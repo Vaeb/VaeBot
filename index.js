@@ -171,6 +171,14 @@ client.on("ready", () => {
 	}
 });
 
+client.on("disconnect", closeEvent => {
+	console.log("DISCONNECTED");
+	console.log(closeEvent);
+	console.log("Code: " + closeEvent.code);
+	console.log("Reason: " + closeEvent.reason);
+	console.log("Clean: " + closeEvent.wasClean);
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 client.login(Auth.token);
