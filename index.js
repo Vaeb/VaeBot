@@ -188,7 +188,7 @@ function setBriefing() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-exports.initCommands();
+Cmds.initCommands();
 
 client.on("ready", () => {
 	console.log(`Connected as ${client.user.username}!`);
