@@ -1,8 +1,12 @@
 const FileSys = require("fs");
 
 var loadedData = index.loadedData;
-
 var muted;
+
+const mutesDir = "./data/mutes.json";
+const histDir = "./data/history.json";
+const autoRoleDir = "./data/autoroles.json";
+const playlistDir = "./data/playlist.json";
 
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
 	var id = targetMember.id;
@@ -340,7 +344,7 @@ exports.restartTimeouts = function() {
 	}
 };
 
-FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
+FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 	if (err) throw err;
 
 	if (data.length > 0) muted = JSON.parse(data);
@@ -353,7 +357,7 @@ FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	Object.defineProperty(muted, "__path", {
-		value: Util.mutesDir,
+		value: mutesDir,
 		enumerable: false,
 		writable: false
 	});
@@ -361,7 +365,7 @@ FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
 	console.log("READY");
 });
 
-FileSys.readFile(Util.histDir, "utf-8", (err, data) => {
+FileSys.readFile(histDir, "utf-8", (err, data) => {
 	if (err) throw err;
 	if (data.length > 0) history = JSON.parse(data);
 	Object.defineProperty(history, "__name", {
@@ -370,14 +374,14 @@ FileSys.readFile(Util.histDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	Object.defineProperty(history, "__path", {
-		value: Util.histDir,
+		value: histDir,
 		enumerable: false,
 		writable: false
 	});
 	loadedData[history] = true;
 });
 
-FileSys.readFile(Util.autoRoleDir, "utf-8", (err, data) => {
+FileSys.readFile(autoRoleDir, "utf-8", (err, data) => {
 	if (err) throw err;
 	if (data.length > 0) autoRoles = JSON.parse(data);
 	Object.defineProperty(autoRoles, "__name", {
@@ -386,14 +390,14 @@ FileSys.readFile(Util.autoRoleDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	Object.defineProperty(autoRoles, "__path", {
-		value: Util.autoRoleDir,
+		value: autoRoleDir,
 		enumerable: false,
 		writable: false
 	});
 	loadedData[autoRoles] = true;
 });
 
-FileSys.readFile(Util.playlistDir, "utf-8", (err, data) => {
+FileSys.readFile(playlistDir, "utf-8", (err, data) => {
 	if (err) throw err;
 	if (data.length > 0) playlist = JSON.parse(data);
 	Object.defineProperty(playlist, "__name", {
@@ -402,7 +406,7 @@ FileSys.readFile(Util.playlistDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	Object.defineProperty(playlist, "__path", {
-		value: Util.playlistDir,
+		value: playlistDir,
 		enumerable: false,
 		writable: false
 	});
