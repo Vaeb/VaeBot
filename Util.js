@@ -337,7 +337,7 @@ exports.getURLChecker = function() {
 	return checkURLs;
 };
 
-var checkURLs = getURLChecker();
+exports.checkURLs = exports.getURLChecker();
 
 exports.capitalize = function(str) {
 	str = String(str);
