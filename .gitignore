@@ -7,7 +7,7 @@ yarn.lock
 *.log
 
 # Authentication
-src/token.txt
+Auth.js
 
 # Miscellaneous
 .tmp/
