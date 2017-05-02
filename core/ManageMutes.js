@@ -5,6 +5,8 @@ exports.$1 = function
 
 */
 
+var muted;
+
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
 	var id = targetMember.id;
 	var muteName = getName(targetMember);
@@ -344,7 +346,6 @@ exports.restartTimeouts = function() {
 FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
 	if (err) throw err;
 	if (data.length > 0) muted = JSON.parse(data);
-
 	exports.muted = muted;
 
 	Object.defineProperty(muted, "__name", {
@@ -359,7 +360,6 @@ FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
 	});
 	loadedData[muted] = true;
 	console.log("READY");
-	MuteManager.restartTimeouts();
 });
 
 FileSys.readFile(Util.histDir, "utf-8", (err, data) => {

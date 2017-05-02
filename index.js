@@ -4,7 +4,8 @@ const Util = require("./Util.js");
 
 const Discord = require("discord.js"),
 	FileSys = require("fs"),
-	MuteManager = require("./core/MuteManager.js"),
+	ManageMutes = require("./core/ManageMutes.js"),
+	ManageData = require("./data/ManageData.js"),
 	Auth = require("./Auth.js");
 
 const client = new Discord.Client({

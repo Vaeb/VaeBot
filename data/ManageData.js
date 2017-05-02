@@ -1,6 +1,6 @@
 var loadedData = index.loadedData;
 
-exports.guildSaveData = function(obj, retry) {
+global.guildSaveData = function(obj, retry) {
 	if (!loadedData[obj]) return;
 	var objName = obj.__name;
 	var objPath = obj.__path;
@@ -14,19 +14,19 @@ exports.guildSaveData = function(obj, retry) {
 	});
 };
 
-exports.guildGet = function(guild, obj, index) {
+global.guildGet = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	if (index !== null) return obj[guild.id][index];
 	return obj[guild.id];
 };
 
-exports.guildSet = function(guild, obj, index, value) {
+global.guildSet = function(guild, obj, index, value) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	obj[guild.id][index] = value;
 	guildSaveData(obj);
 };
 
-exports.guildDelete = function(guild, obj, index) {
+global.guildDelete = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	if (obj[guild.id].hasOwnProperty(index)) {
 		delete obj[guild.id][index];
