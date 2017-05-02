@@ -1,8 +1,9 @@
 console.log("-STARTING-\n");
 
+const Util = require("./Util.js");
+
 const Discord = require("discord.js"),
 	FileSys = require("fs"),
-	Util = require("./Util.js"),
 	MuteManager = require("./core/MuteManager.js"),
 	Auth = require("./Auth.js");
 
@@ -19,10 +20,14 @@ global.Util = Util;
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 var loadedData = [];
+exports.loadedData = loadedData;
 
 var dailyMutes = [];
 var dailyKicks = [];
 var dailyBans = [];
+exports.dailyMutes = dailyMutes;
+exports.dailyKicks = dailyKicks;
+exports.dailyBans = dailyBans;
 
 var briefHour = 2;
 var msToHours = 1/(1000*60*60);
@@ -53,12 +58,12 @@ function setBriefing() {
 
 		console.log("Set daily briefing for " + t3*msToHours + " hours");
 
-		setTimeout(function() {
-			var upField = {name: "​", value: "​", inline: false}
-			var muteField = {name: "Mutes", value: "No mutes today", inline: false}
+		client.setTimeout(function() {
+			var upField = {name: "​", value: "​", inline: false};
+			var muteField = {name: "Mutes", value: "No mutes today", inline: false};
 			//var rightField = {name: "​", value: "​"}
-			var kickField = {name: "Kicks", value: "No kicks today", inline: false}
-			var banField = {name: "Bans", value: "No bans today", inline: false}
+			var kickField = {name: "Kicks", value: "No kicks today", inline: false};
+			var banField = {name: "Bans", value: "No bans today", inline: false};
 
 			var embFields = [muteField, kickField, banField];
 
@@ -153,71 +158,6 @@ function setBriefing() {
 
 client.on("ready", () => {
 	console.log(`Connected as ${client.user.username}!`);
-	FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
-		if (err) throw err;
-		if (data.length > 0) muted = JSON.parse(data);
-		Object.defineProperty(muted, "__name", {
-			value: "muted",
-			enumerable: false,
-			writable: false
-		});
-		Object.defineProperty(muted, "__path", {
-			value: Util.mutesDir,
-			enumerable: false,
-			writable: false
-		});
-		loadedData[muted] = true;
-		console.log("READY");
-		MuteManager.restartTimeouts();
-	});
-
-	FileSys.readFile(Util.histDir, "utf-8", (err, data) => {
-		if (err) throw err;
-		if (data.length > 0) history = JSON.parse(data);
-		Object.defineProperty(history, "__name", {
-			value: "history",
-			enumerable: false,
-			writable: false
-		});
-		Object.defineProperty(history, "__path", {
-			value: Util.histDir,
-			enumerable: false,
-			writable: false
-		});
-		loadedData[history] = true;
-	});
-
-	FileSys.readFile(Util.autoRoleDir, "utf-8", (err, data) => {
-		if (err) throw err;
-		if (data.length > 0) autoRoles = JSON.parse(data);
-		Object.defineProperty(autoRoles, "__name", {
-			value: "autoRoles",
-			enumerable: false,
-			writable: false
-		});
-		Object.defineProperty(autoRoles, "__path", {
-			value: Util.autoRoleDir,
-			enumerable: false,
-			writable: false
-		});
-		loadedData[autoRoles] = true;
-	});
-
-	FileSys.readFile(Util.playlistDir, "utf-8", (err, data) => {
-		if (err) throw err;
-		if (data.length > 0) playlist = JSON.parse(data);
-		Object.defineProperty(playlist, "__name", {
-			value: "playlist",
-			enumerable: false,
-			writable: false
-		});
-		Object.defineProperty(playlist, "__path", {
-			value: Util.playlistDir,
-			enumerable: false,
-			writable: false
-		});
-		loadedData[playlist] = true;
-	});
 
 	if (madeBriefing === false) {
 		madeBriefing = true;
