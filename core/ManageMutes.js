@@ -1,4 +1,4 @@
-FileSys = require("fs");
+const FileSys = require("fs");
 
 var loadedData = index.loadedData;
 

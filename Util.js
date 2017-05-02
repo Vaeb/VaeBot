@@ -1,3 +1,6 @@
+const FileSys = require("fs"),
+	path = require("path");
+
 function getURLChecker() {
 	var
 		SCHEME = "[a-z\\d.-]+://",
@@ -194,6 +197,35 @@ exports.toFixed = function(num, decimals) {
 	return Number(num.Util.toFixed(decimals)).toString();
 };
 
+exports.grabFiles = (filePath, filter = (file) => true) => {
+	let dirFiles = FileSys.readdirSync(filePath);
+	let fullFiles = [];
+	dirFiles.forEach(file => {
+		let fileData = FileSys.lstatSync(`${filePath}${file}`);
+		if (fileData.isDirectory()) {
+			let toAdd = exports.grabFiles(`${filePath}${file}/`, filter);
+			fullFiles = fullFiles.concat(toAdd);
+		} else if(filter(file)) {
+			fullFiles.push(`${filePath}${file}`);
+		}
+	});
+	return fullFiles;
+};
+
+exports.bulkRequire = (filePath) => {
+	let bulkFiles = exports.grabFiles(filePath, file => file.endsWith(".js"));
+
+	for(let i in bulkFiles) {
+		exports.pathRequire(bulkFiles[i]);
+	}
+};
+
+exports.pathRequire = (filePath) => {
+	let file = path.resolve(filePath);
+	delete require.cache[require.resolve(file)];
+	require(filePath);
+};
+
 exports.checkStaff = function(guild, member) {
 	if (member.id == vaebId || member.id == selfId || member.id == guild.ownerID) return true;
 	var speakerRoles = member.roles;
@@ -380,7 +412,7 @@ exports.fixMessageLengthNew = function(msg) {
 			totalBlocks -= numPass;
 			if (numPass % 2 == 1) lastIsOpener = false;
 		}
-		let nextMsg = passOver + (argsFixed[i+1] !== null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
+		let nextMsg = passOver + (argsFixed[i+1] != null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
 		if (nextMsg !== "" && nextMsg[0] != "\n" && msg.includes("\n")) { //If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
 			let cutData = Util.cutStringSafe(msg, "", lastIsOpener);
 			msg = cutData[0];
@@ -426,7 +458,7 @@ exports.fixMessageLengthNew = function(msg) {
 		argsFixed[i] = msg;
 		//console.log("Message length: " + msg.length);
 		//console.log("Pass Over: " + passOver.length);
-		if (passOver != "" && (argsFixed[i+1] !== null || passOver != "```\n")) {
+		if (passOver != "" && (argsFixed[i+1] != null || passOver != "```\n")) {
 			if (argsFixed[i+1] == null) {
 				//console.log("Created new print block extender")
 				argsFixed[i+1] = "";
@@ -494,7 +526,7 @@ exports.getMostName = function(user) {
 };
 
 exports.getFullName = function(user) {
-	return user !== null ? (Util.getMostName(user) + " (" + user.id + ")") : "null";
+	return user != null ? (Util.getMostName(user) + " (" + user.id + ")") : "null";
 };
 
 exports.getMention = function(obj) {
@@ -502,7 +534,7 @@ exports.getMention = function(obj) {
 };
 
 exports.getAvatar = function(user, outStr) {
-	return (user !== null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr === true ? "null" : null);
+	return (user != null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr === true ? "null" : null);
 };
 
 exports.getDateString = function(d) {
@@ -654,7 +686,7 @@ exports.sendDescEmbed = function(embChannel, embTitle, embDesc, embFooter, embIm
 	if (embChannel == null) return;
 	if (embColor == null) embColor = 0x00BCD4;
 
-	if (embDesc !== null && embDesc.length > 2048) {
+	if (embDesc != null && embDesc.length > 2048) {
 		var subFirst = embDesc.substr(0, 2048);
 		var subNext;
 		var lastNewline = subFirst.lastIndexOf("\n");
@@ -845,7 +877,7 @@ exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, 
 	members.forEach((member, id) => {
 		var value = 0;
 
-		var realName = member.nickname !== null ? member.nickname : Util.getName(member);
+		var realName = member.nickname != null ? member.nickname : Util.getName(member);
 		var realstr2Lower = realName.toLowerCase();
 		var nameMatch = realstr2Lower.indexOf(str2Lower);
 
@@ -910,10 +942,10 @@ exports.getDataFromString = function(str, funcs, returnExtra) {
 			continue;
 		}
 		var chunk = mix[pos];
-		if (chunk !== null) combine.unshift(chunk);
+		if (chunk != null) combine.unshift(chunk);
 		if (pos <= end) {
 			var result = funcs[index](combine.join(" "), results);
-			if (result !== null) {
+			if (result != null) {
 				/*if (index == 1) {
 					console.log("[Z] " + combine.join(" "));
 					console.log("[Z] " + remainingFuncs);
@@ -930,7 +962,7 @@ exports.getDataFromString = function(str, funcs, returnExtra) {
 						combine = [];
 						for (var i = start+1; i < mix.length; i++) {
 							var extra = mix[i];
-							if (extra !== null) combine.push(extra);
+							if (extra != null) combine.push(extra);
 						}
 						var leftOver = "";
 						if (combine.length > 0) leftOver = combine.join(" ");
@@ -1173,13 +1205,4 @@ exports.query = function(msg, speaker, channel, func) {
 	Util.print(channel, qMsg);
 	queries.push([qNum, speaker.id, func, qMsg]);
 	nQ++;
-};
-
-exports.addCommand = function(cmds, vaebOnly, staffOnly, guildOnly, func, desc, syntax, example) {
-	var fixedCmds = [];
-	for (var i = 0; i < cmds.length; i++) {
-		fixedCmds.push(cmds[i].toLowerCase());
-	}
-	commands.push([fixedCmds, func, vaebOnly, staffOnly, guildOnly, desc, syntax, example]);
-	commands.sort();
 };

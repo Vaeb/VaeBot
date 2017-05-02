@@ -7,44 +7,64 @@ exports.loadedData = loadedData;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-const Util = require("./Util.js");
-const Data = require("./data/ManageData.js");
-const Mutes = require("./core/ManageMutes.js");
-const Music = require("./core/ManageMusic.js");
+global.selfId = "224529399003742210";
+global.vaebId = "107593015014486016";
 
-global.Util = Util;
-global.Data = Data;
-global.Mutes = Mutes;
-global.Music = Music;
+global.Util = require("./Util.js");
+global.Data = require("./data/ManageData.js");
+global.Mutes = require("./core/ManageMutes.js");
+global.Music = require("./core/ManageMusic.js");
+global.Cmds = require("./core/ManageCommands.js");
+global.Discord = require("discord.js");
 
-const Discord = require("discord.js"),
-	Auth = require("./Auth.js");
+const Auth = require("./Auth.js");
 
-const client = new Discord.Client({
+global.client = new Discord.Client({
 	disabledEvents: ["TYPING_START"],
 	fetchAllMembers: true,
 	disableEveryone: true
 });
 
-global.Discord = Discord;
-global.client = client;
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+exports.dailyMutes = [];
+exports.dailyKicks = [];
+exports.dailyBans = [];
+
+var briefHour = 2;
+const msToHours = 1/(1000*60*60);
+const dayMS = 24/msToHours;
+var madeBriefing = false;
+
+const colAction = 0xF44336; // Log of action, e.g. action from within command
+const colUser = 0x4CAF50; // Log of member change
+const colMessage = 0xFFEB3B; // Log of message change
+const colCommand = 0x2196F3; // Log of command being executed
+
+const spamChannels = {
+	"168744003741810688": true
+};
+
+const quietChannels = {
+	"284746138995785729": true,
+	"289447389251502080": true,
+	"285040042001432577": true,
+	"284746888715042818": true,
+	"294244239485829122": true,
+	"290228574273798146": true
+};
+
+var blockedUsers = {};
+
+var runFuncs = [];
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-var dailyMutes = [];
-var dailyKicks = [];
-var dailyBans = [];
-exports.dailyMutes = dailyMutes;
-exports.dailyKicks = dailyKicks;
-exports.dailyBans = dailyBans;
-
-var briefHour = 2;
-var msToHours = 1/(1000*60*60);
-var dayMS = 24/msToHours;
-var madeBriefing = false;
-
-var muted;
+Discord.GuildMember.prototype.getProp = function(p) {
+	if (this[p] != null) return this[p];
+	return this.user[p];
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,11 +106,11 @@ function setBriefing() {
 				color: 0x00E676
 			};
 
-			if (dailyMutes.length > 0) {
+			if (exports.dailyMutes.length > 0) {
 				let dataValues = [];
 
-				for (let i = 0; i < dailyMutes.length; i++) {
-					let nowData = dailyMutes[i];
+				for (let i = 0; i < exports.dailyMutes.length; i++) {
+					let nowData = exports.dailyMutes[i];
 					let userId = nowData[0];
 					let userName = safe(nowData[1]);
 					let userReason = safe(nowData[2]);
@@ -108,11 +128,11 @@ function setBriefing() {
 
 			muteField.value = "​\n" + muteField.value + "\n​";
 
-			if (dailyKicks.length > 0) {
+			if (exports.dailyKicks.length > 0) {
 				let dataValues = [];
 
-				for (let i = 0; i < dailyKicks.length; i++) {
-					let nowData = dailyKicks[i];
+				for (let i = 0; i < exports.dailyKicks.length; i++) {
+					let nowData = exports.dailyKicks[i];
 					let userId = nowData[0];
 					let userName = safe(nowData[1]);
 					let userReason = safe(nowData[2]);
@@ -129,11 +149,11 @@ function setBriefing() {
 
 			kickField.value = "​\n" + kickField.value + "\n​";
 
-			if (dailyBans.length > 0) {
+			if (exports.dailyBans.length > 0) {
 				let dataValues = [];
 
-				for (let i = 0; i < dailyBans.length; i++) {
-					let nowData = dailyBans[i];
+				for (let i = 0; i < exports.dailyBans.length; i++) {
+					let nowData = exports.dailyBans[i];
 					let userId = nowData[0];
 					let userName = safe(nowData[1]);
 					let userReason = safe(nowData[2]);
@@ -150,14 +170,14 @@ function setBriefing() {
 
 			banField.value = "​\n" + banField.value + "\n​";
 
-			if (dailyMutes.length > 0 || dailyKicks.length > 0 || dailyBans.length > 0) {
+			if (exports.dailyMutes.length > 0 || exports.dailyKicks.length > 0 || exports.dailyBans.length > 0) {
 				channel.send(undefined, {embed: embObj})
 				.catch(error => console.log("\n[E_SendBriefing] " + error));
 			}
 
-			dailyMutes = []; // Reset
-			dailyKicks = [];
-			dailyBans = [];
+			exports.dailyMutes = []; // Reset
+			exports.dailyKicks = [];
+			exports.dailyBans = [];
 
 			setBriefing();
 		}, t3);
@@ -181,6 +201,53 @@ client.on("disconnect", closeEvent => {
 	console.log("Code: " + closeEvent.code);
 	console.log("Reason: " + closeEvent.reason);
 	console.log("Clean: " + closeEvent.wasClean);
+});
+
+client.on("message", msgObj => {
+	var channel = msgObj.channel;
+	if (channel.name == "vaebot-log") return;
+	var guild = msgObj.guild;
+	var speaker = msgObj.member;
+	var author = msgObj.author;
+	var content = msgObj.content;
+	var authorId = author.id;
+
+	if (content.substring(content.length-5) == " -del" && authorId == vaebId) {
+		msgObj.delete();
+		content = content.substring(0, content.length-5);
+	}
+
+	var lcontent = content.toLowerCase();
+
+	var isStaff = guild ? isStaff = Util.checkStaff(guild, speaker) : authorId == vaebId;
+
+	if (blockedUsers[authorId]) {
+		msgObj.delete();
+		return;
+	}
+
+	if (guild != null && lcontent.substr(0, 5) == "sudo " && authorId == vaebId) {
+		author = Util.getUserById(selfId);
+		speaker = Util.getMemberById(selfId, guild);
+		content = content.substring(5);
+		lcontent = content.toLowerCase();
+	} else if (speaker == null) {
+		speaker = author;
+	}
+
+	if (runFuncs.length > 0) {
+		for (var i = 0; i < runFuncs.length; i++) {
+			runFuncs[i](msgObj, channel, speaker);
+		}
+	}
+
+	Cmds.checkMessage(msgObj, speaker, channel, guild, content, lcontent, authorId, isStaff);
+
+	if (author.bot === true) { //RETURN IF BOT
+		return;
+	}
+
+	if (lcontent.includes(("👀").toLowerCase())) Util.print(channel, "👀");
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
