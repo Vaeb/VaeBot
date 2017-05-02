@@ -1,11 +1,13 @@
+FileSys = require("fs");
+
+var muted;
+
 /*
 
 function (\w+)
 exports.$1 = function
 
 */
-
-var muted;
 
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
 	var id = targetMember.id;

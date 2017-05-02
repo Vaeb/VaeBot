@@ -3,7 +3,6 @@ console.log("-STARTING-\n");
 const Util = require("./Util.js");
 
 const Discord = require("discord.js"),
-	FileSys = require("fs"),
 	ManageMutes = require("./core/ManageMutes.js"),
 	ManageData = require("./data/ManageData.js"),
 	Auth = require("./Auth.js");
