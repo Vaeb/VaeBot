@@ -221,7 +221,7 @@ client.on("message", msgObj => {
 
 	var lcontent = content.toLowerCase();
 
-	var isStaff = guild ? isStaff = Util.checkStaff(guild, speaker) : authorId == vaebId;
+	var isStaff = (guild && speaker) ? isStaff = Util.checkStaff(guild, speaker) : authorId == vaebId;
 
 	if (blockedUsers[authorId]) {
 		msgObj.delete();
