@@ -12,10 +12,10 @@ module.exports = {
 	selfId: "224529399003742210",
 	vaebId: "107593015014486016",
 
-	mutesDir: "mutes.json",
-	histDir: "history.json",
-	autoRoleDir: "autoroles.json",
-	playlistDir: "playlist.json",
+	mutesDir: "./data/mutes.json",
+	histDir: "./data/history.json",
+	autoRoleDir: "./data/autoroles.json",
+	playlistDir: "./data/playlist.json",
 
 	rolePermissions: [
 		"CREATE_INSTANT_INVITE",
