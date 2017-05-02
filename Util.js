@@ -1,3 +1,29 @@
+/*
+
+addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\(cmd, args, msgObj, speaker, channel, guild\) {\n\t([\s\S]+?)\n},\n\t(".*?"),\n\t(".*?"),\n\t(".*?")\n\)
+
+Cmds.addCommand({
+	cmds: \1,
+
+	perms: {
+		vaebs: \2,
+		staff: \3,
+		guild: \4
+	},
+
+	desc: \6,
+
+	syntax: \7,
+
+	example: \8,
+
+	func: (cmd, args, msgObj, speaker, channel, guild) => {
+		\5
+	}
+})
+
+*/
+
 const FileSys = require("fs"),
 	path = require("path");
 
