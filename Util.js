@@ -6,6 +6,9 @@ $1:
 [^}];
 ,
 
+function (\w+)
+exports.$1 = function
+
 */
 
 const index = require("./index.js");
@@ -179,7 +182,7 @@ module.exports = {
 
 exports = module.exports;
 
-function getURLChecker() {
+exports.getURLChecker = function() {
 	var
 		SCHEME = "[a-z\\d.-]+://",
 		IPV4 = "(?:(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])",
@@ -214,7 +217,7 @@ function getURLChecker() {
 			punct_regexp: /(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/
 		};
 
-	function checkURLs( txt, options ) {
+	exports.checkURLs = function( txt, options ) {
 		txt = txt.replaceAll("\\", "");
 		txt = txt.replaceAll("*", "");
 		txt = txt.replaceAll("_", "");
@@ -332,106 +335,76 @@ function getURLChecker() {
 	}
 
 	return checkURLs;
-}
+};
 
 var checkURLs = getURLChecker();
 
-function capitalize(str) {
+exports.capitalize = function(str) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.slice(1);
-}
+};
 
-function capitalize2(str, repUnder) {
+exports.capitalize2 = function(str, repUnder) {
 	str = String(str);
 	if (repUnder) str = str.replaceAll("_", " ");
 	str = str.replace(/[0-9a-z]+/ig, function(txt){console.log(txt); return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	return str;
-}
+};
 
-function boolToAns(bool) {
+exports.boolToAns = function(bool) {
 	return bool ? "Yes" : "No";
-}
+};
 
-function safe(str) {
+exports.safe = function(str) {
 	if (typeof(str) == "string") return str.replace(/`/g, "\\`").replace(/@/g, "@­");
-}
+};
 
-function safe2(str) {
+exports.safe2 = function(str) {
 	if (typeof(str) == "string") return str.replace(/`/g, "\\`");
-}
+};
 
-function safeEveryone(str) {
+exports.safeEveryone = function(str) {
 	if (typeof(str) == "string") {
 		var newStr = str.replace(/@everyone/g, "@​everyone");
 		return newStr.replace(/@here/g, "@​here");
 	}
-}
+};
 
-function fix(str) {
+exports.fix = function(str) {
 	return ("`" + safe(str) + "`");
-}
+};
 
-function toFixed(num, decimals) {
+exports.toFixed = function(num, decimals) {
 	return Number(num.toFixed(decimals)).toString();
-}
+};
 
-function checkStaff(guild, member) {
+exports.checkStaff = function(guild, member) {
 	if (member.id == vaebId || member.id == selfId || member.id == guild.ownerID) return true;
 	var speakerRoles = member.roles;
 	if (!speakerRoles) return false;
 	return speakerRoles.some(role => {
 		return role.name == "Staff" || role.name == "Owner/Seller" || role.name == "Bot Admin" || role.name == "Moderator" || role.name == "Head Mod";
 	});
-}
+};
 
-function isQuiet(channel, speaker) {
+exports.isQuiet = function(channel, speaker) {
 	if (quietChannels[channel.id] && !checkStaff(channel.guild, speaker)) {
 		sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", makeEmbedFooter(speaker), null, 0x00E676, null);
 		return true;
 	}
 	return false;
-}
+};
 
-function commandFailed(channel, speaker, message) {
+exports.commandFailed = function(channel, speaker, message) {
 	sendEmbed(channel, "Command Failed", message, makeEmbedFooter(speaker), null, 0x00E676, null);
 	return false;
-}
+};
 
-function getRandomInt(min, max) { //inclusive, exclusive
+exports.getRandomInt = function(min, max) { //inclusive, exclusive
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min)) + min;
-}
-
-/*function chunkStringLine(str, size) {
-	var numChunks = Math.ceil(str.length / size);
-	var chunks = [];
-
-	for (var i = 0, o = 0; i < numChunks; ++i, o += size) {
-		chunks[i] = str.substr(o, size);
-	}
-
-	var chunkLength = chunks.length;
-
-	if (numChunks > 1) {
-		for (var i = 0; i < chunkLength; i++) {
-			var nowChunk = chunks[i];
-			var lastLine = nowChunk.lastIndexOf("\n");
-			if (lastLine >= 0) {
-				var nowChunkMsg = nowChunk.substring(0, lastLine);
-				chunks[i] = nowChunkMsg;
-				var nextChunkMsg = nowChunk.substring(lastLine+1);
-				if (chunks[i+1] === null) {
-					if (nextChunkMsg == "" || nextChunkMsg == "\n" || nextChunkMsg == "```" || nextChunkMsg == "\n```") break;
-					chunks[i+1] = "";
-				}
-				chunks[i+1] = nextChunkMsg + chunks[i+1];
-			}
-		}
-	}
-
-	return chunks;
-}*/
+};
 
 /*
 
@@ -452,12 +425,12 @@ function getRandomInt(min, max) { //inclusive, exclusive
 
 */
 
-function isObject(val) {
+exports.isObject = function(val) {
 	if (val === null) return false;
 	return (typeof(val) === "object");
-}
+};
 
-function cloneObj(obj) {
+exports.cloneObj = function(obj) {
 	var copy;
 
 	if (null === obj || typeof(obj) != "object") return obj;
@@ -486,9 +459,9 @@ function cloneObj(obj) {
 	}
 
 	throw new Error("Unable to copy obj! Its type isn't supported.");
-}
+};
 
-function formatTime(time) {
+exports.formatTime = function(time) {
 	var timeStr;
 	var formatStr;
 
@@ -514,16 +487,16 @@ function formatTime(time) {
 	if (timeStr != "1") formatStr = formatStr + "s";
 
 	return formatStr;
-}
+};
 
-function chunkString(str, maxChars) {
+exports.chunkString = function(str, maxChars) {
 	var iterations = Math.ceil(str.length/maxChars);
 	var chunks = new Array(iterations);
 	for (var i = 0, j = 0; i < iterations; ++i, j += maxChars) chunks[i] = str.substr(j, maxChars);
 	return chunks;
-}
+};
 
-function cutStringSafe(msg, postMsg, lastIsOpener) { //Tries to cut the string along a newline
+exports.cutStringSafe = function(msg, postMsg, lastIsOpener) { //Tries to cut the string along a newline
 	var lastIndex = msg.lastIndexOf("\n");
 	if (lastIndex < 0) return [msg, postMsg];
 	var preCut = msg.substring(0, lastIndex);
@@ -541,9 +514,9 @@ function cutStringSafe(msg, postMsg, lastIsOpener) { //Tries to cut the string a
 		}
 	}
 	return [preCut, postCut + postMsg];
-}
+};
 
-function fixMessageLengthNew(origMsg) {
+exports.fixMessageLengthNew = function(origMsg) {
 	var argsFixed = chunkString(origMsg, 2000); //Group string into sets of 2k chars
 	//argsFixed.forEach(o => console.log("---\n" + o));
 	var totalBlocks = 0; //Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
@@ -575,58 +548,16 @@ function fixMessageLengthNew(origMsg) {
 		}
 	}
 	return argsFixed;
-}
+};
 
-/*function fixMessageLength(msg) {
-	var argsFixed = chunkStringLine(msg, 2000);
-	var argsLength = argsFixed.length;
-	for (var i = 0; i < argsFixed.length; i++) {
-		var passOver = "";
-		var msg = argsFixed[i];
-		//console.log("Original message length: " + msg.length);
-		if (msg.length > 1996) {
-			passOver = msg.substring(1996);
-			msg = msg.substring(0, 1996);
-			//console.log("passStart orig: " + passOver.length);
-			var lastLine = msg.lastIndexOf("\n");
-			if (lastLine >= 5) {
-				var msgEnd = lastLine;
-				var passStart = msgEnd+1;
-				passOver = msg.substring(passStart) + passOver;
-				msg = msg.substring(0, msgEnd);
-				//console.log("passOver: " + passOver.length);
-				//console.log("msg: " + msg.length);
-				//console.log("lastLine: " + lastLine);
-			}
-		}
-		var numBlock = (msg.match(/```/g) || []).length;
-		if (numBlock % 2 == 1) {
-			passOver = "```\n" + passOver;
-			msg = msg + "\n```";
-		}
-		argsFixed[i] = msg;
-		//console.log("Message length: " + msg.length);
-		//console.log("Pass Over: " + passOver.length);
-		if (passOver !== "" && (argsFixed[i+1] !== null || passOver != "```\n")) {
-			if (argsFixed[i+1] === null) {
-				//console.log("Created new print block extender")
-				argsFixed[i+1] = "";
-			}
-			argsFixed[i+1] = passOver + argsFixed[i+1];
-		}
-	}
-
-	return argsFixed;
-}*/
-
-function splitMessages(messages) {
+exports.splitMessages = function(messages) {
 	var fixed = fixMessageLengthNew(messages.join(" "));
 	return fixed;
-}
+};
 
 var printErr = error => console.log("\n[E_Print] " + error);
 
-function print(channel) {
+exports.print = function(channel) {
 	var args = Array.from(arguments);
 	args.splice(0, 1);
 	var messages = splitMessages(args);
@@ -634,15 +565,15 @@ function print(channel) {
 		channel.send(messages[i])
 		.catch(printErr);
 	}
-}
+};
 
-function sortPerms(permsArr) {
+exports.sortPerms = function(permsArr) {
 	permsArr.sort(function(a, b) {
 		return permissionsOrder[b] - permissionsOrder[a];
 	});
-}
+};
 
-function getGuildRoles(guild) {
+exports.getGuildRoles = function(guild) {
 	var roles = [];
 	var guildRoles = guild.roles;
 
@@ -660,45 +591,45 @@ function getGuildRoles(guild) {
 	});
 
 	return roles;
-}
+};
 
-function getName(member) {
+exports.getName = function(member) {
 	return member.username || (member.user ? member.user.username : null);
-}
+};
 
-function getDisplayName(member) {
+exports.getDisplayName = function(member) {
 	return member.displayName || (member.user ? member.user.username : null);
-}
+};
 
-function getMostName(user) {
+exports.getMostName = function(user) {
 	return getName(user) + "#" + user.discriminator;
-}
+};
 
-function getFullName(user) {
+exports.getFullName = function(user) {
 	return user !== null ? (getMostName(user) + " (" + user.id + ")") : "null";
-}
+};
 
-function getMention(obj) {
+exports.getMention = function(obj) {
 	return obj.toString();
-}
+};
 
-function getAvatar(user, outStr) {
+exports.getAvatar = function(user, outStr) {
 	return (user !== null && isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr=== true ? "null" : null);
-}
+};
 
-function getDateString(d) {
+exports.getDateString = function(d) {
 	return dateFormat(d, "ddd, mmm dS yyyy @ h:MM TT") + " GMT";
-}
+};
 
-function hasRole(member, role) {
+exports.hasRole = function(member, role) {
 	return member.roles.has(role.id);
-}
+};
 
-function makeEmbedFooter(user) {
+exports.makeEmbedFooter = function(user) {
 	var memberName = isObject(user) ? getDisplayName(user) : String(user);
 	var dateStr = getDateString(new Date());
 	return {text: memberName + " | " + dateStr, icon_url: getAvatar(user)};
-}
+};
 
 /*
 
@@ -708,11 +639,11 @@ function makeEmbedFooter(user) {
 	Set everything before newline as value for the field
 	Create new field immediately after current field
 	Set name as zero width character
-	Return function on new field and string after newline
+	Return exports.on = function new field and string after newline
 
 */
 
-function setFieldValue(embFields, nowFieldNum, nowString) {
+exports.setFieldValue = function(embFields, nowFieldNum, nowString) {
 	var nowField = embFields[nowFieldNum];
 	if (nowString.length <= 512) {
 		nowField.value = nowString;
@@ -737,7 +668,7 @@ function setFieldValue(embFields, nowFieldNum, nowString) {
 	var newFieldNum = nowFieldNum+1;
 	embFields.splice(newFieldNum, 0, {name: "​", value: "", inline: nowField.inline});
 	return setFieldValue(embFields, newFieldNum, subNext);
-}
+};
 
 /*
 
@@ -751,7 +682,7 @@ Field Value: 512 (maybe 1024?)
 
 */
 
-function sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, embFields, isContinued) {
+exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage, embColor, embFields, isContinued) {
 	if (embChannel === null) return;
 
 	var manyFields = false;
@@ -829,9 +760,9 @@ function sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor,
 	if (manyFields) {
 		sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
 	}
-}
+};
 
-function sendDescEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor) {
+exports.sendDescEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage, embColor) {
 	if (embChannel === null) return;
 	if (embColor === null) embColor = 0x00BCD4;
 
@@ -856,9 +787,9 @@ function sendDescEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embCo
 	} else {
 		sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, []);
 	}
-}
+};
 
-function sendLog(embData, embColor) {
+exports.sendLog = function(embData, embColor) {
 	var embTitle = embData[0];
 	var embGuild = embData[1];
 	var embAuthor = embData[2];
@@ -879,59 +810,38 @@ function sendLog(embData, embColor) {
 		embColor,
 		embFields
 	);
-}
+};
 
-function getHourStr(d) {
+exports.getHourStr = function(d) {
 	var valStr = (d.getHours()).toString();
 	if (valStr.length < 2) valStr = "0" + valStr;
 	return valStr;
-}
+};
 
-function getMinStr(d) {
+exports.getMinStr = function(d) {
 	var valStr = (d.getMinutes()).toString();
 	if (valStr.length < 2) valStr = "0" + valStr;
 	return valStr;
-}
+};
 
-function getYearStr(d) {
+exports.getYearStr = function(d) {
 	var valStr = (d.getFullYear()).toString();
 	return valStr;
-}
+};
 
-function getMonthStr(d) {
+exports.getMonthStr = function(d) {
 	var valStr = (d.getMonth()+1).toString();
 	if (valStr.length < 2) valStr = "0" + valStr;
 	return valStr;
-}
+};
 
-function getDayStr(d) {
+exports.getDayStr = function(d) {
 	var valStr = (d.getDate()).toString();
 	if (valStr.length < 2) valStr = "0" + valStr;
 	return valStr;
-}
+};
 
-/*function searchPartial(array, name, checkPartial) {
-	if (checkPartial != false) {
-		var firstChar = name.substr(0, 1);
-		var endChar = name.substr(name.length-1, 1);
-		if (firstChar == "\"" && endChar == "\"") {
-			checkPartial = false;
-			name = name.substring(1, name.length-1);
-			if (name.length < 1) return;
-		}
-	}
-	name = name.toLowerCase()
-	var user = array.find(function(item) {
-		var user = getName(item);
-		if (checkPartial != false ? safe(user.toLowerCase()).includes(name) : safe(user.toLowerCase()) == name) {
-			return true;
-		}
-		return false;
-	})
-	return user;
-}*/
-
-function searchUserPartial(col, name) {
+exports.searchUserPartial = function(col, name) {
 	name = name.toLowerCase();
 	return col.find(function(member) {
 		var userName = getName(member);
@@ -940,21 +850,21 @@ function searchUserPartial(col, name) {
 		}
 		return false;
 	});
-}
+};
 
-function round(num, inc) {
+exports.round = function(num, inc) {
 	return (inc === 0 ? num : Math.floor(num/inc+0.5)*inc);
-}
+};
 
-function write(content, name) {
+exports.write = function(content, name) {
 	fileSystem.writeFile(name, content);
-}
+};
 
-function remove(name) {
+exports.remove = function(name) {
 	fileSystem.unlink(name);
-}
+};
 
-function guildSaveData(obj, retry) {
+exports.guildSaveData = function(obj, retry) {
 	if (!loaded[obj]) return;
 	var objName = obj.__name;
 	var objPath = obj.__path;
@@ -966,51 +876,51 @@ function guildSaveData(obj, retry) {
 			console.log("Saved: " + objName);
 		}
 	});
-}
+};
 
-function guildGet(guild, obj, index) {
+exports.guildGet = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	if (index !== null) return obj[guild.id][index];
 	return obj[guild.id];
-}
+};
 
-function guildSet(guild, obj, index, value) {
+exports.guildSet = function(guild, obj, index, value) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	obj[guild.id][index] = value;
 	guildSaveData(obj);
-}
+};
 
-function guildDelete(guild, obj, index) {
+exports.guildDelete = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	if (obj[guild.id].hasOwnProperty(index)) {
 		delete obj[guild.id][index];
 		guildSaveData(obj);
 	}
-}
+};
 
-function checkMuted(id, guild) {
+exports.checkMuted = function(id, guild) {
 	return (guildGet(guild, muted, id) ? true : false);
-}
+};
 
-function getHistory(id, guild) {
+exports.getHistory = function(id, guild) {
 	var userHistory = guildGet(guild, history, id);
 	if (userHistory) return userHistory[0];
 	return 0;
-}
+};
 
-function historyToString(num) {
+exports.historyToString = function(num) {
 	var timeHours = round(num/3600000, 0.1);
 	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
 	return timeHours + (timeHours == 1 ? " hour" : " hours");
-}
+};
 
-function getSafeId(id) {
+exports.getSafeId = function(id) {
 	id = id.match(/\d+/);
 	if (id === null) return;
 	return id[0];
-}
+};
 
-function getMemberById(id, guild) {
+exports.getMemberById = function(id, guild) {
 	if (guild === null || id === null) return;
 	if (id.substr(0, 1) == "<" && id.substr(id.length-1, 1) == ">") id = getSafeId(id);
 	if (id === null || id.length < 1) return;
@@ -1018,9 +928,9 @@ function getMemberById(id, guild) {
 	return members.find(member => {
 		return member.id == id;
 	});
-}
+};
 
-function getMatchStrength(fullStr, subStr) { // [v2.0]
+exports.getMatchStrength = function(fullStr, subStr) { // [v2.0]
 	var value = 0;
 
 	var fullStrLower = fullStr.toLowerCase();
@@ -1046,9 +956,9 @@ function getMatchStrength(fullStr, subStr) { // [v2.0]
 	}
 
 	return value;
-}
+};
 
-function getMemberByName(name, guild) { // [v2.0] Visible name match, real name match, caps match, length match, position match
+exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, real name match, caps match, length match, position match
 	if (guild === null) return;
 
 	var str2Lower = name.toLowerCase();
@@ -1104,9 +1014,9 @@ function getMemberByName(name, guild) { // [v2.0] Visible name match, real name 
 		if (strength[0] > strongest[0]) strongest = strength;
 	}
 	return strongest[1];
-}
+};
 
-function getDataFromString(str, funcs, returnExtra) {
+exports.getDataFromString = function(str, funcs, returnExtra) {
 	var mix = str.split(" ");
 	var baseStart = mix.length-1;
 	var start = baseStart;
@@ -1165,120 +1075,120 @@ function getDataFromString(str, funcs, returnExtra) {
 			pos--;
 		}
 	}
-}
+};
 
-function clamp(num, min, max) {
+exports.clamp = function(num, min, max) {
 	if (min === null) min = num;
 	if (max === null) max = num;
 	return Math.min(Math.max(num, min), max);
-}
+};
 
-function toBoolean(str) {
+exports.toBoolean = function(str) {
 	return (typeof(str) === "boolean" ? str : (str === "true" || (str === "false" ? false : undefined)));
-}
+};
 
-function getNum(str, min, max) {
+exports.getNum = function(str, min, max) {
 	var num = Number(str);
 	if (isNaN(num)) return;
 	return clamp(num, min, max);
-}
+};
 
-function getInt(str, min, max) {
+exports.getInt = function(str, min, max) {
 	var num = parseInt(str);
 	if (isNaN(num)) return;
 	return clamp(num, min, max);
-}
+};
 
-function isTextChannel(channel) {
+exports.isTextChannel = function(channel) {
 	return channel.type == "text";
-}
+};
 
-function isVoiceChannel(channel) {
+exports.isVoiceChannel = function(channel) {
 	return channel.type == "voice";
-}
+};
 
-function getTextChannels(guild) {
+exports.getTextChannels = function(guild) {
 	return guild.channels.filter(isTextChannel);
-}
+};
 
-function getVoiceChannels(guild) {
+exports.getVoiceChannels = function(guild) {
 	return guild.channels.filter(isVoiceChannel);
-}
+};
 
-function findChannel(name, guild) {
+exports.findChannel = function(name, guild) {
 	if (guild === null) return;
 	name = name.toLowerCase();
 	var channels = getTextChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
-}
+};
 
-function findVoiceChannel(name, guild) {
+exports.findVoiceChannel = function(name, guild) {
 	if (guild === null) return;
 	name = name.toLowerCase();
 	var channels = getVoiceChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
-}
+};
 
-function getRole(name, obj) {
+exports.getRole = function(name, obj) {
 	if (obj === null) return;
 	name = name.toLowerCase();
 	var roles = obj.roles;
 	return roles.find(role => {
 		return role.name.toLowerCase().includes(name);
 	});
-}
+};
 
-function getHighestRole(member) {
+exports.getHighestRole = function(member) {
 	return member.highestRole;
-}
+};
 
-function getPosition(speaker) {
+exports.getPosition = function(speaker) {
 	if (speaker === null || !isObject(speaker)) return;
 	var roles = speaker.roles;
 	if (speaker.id == speaker.guild.ownerID) return 999999999;
 	return speaker.highestRole.position;
-}
+};
 
-function getUserById(id) {
+exports.getUserById = function(id) {
 	return client.users.get(id);
-}
+};
 
-function getUserByName(name) {
+exports.getUserByName = function(name) {
 	return searchUserPartial(client.users, name);
-}
+};
 
-function getUserByMixed(name) {
+exports.getUserByMixed = function(name) {
 	var user = getUserById(name);
 	if (user === null) user = getUserByName(name);
 	return user;
-}
+};
 
-function getMemberByMixed(name, guild) {
+exports.getMemberByMixed = function(name, guild) {
 	if (guild === null) return;
 	var targetMember = getMemberById(name, guild);
 	if (targetMember === null) targetMember = getMemberByName(name, guild);
 	return targetMember;
-}
+};
 
-function getMemberOrRoleByMixed(name, guild) {
+exports.getMemberOrRoleByMixed = function(name, guild) {
 	if (guild === null) return;
 	var targetObj = getRole(name, guild);
 	if (targetObj === null) targetObj = getMemberById(name, guild);
 	if (targetObj === null) targetObj = getMemberByName(name, guild);
 	return targetObj;
-}
+};
 
-function getEitherByMixed(name, guild) {
+exports.getEitherByMixed = function(name, guild) {
 	var user = getMemberByMixed(name, guild);
 	if (user === null) user = getUserByMixed(name);
 	return user;
-}
+};
 
-function doMuteReal(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
+exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
 	var id = targetMember.id;
 	var muteName = getName(targetMember);
 
@@ -1408,9 +1318,9 @@ function doMuteReal(targetMember, reason, guild, pos, channel, speaker, noOut, t
 	print(targetMember, outStr.join("\n"));
 
 	return timeRemaining;
-}
+};
 
-function unMuteReal(targetMember, guild, pos, channel, speaker) {
+exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	var id = targetMember.id;
 
 	var speakerValid = isObject(speaker);
@@ -1484,9 +1394,9 @@ function unMuteReal(targetMember, guild, pos, channel, speaker) {
 	stopUnMuteTimeout(id);
 
 	return true;
-}
+};
 
-function doMute(name, guild, pos, channel, speaker) {
+exports.doMute = function(name, guild, pos, channel, speaker) {
 	var data = getDataFromString(name, [
 		function(str, results) {
 			return getMemberByMixed(str, guild);
@@ -1505,9 +1415,9 @@ function doMute(name, guild, pos, channel, speaker) {
 	var targetMember = data[0];
 	var reason = data[1];
 	doMuteReal(targetMember, reason, guild, pos, channel, speaker);
-}
+};
 
-function unMute(name, isDefinite, guild, pos, channel, speaker) {
+exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 	var backupTarget;
 	var safeId = getSafeId(name);
 	name = name.toLowerCase();
@@ -1569,9 +1479,9 @@ function unMute(name, isDefinite, guild, pos, channel, speaker) {
 	}
 
 	return false;
-}
+};
 
-function stopUnMuteTimeout(id) {
+exports.stopUnMuteTimeout = function(id) {
 	for (var i = muteEvents.length-1; i >= 0; i--) {
 		var oldTimeout = muteEvents[i];
 		if (oldTimeout[0] == id) {
@@ -1580,9 +1490,9 @@ function stopUnMuteTimeout(id) {
 			muteEvents.splice(i, 1);
 		}
 	}
-}
+};
 
-function addUnMuteEvent(id, guild, time, name) {
+exports.addUnMuteEvent = function(id, guild, time, name) {
 	time = Math.max(time, 0);
 	stopUnMuteTimeout(id);
 	guild.fetchMember(id)
@@ -1598,9 +1508,9 @@ function addUnMuteEvent(id, guild, time, name) {
 			unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	});
-}
+};
 
-function restartTimeouts() {
+exports.restartTimeouts = function() {
 	var preDate = Date.now();
 	var guilds = client.guilds;
 	for (var guildId in muted) {
@@ -1612,9 +1522,9 @@ function restartTimeouts() {
 			addUnMuteEvent(targetId, guilds.get(nowMuted[0]), nowMuted[1]-preDate, nowMuted[2]);
 		}
 	}
-}
+};
 
-function permEnabled(iPerms, permName) {
+exports.permEnabled = function(iPerms, permName) {
 	var allowGeneral = iPerms.General;
 	var allowText = iPerms.Text;
 	var allowVoice = iPerms.Voice;
@@ -1622,9 +1532,9 @@ function permEnabled(iPerms, permName) {
 	if (allowGeneral.hasOwnProperty(permName)) return allowGeneral[permName];
 	if (allowText.hasOwnProperty(permName)) return allowText[permName];
 	if (allowVoice.hasOwnProperty(permName)) return allowVoice[permName];
-}
+};
 
-function getPermRating(guild, userOrRole) {
+exports.getPermRating = function(guild, userOrRole) {
 	if (userOrRole.hasPermission === null) return 0;
 
 	var tempPermRating = cloneObj(permRating);
@@ -1677,9 +1587,9 @@ function getPermRating(guild, userOrRole) {
 	total = Math.min(total, 100);
 
 	return total;
-}
+};
 
-function getMemberPowers(guild) {
+exports.getMemberPowers = function(guild) {
 	var sorted = [];
 	var members = guild.members;
 	for (var i = 0; i < members.size; i++) {
@@ -1692,9 +1602,9 @@ function getMemberPowers(guild) {
 		sorted.splice(index, 0, [member, power]);
 	}
 	return sorted;
-}
+};
 
-function strToPerm(str) {
+exports.strToPerm = function(str) {
 	str = str.toUpperCase().replaceAll(" ", "_");
 
 	var matchPerm = null;
@@ -1711,18 +1621,14 @@ function strToPerm(str) {
 	}
 
 	return matchPerm;
-}
+};
 
-function setChannelPerms(channel, userOrRole, newPerms) {
+exports.setChannelPerms = function(channel, userOrRole, newPerms) {
 	channel.overwritePermissions(userOrRole, newPerms)
 	.catch(error => console.log("\n[E_SetChannelPerms] " + error));
-}
+};
 
-var isPlaying = {};
-var songData = {};
-var songs = {};
-
-function stopMusic(guild) {
+exports.stopMusic = function(guild) {
 	var connection = guild.voiceConnection;
 	if (!connection) return false;
 	var voiceChannel = connection.channel;
@@ -1738,14 +1644,14 @@ function stopMusic(guild) {
 	realSongData.voteSkips = [];
 	realSongData.isAuto = false;
 	return true;
-}
+};
 
-function clearQueue(guild) {
+exports.clearQueue = function(guild) {
 	songs[guild.id] = [];
 	return stopMusic(guild);
-}
+};
 
-function chooseRandomSong(guild, autoPlaylist, lastId) {
+exports.chooseRandomSong = function(guild, autoPlaylist, lastId) {
 	var autoSongs = autoPlaylist.songs;
 	var newSong = autoSongs[getRandomInt(0, autoSongs.length-1)];
 	var video = newSong[0];
@@ -1755,9 +1661,9 @@ function chooseRandomSong(guild, autoPlaylist, lastId) {
 	} else {
 		return newSong;
 	}
-}
+};
 
-function playRealSong(newSong, guild, channel, doPrint) {
+exports.playRealSong = function(newSong, guild, channel, doPrint) {
 	console.log("Playing Real Song");
 	if (doPrint === null) doPrint = true;
 	var video = newSong[0];
@@ -1770,9 +1676,9 @@ function playRealSong(newSong, guild, channel, doPrint) {
 	realSongData.isAuto = false;
 	streamAudio(videoId, guild, channel);
 	if (doPrint) sendDescEmbed(channel, "Playing " + video.snippet.title, "Added by " + safeEveryone(author.toString()), makeEmbedFooter(author), null, 0x00E676);
-}
+};
 
-function playNextQueue(guild, channel, doPrint) {
+exports.playNextQueue = function(guild, channel, doPrint) {
 	console.log("Playing Next Queue");
 	if (doPrint === null) doPrint = true;
 	var realSongs = songs[guild.id];
@@ -1789,9 +1695,9 @@ function playNextQueue(guild, channel, doPrint) {
 	} else {
 		stopMusic(guild);
 	}
-}
+};
 
-function playNextAuto(guild, channel, doPrint) {
+exports.playNextAuto = function(guild, channel, doPrint) {
 	var autoPlaylist = guildGet(guild, playlist);
 	if (!autoPlaylist.hasOwnProperty("songs") || autoPlaylist.songs.length === 0) {
 		stopMusic(guild);
@@ -1815,9 +1721,9 @@ function playNextAuto(guild, channel, doPrint) {
 	realSongData.isAuto = true;
 	streamAudio(videoId, guild, channel);
 	if (doPrint) sendDescEmbed(channel, "[Auto-Playlist-Started]", "Playing " + video.snippet.title, makeEmbedFooter(null), null, 0x00E676);
-}
+};
 
-function streamAudio(remote, guild, channel) {
+exports.streamAudio = function(remote, guild, channel) {
 	var connection = guild.voiceConnection;
 	if (connection === null) return commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
 	var voiceChannel = connection.channel;
@@ -1865,9 +1771,9 @@ function streamAudio(remote, guild, channel) {
 			}
 		}
 	});
-}
+};
 
-function joinMusic(guild, channel, func) {
+exports.joinMusic = function(guild, channel, func) {
 	var connection = guild.voiceConnection;
 	if (connection === null) {
 		var musicChannel = findVoiceChannel("music", guild);
@@ -1884,11 +1790,9 @@ function joinMusic(guild, channel, func) {
 	} else {
 		func(connection);
 	}
-}
+};
 
-//;eval var songz = songs[guild.id]; var mien = songz[4]; songz[4] = songz[1]; songz[1] = mien; return true;
-
-function addSong(speaker, guild, channel, video) {
+exports.addSong = function(speaker, guild, channel, video) {
 	var realSongs = songs[guild.id];
 	realSongs.push([video, speaker]);
 	if (realSongs.length <= 1 || songData[guild.id].isAuto === true) {
@@ -1896,12 +1800,12 @@ function addSong(speaker, guild, channel, video) {
 	} else {
 		sendDescEmbed(channel, "[" + realSongs.length + "] Audio Queue Appended", video.snippet.title, makeEmbedFooter(speaker), null, 0x00E676);
 	}
-}
+};
 
-function query(msg, speaker, channel, func) {
+exports.query = function(msg, speaker, channel, func) {
 	var qNum = "[" + nQ + "]";
 	var qMsg = qNum + " " + msg;
 	print(channel, qMsg);
 	queries.push([qNum, speaker.id, func, qMsg]);
 	nQ++;
-}
+};
