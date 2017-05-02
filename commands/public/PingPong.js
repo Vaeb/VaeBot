@@ -7,8 +7,8 @@ module.exports = {
 	example: "ping",
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		if (isQuiet(channel, speaker)) return;
-		
-		sendDescEmbed(channel, null, "pong", null, null, null);
+		if (Util.isQuiet(channel, speaker)) return;
+
+		Util.sendDescEmbed(channel, null, "pong", null, null, null);
 	}
 };
