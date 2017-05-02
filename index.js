@@ -12,8 +12,8 @@ const Util = require("./Util.js");
 global.Util = Util;
 
 const Discord = require("discord.js"),
-	ManageMutes = require("./core/ManageMutes.js"),
 	ManageData = require("./data/ManageData.js"),
+	ManageMutes = require("./core/ManageMutes.js"),
 	Auth = require("./Auth.js");
 
 const client = new Discord.Client({
