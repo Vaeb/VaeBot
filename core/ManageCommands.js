@@ -9,13 +9,13 @@ const quietChannels = {
 	"290228574273798146": true
 };
 
-exports.isQuiet(channel, speaker) {
+exports.isQuiet = function(channel, speaker) {
 	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
 		Util.sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 		return true;
 	}
 	return false;
-}
+};
 
 exports.addCommand = function(structure) {
 	var cmds = structure.cmds;
