@@ -78,7 +78,7 @@ function setBriefing() {
 				description: "​",
 				fields: embFields,
 				footer: {text: ">> More info in #vaebot-log <<"},
-				thumbnail: {url: "https://cdn.discordapp.com/avatars/224529399003742210/7803b6439775bba18496ef325aa24b7f.jpg"},
+				thumbnail: {url: "./resources/avatar.png"},
 				color: 0x00E676
 			};
 
