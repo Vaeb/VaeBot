@@ -7,6 +7,8 @@ exports.loadedData = loadedData;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+global.index = module.exports;
+
 global.selfId = "224529399003742210";
 global.vaebId = "107593015014486016";
 
