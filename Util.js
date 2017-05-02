@@ -1,188 +1,4 @@
-/*
-
-var (\w+?) = 
-$1: 
-
-[^}];
-,
-
-function (\w+)
-exports.$1 = function
-
-*/
-
-const index = require("./index.js");
-
-global.index = index;
-
-module.exports = {
-	selfId: "224529399003742210",
-	vaebId: "107593015014486016",
-
-	mutesDir: "./data/mutes.json",
-	histDir: "./data/history.json",
-	autoRoleDir: "./data/autoroles.json",
-	playlistDir: "./data/playlist.json",
-
-	rolePermissions: [
-		"CREATE_INSTANT_INVITE",
-		"KICK_MEMBERS",
-		"BAN_MEMBERS",
-		"VIEW_AUDIT_LOG",
-		"ADMINISTRATOR",
-		"MANAGE_CHANNELS",
-		"MANAGE_GUILD",
-		"ADD_REACTIONS", // add reactions to messages
-		"READ_MESSAGES",
-		"SEND_MESSAGES",
-		"SEND_TTS_MESSAGES",
-		"MANAGE_MESSAGES",
-		"EMBED_LINKS",
-		"ATTACH_FILES",
-		"READ_MESSAGE_HISTORY",
-		"MENTION_EVERYONE",
-		"USE_EXTERNAL_EMOJIS", // use external emojis
-		"CONNECT", // connect to voice
-		"SPEAK", // speak on voice
-		"MUTE_MEMBERS", // globally mute members on voice
-		"DEAFEN_MEMBERS", // globally deafen members on voice
-		"MOVE_MEMBERS", // move member's voice channels
-		"USE_VAD", // use voice activity detection
-		"CHANGE_NICKNAME",
-		"MANAGE_NICKNAMES", // change nicknames of others
-		"MANAGE_ROLES",
-		"MANAGE_WEBHOOKS",
-		"MANAGE_EMOJIS"
-	],
-
-	rolePermissionsObj: {
-		"CREATE_INSTANT_INVITE": true,
-		"KICK_MEMBERS": true,
-		"BAN_MEMBERS": true,
-		"VIEW_AUDIT_LOG": true,
-		"ADMINISTRATOR": true,
-		"MANAGE_CHANNELS": true,
-		"MANAGE_GUILD": true,
-		"ADD_REACTIONS": true, // add reactions to messages
-		"READ_MESSAGES": true,
-		"SEND_MESSAGES": true,
-		"SEND_TTS_MESSAGES": true,
-		"MANAGE_MESSAGES": true,
-		"EMBED_LINKS": true,
-		"ATTACH_FILES": true,
-		"READ_MESSAGE_HISTORY": true,
-		"MENTION_EVERYONE": true,
-		"USE_EXTERNAL_EMOJIS": true, // use external emojis
-		"CONNECT": true, // connect to voice
-		"SPEAK": true, // speak on voice
-		"MUTE_MEMBERS": true, // globally mute members on voice
-		"DEAFEN_MEMBERS": true, // globally deafen members on voice
-		"MOVE_MEMBERS": true, // move member's voice channels
-		"USE_VAD": true, // use voice activity detection
-		"CHANGE_NICKNAME": true,
-		"MANAGE_NICKNAMES": true, // change nicknames of others
-		"MANAGE_ROLES": true,
-		"MANAGE_WEBHOOKS": true,
-		"MANAGE_EMOJIS": true
-	},
-
-	textChannnelPermissions: [
-		"CREATE_INSTANT_INVITE",
-		"MANAGE_CHANNEL",
-		"ADD_REACTIONS", // add reactions to messages
-		"READ_MESSAGES",
-		"SEND_MESSAGES",
-		"SEND_TTS_MESSAGES",
-		"MANAGE_MESSAGES",
-		"EMBED_LINKS",
-		"ATTACH_FILES",
-		"READ_MESSAGE_HISTORY",
-		"MENTION_EVERYONE",
-		"USE_EXTERNAL_EMOJIS", // use external emojis
-		"MANAGE_PERMISSIONS",
-		"MANAGE_WEBHOOKS"
-	],
-
-	textChannnelPermissionsObj: {
-		"ADD_REACTIONS": true, // add reactions to messages
-		"READ_MESSAGES": true,
-		"SEND_MESSAGES": true,
-		"SEND_TTS_MESSAGES": true,
-		"MANAGE_MESSAGES": true,
-		"EMBED_LINKS": true,
-		"ATTACH_FILES": true,
-		"READ_MESSAGE_HISTORY": true,
-		"MENTION_EVERYONE": true,
-		"USE_EXTERNAL_EMOJIS": true, // use external emojis
-		"CREATE_INSTANT_INVITE": true,
-		"MANAGE_CHANNEL": true,
-		"MANAGE_PERMISSIONS": true,
-		"MANAGE_WEBHOOKS": true
-	},
-
-	voiceChannnelPermissions: [
-		"CONNECT", // connect to voice
-		"SPEAK", // speak on voice
-		"MUTE_MEMBERS", // globally mute members on voice
-		"DEAFEN_MEMBERS", // globally deafen members on voice
-		"MOVE_MEMBERS", // move member's voice channels
-		"USE_VAD", // use voice activity detection
-		"CREATE_INSTANT_INVITE",
-		"MANAGE_CHANNEL",
-		"MANAGE_PERMISSIONS",
-		"MANAGE_WEBHOOKS"
-	],
-
-	voiceChannnelPermissionsObj: {
-		"CONNECT": true, // connect to voice
-		"SPEAK": true, // speak on voice
-		"MUTE_MEMBERS": true, // globally mute members on voice
-		"DEAFEN_MEMBERS": true, // globally deafen members on voice
-		"MOVE_MEMBERS": true, // move member's voice channels
-		"USE_VAD": true, // use voice activity detection
-		"CREATE_INSTANT_INVITE": true,
-		"MANAGE_CHANNEL": true,
-		"MANAGE_PERMISSIONS": true,
-		"MANAGE_WEBHOOKS": true
-	},
-
-	permissionsOrder: {
-		"ADMINISTRATOR": 27,
-		"MANAGE_GUILD": 26,
-		"MANAGE_ROLES": 25,
-		"MANAGE_CHANNELS": 24,
-		"MANAGE_CHANNEL": 24, // Channel
-		"MANAGE_WEBHOOKS": 23,
-		"MANAGE_EMOJIS": 22,
-		"MANAGE_PERMISSIONS": 22, // Channel
-		"VIEW_AUDIT_LOG": 21,
-		"MENTION_EVERYONE": 20,
-		"BAN_MEMBERS": 19,
-		"KICK_MEMBERS": 18,
-		"MOVE_MEMBERS": 17,
-		"DEAFEN_MEMBERS": 16,
-		"MUTE_MEMBERS": 15,
-		"MANAGE_MESSAGES": 14,
-		"MANAGE_NICKNAMES": 13,
-		"USE_EXTERNAL_EMOJIS": 12,
-		"ATTACH_FILES": 11,
-		"SEND_TTS_MESSAGES": 10,
-		"ADD_REACTIONS": 9,
-		"EMBED_LINKS": 8,
-		"CHANGE_NICKNAME": 7,
-		"USE_VAD": 6,
-		"SPEAK": 5,
-		"CONNECT": 4,
-		"CREATE_INSTANT_INVITE": 3,
-		"SEND_MESSAGES": 2,
-		"READ_MESSAGE_HISTORY": 1,
-		"READ_MESSAGES": 0
-	},
-};
-
-exports = module.exports;
-
-exports.getURLChecker = function() {
+function getURLChecker() {
 	var
 		SCHEME = "[a-z\\d.-]+://",
 		IPV4 = "(?:(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])",
@@ -217,7 +33,7 @@ exports.getURLChecker = function() {
 			punct_regexp: /(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/
 		};
 
-	checkURLs = function( txt, options ) {
+	function checkURLs( txt, options ) {
 		txt = txt.replaceAll("\\", "");
 		txt = txt.replaceAll("*", "");
 		txt = txt.replaceAll("_", "");
@@ -335,9 +151,9 @@ exports.getURLChecker = function() {
 	}
 
 	return checkURLs;
-};
+}
 
-exports.checkURLs = exports.getURLChecker();
+exports.checkURLs = getURLChecker();
 
 exports.capitalize = function(str) {
 	str = String(str);
@@ -371,11 +187,11 @@ exports.safeEveryone = function(str) {
 };
 
 exports.fix = function(str) {
-	return ("`" + safe(str) + "`");
+	return ("`" + Util.safe(str) + "`");
 };
 
 exports.toFixed = function(num, decimals) {
-	return Number(num.toFixed(decimals)).toString();
+	return Number(num.Util.toFixed(decimals)).toString();
 };
 
 exports.checkStaff = function(guild, member) {
@@ -388,15 +204,15 @@ exports.checkStaff = function(guild, member) {
 };
 
 exports.isQuiet = function(channel, speaker) {
-	if (quietChannels[channel.id] && !checkStaff(channel.guild, speaker)) {
-		sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", makeEmbedFooter(speaker), null, 0x00E676, null);
+	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
+		Util.sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 		return true;
 	}
 	return false;
 };
 
 exports.commandFailed = function(channel, speaker, message) {
-	sendEmbed(channel, "Command Failed", message, makeEmbedFooter(speaker), null, 0x00E676, null);
+	Util.sendEmbed(channel, "Command Failed", message, Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 	return false;
 };
 
@@ -405,6 +221,36 @@ exports.getRandomInt = function(min, max) { //inclusive, exclusive
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min)) + min;
 };
+
+/*function chunkStringLine(str, size) {
+	var numChunks = Math.ceil(str.length / size);
+	var chunks = [];
+
+	for (var i = 0, o = 0; i < numChunks; ++i, o += size) {
+		chunks[i] = str.substr(o, size);
+	}
+
+	var chunkLength = chunks.length;
+
+	if (numChunks > 1) {
+		for (var i = 0; i < chunkLength; i++) {
+			var nowChunk = chunks[i];
+			var lastLine = nowChunk.lastIndexOf("\n");
+			if (lastLine >= 0) {
+				var nowChunkMsg = nowChunk.substring(0, lastLine);
+				chunks[i] = nowChunkMsg;
+				var nextChunkMsg = nowChunk.substring(lastLine+1);
+				if (chunks[i+1] == null) {
+					if (nextChunkMsg == "" || nextChunkMsg == "\n" || nextChunkMsg == "```" || nextChunkMsg == "\n```") break;
+					chunks[i+1] = "";
+				}
+				chunks[i+1] = nextChunkMsg + chunks[i+1];
+			}
+		}
+	}
+
+	return chunks;
+}*/
 
 /*
 
@@ -426,14 +272,14 @@ exports.getRandomInt = function(min, max) { //inclusive, exclusive
 */
 
 exports.isObject = function(val) {
-	if (val === null) return false;
+	if (val == null) return false;
 	return (typeof(val) === "object");
 };
 
 exports.cloneObj = function(obj) {
 	var copy;
 
-	if (null === obj || typeof(obj) != "object") return obj;
+	if (null == obj || typeof(obj) != "object") return obj;
 
 	if (obj instanceof Date) {
 		copy = new Date();
@@ -445,7 +291,7 @@ exports.cloneObj = function(obj) {
 		copy = [];
 		var len = obj.length;
 		for (var i = 0; i < len; i++) {
-			copy[i] = cloneObj(obj[i]);
+			copy[i] = Util.cloneObj(obj[i]);
 		}
 		return copy;
 	}
@@ -453,7 +299,7 @@ exports.cloneObj = function(obj) {
 	if (obj instanceof Object) {
 		copy = {};
 		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = cloneObj(obj[attr]);
+			if (obj.hasOwnProperty(attr)) copy[attr] = Util.cloneObj(obj[attr]);
 		}
 		return copy;
 	}
@@ -465,22 +311,22 @@ exports.formatTime = function(time) {
 	var timeStr;
 	var formatStr;
 
-	var numSeconds = round(time/1000, 1);
-	var numMinutes = round(time/60000, 0.1);
-	var numHours = round(time/3600000, 0.1);
-	var numDays = round(time/86400000, 0.1);
+	var numSeconds = Util.round(time/1000, 1);
+	var numMinutes = Util.round(time/60000, 0.1);
+	var numHours = Util.round(time/3600000, 0.1);
+	var numDays = Util.round(time/86400000, 0.1);
 
 	if (numSeconds < 60) {
-		timeStr = numSeconds.toFixed(0);
+		timeStr = numSeconds.Util.toFixed(0);
 		formatStr = timeStr + " second";
 	} else if (numMinutes < 60) {
-		timeStr = numMinutes % 1 === 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
+		timeStr = numMinutes % 1 === 0 ? numMinutes.Util.toFixed(0) : numMinutes.Util.toFixed(1);
 		formatStr = timeStr + " minute";
 	} else if (numHours < 60) {
-		timeStr = numHours % 1 === 0 ? numHours.toFixed(0) : numHours.toFixed(1);
+		timeStr = numHours % 1 === 0 ? numHours.Util.toFixed(0) : numHours.Util.toFixed(1);
 		formatStr = timeStr + " hour";
 	} else if (numDays < 60) {
-		timeStr = numDays % 1 === 0 ? numDays.toFixed(0) : numDays.toFixed(1);
+		timeStr = numDays % 1 === 0 ? numDays.Util.toFixed(0) : numDays.Util.toFixed(1);
 		formatStr = timeStr + " day";
 	}
 
@@ -516,54 +362,96 @@ exports.cutStringSafe = function(msg, postMsg, lastIsOpener) { //Tries to cut th
 	return [preCut, postCut + postMsg];
 };
 
-exports.fixMessageLengthNew = function(origMsg) {
-	var argsFixed = chunkString(origMsg, 2000); //Group string into sets of 2k chars
+exports.fixMessageLengthNew = function(msg) {
+	let argsFixed = Util.chunkString(msg, 2000); //Group string into sets of 2k chars
 	//argsFixed.forEach(o => console.log("---\n" + o));
-	var totalBlocks = 0; //Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
-	for (var i = 0; i < argsFixed.length; i++) {
-		var passOver = ""; //String to pass over as the start of the next chunk
-		var msg = argsFixed[i];
-		var numBlock = (msg.match(/```/g) || []).length; //Number of user created code blocks in this chunk
+	let totalBlocks = 0; //Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
+	for (let i = 0; i < argsFixed.length; i++) {
+		let passOver = ""; //String to pass over as the start of the next chunk
+		let msg = argsFixed[i];
+		let numBlock = (msg.match(/```/g) || []).length; //Number of user created code blocks in this chunk
 		if (totalBlocks % 2 == 1) msg = "```\n" + msg; //If code block is currently open then this chunk needs to be formatted
 		totalBlocks += numBlock; //The user created code blocks may close/open new code block (don't need to include added ones because they just account for seperate messages)
-		var lastIsOpener = totalBlocks % 2 == 1; //Checks whether the last code block is an opener or a closer
+		let lastIsOpener = totalBlocks % 2 == 1; //Checks whether the last code block is an opener or a closer
 		if (lastIsOpener && msg.length > 1996) { //If the chunk ends with the code block still open then it needs to be auto-closed so the chunk needs to be shortened so it can fit
 			passOver = msg.substring(1996);
 			msg = msg.substr(0, 1996);
-			var numPass = (passOver.match(/```/g) || []).length; //If we end up passing over code blocks whilst trying to shorten the string, we need to account for the new amount
+			let numPass = (passOver.match(/```/g) || []).length; //If we end up passing over code blocks whilst trying to shorten the string, we need to account for the new amount
 			totalBlocks -= numPass;
 			if (numPass % 2 == 1) lastIsOpener = false;
 		}
-		var nextMsg = passOver + (argsFixed[i+1] !== null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
+		let nextMsg = passOver + (argsFixed[i+1] !== null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
 		if (nextMsg !== "" && nextMsg[0] != "\n" && msg.includes("\n")) { //If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
-			var cutData = cutStringSafe(msg, "", lastIsOpener);
+			let cutData = Util.cutStringSafe(msg, "", lastIsOpener);
 			msg = cutData[0];
 			passOver = cutData[1] + passOver;
 		}
 		if (lastIsOpener) msg += "\n```"; //Close any left over code blocks (and re open on next chunk if they continue)
 		argsFixed[i] = msg;
 		if (passOver.length > 0) { //Whether any text actually needs to be passed
-			if (argsFixed[i+1] === null) argsFixed[i+1] = ""; //Create new chunk if this is the last one
+			if (argsFixed[i+1] == null) argsFixed[i+1] = ""; //Create new chunk if this is the last one
 			argsFixed[i+1] = passOver + argsFixed[i+1];
 		}
 	}
 	return argsFixed;
 };
 
+/*function fixMessageLength(msg) {
+	var argsFixed = chunkStringLine(msg, 2000);
+	var argsLength = argsFixed.length;
+	for (var i = 0; i < argsFixed.length; i++) {
+		var passOver = "";
+		var msg = argsFixed[i];
+		//console.log("Original message length: " + msg.length);
+		if (msg.length > 1996) {
+			passOver = msg.substring(1996);
+			msg = msg.substring(0, 1996);
+			//console.log("passStart orig: " + passOver.length);
+			var lastLine = msg.lastIndexOf("\n");
+			if (lastLine >= 5) {
+				var msgEnd = lastLine;
+				var passStart = msgEnd+1;
+				passOver = msg.substring(passStart) + passOver;
+				msg = msg.substring(0, msgEnd);
+				//console.log("passOver: " + passOver.length);
+				//console.log("msg: " + msg.length);
+				//console.log("lastLine: " + lastLine);
+			}
+		}
+		var numBlock = (msg.match(/```/g) || []).length;
+		if (numBlock % 2 == 1) {
+			passOver = "```\n" + passOver;
+			msg = msg + "\n```";
+		}
+		argsFixed[i] = msg;
+		//console.log("Message length: " + msg.length);
+		//console.log("Pass Over: " + passOver.length);
+		if (passOver != "" && (argsFixed[i+1] !== null || passOver != "```\n")) {
+			if (argsFixed[i+1] == null) {
+				//console.log("Created new print block extender")
+				argsFixed[i+1] = "";
+			}
+			argsFixed[i+1] = passOver + argsFixed[i+1];
+		}
+	}
+
+	return argsFixed;
+}*/
+
 exports.splitMessages = function(messages) {
-	var fixed = fixMessageLengthNew(messages.join(" "));
+	var fixed = Util.fixMessageLengthNew(messages.join(" "));
 	return fixed;
 };
 
-var printErr = error => console.log("\n[E_Print] " + error);
+var ePrint = error => console.log("\n[E_Print] " + error);
 
 exports.print = function(channel) {
 	var args = Array.from(arguments);
 	args.splice(0, 1);
-	var messages = splitMessages(args);
+	var messages = Util.splitMessages(args);
 	for (var i = 0; i < messages.length; i++) {
 		channel.send(messages[i])
-		.catch(printErr);
+		.catch(ePrint);
 	}
 };
 
@@ -602,11 +490,11 @@ exports.getDisplayName = function(member) {
 };
 
 exports.getMostName = function(user) {
-	return getName(user) + "#" + user.discriminator;
+	return Util.getName(user) + "#" + user.discriminator;
 };
 
 exports.getFullName = function(user) {
-	return user !== null ? (getMostName(user) + " (" + user.id + ")") : "null";
+	return user !== null ? (Util.getMostName(user) + " (" + user.id + ")") : "null";
 };
 
 exports.getMention = function(obj) {
@@ -614,7 +502,7 @@ exports.getMention = function(obj) {
 };
 
 exports.getAvatar = function(user, outStr) {
-	return (user !== null && isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr=== true ? "null" : null);
+	return (user !== null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr === true ? "null" : null);
 };
 
 exports.getDateString = function(d) {
@@ -626,9 +514,9 @@ exports.hasRole = function(member, role) {
 };
 
 exports.makeEmbedFooter = function(user) {
-	var memberName = isObject(user) ? getDisplayName(user) : String(user);
-	var dateStr = getDateString(new Date());
-	return {text: memberName + " | " + dateStr, icon_url: getAvatar(user)};
+	var memberName = Util.isObject(user) ? Util.getDisplayName(user) : String(user);
+	var dateStr = Util.getDateString(new Date());
+	return {text: memberName + " | " + dateStr, icon_url: Util.getAvatar(user)};
 };
 
 /*
@@ -639,7 +527,7 @@ exports.makeEmbedFooter = function(user) {
 	Set everything before newline as value for the field
 	Create new field immediately after current field
 	Set name as zero width character
-	Return exports.on = function new field and string after newline
+	Return function on new field and string after newline
 
 */
 
@@ -667,7 +555,7 @@ exports.setFieldValue = function(embFields, nowFieldNum, nowString) {
 	nowField.value = subFirst;
 	var newFieldNum = nowFieldNum+1;
 	embFields.splice(newFieldNum, 0, {name: "​", value: "", inline: nowField.inline});
-	return setFieldValue(embFields, newFieldNum, subNext);
+	return Util.setFieldValue(embFields, newFieldNum, subNext);
 };
 
 /*
@@ -683,12 +571,12 @@ Field Value: 512 (maybe 1024?)
 */
 
 exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage, embColor, embFields, isContinued) {
-	if (embChannel === null) return;
+	if (embChannel == null) return;
 
 	var manyFields = false;
 	var extraFields;
 
-	if (embFields === null) embFields = [];
+	if (embFields == null) embFields = [];
 
 	if (embFields.length > 25) {
 		manyFields = true;
@@ -703,15 +591,15 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 		var nowName = nowField.name;
 		var nowValue = nowField.value;
 
-		nowName = safeEveryone(String(nowName === null ? "N/A" : nowName));
-		nowValue = safeEveryone(String(nowValue === null ? "N/A" : nowValue));
+		nowName = Util.safeEveryone(String(nowName == null ? "N/A" : nowName));
+		nowValue = Util.safeEveryone(String(nowValue == null ? "N/A" : nowValue));
 
 		nowField.name = nowName.trim().length < 1 ? "N/A" : nowName.substr(0, 256);
 
 		if (nowValue.trim().length < 1) {
 			nowField.value = "N/A";
 		} else if (nowValue.length > 512) {
-			i = setFieldValue(embFields, i, nowValue);
+			i = Util.setFieldValue(embFields, i, nowValue);
 		} else {
 			nowField.value = nowValue;
 		}
@@ -721,14 +609,14 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 
 	var newTitle;
 	var newFooter;
-	var newDesc = ((embDesc === null || embDescStr.trim().length < 1) ? "​" : embDescStr.substr(0, 2048));
+	var newDesc = ((embDesc == null || embDescStr.trim().length < 1) ? "​" : embDescStr.substr(0, 2048));
 
 	if (embTitle) newTitle = embTitle.substr(0, 256);
 	if (embFooter) {
-		if (!isObject(embFooter)) {
+		if (!Util.isObject(embFooter)) {
 			embFooter = {text: embFooter};
 		}
-		newFooter = cloneObj(embFooter);
+		newFooter = Util.cloneObj(embFooter);
 		newFooter.text = (newFooter.text).substr(0, 2048);
 	}
 
@@ -758,13 +646,13 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 	});
 
 	if (manyFields) {
-		sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
+		Util.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
 	}
 };
 
 exports.sendDescEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage, embColor) {
-	if (embChannel === null) return;
-	if (embColor === null) embColor = 0x00BCD4;
+	if (embChannel == null) return;
+	if (embColor == null) embColor = 0x00BCD4;
 
 	if (embDesc !== null && embDesc.length > 2048) {
 		var subFirst = embDesc.substr(0, 2048);
@@ -782,10 +670,10 @@ exports.sendDescEmbed = function(embChannel, embTitle, embDesc, embFooter, embIm
 			subFirst = embDesc.substring(0, lastNewline);
 			subNext = embDesc.substring(lastNewline+1);
 		}
-		sendEmbed(embChannel, embTitle, subFirst, null, embImage, embColor, []);
-		sendDescEmbed(embChannel, null, subNext, embFooter, embImage, embColor);
+		Util.sendEmbed(embChannel, embTitle, subFirst, null, embImage, embColor, []);
+		Util.sendDescEmbed(embChannel, null, subNext, embFooter, embImage, embColor);
 	} else {
-		sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, []);
+		Util.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, []);
 	}
 };
 
@@ -795,13 +683,13 @@ exports.sendLog = function(embData, embColor) {
 	var embAuthor = embData[2];
 	var embFields = embData.splice(3);
 
-	var embChannel = findChannel("vaebot-log", embGuild);
-	if (embChannel === null) return;
+	var embChannel = Util.findChannel("vaebot-log", embGuild);
+	if (embChannel == null) return;
 
-	var embFooter = makeEmbedFooter(embAuthor);
-	var embAvatar = getAvatar(embAuthor);
+	var embFooter = Util.makeEmbedFooter(embAuthor);
+	var embAvatar = Util.getAvatar(embAuthor);
 
-	sendEmbed(
+	Util.sendEmbed(
 		embChannel,
 		embTitle,
 		null,
@@ -841,11 +729,32 @@ exports.getDayStr = function(d) {
 	return valStr;
 };
 
+/*function searchPartial(array, name, checkPartial) {
+	if (checkPartial != false) {
+		var firstChar = name.substr(0, 1);
+		var endChar = name.substr(name.length-1, 1);
+		if (firstChar == "\"" && endChar == "\"") {
+			checkPartial = false;
+			name = name.substring(1, name.length-1);
+			if (name.length < 1) return;
+		}
+	}
+	name = name.toLowerCase()
+	var user = array.find(function(item) {
+		var user = Util.getName(item);
+		if (checkPartial != false ? Util.safe(user.toLowerCase()).includes(name) : Util.safe(user.toLowerCase()) == name) {
+			return true;
+		}
+		return false;
+	})
+	return user;
+}*/
+
 exports.searchUserPartial = function(col, name) {
 	name = name.toLowerCase();
 	return col.find(function(member) {
-		var userName = getName(member);
-		if (member.id == name || safe(userName.toLowerCase()).includes(name)) {
+		var userName = Util.getName(member);
+		if (member.id == name || Util.safe(userName.toLowerCase()).includes(name)) {
 			return true;
 		}
 		return false;
@@ -865,31 +774,31 @@ exports.remove = function(name) {
 };
 
 exports.checkMuted = function(id, guild) {
-	return (guildGet(guild, muted, id) ? true : false);
+	return (Data.guildGet(guild, muted, id) ? true : false);
 };
 
 exports.getHistory = function(id, guild) {
-	var userHistory = guildGet(guild, history, id);
+	var userHistory = Data.guildGet(guild, history, id);
 	if (userHistory) return userHistory[0];
 	return 0;
 };
 
 exports.historyToString = function(num) {
-	var timeHours = round(num/3600000, 0.1);
-	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
+	var timeHours = Util.round(num/3600000, 0.1);
+	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.Util.toFixed(0) : timeHours.Util.toFixed(1);
 	return timeHours + (timeHours == 1 ? " hour" : " hours");
 };
 
 exports.getSafeId = function(id) {
 	id = id.match(/\d+/);
-	if (id === null) return;
+	if (id == null) return;
 	return id[0];
 };
 
 exports.getMemberById = function(id, guild) {
-	if (guild === null || id === null) return;
-	if (id.substr(0, 1) == "<" && id.substr(id.length-1, 1) == ">") id = getSafeId(id);
-	if (id === null || id.length < 1) return;
+	if (guild == null || id == null) return;
+	if (id.substr(0, 1) == "<" && id.substr(id.length-1, 1) == ">") id = Util.getSafeId(id);
+	if (id == null || id.length < 1) return;
 	var members = guild.members;
 	return members.find(member => {
 		return member.id == id;
@@ -925,7 +834,7 @@ exports.getMatchStrength = function(fullStr, subStr) { // [v2.0]
 };
 
 exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, real name match, caps match, length match, position match
-	if (guild === null) return;
+	if (guild == null) return;
 
 	var str2Lower = name.toLowerCase();
 
@@ -936,14 +845,14 @@ exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, 
 	members.forEach((member, id) => {
 		var value = 0;
 
-		var realName = member.nickname !== null ? member.nickname : getName(member);
+		var realName = member.nickname !== null ? member.nickname : Util.getName(member);
 		var realstr2Lower = realName.toLowerCase();
 		var nameMatch = realstr2Lower.indexOf(str2Lower);
 
 		if (nameMatch >= 0) {
 			value += Math.pow(2, 4);
 		} else {
-			realName = getName(member);
+			realName = Util.getName(member);
 			realstr2Lower = realName.toLowerCase();
 			nameMatch = realstr2Lower.indexOf(str2Lower);
 			if (nameMatch >= 0) {
@@ -1044,8 +953,8 @@ exports.getDataFromString = function(str, funcs, returnExtra) {
 };
 
 exports.clamp = function(num, min, max) {
-	if (min === null) min = num;
-	if (max === null) max = num;
+	if (min == null) min = num;
+	if (max == null) max = num;
 	return Math.min(Math.max(num, min), max);
 };
 
@@ -1056,13 +965,13 @@ exports.toBoolean = function(str) {
 exports.getNum = function(str, min, max) {
 	var num = Number(str);
 	if (isNaN(num)) return;
-	return clamp(num, min, max);
+	return Util.clamp(num, min, max);
 };
 
 exports.getInt = function(str, min, max) {
 	var num = parseInt(str);
 	if (isNaN(num)) return;
-	return clamp(num, min, max);
+	return Util.clamp(num, min, max);
 };
 
 exports.isTextChannel = function(channel) {
@@ -1082,25 +991,25 @@ exports.getVoiceChannels = function(guild) {
 };
 
 exports.findChannel = function(name, guild) {
-	if (guild === null) return;
+	if (guild == null) return;
 	name = name.toLowerCase();
-	var channels = getTextChannels(guild);
+	var channels = Util.getTextChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
 };
 
 exports.findVoiceChannel = function(name, guild) {
-	if (guild === null) return;
+	if (guild == null) return;
 	name = name.toLowerCase();
-	var channels = getVoiceChannels(guild);
+	var channels = Util.getVoiceChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
 };
 
 exports.getRole = function(name, obj) {
-	if (obj === null) return;
+	if (obj == null) return;
 	name = name.toLowerCase();
 	var roles = obj.roles;
 	return roles.find(role => {
@@ -1113,7 +1022,7 @@ exports.getHighestRole = function(member) {
 };
 
 exports.getPosition = function(speaker) {
-	if (speaker === null || !isObject(speaker)) return;
+	if (speaker == null || !Util.isObject(speaker)) return;
 	var roles = speaker.roles;
 	if (speaker.id == speaker.guild.ownerID) return 999999999;
 	return speaker.highestRole.position;
@@ -1124,33 +1033,33 @@ exports.getUserById = function(id) {
 };
 
 exports.getUserByName = function(name) {
-	return searchUserPartial(client.users, name);
+	return Util.searchUserPartial(client.users, name);
 };
 
 exports.getUserByMixed = function(name) {
-	var user = getUserById(name);
-	if (user === null) user = getUserByName(name);
+	var user = Util.getUserById(name);
+	if (user == null) user = Util.getUserByName(name);
 	return user;
 };
 
 exports.getMemberByMixed = function(name, guild) {
-	if (guild === null) return;
-	var targetMember = getMemberById(name, guild);
-	if (targetMember === null) targetMember = getMemberByName(name, guild);
+	if (guild == null) return;
+	var targetMember = Util.getMemberById(name, guild);
+	if (targetMember == null) targetMember = Util.getMemberByName(name, guild);
 	return targetMember;
 };
 
 exports.getMemberOrRoleByMixed = function(name, guild) {
-	if (guild === null) return;
-	var targetObj = getRole(name, guild);
-	if (targetObj === null) targetObj = getMemberById(name, guild);
-	if (targetObj === null) targetObj = getMemberByName(name, guild);
+	if (guild == null) return;
+	var targetObj = Util.getRole(name, guild);
+	if (targetObj == null) targetObj = Util.getMemberById(name, guild);
+	if (targetObj == null) targetObj = Util.getMemberByName(name, guild);
 	return targetObj;
 };
 
 exports.getEitherByMixed = function(name, guild) {
-	var user = getMemberByMixed(name, guild);
-	if (user === null) user = getUserByMixed(name);
+	var user = Util.getMemberByMixed(name, guild);
+	if (user == null) user = Util.getUserByMixed(name);
 	return user;
 };
 
@@ -1165,29 +1074,29 @@ exports.permEnabled = function(iPerms, permName) {
 };
 
 exports.getPermRating = function(guild, userOrRole) {
-	if (userOrRole.hasPermission === null) return 0;
+	if (userOrRole.hasPermission == null) return 0;
 
-	var tempPermRating = cloneObj(permRating);
+	var tempPermRating = Util.cloneObj(permRating);
 
 	var total = 0;
 	var foundTop = false;
 
-	for (var i = 0; i < tempPermRating.length; i++) {
-		var permData = tempPermRating[i];
+	for (let i = 0; i < tempPermRating.length; i++) {
+		let permData = tempPermRating[i];
 		if (userOrRole.hasPermission(permData[0], false)) {
 			if (!foundTop) {
 				foundTop = true;
 				
-				var lastVal = null;
-				var pointer0 = i+1;
-				var pointer1 = i+1;
-				var newVal = 5;
+				let lastVal = null;
+				let pointer0 = i+1;
+				let pointer1 = i+1;
+				let newVal = 5;
 
 				//console.log("found", permData[0]);
 
-				for (var i2 = i+1; i2 < tempPermRating.length; i2++) {
-					var nowVal = tempPermRating[i2][1];
-					if (lastVal === null) lastVal = nowVal;
+				for (let i2 = i+1; i2 < tempPermRating.length; i2++) {
+					let nowVal = tempPermRating[i2][1];
+					if (lastVal == null) lastVal = nowVal;
 					if (nowVal != lastVal) {
 						let numPoints = pointer1-pointer0+1;
 						newVal = newVal / numPoints;
@@ -1201,9 +1110,9 @@ exports.getPermRating = function(guild, userOrRole) {
 					lastVal = nowVal;
 				}
 
-				var numPoints = pointer1-pointer0+1;
+				let numPoints = pointer1-pointer0+1;
 				newVal = newVal / numPoints;
-				for (var n = pointer0; n <= pointer1; n++) {
+				for (let n = pointer0; n <= pointer1; n++) {
 					tempPermRating[n][1] = newVal;
 				}
 
@@ -1224,7 +1133,7 @@ exports.getMemberPowers = function(guild) {
 	var members = guild.members;
 	for (var i = 0; i < members.size; i++) {
 		var member = members[i];
-		var power = getPermRating(guild, member);
+		var power = Util.getPermRating(guild, member);
 		var index = 0;
 		for (index = 0; index < sorted.length; index++) {
 			if (power >= sorted[index][1]) break;
@@ -1242,7 +1151,7 @@ exports.strToPerm = function(str) {
 
 	for (var permName in permissionsOrder) {
 		if (!permissionsOrder.hasOwnProperty(permName)) continue;
-		var matchScore = getMatchStrength(permName, str);
+		var matchScore = Util.getMatchStrength(permName, str);
 
 		if (matchScore > matchTop) {
 			matchTop = matchScore;
@@ -1261,7 +1170,16 @@ exports.setChannelPerms = function(channel, userOrRole, newPerms) {
 exports.query = function(msg, speaker, channel, func) {
 	var qNum = "[" + nQ + "]";
 	var qMsg = qNum + " " + msg;
-	print(channel, qMsg);
+	Util.print(channel, qMsg);
 	queries.push([qNum, speaker.id, func, qMsg]);
 	nQ++;
+};
+
+exports.addCommand = function(cmds, vaebOnly, staffOnly, guildOnly, func, desc, syntax, example) {
+	var fixedCmds = [];
+	for (var i = 0; i < cmds.length; i++) {
+		fixedCmds.push(cmds[i].toLowerCase());
+	}
+	commands.push([fixedCmds, func, vaebOnly, staffOnly, guildOnly, desc, syntax, example]);
+	commands.sort();
 };

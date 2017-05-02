@@ -8,12 +8,16 @@ exports.loadedData = loadedData;
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 const Util = require("./Util.js");
+const Data = require("./data/ManageData.js");
+const Mutes = require("./core/ManageMutes.js");
+const Music = require("./core/ManageMusic.js");
 
 global.Util = Util;
+global.Data = Data;
+global.Mutes = Mutes;
+global.Music = Music;
 
 const Discord = require("discord.js"),
-	ManageData = require("./data/ManageData.js"),
-	ManageMutes = require("./core/ManageMutes.js"),
 	Auth = require("./Auth.js");
 
 const client = new Discord.Client({
