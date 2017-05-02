@@ -235,14 +235,6 @@ exports.checkStaff = function(guild, member) {
 	});
 };
 
-exports.isQuiet = function(channel, speaker) {
-	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
-		Util.sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-		return true;
-	}
-	return false;
-};
-
 exports.commandFailed = function(channel, speaker, message) {
 	Util.sendEmbed(channel, "Command Failed", message, Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 	return false;

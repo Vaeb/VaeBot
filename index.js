@@ -43,23 +43,9 @@ const colUser = 0x4CAF50; // Log of member change
 const colMessage = 0xFFEB3B; // Log of message change
 const colCommand = 0x2196F3; // Log of command being executed
 
-const spamChannels = {
-	"168744003741810688": true
-};
-
-const quietChannels = {
-	"284746138995785729": true,
-	"289447389251502080": true,
-	"285040042001432577": true,
-	"284746888715042818": true,
-	"294244239485829122": true,
-	"290228574273798146": true
-};
-
 var blockedUsers = {};
 
 var runFuncs = [];
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 

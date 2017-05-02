@@ -1,5 +1,22 @@
 exports.commands = [];
 
+const quietChannels = {
+	"284746138995785729": true,
+	"289447389251502080": true,
+	"285040042001432577": true,
+	"284746888715042818": true,
+	"294244239485829122": true,
+	"290228574273798146": true
+};
+
+exports.isQuiet(channel, speaker) {
+	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
+		Util.sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+		return true;
+	}
+	return false;
+}
+
 exports.addCommand = function(structure) {
 	var cmds = structure.cmds;
 	var fixedCmds = [];
