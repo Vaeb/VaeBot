@@ -150,7 +150,7 @@ function setBriefing() {
 
 client.on("ready", () => {
 	console.log(`Connected as ${client.user.username}!`);
-	FileSys.readFile(Utils.mutesDir, "utf-8", (err, data) => {
+	FileSys.readFile(Util.mutesDir, "utf-8", (err, data) => {
 		if (err) throw err;
 		if (data.length > 0) muted = JSON.parse(data);
 		Object.defineProperty(muted, "__name", {
@@ -159,7 +159,7 @@ client.on("ready", () => {
 			writable: false
 		});
 		Object.defineProperty(muted, "__path", {
-			value: Utils.mutesDir,
+			value: Util.mutesDir,
 			enumerable: false,
 			writable: false
 		});
@@ -168,7 +168,7 @@ client.on("ready", () => {
 		MuteManager.restartTimeouts();
 	});
 
-	FileSys.readFile(Utils.histDir, "utf-8", (err, data) => {
+	FileSys.readFile(Util.histDir, "utf-8", (err, data) => {
 		if (err) throw err;
 		if (data.length > 0) history = JSON.parse(data);
 		Object.defineProperty(history, "__name", {
@@ -177,14 +177,14 @@ client.on("ready", () => {
 			writable: false
 		});
 		Object.defineProperty(history, "__path", {
-			value: Utils.histDir,
+			value: Util.histDir,
 			enumerable: false,
 			writable: false
 		});
 		loadedData[history] = true;
 	});
 
-	FileSys.readFile(Utils.autoRoleDir, "utf-8", (err, data) => {
+	FileSys.readFile(Util.autoRoleDir, "utf-8", (err, data) => {
 		if (err) throw err;
 		if (data.length > 0) autoRoles = JSON.parse(data);
 		Object.defineProperty(autoRoles, "__name", {
@@ -193,14 +193,14 @@ client.on("ready", () => {
 			writable: false
 		});
 		Object.defineProperty(autoRoles, "__path", {
-			value: Utils.autoRoleDir,
+			value: Util.autoRoleDir,
 			enumerable: false,
 			writable: false
 		});
 		loadedData[autoRoles] = true;
 	});
 
-	FileSys.readFile(Utils.playlistDir, "utf-8", (err, data) => {
+	FileSys.readFile(Util.playlistDir, "utf-8", (err, data) => {
 		if (err) throw err;
 		if (data.length > 0) playlist = JSON.parse(data);
 		Object.defineProperty(playlist, "__name", {
@@ -209,7 +209,7 @@ client.on("ready", () => {
 			writable: false
 		});
 		Object.defineProperty(playlist, "__path", {
-			value: Utils.playlistDir,
+			value: Util.playlistDir,
 			enumerable: false,
 			writable: false
 		});
