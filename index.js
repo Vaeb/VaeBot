@@ -3,6 +3,7 @@ console.log("-STARTING-\n");
 const Discord = require("discord.js"),
 	FileSys = require("fs"),
 	Util = require("./Util.js"),
+	MuteManager = require("./core/MuteManager.js"),
 	Auth = require("./Auth.js");
 
 const client = new Discord.Client({
@@ -11,7 +12,9 @@ const client = new Discord.Client({
 	disableEveryone: true
 });
 
-var MuteManager = require("./core/MuteManager.js");
+global.Discord = Discord;
+global.client = client;
+global.Util = Util;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 

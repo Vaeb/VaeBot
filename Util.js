@@ -8,6 +8,10 @@ $1:
 
 */
 
+const index = require("./index.js");
+
+global.index = index;
+
 module.exports = {
 	selfId: "224529399003742210",
 	vaebId: "107593015014486016",
