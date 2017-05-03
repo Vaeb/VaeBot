@@ -24,6 +24,7 @@ Cmds.addCommand({
 */
 
 const FileSys = require("fs"),
+	DateFormat = require("dateformat"),
 	path = require("path");
 
 function getURLChecker() {
@@ -572,7 +573,7 @@ exports.getAvatar = function(user, outStr) {
 };
 
 exports.getDateString = function(d) {
-	return dateFormat(d, "ddd, mmm dS yyyy @ h:MM TT") + " GMT";
+	return DateFormat(d, "ddd, mmm dS yyyy @ h:MM TT") + " GMT";
 };
 
 exports.hasRole = function(member, role) {
