@@ -131,7 +131,7 @@ module.exports = Cmds.addCommand({
 		var numSearch = userOrType != "all" ? numArgs*10 : numArgs;
 		numSearch = Math.min(numSearch, 1000);
 
-		exports.fetchMessagesEx(channel, numSearch, msgStore).then(() => {
+		Util.fetchMessagesEx(channel, numSearch, msgStore).then(() => {
 			console.log("Messages checked: " + msgStore.length);
 
 			var msgStoreUser = [];
