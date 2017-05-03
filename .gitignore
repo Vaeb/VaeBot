@@ -9,6 +9,12 @@ yarn.lock
 # Authentication
 Auth.js
 
+# Per Instance
+data/mutes.json
+data/history.json
+data/autoroles.json
+data/playlist.json
+
 # Miscellaneous
 .tmp/
 .vscode/
