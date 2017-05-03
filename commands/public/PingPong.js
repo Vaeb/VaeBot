@@ -1,21 +1,20 @@
-Cmds.addCommand({
+module.exports = Cmds.addCommand({
 	cmds: ["ping"],
 
-	perms: {
-		vaebs: false,
-		staff: false,
-		guild: false
+	requires: {
+		guild: false,
+		loud: true
 	},
 
 	desc: "pong",
 
-	syntax: "",
+	args: "",
 
-	example: "ping",
+	example: "",
+
+	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		if (Cmds.isQuiet(channel, speaker)) return;
-
 		Util.sendDescEmbed(channel, null, "pong", null, null, null);
 	}
 });

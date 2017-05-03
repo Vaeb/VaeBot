@@ -9,13 +9,13 @@ const quietChannels = {
 	"290228574273798146": true
 };
 
-exports.isQuiet = function(channel, speaker) {
+function isQuiet(channel, speaker) {
 	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
 		Util.sendEmbed(channel, "Quiet Channel", "Please use #bot-commands", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 		return true;
 	}
 	return false;
-};
+}
 
 exports.addCommand = function(structure) {
 	var cmds = structure.cmds;
@@ -25,8 +25,12 @@ exports.addCommand = function(structure) {
 		fixedCmds.push(cmds[i].toLowerCase());
 	}
 
-	exports.commands.push([fixedCmds, structure.func, structure.perms.vaebs, structure.perms.staff, structure.perms.guild, structure.desc, structure.syntax, structure.example]);
+	var cmdData = [fixedCmds, structure.func, structure.perms.vaebs, structure.perms.staff, structure.perms.guild, structure.desc, structure.args, structure.example];
+
+	exports.commands.push(cmdData);
 	exports.commands.sort();
+
+	return cmdData;
 };
 
 exports.initCommands = function() {

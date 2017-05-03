@@ -33,6 +33,12 @@ exports.dailyMutes = [];
 exports.dailyKicks = [];
 exports.dailyBans = [];
 
+exports.commandTypes = {
+	locked: true,
+	staff: true,
+	public: true
+};
+
 var briefHour = 2;
 const msToHours = 1/(1000*60*60);
 const dayMS = 24/msToHours;

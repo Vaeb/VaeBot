@@ -5,10 +5,9 @@ addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\(cmd, args, msgObj, spea
 Cmds.addCommand({
 	cmds: \1,
 
-	perms: {
-		vaebs: \2,
-		staff: \3,
-		guild: \4
+	requires: {
+		guild: \4,
+		loud: false
 	},
 
 	desc: \6,
@@ -18,7 +17,7 @@ Cmds.addCommand({
 	example: \8,
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		\5
+	\5
 	}
 })
 
@@ -241,7 +240,7 @@ exports.grabFiles = (filePath, filter = (file) => true) => {
 exports.bulkRequire = (filePath) => {
 	let bulkFiles = exports.grabFiles(filePath, file => file.endsWith(".js"));
 
-	for(let i in bulkFiles) {
+	for (let i in bulkFiles) {
 		exports.pathRequire(bulkFiles[i]);
 	}
 };
@@ -249,7 +248,14 @@ exports.bulkRequire = (filePath) => {
 exports.pathRequire = (filePath) => {
 	let file = path.resolve(filePath);
 	delete require.cache[require.resolve(file)];
-	require(filePath);
+
+	let fileData = require(filePath);
+
+	console.log(file);
+
+	let dirName = /\w+$/.exec(file)[1];
+
+	console.log(dirName);
 };
 
 exports.checkStaff = function(guild, member) {
