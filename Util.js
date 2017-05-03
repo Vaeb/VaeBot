@@ -1241,3 +1241,32 @@ exports.query = function(msg, speaker, channel, func) {
 	queries.push([qNum, speaker.id, func, qMsg]);
 	nQ++;
 };
+
+// fetch more messages just like Discord client does
+exports.fetchMessagesEx = function(channel, left, store, last) {
+	// message cache is sorted on insertion
+	// channel.messages[0] will get oldest message
+	if (last) last = last.id;
+	return channel.fetchMessages({limit: Math.min(left, 100), before: last})
+		.then(messages => exports.onFetch(messages, channel, left, store));
+};
+
+exports.onFetch = function(messages, channel, left, store) {
+	messages = messages.array();
+	if (!messages.length) return Promise.resolve();
+	for (var i = 0; i < messages.length; i++) {
+		store.push(messages[i]);
+	}
+	left -= messages.length;
+	console.log(`Received ${messages.length}, left: ${left}`);
+	if (left <= 0) return Promise.resolve();
+	return exports.fetchMessagesEx(channel, left, store, messages[messages.length-1]);
+};
+
+exports.updateMessageCache = function(channel, speaker) {
+	exports.fetchMessagesEx(channel, 100, [], channel.messages[0]).then(() => {
+		if (speaker) {
+			Util.sendDescEmbed(channel, "Message Cache", "Refreshed", Util.makeEmbedFooter(speaker), null, 0x00E676);
+		}
+	});
+}
