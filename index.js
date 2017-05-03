@@ -44,10 +44,10 @@ const msToHours = 1/(1000*60*60);
 const dayMS = 24/msToHours;
 var madeBriefing = false;
 
-const colAction = 0xF44336; // Log of action, e.g. action from within command
-const colUser = 0x4CAF50; // Log of member change
-const colMessage = 0xFFEB3B; // Log of message change
-const colCommand = 0x2196F3; // Log of command being executed
+global.colAction = 0xF44336; // Log of action, e.g. action from within command
+global.colUser = 0x4CAF50; // Log of member change
+global.colMessage = 0xFFEB3B; // Log of message change
+global.colCommand = 0x2196F3; // Log of command being executed
 
 var blockedUsers = {};
 
