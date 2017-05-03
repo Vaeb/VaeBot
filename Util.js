@@ -1050,11 +1050,11 @@ exports.isVoiceChannel = function(channel) {
 };
 
 exports.getTextChannels = function(guild) {
-	return guild.channels.filter(isTextChannel);
+	return guild.channels.filter(exports.isTextChannel);
 };
 
 exports.getVoiceChannels = function(guild) {
-	return guild.channels.filter(isVoiceChannel);
+	return guild.channels.filter(exports.isVoiceChannel);
 };
 
 exports.findChannel = function(name, guild) {
