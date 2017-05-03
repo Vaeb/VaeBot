@@ -23,9 +23,9 @@ Cmds.addCommand({
 
 */
 
-const FileSys = require("fs"),
-	DateFormat = require("dateformat"),
-	path = require("path");
+const FileSys = index.FileSys,
+	DateFormat = index.DateFormat,
+	path = index.path;
 
 function getURLChecker() {
 	var
@@ -220,7 +220,7 @@ exports.fix = function(str) {
 };
 
 exports.toFixed = function(num, decimals) {
-	return Number(num.Util.toFixed(decimals)).toString();
+	return Number(num.toFixed(decimals)).toString();
 };
 
 exports.grabFiles = (filePath, filter = (file) => true) => {
@@ -384,16 +384,16 @@ exports.formatTime = function(time) {
 	var numDays = Util.round(time/86400000, 0.1);
 
 	if (numSeconds < 60) {
-		timeStr = numSeconds.Util.toFixed(0);
+		timeStr = numSeconds.toFixed(0);
 		formatStr = timeStr + " second";
 	} else if (numMinutes < 60) {
-		timeStr = numMinutes % 1 === 0 ? numMinutes.Util.toFixed(0) : numMinutes.Util.toFixed(1);
+		timeStr = numMinutes % 1 === 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
 		formatStr = timeStr + " minute";
 	} else if (numHours < 60) {
-		timeStr = numHours % 1 === 0 ? numHours.Util.toFixed(0) : numHours.Util.toFixed(1);
+		timeStr = numHours % 1 === 0 ? numHours.toFixed(0) : numHours.toFixed(1);
 		formatStr = timeStr + " hour";
 	} else if (numDays < 60) {
-		timeStr = numDays % 1 === 0 ? numDays.Util.toFixed(0) : numDays.Util.toFixed(1);
+		timeStr = numDays % 1 === 0 ? numDays.toFixed(0) : numDays.toFixed(1);
 		formatStr = timeStr + " day";
 	}
 
@@ -848,7 +848,7 @@ exports.getHistory = function(id, guild) {
 
 exports.historyToString = function(num) {
 	var timeHours = Util.round(num/3600000, 0.1);
-	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.Util.toFixed(0) : timeHours.Util.toFixed(1);
+	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
 	return timeHours + (timeHours == 1 ? " hour" : " hours");
 };
 

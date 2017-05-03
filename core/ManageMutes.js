@@ -1,15 +1,12 @@
-const FileSys = require("fs");
+const FileSys = index.FileSys;
 
-var loadedData = index.loadedData;
-var muted;
+var loadedData = Data.loadedData;
+var muteEvents = [];
 
-const mutesDir = "./data/mutes.json";
-const histDir = "./data/history.json";
-const autoRoleDir = "./data/autoroles.json";
-const playlistDir = "./data/playlist.json";
+var defaultMuteTime = 1800000;
 
 exports.checkMuted = function(id, guild) {
-	return (Data.guildGet(guild, muted, id) ? true : false);
+	return (Data.guildGet(guild, Data.muted, id) ? true : false);
 };
 
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
@@ -50,7 +47,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	var nowDate = Date.now();
 	var muteTime;
-	var oldHistory = Data.guildGet(guild, history, id);
+	var oldHistory = Data.guildGet(guild, Data.history, id);
 
 	if (oldHistory && (timeScale >= 1 || oldHistory[0] != defaultMuteTime)) {
 		muteTime = oldHistory[0]*timeScale;
@@ -60,15 +57,15 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 		}
 
 		oldHistory[0] = muteTime;
-		Data.guildSaveData(history);
+		Data.guildSaveData(Data.history);
 	} else {
 		muteTime = defaultMuteTime; //1800000
-		Data.guildSet(guild, history, id, [muteTime, muteName]);
+		Data.guildSet(guild, Data.history, id, [muteTime, muteName]);
 	}
 
 	var endTime = nowDate+muteTime;
 
-	Data.guildSet(guild, muted, id, [guild.id, endTime, muteName, reason, speakerId]);
+	Data.guildSet(guild, Data.muted, id, [guild.id, endTime, muteName, reason, speakerId]);
 
 	// Add a timeout event for unmuting
 
@@ -164,7 +161,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 		return false;
 	}
 
-	var mutedData = Data.guildGet(guild, muted, id);
+	var mutedData = Data.guildGet(guild, Data.muted, id);
 	var origModId = mutedData[4];
 	var origMod = Util.getMemberById(origModId, guild);
 	var origModPos = origMod !== null ? Util.getPosition(origMod) : -1;
@@ -177,7 +174,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 		return false;
 	}
 
-	Data.guildDelete(guild, muted, id);
+	Data.guildDelete(guild, Data.muted, id);
 
 	var role = Util.getRole("SendMessages", guild);
 	if (role !== null) {
@@ -248,7 +245,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 	var speakerName = Util.isObject(speaker) ? speaker.toString() : speaker;
 
-	var mutedGuild = Data.guildGet(guild, muted);
+	var mutedGuild = Data.guildGet(guild, Data.muted);
 
 	for (var targetId in mutedGuild) {
 		if (!mutedGuild.hasOwnProperty(targetId)) continue;
@@ -271,7 +268,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 	if (isDefinite) {
 		console.log("Muted user has left so unmute method changed: " + name);
 
-		Data.guildDelete(guild, muted, safeId);
+		Data.guildDelete(guild, Data.muted, safeId);
 
 		var muteHistoryString = Util.historyToString(Util.getHistory(safeId, guild));
 
@@ -337,9 +334,9 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 exports.restartTimeouts = function() {
 	var preDate = Date.now();
 	var guilds = client.guilds;
-	for (var guildId in muted) {
-		if (!muted.hasOwnProperty(guildId)) continue;
-		var mutedGuild = muted[guildId];
+	for (var guildId in Data.muted) {
+		if (!Data.muted.hasOwnProperty(guildId)) continue;
+		var mutedGuild = Data.muted[guildId];
 		for (var targetId in mutedGuild) {
 			if (!mutedGuild.hasOwnProperty(targetId)) continue;
 			var nowMuted = mutedGuild[targetId];
@@ -347,72 +344,3 @@ exports.restartTimeouts = function() {
 		}
 	}
 };
-
-FileSys.readFile(mutesDir, "utf-8", (err, data) => {
-	if (err) throw err;
-
-	if (data.length > 0) muted = JSON.parse(data);
-
-	exports.muted = muted;
-
-	Object.defineProperty(muted, "__name", {
-		value: "muted",
-		enumerable: false,
-		writable: false
-	});
-	Object.defineProperty(muted, "__path", {
-		value: mutesDir,
-		enumerable: false,
-		writable: false
-	});
-	loadedData[muted] = true;
-	console.log("Loaded data");
-});
-
-FileSys.readFile(histDir, "utf-8", (err, data) => {
-	if (err) throw err;
-	if (data.length > 0) history = JSON.parse(data);
-	Object.defineProperty(history, "__name", {
-		value: "history",
-		enumerable: false,
-		writable: false
-	});
-	Object.defineProperty(history, "__path", {
-		value: histDir,
-		enumerable: false,
-		writable: false
-	});
-	loadedData[history] = true;
-});
-
-FileSys.readFile(autoRoleDir, "utf-8", (err, data) => {
-	if (err) throw err;
-	if (data.length > 0) autoRoles = JSON.parse(data);
-	Object.defineProperty(autoRoles, "__name", {
-		value: "autoRoles",
-		enumerable: false,
-		writable: false
-	});
-	Object.defineProperty(autoRoles, "__path", {
-		value: autoRoleDir,
-		enumerable: false,
-		writable: false
-	});
-	loadedData[autoRoles] = true;
-});
-
-FileSys.readFile(playlistDir, "utf-8", (err, data) => {
-	if (err) throw err;
-	if (data.length > 0) playlist = JSON.parse(data);
-	Object.defineProperty(playlist, "__name", {
-		value: "playlist",
-		enumerable: false,
-		writable: false
-	});
-	Object.defineProperty(playlist, "__path", {
-		value: playlistDir,
-		enumerable: false,
-		writable: false
-	});
-	loadedData[playlist] = true;
-});
