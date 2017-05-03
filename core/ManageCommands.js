@@ -58,7 +58,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, lcontent, auth
 						Util.sendEmbed(channel, "Restricted", "This command can only be used by Vaeb", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 					} else if (requires.guild && guild == null) {
 						Util.sendEmbed(channel, "Restricted", "This command can only be used in Guilds", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-					} else if (requires.loud && !isQuiet(channel, speaker)) {
+					} else if (requires.loud && isQuiet(channel, speaker)) {
 						Util.sendEmbed(channel, "Quiet Channel", "This command cannot be used in this Channel (use #bot-commands)", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 					} else {
 
