@@ -183,7 +183,7 @@ function setBriefing() {
 Cmds.initCommands();
 
 client.on("ready", () => {
-	console.log(`Connected as ${client.user.username}!`);
+	console.log(`\nConnected as ${client.user.username}!`);
 
 	if (madeBriefing === false) {
 		madeBriefing = true;
@@ -197,6 +197,108 @@ client.on("disconnect", closeEvent => {
 	console.log("Code: " + closeEvent.code);
 	console.log("Reason: " + closeEvent.reason);
 	console.log("Clean: " + closeEvent.wasClean);
+});
+
+client.on("guildMemberAdd", member => {
+	var guild = member.guild;
+
+	var guildName = guild.name;
+	var memberId = member.id;
+	var memberName = Util.getName(member);
+
+	if (guild.id == "168742643021512705" || guild.id == "284746138995785729" || guild.id == "166601083584643072") {
+		var isMuted = Mutes.checkMuted(memberId, guild);
+
+		if (isMuted == true) {
+			console.log("Muted user " + memberName + " joined " + guildName);
+		} else {
+			var sendRole = Util.getRole("SendMessages", guild);
+
+			if (sendRole) {
+				member.addRole(sendRole);
+				console.log("Assigned SendMessages to new member " + memberName);
+			}
+		}
+	}
+
+	//if (memberId == "208661173153824769") member.setNickname("<- weird person");
+	//if (memberId == "264481367545479180") member.setNickname("devourer of penis");
+
+	var sendLogData = [
+		"User Joined",
+		guild,
+		member,
+		{name: "Username", value: member.toString()}
+	];
+	Util.sendLog(sendLogData, colUser);
+});
+
+client.on("guildMemberUpdate", (oldMember, member) => {
+	var guild = member.guild;
+	var previousNick = oldMember.nickname;
+	var nowNick = member.nickname;
+	var oldRoles = oldMember.roles;
+	var nowRoles = member.roles;
+
+	var rolesAdded = nowRoles.filter(role => {
+		return (!oldRoles.has(role.id));
+	});
+
+	var rolesRemoved = oldRoles.filter(role => {
+		return (!nowRoles.has(role.id));
+	});
+
+	if (rolesAdded.size > 0) {
+		rolesAdded.forEach((nowRole, roleId) => {
+			if (nowRole.name == "SendMessages" && Mutes.checkMuted(member.id, guild)) {
+				member.removeRole(nowRole);
+				console.log("Force re-muted " + Util.getName(member) + " (" + member.id + ")");
+			} else {
+				var sendLogData = [
+					"Role Added",
+					guild,
+					member,
+					{name: "Username", value: member.toString()},
+					{name: "Role Name", value: nowRole.name}
+				];
+				Util.sendLog(sendLogData, colUser);
+			}
+		});
+	}
+
+	if (rolesRemoved.size > 0) {
+		rolesRemoved.forEach((nowRole, roleId) => {
+			if (nowRole.name == "SendMessages" && Mutes.checkMuted(member.id, guild) == false) {
+				member.addRole(nowRole);
+				console.log("Force re-unmuted " + Util.getName(member) + " (" + member.id + ")");
+			} else {
+				var sendLogData = [
+					"Role Removed",
+					guild,
+					member,
+					{name: "Username", value: member.toString()},
+					{name: "Role Name", value: nowRole.name}
+				];
+				Util.sendLog(sendLogData, colUser);
+			}
+		});
+	}
+
+	if (previousNick != nowNick) {
+		//if (member.id == "208661173153824769" && nowNick != "<- weird person") member.setNickname("<- weird person");
+		//if (member.id == "264481367545479180" && nowNick != "devourer of penis") member.setNickname("devourer of penis");
+		// if (member.id == selfId && nowNick != null && nowNick != "") member.setNickname("");
+		// if (member.id == vaebId && nowNick != null && nowNick != "") member.setNickname("");
+		var sendLogData = [
+			"Nickname Updated",
+			guild,
+			member,
+			{name: "Username", value: member.toString()},
+			{name: "Old Nickname", value: previousNick},
+			{name: "New Nickname", value: nowNick}
+		];
+		Util.sendLog(sendLogData, colUser);
+	}
 });
 
 client.on("message", msgObj => {

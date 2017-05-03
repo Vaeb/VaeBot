@@ -8,6 +8,10 @@ const histDir = "./data/history.json";
 const autoRoleDir = "./data/autoroles.json";
 const playlistDir = "./data/playlist.json";
 
+exports.checkMuted = function(id, guild) {
+	return (Data.guildGet(guild, muted, id) ? true : false);
+};
+
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
 	var id = targetMember.id;
 	var muteName = Util.getName(targetMember);
@@ -362,7 +366,7 @@ FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	loadedData[muted] = true;
-	console.log("Files Loaded");
+	console.log("Loaded data");
 });
 
 FileSys.readFile(histDir, "utf-8", (err, data) => {

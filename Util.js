@@ -840,10 +840,6 @@ exports.remove = function(name) {
 	fileSystem.unlink(name);
 };
 
-exports.checkMuted = function(id, guild) {
-	return (Data.guildGet(guild, muted, id) ? true : false);
-};
-
 exports.getHistory = function(id, guild) {
 	var userHistory = Data.guildGet(guild, history, id);
 	if (userHistory) return userHistory[0];
