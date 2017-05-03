@@ -34,9 +34,9 @@ exports.dailyKicks = [];
 exports.dailyBans = [];
 
 exports.commandTypes = {
-	locked: true,
-	staff: true,
-	public: true
+	locked: "vaeb",
+	staff: "staff",
+	public: "null"
 };
 
 var briefHour = 2;

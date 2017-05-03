@@ -24,8 +24,6 @@ exports.addCommand = function(structure) {
 		fixedCmds.push(cmds[i].toLowerCase());
 	}
 
-	console.log(fixedCmds);
-
 	var cmdData = [fixedCmds, structure.func, structure.requires, structure.desc, structure.args, structure.example];
 
 	exports.commands.push(cmdData);
