@@ -22,6 +22,6 @@ module.exports = Cmds.addCommand({
 		outStr.push("```");
 		outStr.push(result);
 		outStr.push("```");
-		if (result != null) Util.print(channel, outStr.join("\n"));
+		if (result !== undefined) Util.print(channel, outStr.join("\n"));
 	}
 });
