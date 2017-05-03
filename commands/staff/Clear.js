@@ -1,3 +1,76 @@
+var checkFuncs = {
+	user: (function checkUser(msgObj, userId) {
+		return msgObj.author.id == userId;
+	}),
+
+	all: (function checkAll(msgObj) {
+		return true;
+	}),
+
+	bot: (function checkBot(msgObj) {
+		return msgObj.author.bot == true;
+	}),
+
+	hook: (function checkHook(msgObj) {
+		return msgObj.author.bot == true;
+	}),
+
+	image: (function checkImage(msgObj) {
+		var embeds = msgObj.embeds != null ? msgObj.embeds : [];
+		var attachments = msgObj.attachments != null ? msgObj.attachments : [];
+
+		for (let i = 0; i < embeds.length; i++) {
+			let nowEmbed = embeds[i];
+			if (nowEmbed.type == "image" || nowEmbed.type == "gifv" || nowEmbed.type == "gif" || nowEmbed.type == "webm") {
+				return true;
+			}
+		}
+
+		for (let i = 0; i < attachments.length; i++) {
+			let nowAtt = attachments[i];
+			if (nowAtt.hasOwnProperty("width")) {
+				return true;
+			}
+		}
+
+		return false;
+	}),
+
+	file: (function checkFile(msgObj) {
+		var attachments = msgObj.attachments != null ? msgObj.attachments : [];
+
+		for (let i = 0; i < attachments.length; i++) {
+			let nowAtt = attachments[i];
+			if (!nowAtt.hasOwnProperty("width")) {
+				return true;
+			}
+		}
+
+		return false;
+	}),
+
+	link: (function checkLink(msgObj) {
+		if (Util.checkURLs(msgObj.content).length > 0) return true;
+
+		var embeds = msgObj.embeds != null ? msgObj.embeds : [];
+
+		for (let i = 0; i < embeds.length; i++) {
+			let nowEmbed = embeds[i];
+			if (nowEmbed.type == "link") {
+				return true;
+			}
+		}
+
+		return false;
+	}),
+
+	mention: (function checkMentions(msgObj) {
+		var mentions = msgObj.mentions;
+
+		return mentions.length > 0;
+	})
+};
+
 module.exports = Cmds.addCommand({
 	cmds: [";clear ", ";clean ", ";wipe ", ";clearchats ", ";cleanchats "],
 
