@@ -248,6 +248,8 @@ client.on("message", msgObj => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+console.log("-CONNECTING-\n");
+
 client.login(Auth.token);
 
 process.on("unhandledRejection", err => {

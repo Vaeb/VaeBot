@@ -362,7 +362,7 @@ FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 		writable: false
 	});
 	loadedData[muted] = true;
-	console.log("READY");
+	console.log("Files Loaded");
 });
 
 FileSys.readFile(histDir, "utf-8", (err, data) => {

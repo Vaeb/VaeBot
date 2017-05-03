@@ -252,7 +252,7 @@ exports.pathRequire = (filePath) => {
 
 	let fileData = require(filePath);
 
-	let dirName = /(\w+)\/\w+\.js$/.exec(file)[1];
+	let dirName = /(\w+)[\/\\]\w+\.js$/.exec(file)[1];
 
 	if (dirName && index.commandTypes.hasOwnProperty(dirName)) {
 		for (var commandType in index.commandTypes) {
