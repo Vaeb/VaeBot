@@ -261,10 +261,12 @@ exports.pathRequire = (filePath) => {
 		for (var commandType in index.commandTypes) {
 			if (!index.commandTypes.hasOwnProperty(commandType)) continue;
 			var commandKey = index.commandTypes[commandType];
-			if (commandType == dirName) {
-				if (commandKey != "null") fileData[2][commandKey] = true;
-			} else {
-				fileData[2][commandKey] = false;
+			if (commandKey != "null") {
+				if (commandType == dirName) {
+					fileData[2][commandKey] = true;
+				} else {
+					fileData[2][commandKey] = false;
+				}
 			}
 		}
 	}
