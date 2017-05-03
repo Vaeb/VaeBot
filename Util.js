@@ -251,11 +251,7 @@ exports.pathRequire = (filePath) => {
 
 	let fileData = require(filePath);
 
-	console.log(file);
-
 	let dirName = /(\w+)\/\w+\.js$/.exec(file)[1];
-
-	console.log(dirName);
 
 	if (dirName && index.commandTypes.hasOwnProperty(dirName)) {
 		for (var commandType in index.commandTypes) {
@@ -270,9 +266,6 @@ exports.pathRequire = (filePath) => {
 			}
 		}
 	}
-
-	console.log(fileData[0]);
-	console.log(fileData[2]);
 };
 
 exports.checkStaff = function(guild, member) {
