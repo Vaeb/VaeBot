@@ -1,15 +1,19 @@
 const FileSys = index.FileSys;
 
-var loadedData = [];
-exports.loadedData = loadedData;
-
 const mutesDir = "./data/mutes.json";
 const histDir = "./data/history.json";
 const autoRoleDir = "./data/autoroles.json";
 const playlistDir = "./data/playlist.json";
 
+exports.loadedData = [];
+
+exports.autoRoles = {};
+exports.playlist = {};
+exports.history = {};
+exports.muted = {};
+
 exports.guildSaveData = function(obj, retry) {
-	if (!loadedData[obj]) return;
+	if (!exports.loadedData[obj]) return;
 	var objName = obj.__name;
 	var objPath = obj.__path;
 	FileSys.writeFile(objPath, JSON.stringify(obj), (err) => {
@@ -24,7 +28,7 @@ exports.guildSaveData = function(obj, retry) {
 
 exports.guildGet = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
-	if (index !== null) return obj[guild.id][index];
+	if (index != null) return obj[guild.id][index];
 	return obj[guild.id];
 };
 
@@ -42,28 +46,64 @@ exports.guildDelete = function(guild, obj, index) {
 	}
 };
 
-FileSys.readFile(mutesDir, "utf-8", (err, data) => {
+FileSys.readFile(autoRoleDir, "utf-8", (err, data) => {
 	if (err) throw err;
 
-	if (data.length > 0) exports.muted = JSON.parse(data);
+	if (data.length > 0) {
+		let tempObj = JSON.parse(data);
+		for (var key in tempObj) {
+			if (!tempObj.hasOwnProperty(key)) continue;
+			exports.autoRoles[key] = tempObj[key];
+		}
+	}
 
-	Object.defineProperty(exports.muted, "__name", {
-		value: "muted",
+	Object.defineProperty(exports.autoRoles, "__name", {
+		value: "autoRoles",
 		enumerable: false,
 		writable: false
 	});
-	Object.defineProperty(exports.muted, "__path", {
-		value: mutesDir,
+	Object.defineProperty(exports.autoRoles, "__path", {
+		value: autoRoleDir,
 		enumerable: false,
 		writable: false
 	});
-	loadedData[exports.muted] = true;
+	exports.loadedData[exports.autoRoles] = true;
+});
+
+FileSys.readFile(playlistDir, "utf-8", (err, data) => {
+	if (err) throw err;
+
+	if (data.length > 0) {
+		let tempObj = JSON.parse(data);
+		for (var key in tempObj) {
+			if (!tempObj.hasOwnProperty(key)) continue;
+			exports.playlist[key] = tempObj[key];
+		}
+	}
+
+	Object.defineProperty(exports.playlist, "__name", {
+		value: "playlist",
+		enumerable: false,
+		writable: false
+	});
+	Object.defineProperty(exports.playlist, "__path", {
+		value: playlistDir,
+		enumerable: false,
+		writable: false
+	});
+	exports.loadedData[exports.playlist] = true;
 });
 
 FileSys.readFile(histDir, "utf-8", (err, data) => {
 	if (err) throw err;
 
-	if (data.length > 0) exports.history = JSON.parse(data);
+	if (data.length > 0) {
+		let tempObj = JSON.parse(data);
+		for (var key in tempObj) {
+			if (!tempObj.hasOwnProperty(key)) continue;
+			exports.history[key] = tempObj[key];
+		}
+	}
 
 	Object.defineProperty(exports.history, "__name", {
 		value: "history",
@@ -76,42 +116,31 @@ FileSys.readFile(histDir, "utf-8", (err, data) => {
 		writable: false
 	});
 
-	loadedData[exports.history] = true;
+	exports.loadedData[exports.history] = true;
 });
 
-FileSys.readFile(autoRoleDir, "utf-8", (err, data) => {
+FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 	if (err) throw err;
 
-	if (data.length > 0) exports.autoRoles = JSON.parse(data);
+	if (data.length > 0) {
+		let tempObj = JSON.parse(data);
+		for (var key in tempObj) {
+			if (!tempObj.hasOwnProperty(key)) continue;
+			exports.muted[key] = tempObj[key];
+		}
+	}
 
-	Object.defineProperty(exports.autoRoles, "__name", {
-		value: "autoRoles",
+	Object.defineProperty(exports.muted, "__name", {
+		value: "muted",
 		enumerable: false,
 		writable: false
 	});
-	Object.defineProperty(exports.autoRoles, "__path", {
-		value: autoRoleDir,
+	Object.defineProperty(exports.muted, "__path", {
+		value: mutesDir,
 		enumerable: false,
 		writable: false
 	});
-	loadedData[exports.autoRoles] = true;
-});
+	exports.loadedData[exports.muted] = true;
 
-FileSys.readFile(playlistDir, "utf-8", (err, data) => {
-	if (err) throw err;
-
-	if (data.length > 0) exports.playlist = JSON.parse(data);
-
-	Object.defineProperty(exports.playlist, "__name", {
-		value: "playlist",
-		enumerable: false,
-		writable: false
-	});
-	Object.defineProperty(exports.playlist, "__path", {
-		value: playlistDir,
-		enumerable: false,
-		writable: false
-	});
-	loadedData[exports.playlist] = true;
-	console.log("Loaded data");
+	console.log("Loaded persistent data");
 });

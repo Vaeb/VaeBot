@@ -29,7 +29,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 	// Check if user is allowed to be muted
 
 	if (pos <= Util.getPosition(targetMember)) {
-		if (channel !== null) {
+		if (channel != null) {
 			console.log(speakerName + "_User has equal or higher rank");
 			Util.commandFailed(channel, speaker, "User has equal or higher rank");
 		}
@@ -37,7 +37,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 	}
 
 	if (speakerValid && (id == vaebId && speakerId != vaebId)) {
-		if (channel !== null) {
+		if (channel != null) {
 			Util.commandFailed(channel, speaker, "You cannot mute VaeBot's developer");
 		}
 		return false;
@@ -74,7 +74,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 	// Remove the SendMessages role
 
 	var role = Util.getRole("SendMessages", targetMember);
-	if (role !== null) {
+	if (role != null) {
 		targetMember.removeRole(role)
 		.catch(error => console.log("\n[E_RoleRem1] " + error));
 	}
@@ -154,7 +154,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	}
 
 	if (speakerId != vaebId && pos <= Util.getPosition(targetMember)) {
-		if (channel !== null) {
+		if (channel != null) {
 			console.log(speakerName + "_User has equal or higher rank");
 			Util.commandFailed(channel, speaker, "User has equal or higher rank");
 		}
@@ -164,10 +164,10 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	var mutedData = Data.guildGet(guild, Data.muted, id);
 	var origModId = mutedData[4];
 	var origMod = Util.getMemberById(origModId, guild);
-	var origModPos = origMod !== null ? Util.getPosition(origMod) : -1;
+	var origModPos = origMod != null ? Util.getPosition(origMod) : -1;
 
 	if (speakerValid && speakerId != vaebId && speakerId != selfId && (origModId == vaebId || pos < origModPos)) {
-		if (channel !== null) {
+		if (channel != null) {
 			console.log(speakerName + "_Moderator who muted has higher privilege");
 			Util.commandFailed(channel, speaker, "Moderator who muted has higher privilege");
 		}
@@ -177,7 +177,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	Data.guildDelete(guild, Data.muted, id);
 
 	var role = Util.getRole("SendMessages", guild);
-	if (role !== null) {
+	if (role != null) {
 		targetMember.addRole(role)
 		.catch(error => console.log("\n[E_AddRem1] " + error));
 	}
@@ -188,7 +188,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	if (pos == Infinity) {
 		console.log("Unmuted " + muteName);
-	} else if (channel !== null) {
+	} else if (channel != null) {
 		var sendEmbedFields = [
 			{name: "Username", value: Util.getMention(targetMember)},
 			{name: "Mute History", value: muteHistoryString}
@@ -247,14 +247,18 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 	var mutedGuild = Data.guildGet(guild, Data.muted);
 
+	console.log("name: " + name);
+
 	for (var targetId in mutedGuild) {
 		if (!mutedGuild.hasOwnProperty(targetId)) continue;
+		console.log("checking " + targetId);
 		var targetMember = Util.getMemberById(targetId, guild);
+		console.log("found " + targetMember);
 		if (targetMember) {
 			var targetName = Util.getName(targetMember);
 			var targetNick = targetMember.nickname;
 			//console.log(targetName);
-			if ((safeId && safeId == targetId) || (targetNick !== null && (targetNick.toLowerCase().includes(name)))) {
+			if ((safeId && safeId == targetId) || (targetNick != null && (targetNick.toLowerCase().includes(name)))) {
 				return Mutes.unMuteReal(targetMember, guild, pos, channel, speaker);
 			} else if (targetName.toLowerCase().includes(name)) {
 				backupTarget = targetMember;
@@ -288,11 +292,11 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 		Mutes.stopUnMuteTimeout(safeId);
 
 		console.log("Success");
-	}
 
-	if (backupTarget !== null) {
+		return;
+	} else if (backupTarget != null) {
 		return Mutes.unMuteReal(backupTarget, guild, pos, channel, speaker);
-	} else if (channel !== null) {
+	} else if (channel != null) {
 		console.log("(Channel included) Unmute failed: Unable to find muted user (" + name + ")");
 		Util.sendEmbed(channel, "Unmute Failed", "User not found", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 	} else {

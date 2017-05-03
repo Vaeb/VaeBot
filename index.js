@@ -1,4 +1,4 @@
-console.log("-STARTING-\n");
+console.log("\n-STARTING-\n");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,7 +112,7 @@ function setBriefing() {
 					let userTime = nowData[3];
 					let targMention = "<@" + userId + ">";
 					let reasonStr = "";
-					if (userReason !== null && userReason.trim().length > 0) {
+					if (userReason != null && userReason.trim().length > 0) {
 						reasonStr = " : " + userReason;
 					}
 					dataValues.push(targMention + reasonStr);
@@ -133,7 +133,7 @@ function setBriefing() {
 					let userReason = safe(nowData[2]);
 					let targMention = "<@" + userId + ">";
 					let reasonStr = "";
-					if (userReason !== null && userReason.trim().length > 0) {
+					if (userReason != null && userReason.trim().length > 0) {
 						reasonStr = " : " + userReason;
 					}
 					dataValues.push(targMention + reasonStr);
@@ -154,7 +154,7 @@ function setBriefing() {
 					let userReason = safe(nowData[2]);
 					let targMention = "<@" + userId + ">";
 					let reasonStr = "";
-					if (userReason !== null && userReason.trim().length > 0) {
+					if (userReason != null && userReason.trim().length > 0) {
 						reasonStr = " : " + userReason;
 					}
 					dataValues.push(targMention + reasonStr);
@@ -186,7 +186,9 @@ Cmds.initCommands();
 client.on("ready", () => {
 	console.log(`\nConnected as ${client.user.username}!`);
 
-	if (madeBriefing === false) {
+	Mutes.restartTimeouts();
+
+	if (madeBriefing == false) {
 		madeBriefing = true;
 		setBriefing();
 	}
@@ -342,7 +344,7 @@ client.on("message", msgObj => {
 
 	Cmds.checkMessage(msgObj, speaker, channel, guild, content, lcontent, authorId, isStaff);
 
-	if (author.bot === true) { //RETURN IF BOT
+	if (author.bot == true) { //RETURN IF BOT
 		return;
 	}
 

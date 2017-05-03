@@ -1,8 +1,8 @@
 /*
 
-addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\(cmd, args, msgObj, speaker, channel, guild\) {\n\t([\s\S]+?)\n},\n\t(".*?"),\n\t(".*?"),\n\t(".*?")\n\)
+addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\(cmd, args, msgObj, speaker, channel, guild\) {.*\n\t([\s\S]+?)\n},\n\t(".*?"),\n\t(".*?"),\n\t(".*?")\n\)
 
-Cmds.addCommand({
+module.exports = Cmds.addCommand({
 	cmds: \1,
 
 	requires: {
@@ -12,7 +12,7 @@ Cmds.addCommand({
 
 	desc: \6,
 
-	syntax: \7,
+	args: \7,
 
 	example: \8,
 
@@ -26,6 +26,221 @@ Cmds.addCommand({
 const FileSys = index.FileSys,
 	DateFormat = index.DateFormat,
 	path = index.path;
+
+var regexURLPerfect = new RegExp(
+	"^" +
+		// protocol identifier
+		"(?:(?:https?|ftp)://)" +
+		// user:pass authentication
+		"(?:\\S+(?::\\S*)?@)?" +
+		"(?:" +
+			// IP address exclusion
+			// private & local networks
+			"(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+			"(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+			"(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+			// IP address dotted notation octets
+			// excludes loopback network 0.0.0.0
+			// excludes reserved space >= 224.0.0.0
+			// excludes network & broacast addresses
+			// (first & last IP address of each class)
+			"(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+			"(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+			"(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+		"|" +
+			// host name
+			"(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" +
+			// domain name
+			"(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" +
+			// TLD identifier
+			"(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
+			// TLD may end with dot
+			"\\.?" +
+		")" +
+		// port number
+		"(?::\\d{2,5})?" +
+		// resource path
+		"(?:[/?#]\\S*)?" +
+	"$", "i"
+);
+
+var rolePermissions = [
+	"CREATE_INSTANT_INVITE",
+	"KICK_MEMBERS",
+	"BAN_MEMBERS",
+	"VIEW_AUDIT_LOG",
+	"ADMINISTRATOR",
+	"MANAGE_CHANNELS",
+	"MANAGE_GUILD",
+	"ADD_REACTIONS", // add reactions to messages
+	"READ_MESSAGES",
+	"SEND_MESSAGES",
+	"SEND_TTS_MESSAGES",
+	"MANAGE_MESSAGES",
+	"EMBED_LINKS",
+	"ATTACH_FILES",
+	"READ_MESSAGE_HISTORY",
+	"MENTION_EVERYONE",
+	"USE_EXTERNAL_EMOJIS", // use external emojis
+	"CONNECT", // connect to voice
+	"SPEAK", // speak on voice
+	"MUTE_MEMBERS", // globally mute members on voice
+	"DEAFEN_MEMBERS", // globally deafen members on voice
+	"MOVE_MEMBERS", // move member's voice channels
+	"USE_VAD", // use voice activity detection
+	"CHANGE_NICKNAME",
+	"MANAGE_NICKNAMES", // change nicknames of others
+	"MANAGE_ROLES",
+	"MANAGE_WEBHOOKS",
+	"MANAGE_EMOJIS"
+];
+
+var rolePermissionsObj = {
+	"CREATE_INSTANT_INVITE": true,
+	"KICK_MEMBERS": true,
+	"BAN_MEMBERS": true,
+	"VIEW_AUDIT_LOG": true,
+	"ADMINISTRATOR": true,
+	"MANAGE_CHANNELS": true,
+	"MANAGE_GUILD": true,
+	"ADD_REACTIONS": true, // add reactions to messages
+	"READ_MESSAGES": true,
+	"SEND_MESSAGES": true,
+	"SEND_TTS_MESSAGES": true,
+	"MANAGE_MESSAGES": true,
+	"EMBED_LINKS": true,
+	"ATTACH_FILES": true,
+	"READ_MESSAGE_HISTORY": true,
+	"MENTION_EVERYONE": true,
+	"USE_EXTERNAL_EMOJIS": true, // use external emojis
+	"CONNECT": true, // connect to voice
+	"SPEAK": true, // speak on voice
+	"MUTE_MEMBERS": true, // globally mute members on voice
+	"DEAFEN_MEMBERS": true, // globally deafen members on voice
+	"MOVE_MEMBERS": true, // move member's voice channels
+	"USE_VAD": true, // use voice activity detection
+	"CHANGE_NICKNAME": true,
+	"MANAGE_NICKNAMES": true, // change nicknames of others
+	"MANAGE_ROLES": true,
+	"MANAGE_WEBHOOKS": true,
+	"MANAGE_EMOJIS": true
+};
+
+var textChannnelPermissions = [
+	"CREATE_INSTANT_INVITE",
+	"MANAGE_CHANNEL",
+	"ADD_REACTIONS", // add reactions to messages
+	"READ_MESSAGES",
+	"SEND_MESSAGES",
+	"SEND_TTS_MESSAGES",
+	"MANAGE_MESSAGES",
+	"EMBED_LINKS",
+	"ATTACH_FILES",
+	"READ_MESSAGE_HISTORY",
+	"MENTION_EVERYONE",
+	"USE_EXTERNAL_EMOJIS", // use external emojis
+	"MANAGE_PERMISSIONS",
+	"MANAGE_WEBHOOKS"
+];
+
+var textChannnelPermissionsObj = {
+	"ADD_REACTIONS": true, // add reactions to messages
+	"READ_MESSAGES": true,
+	"SEND_MESSAGES": true,
+	"SEND_TTS_MESSAGES": true,
+	"MANAGE_MESSAGES": true,
+	"EMBED_LINKS": true,
+	"ATTACH_FILES": true,
+	"READ_MESSAGE_HISTORY": true,
+	"MENTION_EVERYONE": true,
+	"USE_EXTERNAL_EMOJIS": true, // use external emojis
+	"CREATE_INSTANT_INVITE": true,
+	"MANAGE_CHANNEL": true,
+	"MANAGE_PERMISSIONS": true,
+	"MANAGE_WEBHOOKS": true
+};
+
+var voiceChannnelPermissions = [
+	"CONNECT", // connect to voice
+	"SPEAK", // speak on voice
+	"MUTE_MEMBERS", // globally mute members on voice
+	"DEAFEN_MEMBERS", // globally deafen members on voice
+	"MOVE_MEMBERS", // move member's voice channels
+	"USE_VAD", // use voice activity detection
+	"CREATE_INSTANT_INVITE",
+	"MANAGE_CHANNEL",
+	"MANAGE_PERMISSIONS",
+	"MANAGE_WEBHOOKS"
+];
+
+var voiceChannnelPermissionsObj = {
+	"CONNECT": true, // connect to voice
+	"SPEAK": true, // speak on voice
+	"MUTE_MEMBERS": true, // globally mute members on voice
+	"DEAFEN_MEMBERS": true, // globally deafen members on voice
+	"MOVE_MEMBERS": true, // move member's voice channels
+	"USE_VAD": true, // use voice activity detection
+	"CREATE_INSTANT_INVITE": true,
+	"MANAGE_CHANNEL": true,
+	"MANAGE_PERMISSIONS": true,
+	"MANAGE_WEBHOOKS": true
+};
+
+var permissionsOrder = {
+	"ADMINISTRATOR": 27,
+	"MANAGE_GUILD": 26,
+	"MANAGE_ROLES": 25,
+	"MANAGE_CHANNELS": 24,
+	"MANAGE_CHANNEL": 24, // Channel
+	"MANAGE_WEBHOOKS": 23,
+	"MANAGE_EMOJIS": 22,
+	"MANAGE_PERMISSIONS": 22, // Channel
+	"VIEW_AUDIT_LOG": 21,
+	"MENTION_EVERYONE": 20,
+	"BAN_MEMBERS": 19,
+	"KICK_MEMBERS": 18,
+	"MOVE_MEMBERS": 17,
+	"DEAFEN_MEMBERS": 16,
+	"MUTE_MEMBERS": 15,
+	"MANAGE_MESSAGES": 14,
+	"MANAGE_NICKNAMES": 13,
+	"USE_EXTERNAL_EMOJIS": 12,
+	"ATTACH_FILES": 11,
+	"SEND_TTS_MESSAGES": 10,
+	"ADD_REACTIONS": 9,
+	"EMBED_LINKS": 8,
+	"CHANGE_NICKNAME": 7,
+	"USE_VAD": 6,
+	"SPEAK": 5,
+	"CONNECT": 4,
+	"CREATE_INSTANT_INVITE": 3,
+	"SEND_MESSAGES": 2,
+	"READ_MESSAGE_HISTORY": 1,
+	"READ_MESSAGES": 0
+};
+
+var permRating = [
+	["ADMINISTRATOR", 100],
+	["MANAGE_GUILD", 90],
+	["MANAGE_ROLES", 80],
+	["MANAGE_CHANNELS", 70],
+	["MANAGE_EMOJIS", 60],
+	["MENTION_EVERYONE", 50],
+	["VIEW_AUDIT_LOG", 50],
+	["BAN_MEMBERS", 40],
+	["KICK_MEMBERS", 30],
+	["MANAGE_MESSAGES", 20],
+	["MANAGE_NICKNAMES", 20],
+	["MOVE_MEMBERS", 20],
+	["ATTACH_FILES", 10],
+	["ADD_REACTIONS", 10],
+	["SEND_MESSAGES", 10]
+];
+
+String.prototype.replaceAll = function(search, replacement) {
+	var target = this;
+	return target.split(search).join(replacement);
+};
 
 function getURLChecker() {
 	var
@@ -97,7 +312,7 @@ function getURLChecker() {
 		
 		// Initialize options.
 		for ( i in default_options ) {
-			if ( options[ i ] === undefined ) {
+			if ( options[ i ] == undefined ) {
 				options[ i ] = default_options[ i ];
 			}
 		}
@@ -141,13 +356,13 @@ function getURLChecker() {
 						return '';
 					});
 				}
-			} while ( link.length && link !== link_last );
+			} while ( link.length && link != link_last );
 			
 			href = link;
 			
 			// Add appropriate protocol to naked links.
 			if ( !SCHEME_RE.test( href ) ) {
-				href = ( href.indexOf( '@' ) !== -1 ? ( !href.indexOf( MAILTO ) ? '' : MAILTO )
+				href = ( href.indexOf( '@' ) != -1 ? ( !href.indexOf( MAILTO ) ? '' : MAILTO )
 					: !href.indexOf( 'irc.' ) ? 'irc://'
 					: !href.indexOf( 'ftp.' ) ? 'ftp://'
 					: 'http://' ) + href;
@@ -219,7 +434,7 @@ exports.fix = function(str) {
 	return ("`" + Util.safe(str) + "`");
 };
 
-exports.toFixed = function(num, decimals) {
+exports.toFixedCut = function(num, decimals) {
 	return Number(num.toFixed(decimals)).toString();
 };
 
@@ -340,7 +555,7 @@ exports.getRandomInt = function(min, max) { //inclusive, exclusive
 
 exports.isObject = function(val) {
 	if (val == null) return false;
-	return (typeof(val) === "object");
+	return (typeof(val) == "object");
 };
 
 exports.cloneObj = function(obj) {
@@ -387,13 +602,13 @@ exports.formatTime = function(time) {
 		timeStr = numSeconds.toFixed(0);
 		formatStr = timeStr + " second";
 	} else if (numMinutes < 60) {
-		timeStr = numMinutes % 1 === 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
+		timeStr = numMinutes % 1 == 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
 		formatStr = timeStr + " minute";
 	} else if (numHours < 60) {
-		timeStr = numHours % 1 === 0 ? numHours.toFixed(0) : numHours.toFixed(1);
+		timeStr = numHours % 1 == 0 ? numHours.toFixed(0) : numHours.toFixed(1);
 		formatStr = timeStr + " hour";
 	} else if (numDays < 60) {
-		timeStr = numDays % 1 === 0 ? numDays.toFixed(0) : numDays.toFixed(1);
+		timeStr = numDays % 1 == 0 ? numDays.toFixed(0) : numDays.toFixed(1);
 		formatStr = timeStr + " day";
 	}
 
@@ -448,7 +663,7 @@ exports.fixMessageLengthNew = function(msg) {
 			if (numPass % 2 == 1) lastIsOpener = false;
 		}
 		let nextMsg = passOver + (argsFixed[i+1] != null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
-		if (nextMsg !== "" && nextMsg[0] != "\n" && msg.includes("\n")) { //If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
+		if (nextMsg != "" && nextMsg[0] != "\n" && msg.includes("\n")) { //If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
 			let cutData = Util.cutStringSafe(msg, "", lastIsOpener);
 			msg = cutData[0];
 			passOver = cutData[1] + passOver;
@@ -569,7 +784,7 @@ exports.getMention = function(obj) {
 };
 
 exports.getAvatar = function(user, outStr) {
-	return (user != null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr === true ? "null" : null);
+	return (user != null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr == true ? "null" : null);
 };
 
 exports.getDateString = function(d) {
@@ -829,7 +1044,7 @@ exports.searchUserPartial = function(col, name) {
 };
 
 exports.round = function(num, inc) {
-	return (inc === 0 ? num : Math.floor(num/inc+0.5)*inc);
+	return (inc == 0 ? num : Math.floor(num/inc+0.5)*inc);
 };
 
 exports.write = function(content, name) {
@@ -841,14 +1056,14 @@ exports.remove = function(name) {
 };
 
 exports.getHistory = function(id, guild) {
-	var userHistory = Data.guildGet(guild, history, id);
+	var userHistory = Data.guildGet(guild, Data.history, id);
 	if (userHistory) return userHistory[0];
 	return 0;
 };
 
 exports.historyToString = function(num) {
 	var timeHours = Util.round(num/3600000, 0.1);
-	timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
+	timeHours = (timeHours >= 1 || timeHours == 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
 	return timeHours + (timeHours == 1 ? " hour" : " hours");
 };
 
@@ -889,7 +1104,7 @@ exports.getMatchStrength = function(fullStr, subStr) { // [v2.0]
 		value += Math.pow(2, 1+caps);
 
 		var totalPosition = fullStr.length-subStr.length;
-		var perc = 1 - (totalPosition*nameMatch === 0 ? 0.001 : nameMatch/totalPosition);
+		var perc = 1 - (totalPosition*nameMatch == 0 ? 0.001 : nameMatch/totalPosition);
 		value += Math.pow(2, perc);
 	}
 
@@ -939,7 +1154,7 @@ exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, 
 			value += Math.pow(2, 1+caps);
 
 			var totalPosition = realName.length-name.length;
-			var perc = 1 - (totalPosition*nameMatch === 0 ? 0.001 : nameMatch/totalPosition);
+			var perc = 1 - (totalPosition*nameMatch == 0 ? 0.001 : nameMatch/totalPosition);
 			//console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
 			value += Math.pow(2, perc);
 
@@ -1022,7 +1237,7 @@ exports.clamp = function(num, min, max) {
 };
 
 exports.toBoolean = function(str) {
-	return (typeof(str) === "boolean" ? str : (str === "true" || (str === "false" ? false : undefined)));
+	return (typeof(str) == "boolean" ? str : (str == "true" || (str == "false" ? false : undefined)));
 };
 
 exports.getNum = function(str, min, max) {
