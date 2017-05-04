@@ -3,7 +3,7 @@ const FileSys = index.FileSys;
 var loadedData = Data.loadedData;
 var muteEvents = [];
 
-var defaultMuteTime = 1800000;
+exports.defaultMuteTime = 1800000;
 
 exports.checkMuted = function(id, guild) {
 	return (Data.guildGet(guild, Data.muted, id) ? true : false);
@@ -49,7 +49,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 	var muteTime;
 	var oldHistory = Data.guildGet(guild, Data.history, id);
 
-	if (oldHistory && (timeScale >= 1 || oldHistory[0] != defaultMuteTime)) {
+	if (oldHistory && (timeScale >= 1 || oldHistory[0] != exports.defaultMuteTime)) {
 		muteTime = oldHistory[0]*timeScale;
 
 		if (muteTime < 0) {
@@ -59,7 +59,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 		oldHistory[0] = muteTime;
 		Data.guildSaveData(Data.history);
 	} else {
-		muteTime = defaultMuteTime; //1800000
+		muteTime = exports.defaultMuteTime; //1800000
 		Data.guildSet(guild, Data.history, id, [muteTime, muteName]);
 	}
 
