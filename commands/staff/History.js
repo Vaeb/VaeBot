@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-	cmds: [";history"],
+	cmds: [";history", ";mutehistory"],
 
 	requires: {
 		guild: true,
