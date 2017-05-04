@@ -399,6 +399,18 @@ function getURLChecker() {
 
 exports.checkURLs = getURLChecker();
 
+exports.initRoles = function(sendRole, guild) {
+	var members = guild.members;
+
+	members.forEach((member, id) => {
+		if (!Util.hasRole(member, sendRole)) {
+			member.addRole(sendRole)
+			.then(() => console.log("Assigned role to " + Util.getName(member)))
+			.catch(error => console.log("\n[E_InitRoles] addRole: " + error));
+		}
+	});
+};
+
 exports.capitalize = function(str) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.slice(1);
