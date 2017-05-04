@@ -126,7 +126,7 @@ var rolePermissionsObj = {
 	"MANAGE_EMOJIS": true
 };
 
-var textChannnelPermissions = [
+var textChannelPermissions = [
 	"CREATE_INSTANT_INVITE",
 	"MANAGE_CHANNEL",
 	"ADD_REACTIONS", // add reactions to messages
@@ -143,7 +143,7 @@ var textChannnelPermissions = [
 	"MANAGE_WEBHOOKS"
 ];
 
-var textChannnelPermissionsObj = {
+var textChannelPermissionsObj = {
 	"ADD_REACTIONS": true, // add reactions to messages
 	"READ_MESSAGES": true,
 	"SEND_MESSAGES": true,
@@ -160,7 +160,7 @@ var textChannnelPermissionsObj = {
 	"MANAGE_WEBHOOKS": true
 };
 
-var voiceChannnelPermissions = [
+var voiceChannelPermissions = [
 	"CONNECT", // connect to voice
 	"SPEAK", // speak on voice
 	"MUTE_MEMBERS", // globally mute members on voice
@@ -173,7 +173,7 @@ var voiceChannnelPermissions = [
 	"MANAGE_WEBHOOKS"
 ];
 
-var voiceChannnelPermissionsObj = {
+var voiceChannelPermissionsObj = {
 	"CONNECT": true, // connect to voice
 	"SPEAK": true, // speak on voice
 	"MUTE_MEMBERS": true, // globally mute members on voice
