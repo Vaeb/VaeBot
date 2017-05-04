@@ -384,6 +384,16 @@ client.on("guildMemberUpdate", (oldMember, member) => {
 	}
 });
 
+var messageStamps = {};
+var userStatus = {};
+var lastWarn = {};
+var checkMessages = 5; // (n)
+var warnGrad = 13.5; // Higher = More Spam (Messages per Second) | 10 = 1 message per second
+var sameGrad = 4;
+var muteGrad = 9;
+var waitTime = 5.5;
+var endAlert = 15;
+
 client.on("message", msgObj => {
 	var channel = msgObj.channel;
 	if (channel.name == "vaebot-log") return;
@@ -417,8 +427,114 @@ client.on("message", msgObj => {
 	}
 
 	if (runFuncs.length > 0) {
-		for (var i = 0; i < runFuncs.length; i++) {
+		for (let i = 0; i < runFuncs.length; i++) {
 			runFuncs[i](msgObj, channel, speaker);
+		}
+	}
+
+	if (guild != null && author.bot == false && author.bot == false) {
+		if (!userStatus.hasOwnProperty(authorId)) userStatus[authorId] = 0;
+		if (!messageStamps.hasOwnProperty(authorId)) messageStamps[authorId] = [];
+		var nowStamps = messageStamps[authorId];
+		var stamp = (+ new Date());
+		nowStamps.unshift({stamp: stamp, message: lcontent});
+		if (userStatus[authorId] != 1) {
+			if (nowStamps.length > checkMessages) {
+				nowStamps.splice(checkMessages, nowStamps.length-checkMessages);
+			}
+			if (nowStamps.length >= checkMessages) {
+				var oldStamp = nowStamps[checkMessages-1].stamp;
+				var elapsed = (stamp-oldStamp)/1000;
+				var grad1 = (checkMessages/elapsed)*10;
+				var checkGrad1 = sameGrad;
+				var latestMsg = nowStamps[0].message;
+				for (let i = 0; i < checkMessages; i++) {
+					if (nowStamps[i].message != latestMsg) {
+						checkGrad1 = warnGrad;
+						break;
+					}
+				}
+				// console.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
+				if (grad1 >= checkGrad1) {
+					if (userStatus[authorId] == 0) {
+						console.log(Util.getName(speaker) + " warned, gradient larger than " + checkGrad1);
+						userStatus[authorId] = 1;
+						Util.print(channel, speaker.toString(), "Warning: If you continue to spam you will be auto-muted");
+						setTimeout(function() {
+							var lastStamp = nowStamps[0].stamp;
+							setTimeout(function() {
+								var numNew = 0;
+								var checkGrad2 = sameGrad;
+								var newStamp = (+ new Date());
+								var latestMsg2 = nowStamps[0].message;
+								//var origStamp2;
+								for (let i = 0; i < nowStamps.length; i++) {
+									var curStamp = nowStamps[i];
+									var isFinal = curStamp.stamp == lastStamp;
+									if (isFinal && stamp == lastStamp) break;
+									numNew++;
+									//origStamp2 = curStamp.stamp;
+									if (curStamp.message != latestMsg2) checkGrad2 = muteGrad;
+									if (isFinal) break;
+								}
+								if (numNew == 0) {
+									console.log("[2_] " + Util.getName(speaker) + " was put on alert");
+									lastWarn[authorId] = newStamp;
+									userStatus[authorId] = 2;
+									return;
+								}
+								var numNew2 = 0;
+								var elapsed2 = 0;
+								var grad2 = 0;
+								//var elapsed2 = (newStamp-origStamp2)/1000;
+								//var grad2 = (numNew/elapsed2)*10;
+								for (let i = 2; i < numNew; i++) {
+									var curStamp = nowStamps[i].stamp;
+									var nowElapsed = (newStamp-curStamp)/1000;
+									var nowGradient = ((i+1)/nowElapsed)*10;
+									if (nowGradient > grad2) {
+										grad2 = nowGradient;
+										elapsed2 = nowElapsed;
+										numNew2 = i+1;
+									}
+								}
+								console.log("[2] User: " + Util.getName(speaker) + " | Messages Since " + elapsed2 + " Seconds: " + numNew2 + " | Gradient2: " + grad2);
+								if (grad2 >= checkGrad2) {
+									console.log("[2] " + Util.getName(speaker) + " muted, gradient larger than " + checkGrad2);
+									Mutes.doMuteReal(speaker, "[Auto-Mute] Spamming", guild, Infinity, channel, "System");
+									userStatus[authorId] = 0;
+								} else {
+									console.log("[2] " + Util.getName(speaker) + " was put on alert");
+									lastWarn[authorId] = newStamp;
+									userStatus[authorId] = 2;
+								}
+							}, waitTime*1000);
+						}, 350);
+					} else if (userStatus[authorId] == 2) {
+						console.log("[3] " + Util.getName(speaker) + " muted, repeated warns");
+						Mutes.doMuteReal(speaker, "[Auto-Mute] Spamming", guild, Infinity, channel, "System");
+						userStatus[authorId] = 0;
+					}
+				} else {
+					if (userStatus[authorId] == 2 && (stamp-lastWarn[authorId]) > (endAlert*1000)) {
+						console.log(Util.getName(speaker) + " ended their alert");
+						userStatus[authorId] = 0;
+					}
+				}
+			}
+		}
+	}
+
+	if (guild != null) {
+		if (Music.songs[guild.id] == null) Music.songs[guild.id] = [];
+
+		if (Music.songData[guild.id] == null) {
+			Music.songData[guild.id] = {
+				nowVideo: null,
+				nowAuthor: null,
+				voteSkips: [],
+				isAuto: false
+			};
 		}
 	}
 

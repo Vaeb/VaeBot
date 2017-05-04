@@ -1,6 +1,6 @@
-var isPlaying = {};
-var songData = {};
-var songs = {};
+exports.isPlaying = {};
+exports.songData = {};
+exports.songs = {};
 
 exports.stopMusic = function(guild) {
 	var connection = guild.voiceConnection;
@@ -10,9 +10,9 @@ exports.stopMusic = function(guild) {
 	if (!player) return false;
 	var dispatcher = player.dispatcher;
 	if (!dispatcher) return false;
-	isPlaying[guild.id] = false;
+	exports.isPlaying[guild.id] = false;
 	dispatcher.end("StopMusic");
-	var realSongData = songData[guild.id];
+	var realSongData = exports.songData[guild.id];
 	realSongData.nowVideo = null;
 	realSongData.nowAuthor = null;
 	realSongData.voteSkips = [];
@@ -21,7 +21,7 @@ exports.stopMusic = function(guild) {
 };
 
 exports.clearQueue = function(guild) {
-	songs[guild.id] = [];
+	exports.songs[guild.id] = [];
 	return Music.stopMusic(guild);
 };
 
@@ -43,7 +43,7 @@ exports.playRealSong = function(newSong, guild, channel, doPrint) {
 	var video = newSong[0];
 	var author = newSong[1];
 	var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
-	var realSongData = songData[guild.id];
+	var realSongData = exports.songData[guild.id];
 	realSongData.nowVideo = video;
 	realSongData.nowAuthor = author;
 	realSongData.voteSkips = [];
@@ -55,7 +55,7 @@ exports.playRealSong = function(newSong, guild, channel, doPrint) {
 exports.playNextQueue = function(guild, channel, doPrint) {
 	console.log("Playing Next Queue");
 	if (doPrint == null) doPrint = true;
-	var realSongs = songs[guild.id];
+	var realSongs = exports.songs[guild.id];
 	var autoPlaylist = Data.guildGet(guild, playlist);
 	console.log("\nrealSongs");
 	console.log(realSongs.length);
@@ -77,7 +77,7 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 		Music.stopMusic(guild);
 		return;
 	}
-	var realSongData = songData[guild.id];
+	var realSongData = exports.songData[guild.id];
 	var lastId = "";
 	if (realSongData.isAuto === true) lastId = typeof(realSongData.nowVideo.id) == "object" ? realSongData.nowVideo.id.videoId : realSongData.nowVideo.id;
 	var newSong = Music.chooseRandomSong(guild, autoPlaylist, lastId);
@@ -116,14 +116,14 @@ exports.streamAudio = function(remote, guild, channel) {
 	const stream = yt(remote, {filter: 'audioonly'});
 	const dispatcher = connection.playStream(stream, streamOptions);
 
-	isPlaying[guild.id] = true;
+	exports.isPlaying[guild.id] = true;
 
 	dispatcher.on("end", reason => {
 		if (reason == "NewStreamAudio" || reason == "StopMusic") return;
-		if (isPlaying[guild.id]) {
+		if (exports.isPlaying[guild.id]) {
 			console.log("Track Ended: " + reason);
-			var realSongData = songData[guild.id];
-			var realSongs = songs[guild.id];
+			var realSongData = exports.songData[guild.id];
+			var realSongs = exports.songs[guild.id];
 
 			if (realSongs.length > 0) {
 				var video = realSongs[0][0];
@@ -167,9 +167,9 @@ exports.joinMusic = function(guild, channel, func) {
 };
 
 exports.addSong = function(speaker, guild, channel, video) {
-	var realSongs = songs[guild.id];
+	var realSongs = exports.songs[guild.id];
 	realSongs.push([video, speaker]);
-	if (realSongs.length <= 1 || songData[guild.id].isAuto === true) {
+	if (realSongs.length <= 1 || exports.songData[guild.id].isAuto === true) {
 		Music.playNextQueue(guild, channel, true);
 	} else {
 		Util.sendDescEmbed(channel, "[" + realSongs.length + "] Audio Queue Appended", video.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
