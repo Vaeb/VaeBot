@@ -20,13 +20,14 @@ module.exports = Cmds.addCommand({
 		if (sendRole != null) {
 			Util.initRoles(sendRole, guild);
 		} else {
-			var newRolePerms = ["CHANGE_NICKNAME", "EMBED_LINKS", "SEND_MESSAGES", "READ_MESSAGES", "READ_MESSAGE_HISTORY", "ADD_REACTIONS", "EXTERNAL_EMOTES", "CONNECT", "SPEAK", "USE_VAD"];
+			var newRolePerms = ["CHANGE_NICKNAME", "EMBED_LINKS", "SEND_MESSAGES", "READ_MESSAGES", "READ_MESSAGE_HISTORY", "ADD_REACTIONS", "USE_EXTERNAL_EMOJIS", "CONNECT", "SPEAK", "USE_VAD"];
 			guild.createRole({
 				name: "SendMessages",
 				hoist: false,
 				permissions: newRolePerms,
 				position: 1
-			}).then(role => { 
+			})
+			.then(role => { 
 				Util.initRoles(role, guild);
 			})
 			.catch(error => console.log("\n[E_InitRolesCreate] " + error));
