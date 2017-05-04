@@ -293,7 +293,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 		console.log("Success");
 
-		return;
+		return true;
 	} else if (backupTarget != null) {
 		return Mutes.unMuteReal(backupTarget, guild, pos, channel, speaker);
 	} else if (channel != null) {
@@ -303,7 +303,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 		console.log("(Channel not included) Unmute failed: Unable to find muted user (" + name + ")");
 	}
 
-	return false;
+	return true;
 };
 
 exports.stopUnMuteTimeout = function(id) {
