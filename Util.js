@@ -772,7 +772,7 @@ exports.getDisplayName = function(member) {
 };
 
 exports.getMostName = function(user) {
-	return Util.getName(user) + "#" + user.discriminator;
+	return Util.getName(user) + "#" + user.getProp("discriminator");
 };
 
 exports.getFullName = function(user) {
@@ -1289,9 +1289,10 @@ exports.findVoiceChannel = function(name, guild) {
 exports.getRole = function(name, obj) {
 	if (obj == null) return;
 	name = name.toLowerCase();
+	var nameId = exports.getSafeId(name);
 	var roles = obj.roles;
 	return roles.find(role => {
-		return role.name.toLowerCase().includes(name);
+		return (role.name.toLowerCase().includes(name) || role.id == nameId);
 	});
 };
 
