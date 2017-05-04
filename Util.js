@@ -27,7 +27,7 @@ const FileSys = index.FileSys,
 	DateFormat = index.DateFormat,
 	path = index.path;
 
-var regexURLPerfect = new RegExp(
+exports.regexURLPerfect = new RegExp(
 	"^" +
 		// protocol identifier
 		"(?:(?:https?|ftp)://)" +
@@ -64,7 +64,7 @@ var regexURLPerfect = new RegExp(
 	"$", "i"
 );
 
-var rolePermissions = [
+exports.rolePermissions = [
 	"CREATE_INSTANT_INVITE",
 	"KICK_MEMBERS",
 	"BAN_MEMBERS",
@@ -95,7 +95,7 @@ var rolePermissions = [
 	"MANAGE_EMOJIS"
 ];
 
-var rolePermissionsObj = {
+exports.rolePermissionsObj = {
 	"CREATE_INSTANT_INVITE": true,
 	"KICK_MEMBERS": true,
 	"BAN_MEMBERS": true,
@@ -126,7 +126,7 @@ var rolePermissionsObj = {
 	"MANAGE_EMOJIS": true
 };
 
-var textChannelPermissions = [
+exports.textChannelPermissions = [
 	"CREATE_INSTANT_INVITE",
 	"MANAGE_CHANNEL",
 	"ADD_REACTIONS", // add reactions to messages
@@ -143,7 +143,7 @@ var textChannelPermissions = [
 	"MANAGE_WEBHOOKS"
 ];
 
-var textChannelPermissionsObj = {
+exports.textChannelPermissionsObj = {
 	"ADD_REACTIONS": true, // add reactions to messages
 	"READ_MESSAGES": true,
 	"SEND_MESSAGES": true,
@@ -160,7 +160,7 @@ var textChannelPermissionsObj = {
 	"MANAGE_WEBHOOKS": true
 };
 
-var voiceChannelPermissions = [
+exports.voiceChannelPermissions = [
 	"CONNECT", // connect to voice
 	"SPEAK", // speak on voice
 	"MUTE_MEMBERS", // globally mute members on voice
@@ -173,7 +173,7 @@ var voiceChannelPermissions = [
 	"MANAGE_WEBHOOKS"
 ];
 
-var voiceChannelPermissionsObj = {
+exports.voiceChannelPermissionsObj = {
 	"CONNECT": true, // connect to voice
 	"SPEAK": true, // speak on voice
 	"MUTE_MEMBERS": true, // globally mute members on voice
@@ -186,7 +186,7 @@ var voiceChannelPermissionsObj = {
 	"MANAGE_WEBHOOKS": true
 };
 
-var permissionsOrder = {
+exports.permissionsOrder = {
 	"ADMINISTRATOR": 27,
 	"MANAGE_GUILD": 26,
 	"MANAGE_ROLES": 25,
@@ -219,7 +219,7 @@ var permissionsOrder = {
 	"READ_MESSAGES": 0
 };
 
-var permRating = [
+exports.permRating = [
 	["ADMINISTRATOR", 100],
 	["MANAGE_GUILD", 90],
 	["MANAGE_ROLES", 80],
@@ -739,7 +739,7 @@ exports.print = function(channel) {
 
 exports.sortPerms = function(permsArr) {
 	permsArr.sort(function(a, b) {
-		return permissionsOrder[b] - permissionsOrder[a];
+		return exports.permissionsOrder[b] - exports.permissionsOrder[a];
 	});
 };
 
@@ -1354,7 +1354,7 @@ exports.permEnabled = function(iPerms, permName) {
 exports.getPermRating = function(guild, userOrRole) {
 	if (userOrRole.hasPermission == null) return 0;
 
-	var tempPermRating = Util.cloneObj(permRating);
+	var tempPermRating = Util.cloneObj(exports.permRating);
 
 	var total = 0;
 	var foundTop = false;
@@ -1427,8 +1427,8 @@ exports.strToPerm = function(str) {
 	var matchPerm = null;
 	var matchTop = 0;
 
-	for (var permName in permissionsOrder) {
-		if (!permissionsOrder.hasOwnProperty(permName)) continue;
+	for (var permName in exports.permissionsOrder) {
+		if (!exports.permissionsOrder.hasOwnProperty(permName)) continue;
 		var matchScore = Util.getMatchStrength(permName, str);
 
 		if (matchScore > matchTop) {
