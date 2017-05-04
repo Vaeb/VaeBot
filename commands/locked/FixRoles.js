@@ -22,13 +22,22 @@ module.exports = Cmds.addCommand({
 		var sendNew = {};
 
 		var newRolePerms = ["CHANGE_NICKNAME", "EMBED_LINKS", "SEND_MESSAGES", "READ_MESSAGES", "READ_MESSAGE_HISTORY", "ADD_REACTIONS", "USE_EXTERNAL_EMOJIS", "CONNECT", "SPEAK", "USE_VAD"];
+		var newRolePermsObj = Util.arrayToObj(newRolePerms);
 
 		sendRole.setPermissions(newRolePerms)
 		.catch(error => console.log("\n[E_FixRoles1] " + error));
 
 		guildRoles.forEach(role => {
 			if (role.id == sendRole.id) return;
-			role.setPermissions([])
+			var newPerms = [];
+			var rolePerms = role.serialize();
+			for (var permName in rolePerms) {
+				if (!rolePerms.hasOwnProperty(permName)) continue;
+				if (!newRolePermsObj.hasOwnProperty(permName) && rolePerms[permName] == true) {
+					newPerms.push(permName);
+				}
+			}
+			role.setPermissions(newPerms)
 			.catch(error => console.log("\n[E_FixRoles2] " + error));
 		});
 

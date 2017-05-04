@@ -24,6 +24,15 @@ global.Discord = require("discord.js");
 
 const Auth = require("./Auth.js");
 
+Discord.GuildMember.prototype.getProp = function(p) {
+	if (this[p] != null) return this[p];
+	return this.user[p];
+};
+
+Discord.User.prototype.getProp = function(p) {
+	return this[p];
+};
+
 global.client = new Discord.Client({
 	disabledEvents: ["TYPING_START"],
 	fetchAllMembers: true,
@@ -55,13 +64,6 @@ global.colCommand = 0x2196F3; // Log of command being executed
 var blockedUsers = {};
 
 var runFuncs = [];
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-Discord.GuildMember.prototype.getProp = function(p) {
-	if (this[p] != null) return this[p];
-	return this.user[p];
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 

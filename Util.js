@@ -411,6 +411,15 @@ exports.initRoles = function(sendRole, guild) {
 	});
 };
 
+exports.arrayToObj = function(arr) {
+	var obj = {};
+	for (let i = 0; i < arr.length; i++) {
+		let val = arr[i];
+		obj[val] = true;
+	}
+	return obj;
+};
+
 exports.capitalize = function(str) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.slice(1);
