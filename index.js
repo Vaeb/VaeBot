@@ -181,6 +181,40 @@ function setBriefing() {
 	}, 2000); // Let's wait 2 seconds before starting countdown, just in case of floating point errors triggering multiple countdowns
 }
 
+function setupSecurity() {
+	var veilGuild = client.guilds.get("284746138995785729");
+	if (!veilGuild) return console.log("[ERROR_VP] Veil guild not found!");
+	var newGuild = client.guilds.get("309785618932563968");
+	if (!newGuild) return console.log("[ERROR_VP] New Veil guild not found!");
+	var veilBuyer = veilGuild.roles.find("name", "Buyer");
+	if (!veilBuyer) return console.log("[ERROR_VP] Veil Buyer role not found!");
+	var newBuyer = newGuild.roles.find("name", "Buyer");
+	if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
+
+	console.log("Setting up security");
+
+	newGuild.members.forEach(member => {
+		var veilMember = Util.getMemberById(member.id, veilGuild);
+		if (!veilMember) {
+			console.log("[Auto-Old-Kick 1] User not in Veil");
+			member.kick()
+			.catch(error => console.log("\n[E_AutoOldKick1] " + error));
+			return;
+		}
+		if (!veilMember.roles.has(veilBuyer.id)) {
+			console.log("[Auto-Old-Kick 2] User does not have Buyer role");
+			member.kick()
+			.catch(error => console.log("\n[E_AutoOldKick2] " + error));
+			return;
+		}
+		if (!member.roles.has(newBuyer.id)) {
+			member.addRole(newBuyer)
+			.catch(error => console.log("\n[E_AutoOldAddRole1] " + error));
+			console.log("Updated old member with Buyer role");
+		}
+	});
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 Cmds.initCommands();
@@ -194,6 +228,8 @@ client.on("ready", () => {
 		madeBriefing = true;
 		setBriefing();
 	}
+
+	setupSecurity();
 });
 
 client.on("disconnect", closeEvent => {
@@ -242,10 +278,11 @@ client.on("guildMemberAdd", member => {
 		if (!veilMember.roles.has(veilBuyer.id)) {
 			console.log("[Auto-Kick 2] User does not have Buyer role");
 			member.kick()
-			.catch(error => console.log("\n[E_AutoKick1] " + error));
+			.catch(error => console.log("\n[E_AutoKick2] " + error));
 			return;
 		}
 		var newBuyer = guild.roles.find("name", "Buyer");
+		if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
 		member.addRole(newBuyer)
 		.catch(error => console.log("\n[E_AutoAddRole1] " + error));
 		console.log("Awarded new member with Buyer role");
