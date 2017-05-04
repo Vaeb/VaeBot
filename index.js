@@ -265,30 +265,35 @@ client.on("guildMemberAdd", member => {
 
 	if (guild.id == "309785618932563968") {
 		var veilGuild = client.guilds.get("284746138995785729");
-		if (!veilGuild) return console.log("[ERROR_VP] Veil guild not found!");
-		var veilMember = Util.getMemberById(memberId, veilGuild);
-		if (!veilMember) {
-			console.log("[Auto-Kick 1] User not in Veil");
-			member.kick()
-			.catch(error => console.log("\n[E_AutoKick1] " + error));
-			return;
-		}
 		var veilBuyer = veilGuild.roles.find("name", "Buyer");
-		if (!veilBuyer) return console.log("[ERROR_VP] Veil Buyer role not found!");
-		if (!veilMember.roles.has(veilBuyer.id)) {
-			console.log("[Auto-Kick 2] User does not have Buyer role");
-			member.kick()
-			.catch(error => console.log("\n[E_AutoKick2] " + error));
-			return;
-		}
 		var newBuyer = guild.roles.find("name", "Buyer");
-		if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
-		member.addRole(newBuyer)
-		.catch(error => console.log("\n[E_AutoAddRole1] " + error));
-		console.log("Awarded new member with Buyer role");
+		if (!veilGuild) {
+			console.log("[ERROR_VP] Veil guild not found!");
+		} else if (!veilBuyer) {
+			console.log("[ERROR_VP] Veil Buyer role not found!");
+		} else if (!newBuyer) {
+			console.log("[ERROR_VP] New Buyer role not found!");
+		} else {
+			var veilMember = Util.getMemberById(memberId, veilGuild);
+			if (!veilMember) {
+				console.log("[Auto-Kick 1] User not in Veil");
+				member.kick()
+				.catch(error => console.log("\n[E_AutoKick1] " + error));
+				return;
+			}
+			if (!veilMember.roles.has(veilBuyer.id)) {
+				console.log("[Auto-Kick 2] User does not have Buyer role");
+				member.kick()
+				.catch(error => console.log("\n[E_AutoKick2] " + error));
+				return;
+			}
+			member.addRole(newBuyer)
+			.catch(error => console.log("\n[E_AutoAddRole1] " + error));
+			console.log("Awarded new member with Buyer role");
+		}
 	}
 
-	if (guild.id == "168742643021512705" || guild.id == "284746138995785729" || guild.id == "166601083584643072") {
+	if (Util.getRole("SendMessages", guild)) {
 		var isMuted = Mutes.checkMuted(memberId, guild);
 
 		if (isMuted == true) {
