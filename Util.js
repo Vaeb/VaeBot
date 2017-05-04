@@ -25,7 +25,7 @@ module.exports = Cmds.addCommand({
 
 const FileSys = index.FileSys,
 	DateFormat = index.DateFormat,
-	path = index.path;
+	Path = index.Path;
 
 exports.regexURLPerfect = new RegExp(
 	"^" +
@@ -462,7 +462,7 @@ exports.bulkRequire = (filePath) => {
 };
 
 exports.pathRequire = (filePath) => {
-	let file = path.resolve(filePath);
+	let file = Path.resolve(filePath);
 	delete require.cache[require.resolve(file)];
 
 	let fileData = require(filePath);

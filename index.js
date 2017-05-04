@@ -4,7 +4,9 @@ console.log("\n-STARTING-\n");
 
 exports.FileSys = require("fs");
 exports.DateFormat = require("dateformat");
-exports.path = require("path");
+exports.Request = require("request");
+exports.Urban = require("urban");
+exports.Path = require("path");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -202,6 +204,20 @@ client.on("disconnect", closeEvent => {
 	console.log("Clean: " + closeEvent.wasClean);
 });
 
+client.on("guildMemberRemove", member => {
+	var guild = member.guild;
+
+	var sendLogData = [
+		"User Left",
+		guild,
+		member,
+		{name: "Username", value: member.toString()},
+		{name: "Highest Role", value: member.highestRole.name}
+	];
+
+	Util.sendLog(sendLogData, colUser);
+});
+
 client.on("guildMemberAdd", member => {
 	var guild = member.guild;
 
@@ -233,6 +249,7 @@ client.on("guildMemberAdd", member => {
 		member,
 		{name: "Username", value: member.toString()}
 	];
+	
 	Util.sendLog(sendLogData, colUser);
 });
 
