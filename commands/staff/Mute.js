@@ -16,7 +16,7 @@ module.exports = Cmds.addCommand({
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		var position = Util.getPosition(speaker);
-		if (speaker.id == "264481367545479180") {
+		/*if (speaker.id == "264481367545479180") {
 			var data = Util.getDataFromString(args, [
 				function(str, results) {
 					return Util.getMemberByMixed(str, guild);
@@ -25,7 +25,7 @@ module.exports = Cmds.addCommand({
 			args = speaker.id;
 			if (data[1]) args += (" " + data[1]);
 			position = Infinity;
-		}
+		}*/
 		Mutes.doMute(args, guild, position, channel, speaker);
 	}
 });
