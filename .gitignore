@@ -15,6 +15,10 @@ data/history.json
 data/autoroles.json
 data/playlist.json
 
+# =========================
+# Everything below is .gitignore template
+# =========================
+
 # Miscellaneous
 .tmp/
 .vscode/
