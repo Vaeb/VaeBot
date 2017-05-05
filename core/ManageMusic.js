@@ -3,6 +3,7 @@ const Ytdl = index.Ytdl;
 exports.isPlaying = {};
 exports.songData = {};
 exports.songs = {};
+exports.noPlay = {};
 
 exports.stopMusic = function(guild) {
 	var connection = guild.voiceConnection;
