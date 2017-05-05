@@ -38,7 +38,7 @@ module.exports = Cmds.addCommand({
 
 		target.kick();
 		Util.print(channel, "Kicked", Util.fix(targName), "(" + targId + ") for", Util.fix(reason));
-		if (guild.id == "168742643021512705") dailyKicks.push([targId, targName + "#" + target.discriminator, reason]);
+		if (guild.id == "168742643021512705") index.dailyKicks.push([targId, targName + "#" + target.discriminator, reason]);
 
 		var sendLogData = [
 			"Guild Kick",

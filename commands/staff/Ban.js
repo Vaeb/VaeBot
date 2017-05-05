@@ -39,7 +39,7 @@ module.exports = Cmds.addCommand({
 
 		target.ban();
 		Util.print(channel, "Banned", Util.fix(targName), "(" + targId + ") for", Util.fix(reason));
-		if (guild.id == "168742643021512705") dailyBans.push([targId, targName + "#" + target.discriminator, reason]);
+		if (guild.id == "168742643021512705") index.dailyBans.push([targId, targName + "#" + target.discriminator, reason]);
 
 		var sendLogData = [
 			"Guild Ban",

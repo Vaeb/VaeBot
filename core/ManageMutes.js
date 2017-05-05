@@ -83,7 +83,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	var timeRemaining = Util.historyToString(muteTime);
 	if (guild.id == "168742643021512705") {
-		dailyMutes.push([id, muteName + "#" + targetMember.discriminator, reason, timeRemaining]);
+		index.dailyMutes.push([id, muteName + "#" + targetMember.discriminator, reason, timeRemaining]);
 	}
 
 	// Embed mute information in channel
