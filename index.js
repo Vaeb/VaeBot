@@ -66,7 +66,8 @@ global.colUser = 0x4CAF50; // Log of member change
 global.colMessage = 0xFFEB3B; // Log of message change
 global.colCommand = 0x2196F3; // Log of command being executed
 
-var blockedUsers = {};
+exports.blockedUsers = {};
+exports.blockedWords = [];
 
 var runFuncs = [];
 
@@ -412,8 +413,8 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 
 	var oldContent = oldMsgObj.content;
 
-	for (var i = 0; i < blockedWords.length; i++) {
-		if (lcontent.includes(blockedWords[i].toLowerCase())) {
+	for (var i = 0; i < exports.blockedWords.length; i++) {
+		if (lcontent.includes(exports.blockedWords[i].toLowerCase())) {
 			newMsgObj.delete();
 			return;
 		}
@@ -511,7 +512,7 @@ client.on("message", msgObj => {
 
 	var isStaff = (guild && speaker) ? isStaff = Util.checkStaff(guild, speaker) : authorId == vaebId;
 
-	if (blockedUsers[authorId]) {
+	if (exports.blockedUsers[authorId]) {
 		msgObj.delete();
 		return;
 	}
