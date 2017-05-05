@@ -196,23 +196,25 @@ function setupSecurity() {
 	console.log("Setting up security");
 
 	newGuild.members.forEach(member => {
-		var veilMember = Util.getMemberById(member.id, veilGuild);
+		var memberId = member.id;
+		var memberName = Util.getFullName(member);
+		var veilMember = Util.getMemberById(memberId, veilGuild);
 		if (!veilMember) {
-			console.log("[Auto-Old-Kick 1] User not in Veil");
+			console.log("[Auto-Old-Kick 1] User not in Veil: " + memberName);
 			member.kick()
-			.catch(error => console.log("\n[E_AutoOldKick1] " + error));
+			.catch(error => console.log("\n[E_AutoOldKick1] " + memberName + " | " + error));
 			return;
 		}
 		if (!veilMember.roles.has(veilBuyer.id)) {
-			console.log("[Auto-Old-Kick 2] User does not have Buyer role");
+			console.log("[Auto-Old-Kick 2] User does not have Buyer role: " + memberName);
 			member.kick()
-			.catch(error => console.log("\n[E_AutoOldKick2] " + error));
+			.catch(error => console.log("\n[E_AutoOldKick2] " + memberName + " | " + error));
 			return;
 		}
 		if (!member.roles.has(newBuyer.id)) {
 			member.addRole(newBuyer)
-			.catch(error => console.log("\n[E_AutoOldAddRole1] " + error));
-			console.log("Updated old member with Buyer role");
+			.catch(error => console.log("\n[E_AutoOldAddRole1] " + memberName + " | " + error));
+			console.log("Updated old member with Buyer role: " + memberName);
 		}
 	});
 }
@@ -261,7 +263,7 @@ client.on("guildMemberAdd", member => {
 
 	var guildName = guild.name;
 	var memberId = member.id;
-	var memberName = Util.getName(member);
+	var memberName = Util.getFullName(member);
 
 	console.log("User joined: " + memberName + " (" + memberId + ")" + " @ " + guildName);
 
@@ -278,13 +280,13 @@ client.on("guildMemberAdd", member => {
 		} else {
 			var veilMember = Util.getMemberById(memberId, veilGuild);
 			if (!veilMember) {
-				console.log("[Auto-Kick 1] User not in Veil");
+				console.log("[Auto-Kick 1] User not in Veil: " + memberName);
 				member.kick()
 				.catch(error => console.log("\n[E_AutoKick1] " + error));
 				return;
 			}
 			if (!veilMember.roles.has(veilBuyer.id)) {
-				console.log("[Auto-Kick 2] User does not have Buyer role");
+				console.log("[Auto-Kick 2] User does not have Buyer role: " + memberName);
 				member.kick()
 				.catch(error => console.log("\n[E_AutoKick2] " + error));
 				return;
