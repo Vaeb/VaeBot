@@ -398,6 +398,91 @@ client.on("guildMemberUpdate", (oldMember, member) => {
 	}
 });
 
+client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
+	if (newMsgObj == null) return;
+	var channel = newMsgObj.channel;
+	if (channel.name == "vaebot-log") return;
+	var guild = newMsgObj.guild;
+	var speaker = newMsgObj.member;
+	var author = newMsgObj.author;
+	var content = newMsgObj.content;
+	var lcontent = content.toLowerCase();
+	var isStaff = author.id == vaebId;
+	var msgId = newMsgObj.id;
+
+	var oldContent = oldMsgObj.content;
+
+	for (var i = 0; i < blockedWords.length; i++) {
+		if (lcontent.includes(blockedWords[i].toLowerCase())) {
+			newMsgObj.delete();
+			return;
+		}
+	}
+
+	if (oldContent != content) {
+		var sendLogData = [
+			"Message Updated",
+			guild,
+			author,
+			{name: "Username", value: author.toString()},
+			{name: "Channel Name", value: channel.toString()},
+			{name: "Old Message", value: oldContent},
+			{name: "New Message", value: content}
+		];
+		Util.sendLog(sendLogData, colMessage);
+	}
+});
+
+exports.lockChannel = null;
+
+client.on("voiceStateUpdate", (oldMember, member) => {
+	var oldChannel = oldMember.voiceChannel; // May be null
+	var newChannel = member.voiceChannel; // May be null
+
+	var oldChannelId = oldChannel ? oldChannel.id : null;
+	var newChannelId = newChannel ? newChannel.id : null;
+
+	var guild = member.guild;
+
+	if (member.id == selfId) {
+		var member = Util.getMemberById(member.id, guild);
+
+		if (member.serverMute) {
+			member.setMute(false);
+			console.log("Force removed server-mute from bot");
+		}
+
+		if (exports.lockChannel != null && oldChannelId == exports.lockChannel && newChannelId != exports.lockChannel) {
+			console.log("Force re-joined locked channel");
+			oldChannel.join();
+		}
+	}
+});
+
+client.on("messageDelete", msgObj => {
+	if (msgObj == null) return;
+	var channel = msgObj.channel;
+	var guild = msgObj.guild;
+	var speaker = msgObj.member;
+	var author = msgObj.author;
+	var content = msgObj.content;
+	var lcontent = content.toLowerCase();
+	var isStaff = author.id == vaebId;
+	var msgId = msgObj.id;
+
+	if (author.id == vaebId) return;
+
+	var sendLogData = [
+		"Message Deleted",
+		guild,
+		author,
+		{name: "Username", value: author.toString()},
+		{name: "Channel Name", value: channel.toString()},
+		{name: "Message", value: content}
+	];
+	Util.sendLog(sendLogData, colMessage);
+});
+
 var messageStamps = {};
 var userStatus = {};
 var lastWarn = {};
