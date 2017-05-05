@@ -15,6 +15,7 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
+		var position = Util.getPosition(speaker);
 		if (speaker.id == "264481367545479180") {
 			var data = Util.getDataFromString(args, [
 				function(str, results) {
@@ -23,7 +24,8 @@ module.exports = Cmds.addCommand({
 			], true);
 			args = speaker.id;
 			if (data[1]) args += (" " + data[1]);
+			position = Infinity;
 		}
-		Mutes.doMute(args, guild, Util.getPosition(speaker), channel, speaker);
+		Mutes.doMute(args, guild, position, channel, speaker);
 	}
 });
