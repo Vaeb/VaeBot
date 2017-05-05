@@ -403,9 +403,9 @@ exports.initRoles = function(sendRole, guild) {
 	var members = guild.members;
 
 	members.forEach((member, id) => {
-		if (!Util.hasRole(member, sendRole)) {
+		if (!exports.hasRole(member, sendRole)) {
 			member.addRole(sendRole)
-			.then(() => console.log("Assigned role to " + Util.getName(member)))
+			.then(() => console.log("Assigned role to " + exports.getName(member)))
 			.catch(error => console.log("\n[E_InitRoles] addRole: " + error));
 		}
 	});
@@ -452,7 +452,7 @@ exports.safeEveryone = function(str) {
 };
 
 exports.fix = function(str) {
-	return ("`" + Util.safe(str) + "`");
+	return ("`" + exports.safe(str) + "`");
 };
 
 exports.toFixedCut = function(num, decimals) {
@@ -515,7 +515,7 @@ exports.checkStaff = function(guild, member) {
 };
 
 exports.commandFailed = function(channel, speaker, message) {
-	Util.sendEmbed(channel, "Command Failed", message, Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+	exports.sendEmbed(channel, "Command Failed", message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
 	return false;
 };
 
@@ -594,7 +594,7 @@ exports.cloneObj = function(obj) {
 		copy = [];
 		var len = obj.length;
 		for (var i = 0; i < len; i++) {
-			copy[i] = Util.cloneObj(obj[i]);
+			copy[i] = exports.cloneObj(obj[i]);
 		}
 		return copy;
 	}
@@ -602,7 +602,7 @@ exports.cloneObj = function(obj) {
 	if (obj instanceof Object) {
 		copy = {};
 		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = Util.cloneObj(obj[attr]);
+			if (obj.hasOwnProperty(attr)) copy[attr] = exports.cloneObj(obj[attr]);
 		}
 		return copy;
 	}
@@ -614,10 +614,10 @@ exports.formatTime = function(time) {
 	var timeStr;
 	var formatStr;
 
-	var numSeconds = Util.round(time/1000, 1);
-	var numMinutes = Util.round(time/60000, 0.1);
-	var numHours = Util.round(time/3600000, 0.1);
-	var numDays = Util.round(time/86400000, 0.1);
+	var numSeconds = exports.round(time/1000, 1);
+	var numMinutes = exports.round(time/60000, 0.1);
+	var numHours = exports.round(time/3600000, 0.1);
+	var numDays = exports.round(time/86400000, 0.1);
 
 	if (numSeconds < 60) {
 		timeStr = numSeconds.toFixed(0);
@@ -666,7 +666,7 @@ exports.cutStringSafe = function(msg, postMsg, lastIsOpener) { //Tries to cut th
 };
 
 exports.fixMessageLengthNew = function(msg) {
-	let argsFixed = Util.chunkString(msg, 2000); //Group string into sets of 2k chars
+	let argsFixed = exports.chunkString(msg, 2000); //Group string into sets of 2k chars
 	//argsFixed.forEach(o => console.log("---\n" + o));
 	let totalBlocks = 0; //Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
 	for (let i = 0; i < argsFixed.length; i++) {
@@ -685,7 +685,7 @@ exports.fixMessageLengthNew = function(msg) {
 		}
 		let nextMsg = passOver + (argsFixed[i+1] != null ? argsFixed[i+1] : ""); //Message for next chunk (or empty string if none)
 		if (nextMsg != "" && nextMsg[0] != "\n" && msg.includes("\n")) { //If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
-			let cutData = Util.cutStringSafe(msg, "", lastIsOpener);
+			let cutData = exports.cutStringSafe(msg, "", lastIsOpener);
 			msg = cutData[0];
 			passOver = cutData[1] + passOver;
 		}
@@ -742,7 +742,7 @@ exports.fixMessageLengthNew = function(msg) {
 }*/
 
 exports.splitMessages = function(messages) {
-	var fixed = Util.fixMessageLengthNew(messages.join(" "));
+	var fixed = exports.fixMessageLengthNew(messages.join(" "));
 	return fixed;
 };
 
@@ -751,7 +751,7 @@ var ePrint = error => console.log("\n[E_Print] " + error);
 exports.print = function(channel) {
 	var args = Array.from(arguments);
 	args.splice(0, 1);
-	var messages = Util.splitMessages(args);
+	var messages = exports.splitMessages(args);
 	for (var i = 0; i < messages.length; i++) {
 		channel.send(messages[i])
 		.catch(ePrint);
@@ -793,11 +793,11 @@ exports.getDisplayName = function(member) {
 };
 
 exports.getMostName = function(user) {
-	return Util.getName(user) + "#" + user.getProp("discriminator");
+	return exports.getName(user) + "#" + user.getProp("discriminator");
 };
 
 exports.getFullName = function(user) {
-	return user != null ? (Util.getMostName(user) + " (" + user.id + ")") : "null";
+	return user != null ? (exports.getMostName(user) + " (" + user.id + ")") : "null";
 };
 
 exports.getMention = function(obj) {
@@ -805,7 +805,7 @@ exports.getMention = function(obj) {
 };
 
 exports.getAvatar = function(user, outStr) {
-	return (user != null && Util.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr == true ? "null" : null);
+	return (user != null && exports.isObject(user)) ? (user.avatarURL || (user.user ? user.user.avatarURL : null)) : (outStr == true ? "null" : null);
 };
 
 exports.getDateString = function(d) {
@@ -817,9 +817,9 @@ exports.hasRole = function(member, role) {
 };
 
 exports.makeEmbedFooter = function(user) {
-	var memberName = Util.isObject(user) ? Util.getDisplayName(user) : String(user);
-	var dateStr = Util.getDateString(new Date());
-	return {text: memberName + " | " + dateStr, icon_url: Util.getAvatar(user)};
+	var memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
+	var dateStr = exports.getDateString(new Date());
+	return {text: memberName + " | " + dateStr, icon_url: exports.getAvatar(user)};
 };
 
 /*
@@ -858,7 +858,7 @@ exports.setFieldValue = function(embFields, nowFieldNum, nowString) {
 	nowField.value = subFirst;
 	var newFieldNum = nowFieldNum+1;
 	embFields.splice(newFieldNum, 0, {name: "​", value: "", inline: nowField.inline});
-	return Util.setFieldValue(embFields, newFieldNum, subNext);
+	return exports.setFieldValue(embFields, newFieldNum, subNext);
 };
 
 /*
@@ -894,15 +894,15 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 		var nowName = nowField.name;
 		var nowValue = nowField.value;
 
-		nowName = Util.safeEveryone(String(nowName == null ? "N/A" : nowName));
-		nowValue = Util.safeEveryone(String(nowValue == null ? "N/A" : nowValue));
+		nowName = exports.safeEveryone(String(nowName == null ? "N/A" : nowName));
+		nowValue = exports.safeEveryone(String(nowValue == null ? "N/A" : nowValue));
 
 		nowField.name = nowName.trim().length < 1 ? "N/A" : nowName.substr(0, 256);
 
 		if (nowValue.trim().length < 1) {
 			nowField.value = "N/A";
 		} else if (nowValue.length > 512) {
-			i = Util.setFieldValue(embFields, i, nowValue);
+			i = exports.setFieldValue(embFields, i, nowValue);
 		} else {
 			nowField.value = nowValue;
 		}
@@ -916,10 +916,10 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 
 	if (embTitle) newTitle = embTitle.substr(0, 256);
 	if (embFooter) {
-		if (!Util.isObject(embFooter)) {
+		if (!exports.isObject(embFooter)) {
 			embFooter = {text: embFooter};
 		}
-		newFooter = Util.cloneObj(embFooter);
+		newFooter = exports.cloneObj(embFooter);
 		newFooter.text = (newFooter.text).substr(0, 2048);
 	}
 
@@ -949,7 +949,7 @@ exports.sendEmbed = function(embChannel, embTitle, embDesc, embFooter, embImage,
 	});
 
 	if (manyFields) {
-		Util.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
+		exports.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
 	}
 };
 
@@ -973,10 +973,10 @@ exports.sendDescEmbed = function(embChannel, embTitle, embDesc, embFooter, embIm
 			subFirst = embDesc.substring(0, lastNewline);
 			subNext = embDesc.substring(lastNewline+1);
 		}
-		Util.sendEmbed(embChannel, embTitle, subFirst, null, embImage, embColor, []);
-		Util.sendDescEmbed(embChannel, null, subNext, embFooter, embImage, embColor);
+		exports.sendEmbed(embChannel, embTitle, subFirst, null, embImage, embColor, []);
+		exports.sendDescEmbed(embChannel, null, subNext, embFooter, embImage, embColor);
 	} else {
-		Util.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, []);
+		exports.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, []);
 	}
 };
 
@@ -986,13 +986,13 @@ exports.sendLog = function(embData, embColor) {
 	var embAuthor = embData[2];
 	var embFields = embData.splice(3);
 
-	var embChannel = Util.findChannel("vaebot-log", embGuild);
+	var embChannel = exports.findChannel("vaebot-log", embGuild);
 	if (embChannel == null) return;
 
-	var embFooter = Util.makeEmbedFooter(embAuthor);
-	var embAvatar = Util.getAvatar(embAuthor);
+	var embFooter = exports.makeEmbedFooter(embAuthor);
+	var embAvatar = exports.getAvatar(embAuthor);
 
-	Util.sendEmbed(
+	exports.sendEmbed(
 		embChannel,
 		embTitle,
 		null,
@@ -1044,8 +1044,8 @@ exports.getDayStr = function(d) {
 	}
 	name = name.toLowerCase()
 	var user = array.find(function(item) {
-		var user = Util.getName(item);
-		if (checkPartial != false ? Util.safe(user.toLowerCase()).includes(name) : Util.safe(user.toLowerCase()) == name) {
+		var user = exports.getName(item);
+		if (checkPartial != false ? exports.safe(user.toLowerCase()).includes(name) : exports.safe(user.toLowerCase()) == name) {
 			return true;
 		}
 		return false;
@@ -1056,8 +1056,8 @@ exports.getDayStr = function(d) {
 exports.searchUserPartial = function(col, name) {
 	name = name.toLowerCase();
 	return col.find(function(member) {
-		var userName = Util.getName(member);
-		if (member.id == name || Util.safe(userName.toLowerCase()).includes(name)) {
+		var userName = exports.getName(member);
+		if (member.id == name || exports.safe(userName.toLowerCase()).includes(name)) {
 			return true;
 		}
 		return false;
@@ -1083,7 +1083,7 @@ exports.getHistory = function(id, guild) {
 };
 
 exports.historyToString = function(num) {
-	var timeHours = Util.round(num/3600000, 0.1);
+	var timeHours = exports.round(num/3600000, 0.1);
 	timeHours = (timeHours >= 1 || timeHours == 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
 	return timeHours + (timeHours == 1 ? " hour" : " hours");
 };
@@ -1096,7 +1096,7 @@ exports.getSafeId = function(id) {
 
 exports.getMemberById = function(id, guild) {
 	if (guild == null || id == null) return;
-	if (id.substr(0, 1) == "<" && id.substr(id.length-1, 1) == ">") id = Util.getSafeId(id);
+	if (id.substr(0, 1) == "<" && id.substr(id.length-1, 1) == ">") id = exports.getSafeId(id);
 	if (id == null || id.length < 1) return;
 	var members = guild.members;
 	return members.find(member => {
@@ -1144,14 +1144,14 @@ exports.getMemberByName = function(name, guild) { // [v2.0] Visible name match, 
 	members.forEach((member, id) => {
 		var value = 0;
 
-		var realName = member.nickname != null ? member.nickname : Util.getName(member);
+		var realName = member.nickname != null ? member.nickname : exports.getName(member);
 		var realstr2Lower = realName.toLowerCase();
 		var nameMatch = realstr2Lower.indexOf(str2Lower);
 
 		if (nameMatch >= 0) {
 			value += Math.pow(2, 4);
 		} else {
-			realName = Util.getName(member);
+			realName = exports.getName(member);
 			realstr2Lower = realName.toLowerCase();
 			nameMatch = realstr2Lower.indexOf(str2Lower);
 			if (nameMatch >= 0) {
@@ -1264,13 +1264,13 @@ exports.toBoolean = function(str) {
 exports.getNum = function(str, min, max) {
 	var num = Number(str);
 	if (isNaN(num)) return;
-	return Util.clamp(num, min, max);
+	return exports.clamp(num, min, max);
 };
 
 exports.getInt = function(str, min, max) {
 	var num = parseInt(str);
 	if (isNaN(num)) return;
-	return Util.clamp(num, min, max);
+	return exports.clamp(num, min, max);
 };
 
 exports.isTextChannel = function(channel) {
@@ -1292,7 +1292,7 @@ exports.getVoiceChannels = function(guild) {
 exports.findChannel = function(name, guild) {
 	if (guild == null) return;
 	name = name.toLowerCase();
-	var channels = Util.getTextChannels(guild);
+	var channels = exports.getTextChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
@@ -1301,7 +1301,7 @@ exports.findChannel = function(name, guild) {
 exports.findVoiceChannel = function(name, guild) {
 	if (guild == null) return;
 	name = name.toLowerCase();
-	var channels = Util.getVoiceChannels(guild);
+	var channels = exports.getVoiceChannels(guild);
 	return channels.find(nowChannel => {
 		return nowChannel.id == name || nowChannel.name.toLowerCase() == name;
 	});
@@ -1322,7 +1322,7 @@ exports.getHighestRole = function(member) {
 };
 
 exports.getPosition = function(speaker) {
-	if (speaker == null || !Util.isObject(speaker)) return;
+	if (speaker == null || !exports.isObject(speaker)) return;
 	var roles = speaker.roles;
 	if (speaker.id == speaker.guild.ownerID) return 999999999;
 	return speaker.highestRole.position;
@@ -1333,33 +1333,33 @@ exports.getUserById = function(id) {
 };
 
 exports.getUserByName = function(name) {
-	return Util.searchUserPartial(client.users, name);
+	return exports.searchUserPartial(client.users, name);
 };
 
 exports.getUserByMixed = function(name) {
-	var user = Util.getUserById(name);
-	if (user == null) user = Util.getUserByName(name);
+	var user = exports.getUserById(name);
+	if (user == null) user = exports.getUserByName(name);
 	return user;
 };
 
 exports.getMemberByMixed = function(name, guild) {
 	if (guild == null) return;
-	var targetMember = Util.getMemberById(name, guild);
-	if (targetMember == null) targetMember = Util.getMemberByName(name, guild);
+	var targetMember = exports.getMemberById(name, guild);
+	if (targetMember == null) targetMember = exports.getMemberByName(name, guild);
 	return targetMember;
 };
 
 exports.getMemberOrRoleByMixed = function(name, guild) {
 	if (guild == null) return;
-	var targetObj = Util.getRole(name, guild);
-	if (targetObj == null) targetObj = Util.getMemberById(name, guild);
-	if (targetObj == null) targetObj = Util.getMemberByName(name, guild);
+	var targetObj = exports.getRole(name, guild);
+	if (targetObj == null) targetObj = exports.getMemberById(name, guild);
+	if (targetObj == null) targetObj = exports.getMemberByName(name, guild);
 	return targetObj;
 };
 
 exports.getEitherByMixed = function(name, guild) {
-	var user = Util.getMemberByMixed(name, guild);
-	if (user == null) user = Util.getUserByMixed(name);
+	var user = exports.getMemberByMixed(name, guild);
+	if (user == null) user = exports.getUserByMixed(name);
 	return user;
 };
 
@@ -1376,7 +1376,7 @@ exports.permEnabled = function(iPerms, permName) {
 exports.getPermRating = function(guild, userOrRole) {
 	if (userOrRole.hasPermission == null) return 0;
 
-	var tempPermRating = Util.cloneObj(exports.permRating);
+	var tempPermRating = exports.cloneObj(exports.permRating);
 
 	var total = 0;
 	var foundTop = false;
@@ -1433,7 +1433,7 @@ exports.getMemberPowers = function(guild) {
 	var members = guild.members;
 	for (var i = 0; i < members.size; i++) {
 		var member = members[i];
-		var power = Util.getPermRating(guild, member);
+		var power = exports.getPermRating(guild, member);
 		var index = 0;
 		for (index = 0; index < sorted.length; index++) {
 			if (power >= sorted[index][1]) break;
@@ -1451,7 +1451,7 @@ exports.strToPerm = function(str) {
 
 	for (var permName in exports.permissionsOrder) {
 		if (!exports.permissionsOrder.hasOwnProperty(permName)) continue;
-		var matchScore = Util.getMatchStrength(permName, str);
+		var matchScore = exports.getMatchStrength(permName, str);
 
 		if (matchScore > matchTop) {
 			matchTop = matchScore;
@@ -1470,7 +1470,7 @@ exports.setChannelPerms = function(channel, userOrRole, newPerms) {
 exports.query = function(msg, speaker, channel, func) {
 	var qNum = "[" + nQ + "]";
 	var qMsg = qNum + " " + msg;
-	Util.print(channel, qMsg);
+	exports.print(channel, qMsg);
 	queries.push([qNum, speaker.id, func, qMsg]);
 	nQ++;
 };
@@ -1499,7 +1499,7 @@ exports.onFetch = function(messages, channel, left, store) {
 exports.updateMessageCache = function(channel, speaker) {
 	exports.fetchMessagesEx(channel, 100, [], channel.messages[0]).then(() => {
 		if (speaker) {
-			Util.sendDescEmbed(channel, "Message Cache", "Refreshed", Util.makeEmbedFooter(speaker), null, 0x00E676);
+			exports.sendDescEmbed(channel, "Message Cache", "Refreshed", exports.makeEmbedFooter(speaker), null, 0x00E676);
 		}
 	});
 }

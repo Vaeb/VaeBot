@@ -19,7 +19,7 @@ exports.guildSaveData = function(obj, retry) {
 	FileSys.writeFile(objPath, JSON.stringify(obj), (err) => {
 		if (err) {
 			console.log("Error saving " + objName + ": " + err);
-			if (!retry) Data.guildSaveData(obj, true);
+			if (!retry) exports.guildSaveData(obj, true);
 		} else {
 			console.log("Saved: " + objName);
 		}
@@ -35,14 +35,14 @@ exports.guildGet = function(guild, obj, index) {
 exports.guildSet = function(guild, obj, index, value) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	obj[guild.id][index] = value;
-	Data.guildSaveData(obj);
+	exports.guildSaveData(obj);
 };
 
 exports.guildDelete = function(guild, obj, index) {
 	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
 	if (obj[guild.id].hasOwnProperty(index)) {
 		delete obj[guild.id][index];
-		Data.guildSaveData(obj);
+		exports.guildSaveData(obj);
 	}
 };
 
