@@ -59,7 +59,7 @@ exports.playNextQueue = function(guild, channel, doPrint) {
 	console.log("Playing Next Queue");
 	if (doPrint == null) doPrint = true;
 	var realSongs = exports.songs[guild.id];
-	var autoPlaylist = Data.guildGet(guild, playlist);
+	var autoPlaylist = Data.guildGet(guild, Data.playlist);
 	console.log("\nrealSongs");
 	console.log(realSongs.length);
 	console.log("-------Playing Next Queue---------");
@@ -75,7 +75,7 @@ exports.playNextQueue = function(guild, channel, doPrint) {
 };
 
 exports.playNextAuto = function(guild, channel, doPrint) {
-	var autoPlaylist = Data.guildGet(guild, playlist);
+	var autoPlaylist = Data.guildGet(guild, Data.playlist);
 	if (!autoPlaylist.hasOwnProperty("songs") || autoPlaylist.songs.length === 0) {
 		exports.stopMusic(guild);
 		return;
@@ -89,7 +89,7 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 	/*var newSongNum = songNum+1;
 	if (newSongNum >= autoSongs.length) newSongNum = 0;
 	autoPlaylist.songNum = newSongNum;
-	Data.guildSaveData(playlist);*/
+	Data.guildSaveData(Data.playlist);*/
 	console.log("Playing Next Auto");
 	var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
 	realSongData.nowVideo = video;
@@ -139,7 +139,7 @@ exports.streamAudio = function(remote, guild, channel) {
 			}
 
 			if (voiceChannel.members.size > 1) {
-				var autoPlaylist = Data.guildGet(guild, playlist);
+				var autoPlaylist = Data.guildGet(guild, Data.playlist);
 				if (realSongs.length === 0 && realSongData.isAuto === true) {
 					console.log("Track Ended, Playing Next Auto");
 					exports.playNextAuto(guild, channel);
