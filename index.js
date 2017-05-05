@@ -6,7 +6,10 @@ exports.FileSys = require("fs");
 exports.DateFormat = require("dateformat");
 exports.Request = require("request");
 exports.Urban = require("urban");
+exports.Ytdl = require("ytdl-core");
 exports.Path = require("path");
+const YtInfoObj = require("youtube-node");
+exports.YtInfo = new YtInfoObj();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +26,8 @@ global.Cmds = require("./core/ManageCommands.js");
 global.Discord = require("discord.js");
 
 const Auth = require("./Auth.js");
+
+exports.YtInfo.setKey(Auth.youtube);
 
 Discord.GuildMember.prototype.getProp = function(p) {
 	if (this[p] != null) return this[p];

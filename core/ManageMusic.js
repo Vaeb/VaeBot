@@ -1,3 +1,5 @@
+const Ytdl = index.Ytdl;
+
 exports.isPlaying = {};
 exports.songData = {};
 exports.songs = {};
@@ -22,7 +24,7 @@ exports.stopMusic = function(guild) {
 
 exports.clearQueue = function(guild) {
 	exports.songs[guild.id] = [];
-	return Music.stopMusic(guild);
+	return exports.stopMusic(guild);
 };
 
 exports.chooseRandomSong = function(guild, autoPlaylist, lastId) {
@@ -31,7 +33,7 @@ exports.chooseRandomSong = function(guild, autoPlaylist, lastId) {
 	var video = newSong[0];
 	var songId = typeof(video.id) == "object" ? video.id.videoId : video.id;
 	if (autoSongs.length > 1 && songId == lastId) {
-		return Music.chooseRandomSong(guild, autoPlaylist, lastId);
+		return exports.chooseRandomSong(guild, autoPlaylist, lastId);
 	} else {
 		return newSong;
 	}
@@ -48,7 +50,7 @@ exports.playRealSong = function(newSong, guild, channel, doPrint) {
 	realSongData.nowAuthor = author;
 	realSongData.voteSkips = [];
 	realSongData.isAuto = false;
-	Music.streamAudio(videoId, guild, channel);
+	exports.streamAudio(videoId, guild, channel);
 	if (doPrint) Util.sendDescEmbed(channel, "Playing " + video.snippet.title, "Added by " + Util.safeEveryone(author.toString()), Util.makeEmbedFooter(author), null, 0x00E676);
 };
 
@@ -62,25 +64,25 @@ exports.playNextQueue = function(guild, channel, doPrint) {
 	console.log("-------Playing Next Queue---------");
 	if (realSongs.length > 0) {
 		var newSong = realSongs[0];
-		Music.playRealSong(newSong, guild, channel, doPrint);
+		exports.playRealSong(newSong, guild, channel, doPrint);
 	} else if (autoPlaylist.hasOwnProperty("songs") && autoPlaylist.songs.length > 0) {
 		console.log("Playing Next Queue, Playing Next Auto");
-		Music.playNextAuto(guild, channel, true);
+		exports.playNextAuto(guild, channel, true);
 	} else {
-		Music.stopMusic(guild);
+		exports.stopMusic(guild);
 	}
 };
 
 exports.playNextAuto = function(guild, channel, doPrint) {
 	var autoPlaylist = Data.guildGet(guild, playlist);
 	if (!autoPlaylist.hasOwnProperty("songs") || autoPlaylist.songs.length === 0) {
-		Music.stopMusic(guild);
+		exports.stopMusic(guild);
 		return;
 	}
 	var realSongData = exports.songData[guild.id];
 	var lastId = "";
 	if (realSongData.isAuto === true) lastId = typeof(realSongData.nowVideo.id) == "object" ? realSongData.nowVideo.id.videoId : realSongData.nowVideo.id;
-	var newSong = Music.chooseRandomSong(guild, autoPlaylist, lastId);
+	var newSong = exports.chooseRandomSong(guild, autoPlaylist, lastId);
 	var video = newSong[0];
 	var author = newSong[1];
 	/*var newSongNum = songNum+1;
@@ -93,7 +95,7 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 	realSongData.nowAuthor = author;
 	realSongData.voteSkips = [];
 	realSongData.isAuto = true;
-	Music.streamAudio(videoId, guild, channel);
+	exports.streamAudio(videoId, guild, channel);
 	if (doPrint) Util.sendDescEmbed(channel, "[Auto-Playlist-Started]", "Playing " + video.snippet.title, Util.makeEmbedFooter(null), null, 0x00E676);
 };
 
@@ -111,12 +113,16 @@ exports.streamAudio = function(remote, guild, channel) {
 	}
 
 	console.log("Streaming Audio: " + remote);
-	const streamOptions = {seek: 0, volume: 1, passes: 1};
+	// const streamOptions = {seek: 0, volume: 1, passes: 1};
 
-	const stream = yt(remote, {filter: 'audioonly'});
-	const dispatcher = connection.playStream(stream, streamOptions);
+	const stream = Ytdl(remote, {filter: 'audioonly'});
+	const dispatcher = connection.playStream(stream);
 
 	exports.isPlaying[guild.id] = true;
+
+	dispatcher.on("error", error => {
+		console.log(error);
+	});
 
 	dispatcher.on("end", reason => {
 		if (reason == "NewStreamAudio" || reason == "StopMusic") return;
@@ -135,12 +141,12 @@ exports.streamAudio = function(remote, guild, channel) {
 				var autoPlaylist = Data.guildGet(guild, playlist);
 				if (realSongs.length === 0 && realSongData.isAuto === true) {
 					console.log("Track Ended, Playing Next Auto");
-					Music.playNextAuto(guild, channel);
+					exports.playNextAuto(guild, channel);
 				} else {
-					Music.playNextQueue(guild, channel, true);
+					exports.playNextQueue(guild, channel, true);
 				}
 			} else {
-				Music.stopMusic(guild);
+				exports.stopMusic(guild);
 				Util.print(channel, "Auto stopping audio | No users in voice");
 			}
 		}
@@ -170,7 +176,7 @@ exports.addSong = function(speaker, guild, channel, video) {
 	var realSongs = exports.songs[guild.id];
 	realSongs.push([video, speaker]);
 	if (realSongs.length <= 1 || exports.songData[guild.id].isAuto === true) {
-		Music.playNextQueue(guild, channel, true);
+		exports.playNextQueue(guild, channel, true);
 	} else {
 		Util.sendDescEmbed(channel, "[" + realSongs.length + "] Audio Queue Appended", video.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
 	}
