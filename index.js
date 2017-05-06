@@ -93,7 +93,7 @@ function setBriefing() {
 
 		console.log("Set daily briefing for " + t3*msToHours + " hours");
 
-		client.setTimeout(function() {
+		setTimeout(function() {
 			var upField = {name: "​", value: "​", inline: false};
 			var muteField = {name: "Mutes", value: "No mutes today", inline: false};
 			//var rightField = {name: "​", value: "​"}
