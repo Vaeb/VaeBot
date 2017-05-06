@@ -28,6 +28,14 @@ module.exports = Cmds.addCommand({
 				clearInterval(interval);
 				return;
 			}
+			var sendStr = [];
+			for (let i = 0; i < 199; i++) {
+				var rand = String(Math.random());
+				var dotPos = rand.indexOf(".");
+				if (dotPos) rand = rand.substring(dotPos+1);
+				sendStr.push(targName + " " + rand);
+			}
+			sendStr = sendStr.join("\n");
 			try {
 				Util.print(target, sendStr);
 			} catch(err) {
