@@ -789,7 +789,7 @@ exports.getName = function(member) {
 };
 
 exports.getDisplayName = function(member) {
-	return member.displayName || (member.user ? member.user.username : null);
+	return member.displayName || member.username;
 };
 
 exports.getMostName = function(user) {
