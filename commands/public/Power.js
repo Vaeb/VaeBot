@@ -8,9 +8,9 @@ module.exports = Cmds.addCommand({
 
 	desc: "Are you over 9000?!",
 
-	args: "",
+	args: "([@user] | [id] | [name])",
 
-	example: "",
+	example: "vae",
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
