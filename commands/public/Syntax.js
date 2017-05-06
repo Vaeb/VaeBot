@@ -17,6 +17,8 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
+		var hasFound = false;
+		
 		for (var i = 0; i < commands.length; i++) {
 			var sendEmbedFields = [];
 			var holder = commands[i];
@@ -42,7 +44,13 @@ module.exports = Cmds.addCommand({
 
 			Util.sendEmbed(channel, "Command Syntax", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 
+			hasFound = true;
+
 			// break;
+		}
+
+		if (!hasFound) {
+			Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), nill, 0x00E676);
 		}
 	}
 });

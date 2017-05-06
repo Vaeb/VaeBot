@@ -10,6 +10,7 @@ exports.Ytdl = require("ytdl-core");
 exports.Path = require("path");
 const YtInfoObj = require("youtube-node");
 exports.YtInfo = new YtInfoObj();
+exports.NodeOpus = require("node-opus");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
