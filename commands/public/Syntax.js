@@ -50,7 +50,7 @@ module.exports = Cmds.addCommand({
 		}
 
 		if (!hasFound) {
-			Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), nill, 0x00E676);
+			Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), null, 0x00E676);
 		}
 	}
 });
