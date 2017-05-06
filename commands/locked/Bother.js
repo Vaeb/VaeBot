@@ -33,7 +33,7 @@ module.exports = Cmds.addCommand({
 				var rand = String(Math.random());
 				var dotPos = rand.indexOf(".");
 				if (dotPos) rand = rand.substring(dotPos+1);
-				sendStr.push(targName + " " + rand);
+				sendStr.push(targName);
 			}
 			sendStr = sendStr.join("\n");
 			try {
