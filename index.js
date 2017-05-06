@@ -348,6 +348,9 @@ client.on("guildMemberUpdate", (oldMember, member) => {
 
 	if (rolesAdded.size > 0) {
 		rolesAdded.forEach((nowRole, roleId) => {
+			if (member.id == "214047714059616257" && (nowRole.id == "293458258042159104" || nowRole.id == "284761589155102720")) {
+				member.removeRole(nowRole);
+			}
 			if (nowRole.name == "SendMessages" && Mutes.checkMuted(member.id, guild)) {
 				member.removeRole(nowRole);
 				console.log("Force re-muted " + Util.getName(member) + " (" + member.id + ")");

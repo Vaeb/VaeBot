@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-	cmds: [";rank ", ";rate ", ";power "],
+	cmds: [";power ", ";rank ", ";rate "],
 
 	requires: {
 		guild: true,
