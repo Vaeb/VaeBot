@@ -74,7 +74,7 @@ var runFuncs = [];
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 function setBriefing() {
-	client.setTimeout(function() {
+	setTimeout(function() {
 		var time1 = new Date();
 		var time2 = new Date();
 
