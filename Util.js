@@ -1,6 +1,6 @@
 /*
 
-addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\(cmd, args, msgObj, speaker, channel, guild\) {.*\n\t([\s\S]+?)\n},\n\t(".*?"),\n\t(".*?"),\n\t(".*?")\n\)
+addCommand\((\[.+?\]), (\w+?), (\w+?), (\w+?), function\([\w, ]+?\) {.*\n\t([\s\S]+?)\n},\n\t(".*?"),\n\t(".*?"),\n\t(".*?")\n\)
 
 module.exports = Cmds.addCommand({
 	cmds: \1,
@@ -423,6 +423,69 @@ exports.arrayToObj = function(arr) {
 exports.capitalize = function(str) {
 	str = String(str);
 	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+exports.runLua = function(args, channel) {
+	//args = "os=nil;io=nil;debug=nil;package=nil;require=nil;loadfile=nil;dofile=nil;collectgarbage=nil;" + args;
+	var tagNum = Math.floor((new Date()).getTime());
+	var fileDir = "/tmp/script_" + tagNum + ".lua";
+	fileSystem.writeFile(fileDir, args, (err) => {
+		if (err) {
+			console.log("Script creation error: " + err);
+			Util.print(channel, "Script creation error: " + err);
+		}
+		exec("lua " + fileDir, (error, stdout, stderr) => {
+			if (!stdout) stdout = "";
+			safeOut = Util.safe(stdout);
+			safeErr = Util.safe(stderr);
+			var outStr = [];
+			if (error) {
+				outStr.push("**Execution error:**");
+				outStr.push("```");
+				console.log("Execution Error: " + stderr);
+				outStr.push(error);
+				outStr.push("```");
+			} else {
+				if (safeOut.length <= 1980) {
+					outStr.push("**Output:**");
+					outStr.push("```");
+					outStr.push(safeOut);
+					outStr.push("```");
+				} else {
+					var headers = {
+						"Content-Type": "text/plain"
+					};
+					var options = {
+						url: "http://hastebin.com/documents",
+						method: "POST",
+						headers: headers,
+						body: stdout
+					};
+					index.Request(options, function(error, response, body) {
+						body = JSON.parse(body);
+						if (error || !body || !body.key) {
+							Util.print(channel, "Hastebin upload error:", error);
+						} else {
+							Util.print(channel, "Output:", "http://hastebin.com/raw/" + body.key);
+						}
+					});
+				}
+				if (stderr) {
+					outStr.push("**Lua Error:**");
+					outStr.push("```");
+					console.log("Lua Error: " + stderr);
+					outStr.push(stderr);
+					outStr.push("```");
+				}
+			}
+			Util.print(channel, outStr.join("\n"));
+			fileSystem.unlink(fileDir);
+		});
+	});
+};
+
+exports.doXOR = function(a, b) {
+	return ((a == 1 || b == 1) && !(a == 1 && b == 1)) ? 1 : 0;
 };
 
 exports.capitalize2 = function(str, repUnder) {
