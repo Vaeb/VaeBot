@@ -19,7 +19,7 @@ module.exports = Cmds.addCommand({
 		if (target == null) return Util.commandFailed(channel, speaker, "User not found");
 
 		var highestRole = Util.getHighestRole(target);
-		var powerRating = toFixed(Util.getPermRating(guild, target), 3) + "%";
+		var powerRating = Util.toFixedCut(Util.getPermRating(guild, target), 3) + "%";
 
 		var sendEmbedFields = [];
 
