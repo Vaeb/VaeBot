@@ -8,9 +8,9 @@ module.exports = Cmds.addCommand({
 
 	desc: "Hi friend",
 
-	args: "",
+	args: "([@user] | [id] | [name])",
 
-	example: "",
+	example: "vae",
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
