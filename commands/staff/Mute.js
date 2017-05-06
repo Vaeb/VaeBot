@@ -10,7 +10,7 @@ module.exports = Cmds.addCommand({
 
 	args: "([@user] | [id] | [name]) ([reason])",
 
-	example: "vaeb being weird",
+	example: "vae being weird",
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
