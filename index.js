@@ -198,6 +198,8 @@ function setupSecurity() {
 	if (!veilBuyer) return console.log("[ERROR_VP] Veil Buyer role not found!");
 	var newBuyer = newGuild.roles.find("name", "Buyer");
 	if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
+	var sendRole = Util.getRole("SendMessages", guild);
+	var guildName = newGuild.name;
 
 	console.log("Setting up security");
 
@@ -221,6 +223,17 @@ function setupSecurity() {
 			member.addRole(newBuyer)
 			.catch(error => console.log("\n[E_AutoOldAddRole1] " + memberName + " | " + error));
 			console.log("Updated old member with Buyer role: " + memberName);
+		}
+
+		if (sendRole) {
+			var isMuted = Mutes.checkMuted(memberId, guild);
+
+			if (isMuted == true) {
+				console.log("Muted user " + memberName + " had already joined " + guildName);
+			} else {
+				member.addRole(sendRole);
+				console.log("Assigned SendMessages to old member " + memberName);
+			}
 		}
 	});
 }
@@ -303,18 +316,16 @@ client.on("guildMemberAdd", member => {
 		}
 	}
 
-	if (Util.getRole("SendMessages", guild)) {
-		var isMuted = Mutes.checkMuted(memberId, guild);
+	var isMuted = Mutes.checkMuted(memberId, guild);
 
-		if (isMuted == true) {
-			console.log("Muted user " + memberName + " joined " + guildName);
-		} else {
-			var sendRole = Util.getRole("SendMessages", guild);
+	if (isMuted == true) {
+		console.log("Muted user " + memberName + " joined " + guildName);
+	} else {
+		var sendRole = Util.getRole("SendMessages", guild);
 
-			if (sendRole) {
-				member.addRole(sendRole);
-				console.log("Assigned SendMessages to new member " + memberName);
-			}
+		if (sendRole) {
+			member.addRole(sendRole);
+			console.log("Assigned SendMessages to new member " + memberName);
 		}
 	}
 
