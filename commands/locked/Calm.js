@@ -33,7 +33,7 @@ module.exports = Cmds.addCommand({
 			var msgCreatedAt = msgObj.createdAt;
 
 			// Util.sendEmbed(msgChannel, Util.getMostName(msgSpeaker), msgContent, Util.makeEmbedFooter(msgSpeaker, msgCreatedAt), null, 0x00E676, null);
-			msgChannel.send("[" + Util.getMostName(msgSpeaker) + "] " + msgContent);
+			msgChannel.send(Util.getMostName(msgSpeaker) + ": " + msgContent);
 		}, index.calmSpeed);
 
 		index.slowChat[guild.id] = true;
