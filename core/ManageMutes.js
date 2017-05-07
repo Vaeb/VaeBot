@@ -28,13 +28,15 @@ exports.removeSend = function(member) {
 		let linkedGuild = linkedGuilds[i];
 		let linkedMember = Util.getMemberById(memberId, linkedGuild);
 
-		let role = Util.getRole("SendMessages", linkedMember);
-		if (role != null) {
-			linkedMember.removeRole(role)
-			.then(() => {
-				console.log("Link-removed SendMessages from " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
-			})
-			.catch(error => console.log("\n[E_LinkRoleRem1] " + error));
+		if (linkedMember) {
+			let role = Util.getRole("SendMessages", linkedMember);
+			if (role != null) {
+				linkedMember.removeRole(role)
+				.then(() => {
+					console.log("Link-removed SendMessages from " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
+				})
+				.catch(error => console.log("\n[E_LinkRoleRem1] " + error));
+			}
 		}
 	}
 };
@@ -48,13 +50,15 @@ exports.addSend = function(member) {
 		let linkedGuild = linkedGuilds[i];
 		let linkedMember = Util.getMemberById(memberId, linkedGuild);
 
-		let role = Util.getRole("SendMessages", linkedGuild);
-		if (role != null) {
-			linkedMember.addRole(role)
-			.then(() => {
-				console.log("Link-added SendMessages to " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
-			})
-			.catch(error => console.log("\n[E_LinkRoleAdd1] " + error));
+		if (linkedMember) {
+			let role = Util.getRole("SendMessages", linkedGuild);
+			if (role != null) {
+				linkedMember.addRole(role)
+				.then(() => {
+					console.log("Link-added SendMessages to " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
+				})
+				.catch(error => console.log("\n[E_LinkRoleAdd1] " + error));
+			}
 		}
 	}
 };
