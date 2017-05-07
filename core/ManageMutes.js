@@ -19,6 +19,46 @@ function checkMutedInner(id, guild) {
 	return (Data.guildGet(guild, Data.muted, id) ? true : false);
 }
 
+exports.removeSend = function(member) {
+	var guild = member.guild;
+	var linkedGuilds = Data.getLinkedGuilds(guild);
+	var memberId = member.id;
+
+	for (let i = 0; i < linkedGuilds.length; i++) {
+		let linkedGuild = linkedGuilds[i];
+		let linkedMember = getMemberById(memberId, linkedGuild);
+
+		let role = Util.getRole("SendMessages", linkedMember);
+		if (role != null) {
+			linkedMember.removeRole(role)
+			.then(() => {
+				console.log("Link-removed SendMessages from " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
+			})
+			.catch(error => console.log("\n[E_LinkRoleRem1] " + error));
+		}
+	}
+};
+
+exports.addSend = function(member) {
+	var guild = member.guild;
+	var linkedGuilds = Data.getLinkedGuilds(guild);
+	var memberId = member.id;
+
+	for (let i = 0; i < linkedGuilds.length; i++) {
+		let linkedGuild = linkedGuilds[i];
+		let linkedMember = getMemberById(memberId, linkedGuild);
+
+		let role = Util.getRole("SendMessages", linkedGuild);
+		if (role != null) {
+			linkedMember.addRole(role)
+			.then(() => {
+				console.log("Link-added SendMessages to " + Util.getName(linkedMember) + " @ " + linkedGuild.name);
+			})
+			.catch(error => console.log("\n[E_LinkRoleAdd1] " + error));
+		}
+	}
+};
+
 exports.checkMuted = function(id, guild) {
 	var isMuted = checkMutedInner(id, guild);
 
@@ -105,11 +145,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	// Remove the speaking role
 
-	var role = Util.getRole("SendMessages", targetMember);
-	if (role != null) {
-		targetMember.removeRole(role)
-		.catch(error => console.log("\n[E_RoleRem1] " + error));
-	}
+	exports.removeSend(targetMember);
 
 	// Save the mute for briefing
 
@@ -208,11 +244,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	Data.guildDelete(guild, Data.muted, id);
 
-	var role = Util.getRole("SendMessages", guild);
-	if (role != null) {
-		targetMember.addRole(role)
-		.catch(error => console.log("\n[E_AddRem1] " + error));
-	}
+	exports.addSend(targetMember);
 
 	var muteName = Util.getName(targetMember);
 
@@ -244,7 +276,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	outStr.push("```");
 	Util.print(targetMember, outStr.join("\n"));
 
-	exports.stopUnMuteTimeout(id);
+	exports.stopUnMuteTimeout(id, guild);
 
 	return true;
 };
@@ -279,13 +311,11 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 	var mutedGuild = Data.guildGet(guild, Data.muted);
 
-	console.log("name: " + name);
+	console.log("UnMute Name: " + name);
 
 	for (var targetId in mutedGuild) {
 		if (!mutedGuild.hasOwnProperty(targetId)) continue;
-		console.log("checking " + targetId);
 		var targetMember = Util.getMemberById(targetId, guild);
-		console.log("found " + targetMember);
 		if (targetMember) {
 			var targetName = Util.getName(targetMember);
 			var targetNick = targetMember.nickname;
@@ -321,7 +351,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 		Util.sendLog(sendLogData, colAction);
 
-		exports.stopUnMuteTimeout(safeId);
+		exports.stopUnMuteTimeout(safeId, guild);
 
 		console.log("Success");
 
@@ -338,11 +368,12 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 	return true;
 };
 
-exports.stopUnMuteTimeout = function(id) {
+exports.stopUnMuteTimeout = function(id, guild) {
+	var baseGuild = Data.getBaseGuild(guild);
 	for (var i = muteEvents.length-1; i >= 0; i--) {
 		var oldTimeout = muteEvents[i];
-		if (oldTimeout[0] == id) {
-			clearTimeout(oldTimeout[1]);
+		if (oldTimeout[0] == id && oldTimeout[1] == baseGuild.id) {
+			clearTimeout(oldTimeout[2]);
 			console.log("removed timeout " + id);
 			muteEvents.splice(i, 1);
 		}
@@ -350,18 +381,22 @@ exports.stopUnMuteTimeout = function(id) {
 };
 
 exports.addUnMuteEvent = function(id, guild, time, name) {
+	var baseGuild = Data.getBaseGuild(guild);
+
 	time = Math.max(time, 0);
-	exports.stopUnMuteTimeout(id);
+
+	exports.stopUnMuteTimeout(id, guild);
+
 	guild.fetchMember(id)
 	.then(member => {
 		console.log("Started timeout " + name + " " + id + " " + guild + " - " + time);
-		muteEvents.push([id, setTimeout(function() {
+		muteEvents.push([id, baseGuild.id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	})
 	.catch(error => {
 		console.log("Started timeout but user has left " + name + " " + id + " " + guild + " - " + time);
-		muteEvents.push([id, setTimeout(function() {
+		muteEvents.push([id, baseGuild.id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	});
