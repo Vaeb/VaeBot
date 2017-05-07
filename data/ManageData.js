@@ -230,5 +230,5 @@ FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 	});
 	exports.loadedData[exports.muted] = true;
 
-	console.log("Loaded persistent data");
+	console.log("Loaded persistent data!");
 });
