@@ -26,7 +26,7 @@ exports.removeSend = function(member) {
 
 	for (let i = 0; i < linkedGuilds.length; i++) {
 		let linkedGuild = linkedGuilds[i];
-		let linkedMember = getMemberById(memberId, linkedGuild);
+		let linkedMember = Util.getMemberById(memberId, linkedGuild);
 
 		let role = Util.getRole("SendMessages", linkedMember);
 		if (role != null) {
@@ -46,7 +46,7 @@ exports.addSend = function(member) {
 
 	for (let i = 0; i < linkedGuilds.length; i++) {
 		let linkedGuild = linkedGuilds[i];
-		let linkedMember = getMemberById(memberId, linkedGuild);
+		let linkedMember = Util.getMemberById(memberId, linkedGuild);
 
 		let role = Util.getRole("SendMessages", linkedGuild);
 		if (role != null) {
