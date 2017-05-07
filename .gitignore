@@ -6,8 +6,9 @@ yarn.lock
 # Log files
 *.log
 
-# Authentication
+# Testing
 Auth.js
+Test.js
 
 # Per Instance
 data/mutes.json
