@@ -370,8 +370,13 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 exports.restartTimeouts = function() {
 	var preDate = Date.now();
 	var guilds = client.guilds;
+	var hasChecked = {};
 	for (var guildId in Data.muted) {
 		if (!Data.muted.hasOwnProperty(guildId)) continue;
+		var baseGuild = Data.getBaseGuild(guilds.get(guildId));
+		var baseId = baseGuild.id;
+		if (hasChecked.hasOwnProperty(baseId)) continue;
+		hasChecked[baseId] = true; 
 		var mutedGuild = Data.muted[guildId];
 		for (var targetId in mutedGuild) {
 			if (!mutedGuild.hasOwnProperty(targetId)) continue;
