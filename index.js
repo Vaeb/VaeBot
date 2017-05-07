@@ -480,14 +480,14 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 	var speaker = newMsgObj.member;
 	var author = newMsgObj.author;
 	var content = newMsgObj.content;
-	var lcontent = content.toLowerCase();
+	var contentLower = content.toLowerCase();
 	var isStaff = author.id == vaebId;
 	var msgId = newMsgObj.id;
 
 	var oldContent = oldMsgObj.content;
 
 	for (var i = 0; i < exports.blockedWords.length; i++) {
-		if (lcontent.includes(exports.blockedWords[i].toLowerCase())) {
+		if (contentLower.includes(exports.blockedWords[i].toLowerCase())) {
 			newMsgObj.delete();
 			return;
 		}
@@ -540,7 +540,7 @@ client.on("messageDelete", msgObj => {
 	var speaker = msgObj.member;
 	var author = msgObj.author;
 	var content = msgObj.content;
-	var lcontent = content.toLowerCase();
+	var contentLower = content.toLowerCase();
 	var isStaff = author.id == vaebId;
 	var msgId = msgObj.id;
 
@@ -581,7 +581,7 @@ client.on("message", msgObj => {
 		content = content.substring(0, content.length-5);
 	}
 
-	var lcontent = content.toLowerCase();
+	var contentLower = content.toLowerCase();
 
 	var isStaff = (guild && speaker) ? isStaff = Util.checkStaff(guild, speaker) : authorId == vaebId;
 
@@ -590,11 +590,11 @@ client.on("message", msgObj => {
 		return;
 	}
 
-	if (guild != null && lcontent.substr(0, 5) == "sudo " && authorId == vaebId) {
+	if (guild != null && contentLower.substr(0, 5) == "sudo " && authorId == vaebId) {
 		author = Util.getUserById(selfId);
 		speaker = Util.getMemberById(selfId, guild);
 		content = content.substring(5);
-		lcontent = content.toLowerCase();
+		contentLower = content.toLowerCase();
 	} else if (speaker == null) {
 		speaker = author;
 	}
@@ -610,7 +610,7 @@ client.on("message", msgObj => {
 		if (!messageStamps.hasOwnProperty(authorId)) messageStamps[authorId] = [];
 		var nowStamps = messageStamps[authorId];
 		var stamp = (+ new Date());
-		nowStamps.unshift({stamp: stamp, message: lcontent});
+		nowStamps.unshift({stamp: stamp, message: contentLower});
 		if (userStatus[authorId] != 1) {
 			if (nowStamps.length > checkMessages) {
 				nowStamps.splice(checkMessages, nowStamps.length-checkMessages);
@@ -711,13 +711,13 @@ client.on("message", msgObj => {
 		}
 	}
 
-	Cmds.checkMessage(msgObj, speaker, channel, guild, content, lcontent, authorId, isStaff);
+	Cmds.checkMessage(msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff);
 
 	if (author.bot == true) { //RETURN IF BOT
 		return;
 	}
 
-	if (lcontent.includes(("👀").toLowerCase())) Util.print(channel, "👀");
+	if (contentLower.includes(("👀").toLowerCase())) Util.print(channel, "👀");
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

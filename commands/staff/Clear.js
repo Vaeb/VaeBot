@@ -7,6 +7,10 @@ var checkFuncs = {
 		return true;
 	}),
 
+	cmd: (function checkBot(msgObj) {
+		return msgObj.author.id == selfId || Cmds.getCommand(msgObj.content) != null;
+	}),
+
 	bot: (function checkBot(msgObj) {
 		return msgObj.author.bot == true;
 	}),
@@ -92,7 +96,7 @@ module.exports = Cmds.addCommand({
 			function(str, results) {
 				var lower = str.toLowerCase();
 				if (lower.substring(lower.length-1) == "s") lower = lower.substr(0, lower.length-1);
-				if (lower == "all" || lower == "bot" || lower == "hook" || lower == "image" || lower == "file" || lower == "link" || lower == "mention") {
+				if (lower == "all" || lower == "cmd" || lower == "bot" || lower == "hook" || lower == "image" || lower == "file" || lower == "link" || lower == "mention") {
 					return lower;
 				} else {
 					return Util.getMemberByMixed(str, guild);
