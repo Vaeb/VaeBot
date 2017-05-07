@@ -15,6 +15,6 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		Music.playFile(args);
+		Music.playFile(args, guild, channel);
 	}
 });

@@ -155,7 +155,7 @@ exports.streamAudio = function(remote, guild, channel) {
 	});
 };
 
-exports.playFile = function(name) {
+exports.playFile = function(name, guild, channel) {
 	var connection = guild.voiceConnection;
 	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
 	var voiceChannel = connection.channel;
