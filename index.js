@@ -235,10 +235,13 @@ function setupSecurity() {
 			var isMuted = Mutes.checkMuted(memberId, newGuild);
 
 			if (isMuted) {
+				member.removeRole(sendRole)
+				.catch(console.error);
 				console.log("Muted user " + memberName + " had already joined " + guildName);
 			} else {
 				if (!Util.hasRole(member, sendRole)) {
-					member.addRole(sendRole);
+					member.addRole(sendRole)
+					.catch(console.error);
 					console.log("Assigned SendMessages to old member " + memberName);
 				}
 			}
@@ -333,7 +336,8 @@ client.on("guildMemberAdd", member => {
 		var sendRole = Util.getRole("SendMessages", guild);
 
 		if (sendRole) {
-			member.addRole(sendRole);
+			member.addRole(sendRole)
+			.catch(console.error);
 			console.log("Assigned SendMessages to new member " + memberName);
 		}
 	}
@@ -389,8 +393,9 @@ client.on("guildMemberUpdate", (oldMember, member) => {
 
 	if (rolesRemoved.size > 0) {
 		rolesRemoved.forEach((nowRole, roleId) => {
-			if (nowRole.name == "SendMessages" && Mutes.checkMuted(member.id, guild) == false) {
-				member.addRole(nowRole);
+			if (nowRole.name == "SendMessages" && !Mutes.checkMuted(member.id, guild)) {
+				member.addRole(nowRole)
+				.catch(console.error);
 				console.log("Force re-unmuted " + Util.getName(member) + " (" + member.id + ")");
 			} else {
 				var sendLogData = [
