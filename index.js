@@ -198,7 +198,7 @@ function setupSecurity(guild) {
 	var sendRole = Util.getRole("SendMessages", guild);
 	var guildId = guild.id;
 	var guildName = guild.name;
-
+	
 	console.log("Setting up security for " + guild.name + " (" + guild.members.size + " members)");
 
 	guild.members.forEach(member => {
