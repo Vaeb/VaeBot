@@ -78,19 +78,20 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	var nowDate = Date.now();
 	var muteTime;
+
 	var oldHistory = Data.guildGet(guild, Data.history, id);
 
 	if (oldHistory && (timeScale >= 1 || oldHistory[0] != exports.defaultMuteTime)) {
 		muteTime = oldHistory[0]*timeScale;
 
-		if (muteTime < 0) {
-			muteTime = oldHistory[0];
-		}
+		if (muteTime < 0) muteTime = oldHistory[0];
 
-		oldHistory[0] = muteTime;
-		Data.guildSaveData(Data.history);
+		Data.guildRun(guild, Data.history, id, (result => {
+			result[0] = muteTime;
+		}));
 	} else {
 		muteTime = exports.defaultMuteTime; //1800000
+
 		Data.guildSet(guild, Data.history, id, [muteTime, muteName]);
 	}
 

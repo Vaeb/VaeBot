@@ -38,7 +38,7 @@ exports.getLinkedGuilds = function(guild) {
 	}
 	
 	return linkedGuilds;
-}
+};
 
 exports.getBaseGuild = function(guild) {
 	var guildId = guild.id;
@@ -62,7 +62,7 @@ exports.getBaseGuild = function(guild) {
 	}
 	
 	return guild;
-}
+};
 
 exports.guildSaveData = function(obj, retry) {
 	if (!exports.loadedData[obj]) return;
@@ -79,23 +79,59 @@ exports.guildSaveData = function(obj, retry) {
 };
 
 exports.guildGet = function(guild, obj, index) {
-	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
-	if (index != null) return obj[guild.id][index];
-	return obj[guild.id];
+	let guildId = guild.id;
+
+	if (!obj.hasOwnProperty(guildId)) obj[guildId] = {};
+	if (index != null) return obj[guildId][index];
+	return obj[guildId];
 };
 
 exports.guildSet = function(guild, obj, index, value) {
-	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
-	obj[guild.id][index] = value;
+	var linkedGuilds = exports.getLinkedGuilds(guild);
+
+	for (let i = 0; i < linkedGuilds.length; i++) {
+		let newGuild = linkedGuilds[i];
+		let newGuildId = newGuild.id;
+
+		if (!obj.hasOwnProperty(newGuildId)) obj[newGuildId] = {};
+		obj[newGuildId][index] = value;
+	}
+
+	exports.guildSaveData(obj);
+};
+
+exports.guildRun = function(guild, obj, index, func) {
+	var linkedGuilds = exports.getLinkedGuilds(guild);
+
+	for (let i = 0; i < linkedGuilds.length; i++) {
+		let newGuild = linkedGuilds[i];
+		let newGuildId = newGuild.id;
+
+		if (!obj.hasOwnProperty(newGuildId)) obj[newGuildId] = {};
+
+		var result = obj[newGuildId];
+		if (index != null) result = obj[newGuildId][index];
+
+		func(result);
+	}
+
 	exports.guildSaveData(obj);
 };
 
 exports.guildDelete = function(guild, obj, index) {
-	if (!obj.hasOwnProperty(guild.id)) obj[guild.id] = {};
-	if (obj[guild.id].hasOwnProperty(index)) {
-		delete obj[guild.id][index];
-		exports.guildSaveData(obj);
+	var linkedGuilds = exports.getLinkedGuilds(guild);
+
+	for (let i = 0; i < linkedGuilds.length; i++) {
+		let newGuild = linkedGuilds[i];
+		let newGuildId = newGuild.id;
+
+		if (!obj.hasOwnProperty(newGuildId)) obj[newGuildId] = {};
+		if (obj[newGuildId].hasOwnProperty(index)) {
+			delete obj[newGuildId][index];
+		}
 	}
+
+	exports.guildSaveData(obj);
 };
 
 FileSys.readFile(autoRoleDir, "utf-8", (err, data) => {
