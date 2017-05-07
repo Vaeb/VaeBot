@@ -17,18 +17,18 @@ module.exports = Cmds.addCommand({
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		if (index.slowChat) return;
 
-		index.slowChat = true;
+		index.slowChat[guild.id] = true;
 
 		index.slowInterval = setInterval(function() {
 			var msgObj = (index.chatQueue.splice(0, 1))[0];
 
-			var channel = msgObj.channel;
+			var msgChannel = msgObj.channel;
 			var guild = msgObj.guild;
 			var speaker = msgObj.member;
 			var content = msgObj.content;
 			var createdAt = msgObj.createdAt;
 
-			Util.sendEmbed(channell, Util.getMostName(speaker), content, Util.makeEmbedFooter(speaker, createdAt), null, 0x00E676, null);
+			Util.sendEmbed(msgChannel, Util.getMostName(speaker), content, Util.makeEmbedFooter(speaker, createdAt), null, 0x00E676, null);
 		}, 3000);
 	}
 });

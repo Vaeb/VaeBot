@@ -509,7 +509,7 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 
 exports.lockChannel = null;
 
-exports.slowChat = false;
+exports.slowChat = {};
 exports.slowInterval = null;
 exports.chatQueue = [];
 
@@ -715,7 +715,7 @@ client.on("message", msgObj => {
 		}
 	}
 
-	if (exports.slowChat && author.bot == false) {
+	if (guild && exports.slowChat[guild.id] && author.bot == false) {
 		msgObj.delete();
 		exports.chatQueue.push(msgObj);
 	}

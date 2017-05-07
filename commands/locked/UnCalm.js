@@ -15,7 +15,7 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		index.slowChat = false;
+		index.slowChat[guild.id] = null;
 		clearInterval(index.slowInterval);
 		index.slowInterval = null;
 	}
