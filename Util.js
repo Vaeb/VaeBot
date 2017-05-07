@@ -879,9 +879,10 @@ exports.hasRole = function(member, role) {
 	return member.roles.has(role.id);
 };
 
-exports.makeEmbedFooter = function(user) {
+exports.makeEmbedFooter = function(user, date) {
 	var memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
-	var dateStr = exports.getDateString(new Date());
+	if (date == null) date = new Date();
+	var dateStr = exports.getDateString(date);
 	return {text: memberName + " | " + dateStr, icon_url: exports.getAvatar(user)};
 };
 
