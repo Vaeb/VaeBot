@@ -715,7 +715,7 @@ client.on("message", msgObj => {
 		}
 	}
 
-	if (guild && exports.slowChat[guild.id] && author.bot == false) {
+	if (guild && exports.slowChat[guild.id] && author.bot == false && !Util.checkStaff(guild, speaker)) {
 		msgObj.delete();
 		exports.chatQueue[guild.id].push(msgObj);
 	}
