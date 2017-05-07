@@ -91,16 +91,16 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 		Data.guildSaveData(Data.history);
 	} else {
 		muteTime = exports.defaultMuteTime; //1800000
-		Data.guildSet(dataGuild, Data.history, id, [muteTime, muteName]);
+		Data.guildSet(guild, Data.history, id, [muteTime, muteName]);
 	}
 
 	var endTime = nowDate+muteTime;
 
-	Data.guildSet(dataGuild, Data.muted, id, [dataGuild.id, endTime, muteName, reason, speakerId]);
+	Data.guildSet(guild, Data.muted, id, [guild.id, endTime, muteName, reason, speakerId]);
 
 	// Add a timeout event for unmuting
 
-	exports.addUnMuteEvent(id, dataGuild, muteTime, muteName);
+	exports.addUnMuteEvent(id, guild, muteTime, muteName);
 
 	// Remove the speaking role
 
@@ -149,7 +149,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	var sendLogData = [
 		"User Muted",
-		dataGuild,
+		guild,
 		targetMember,
 		{name: "Username", value: targetMember.toString()},
 		{name: "Moderator", value: speakerName},
@@ -192,11 +192,9 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 		return false;
 	}
 
-	var dataGuild = getBaseGuild(guild);
-
-	var mutedData = Data.guildGet(dataGuild, Data.muted, id);
+	var mutedData = Data.guildGet(guild, Data.muted, id);
 	var origModId = mutedData[4];
-	var origMod = Util.getMemberByIdLinked(origModId, dataGuild);
+	var origMod = Util.getMemberByIdLinked(origModId, guild);
 	var origModPos = origMod != null ? Util.getPosition(origMod) : -1;
 
 	if (speakerValid && speakerId != vaebId && speakerId != selfId && (origModId == vaebId || pos < origModPos)) {
@@ -207,7 +205,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 		return false;
 	}
 
-	Data.guildDelete(dataGuild, Data.muted, id);
+	Data.guildDelete(guild, Data.muted, id);
 
 	var role = Util.getRole("SendMessages", guild);
 	if (role != null) {
@@ -217,7 +215,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	var muteName = Util.getName(targetMember);
 
-	var muteHistoryString = Util.historyToString(Util.getHistory(targetMember.id, dataGuild));
+	var muteHistoryString = Util.historyToString(Util.getHistory(targetMember.id, guild));
 
 	if (pos == Infinity) {
 		console.log("Unmuted " + muteName);
@@ -232,7 +230,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	var sendLogData = [
 		"User Unmuted",
-		dataGuild,
+		guild,
 		targetMember,
 		{name: "Username", value: targetMember.toString()},
 		{name: "Moderator", value: speakerName},
