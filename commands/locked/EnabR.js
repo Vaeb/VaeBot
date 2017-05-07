@@ -29,15 +29,22 @@ module.exports = Cmds.addCommand({
 		var newRole = data[1];
 		var newPerms = data[2];
 
-		var rolePerms = newRole.permissions;
+		var rolePerms = newRole.serialize();
 
-		var setPerms = [rolePerms];
+		var setPerms = [];
+
 		var pattern = /[\w_]+/g;
 
-		var matchData;
+		for (let permName in rolePerms) {
+			if (!rolePerms.hasOwnProperty(permName)) continue;
+			if (rolePerms[permName]) {
+				setPerms.push(permName);
+			}
+		}
 
+		var matchData;
 		while (matchData = pattern.exec(newPerms)) {
-			var permName = matchData[0];
+			let permName = matchData[0];
 			if (Util.rolePermissionsObj[permName] && !newRole.hasPermission(permName)) {
 				setPerms.push(permName);
 				console.log("Enabled " + permName + " permission for " + newRole.name + " role");
