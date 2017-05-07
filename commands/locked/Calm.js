@@ -20,7 +20,7 @@ module.exports = Cmds.addCommand({
 		index.chatQueue[guild.id] = [];
 
 		index.slowInterval[guild.id] = setInterval(function() {
-			var msgObj = (index.chatQueue.splice(0, 1))[0];
+			var msgObj = (index.chatQueue[guild.id].splice(0, 1))[0];
 
 			var msgChannel = msgObj.channel;
 			var guild = msgObj.guild;
