@@ -237,7 +237,7 @@ function setupSecurityVeil() {
 	var guildId = guild.id;
 	var guildName = guild.name;
 
-	console.log("Setting up Veil buyer security");
+	console.log("Setting up auto-kick for " + guild.name + " (" + guild.members.size + " members)");
 
 	guild.members.forEach(member => {
 		var memberId = member.id;
