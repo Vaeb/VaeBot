@@ -605,7 +605,7 @@ client.on("message", msgObj => {
 		}
 	}
 
-	if (guild != null && author.bot == false && author.bot == false) {
+	if (guild != null && author.bot == false && content.length > 0) {
 		if (!userStatus.hasOwnProperty(authorId)) userStatus[authorId] = 0;
 		if (!messageStamps.hasOwnProperty(authorId)) messageStamps[authorId] = [];
 		var nowStamps = messageStamps[authorId];
@@ -630,7 +630,7 @@ client.on("message", msgObj => {
 				// console.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
 				if (grad1 >= checkGrad1) {
 					if (userStatus[authorId] == 0) {
-						console.log(Util.getName(speaker) + " warned, gradient larger than " + checkGrad1);
+						console.log(Util.getName(speaker) + " warned, gradient " + grad1 + " larger than " + checkGrad1);
 						userStatus[authorId] = 1;
 						Util.print(channel, speaker.toString(), "Warning: If you continue to spam you will be auto-muted");
 						setTimeout(function() {
@@ -673,7 +673,7 @@ client.on("message", msgObj => {
 								}
 								console.log("[2] User: " + Util.getName(speaker) + " | Messages Since " + elapsed2 + " Seconds: " + numNew2 + " | Gradient2: " + grad2);
 								if (grad2 >= checkGrad2) {
-									console.log("[2] " + Util.getName(speaker) + " muted, gradient larger than " + checkGrad2);
+									console.log("[2] " + Util.getName(speaker) + " muted, gradient " + grad2 + " larger than " + checkGrad2);
 									Mutes.doMuteReal(speaker, "[Auto-Mute] Spamming", guild, Infinity, channel, "System");
 									userStatus[authorId] = 0;
 								} else {
