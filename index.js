@@ -237,8 +237,10 @@ function setupSecurity() {
 			if (isMuted) {
 				console.log("Muted user " + memberName + " had already joined " + guildName);
 			} else {
-				member.addRole(sendRole);
-				console.log("Assigned SendMessages to old member " + memberName);
+				if (!Util.hasRole(member, sendRole)) {
+					member.addRole(sendRole);
+					console.log("Assigned SendMessages to old member " + memberName);
+				}
 			}
 		}
 	});
