@@ -353,13 +353,13 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 	exports.stopUnMuteTimeout(id);
 	guild.fetchMember(id)
 	.then(member => {
-		console.log("started timeout " + name + " " + id + " " + guild + " - " + time);
+		console.log("Started timeout " + name + " " + id + " " + guild + " - " + time);
 		muteEvents.push([id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	})
 	.catch(error => {
-		console.log("started timeout but user has left " + name + " " + id + " " + guild + " - " + time);
+		console.log("Started timeout but user has left " + name + " " + id + " " + guild + " - " + time);
 		muteEvents.push([id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);

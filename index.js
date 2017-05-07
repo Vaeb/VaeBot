@@ -268,7 +268,7 @@ function setupSecurityVeil() {
 Cmds.initCommands();
 
 client.on("ready", () => {
-	console.log(`\nConnected as ${client.user.username}!`);
+	console.log(`\nConnected as ${client.user.username}!\n`);
 
 	if (madeBriefing == false) {
 		madeBriefing = true;
