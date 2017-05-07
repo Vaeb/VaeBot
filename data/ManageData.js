@@ -5,12 +5,64 @@ const histDir = "./data/history.json";
 const autoRoleDir = "./data/autoroles.json";
 const playlistDir = "./data/playlist.json";
 
+var linkGuilds = index.linkGuilds;
+
 exports.loadedData = [];
 
 exports.autoRoles = {};
 exports.playlist = {};
 exports.history = {};
 exports.muted = {};
+
+exports.getLinkedGuilds = function(guild) {
+	var linkedGuilds = [guild];
+
+	var guildId = guild.id;
+
+	for (let i = 0; i < linkGuilds.length; i++) {
+		let linkData = linkGuilds[i];
+		if (linkData.includes(guildId)) {
+			for (let i2 = 0; i2 < linkData.length; i2++) {
+				let linkedGuildId = linkData[i2];
+				if (linkedGuildId != guildId) {
+					let linkedGuild = client.guilds.get(linkedGuildId);
+					if (linkedGuild) {
+						linkedGuilds.push(linkedGuild);
+					} else {
+						console.log("[CRIT_ERROR_2] Can't resolve linked guild: " + linkedGuildId);
+					}
+				}
+			}
+			break;
+		}
+	}
+	
+	return linkedGuilds;
+}
+
+exports.getBaseGuild = function(guild) {
+	var guildId = guild.id;
+	
+	for (let i = 0; i < linkGuilds.length; i++) {
+		let linkData = linkGuilds[i];
+		if (linkData.includes(guildId)) {
+			let linkedGuildId = linkData[0];
+			if (linkedGuildId != guildId) {
+				let linkedGuild = client.guilds.get(linkedGuildId);
+				if (linkedGuild) {
+					return linkedGuild;
+				} else {
+					console.log("[CRIT_ERROR] Can't resolve linked guild: " + linkedGuildId);
+					return null;
+				}
+			} else {
+				return guild;
+			}
+		}
+	}
+	
+	return guild;
+}
 
 exports.guildSaveData = function(obj, retry) {
 	if (!exports.loadedData[obj]) return;
