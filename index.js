@@ -509,7 +509,7 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 
 exports.lockChannel = null;
 
-exports.calmSpeed = 5000;
+exports.calmSpeed = 7000;
 exports.slowChat = {};
 exports.slowInterval = {};
 exports.chatQueue = {};
