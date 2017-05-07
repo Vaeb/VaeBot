@@ -270,8 +270,6 @@ Cmds.initCommands();
 client.on("ready", () => {
 	console.log(`\nConnected as ${client.user.username}!`);
 
-	Mutes.restartTimeouts();
-
 	if (madeBriefing == false) {
 		madeBriefing = true;
 		setBriefing();
@@ -281,16 +279,35 @@ client.on("ready", () => {
 
 	var securityNum = 0;
 
+	var remaining = nowGuilds.size;
+
 	nowGuilds.forEach((guild, snowflake) => {
 		guild.fetchMembers()
 		.then((newGuild) => {
+			remaining--;
+
 			if (newGuild.id == "284746138995785729" || newGuild.id == "309785618932563968") {
 				securityNum++;
 				if (securityNum == 2) setupSecurityVeil();
 			}
+
 			setupSecurity(newGuild);
+
+			if (remaining == 0) {
+				console.log("Fetched all Guild members!");
+				Mutes.restartTimeouts();
+			}
 		})
-		.catch(console.error);
+		.catch(error => {
+			remaining--;
+			
+			console.log("E_READY_FETCH_MEMBERS: " + error);
+			
+			if (remaining == 0) {
+				console.log("Fetched all Guild members!");
+				Mutes.restartTimeouts();
+			}
+		});
 	});
 });
 
