@@ -135,7 +135,10 @@ module.exports = Cmds.addCommand({
 		var numSearch = userOrType != "all" ? numArgs*10 : numArgs;
 		numSearch = Math.min(numSearch, 1000);
 
-		Util.fetchMessagesEx(channel, numSearch, msgStore).then(() => {
+		var last = null;
+		if (userOrType == "cmd") last = msgObj;
+
+		Util.fetchMessagesEx(channel, numSearch, msgStore, last).then(() => {
 			console.log("Messages checked: " + msgStore.length);
 
 			var msgStoreUser = [];
@@ -159,6 +162,7 @@ module.exports = Cmds.addCommand({
 					.catch(console.error);
 				} else {
 					chunk[0].delete();
+					console.log("Cleared 1 message");
 				}
 			}
 		});
