@@ -510,8 +510,8 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 exports.lockChannel = null;
 
 exports.slowChat = {};
-exports.slowInterval = null;
-exports.chatQueue = [];
+exports.slowInterval = {};
+exports.chatQueue = {};
 
 client.on("voiceStateUpdate", (oldMember, member) => {
 	var oldChannel = oldMember.voiceChannel; // May be null
@@ -717,7 +717,7 @@ client.on("message", msgObj => {
 
 	if (guild && exports.slowChat[guild.id] && author.bot == false) {
 		msgObj.delete();
-		exports.chatQueue.push(msgObj);
+		exports.chatQueue[guild.id].push(msgObj);
 	}
 
 	Cmds.checkMessage(msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff);

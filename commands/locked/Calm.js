@@ -15,11 +15,11 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		if (index.slowChat) return;
+		if (index.slowChat[guild.id]) return;
 
-		index.slowChat[guild.id] = true;
+		index.chatQueue[guild.id] = [];
 
-		index.slowInterval = setInterval(function() {
+		index.slowInterval[guild.id] = setInterval(function() {
 			var msgObj = (index.chatQueue.splice(0, 1))[0];
 
 			var msgChannel = msgObj.channel;
@@ -30,5 +30,7 @@ module.exports = Cmds.addCommand({
 
 			Util.sendEmbed(msgChannel, Util.getMostName(speaker), content, Util.makeEmbedFooter(speaker, createdAt), null, 0x00E676, null);
 		}, 3000);
+
+		index.slowChat[guild.id] = true;
 	}
 });
