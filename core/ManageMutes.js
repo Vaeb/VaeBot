@@ -1,7 +1,7 @@
 const FileSys = index.FileSys;
 
 var loadedData = Data.loadedData;;
-var muteEvents = [];
+exports.muteEvents = [];
 
 exports.defaultMuteTime = 1800000;
 
@@ -370,12 +370,12 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 exports.stopUnMuteTimeout = function(id, guild) {
 	var baseGuild = Data.getBaseGuild(guild);
-	for (var i = muteEvents.length-1; i >= 0; i--) {
-		var oldTimeout = muteEvents[i];
+	for (var i = exports.muteEvents.length-1; i >= 0; i--) {
+		var oldTimeout = exports.muteEvents[i];
 		if (oldTimeout[0] == id && oldTimeout[1] == baseGuild.id) {
 			clearTimeout(oldTimeout[2]);
-			console.log("removed timeout " + id);
-			muteEvents.splice(i, 1);
+			console.log("Removed timeout " + id);
+			exports.muteEvents.splice(i, 1);
 		}
 	}
 };
@@ -390,13 +390,13 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 	guild.fetchMember(id)
 	.then(member => {
 		console.log("Started timeout " + name + " " + id + " " + guild + " - " + time);
-		muteEvents.push([id, baseGuild.id, setTimeout(function() {
+		exports.muteEvents.push([id, baseGuild.id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	})
 	.catch(error => {
 		console.log("Started timeout but user has left " + name + " " + id + " " + guild + " - " + time);
-		muteEvents.push([id, baseGuild.id, setTimeout(function() {
+		exports.muteEvents.push([id, baseGuild.id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
 	});
