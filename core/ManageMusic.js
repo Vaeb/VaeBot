@@ -5,7 +5,7 @@ exports.songData = {};
 exports.songs = {};
 exports.noPlay = {};
 
-exports.stopMusic = function(guild) {
+exports.stopMusic = function(guild, reason) {
 	var connection = guild.voiceConnection;
 	if (!connection) return false;
 	var voiceChannel = connection.channel;
@@ -14,7 +14,7 @@ exports.stopMusic = function(guild) {
 	var dispatcher = player.dispatcher;
 	if (!dispatcher) return false;
 	exports.isPlaying[guild.id] = false;
-	dispatcher.end("StopMusic");
+	dispatcher.end(reason);
 	var realSongData = exports.songData[guild.id];
 	realSongData.nowVideo = null;
 	realSongData.nowAuthor = null;
@@ -127,31 +127,33 @@ exports.streamAudio = function(remote, guild, channel) {
 	});
 
 	dispatcher.on("end", reason => {
-		if (reason == "NewStreamAudio" || reason == "StopMusic") return;
-		if (exports.isPlaying[guild.id]) {
-			console.log("Track Ended: " + reason);
-			var realSongData = exports.songData[guild.id];
-			var realSongs = exports.songs[guild.id];
+		console.log(reason);
+		if (reason == "nextTrack") {
+			if (exports.isPlaying[guild.id]) {
+				console.log("Track Ended: " + reason);
+				var realSongData = exports.songData[guild.id];
+				var realSongs = exports.songs[guild.id];
 
-			if (realSongs.length > 0) {
-				var video = realSongs[0][0];
-				var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
-				if (videoId == remote) realSongs.splice(0, 1);
-			}
-
-			if (voiceChannel.members.size > 1) {
-				var autoPlaylist = Data.guildGet(guild, Data.playlist);
-				if (realSongs.length === 0 && realSongData.isAuto === true) {
-					console.log("Track Ended, Playing Next Auto");
-					exports.playNextAuto(guild, channel);
-				} else {
-					exports.playNextQueue(guild, channel, true);
+				if (realSongs.length > 0) {
+					var video = realSongs[0][0];
+					var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
+					if (videoId == remote) realSongs.splice(0, 1);
 				}
-			} else {
-				exports.stopMusic(guild);
-				Util.print(channel, "Auto stopping audio | No users in voice");
+
+				if (voiceChannel.members.size > 1) {
+					var autoPlaylist = Data.guildGet(guild, Data.playlist);
+					if (realSongs.length === 0 && realSongData.isAuto === true) {
+						console.log("Track Ended, Playing Next Auto");
+						exports.playNextAuto(guild, channel);
+					} else {
+						exports.playNextQueue(guild, channel, true);
+					}
+				} else {
+					exports.stopMusic(guild);
+					Util.print(channel, "Auto stopping audio | No users in voice");
+				}
 			}
-		}
+	}
 	});
 };
 
@@ -181,31 +183,7 @@ exports.playFile = function(name, guild, channel) {
 	});
 
 	dispatcher.on("end", reason => {
-		if (reason == "NewStreamAudio" || reason == "StopMusic") return;
-		if (exports.isPlaying[guild.id]) {
-			console.log("Track Ended: " + reason);
-			var realSongData = exports.songData[guild.id];
-			var realSongs = exports.songs[guild.id];
-
-			if (realSongs.length > 0) {
-				var video = realSongs[0][0];
-				var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
-				if (videoId == name) realSongs.splice(0, 1);
-			}
-
-			if (voiceChannel.members.size > 1) {
-				var autoPlaylist = Data.guildGet(guild, Data.playlist);
-				if (realSongs.length === 0 && realSongData.isAuto === true) {
-					console.log("Track Ended, Playing Next Auto");
-					exports.playNextAuto(guild, channel);
-				} else {
-					exports.playNextQueue(guild, channel, true);
-				}
-			} else {
-				exports.stopMusic(guild);
-				Util.print(channel, "Auto stopping audio | No users in voice");
-			}
-		}
+		console.log(reason);
 	});
 };
 
