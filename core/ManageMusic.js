@@ -169,10 +169,9 @@ exports.playFile = function(name, guild, channel) {
 		}
 	}
 
-	console.log("Streaming Audio: " + remote);
+	console.log("Playing File: " + name);
 	const streamOptions = {seek: 0, volume: 0.2};
 
-	const stream = Ytdl(remote, {filter: 'audioonly'});
 	const dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + name + ".mp3");
 
 	exports.isPlaying[guild.id] = true;
@@ -191,7 +190,7 @@ exports.playFile = function(name, guild, channel) {
 			if (realSongs.length > 0) {
 				var video = realSongs[0][0];
 				var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
-				if (videoId == remote) realSongs.splice(0, 1);
+				if (videoId == name) realSongs.splice(0, 1);
 			}
 
 			if (voiceChannel.members.size > 1) {
@@ -208,7 +207,7 @@ exports.playFile = function(name, guild, channel) {
 			}
 		}
 	});
-}
+};
 
 exports.joinMusic = function(guild, channel, func) {
 	var connection = guild.voiceConnection;
