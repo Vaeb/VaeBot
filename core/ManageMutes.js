@@ -194,7 +194,7 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	var mutedData = Data.guildGet(guild, Data.muted, id);
 	var origModId = mutedData[4];
-	var origMod = Util.getMemberByIdLinked(origModId, guild);
+	var origMod = Util.getMemberById(origModId, guild);
 	var origModPos = origMod != null ? Util.getPosition(origMod) : -1;
 
 	if (speakerValid && speakerId != vaebId && speakerId != selfId && (origModId == vaebId || pos < origModPos)) {
