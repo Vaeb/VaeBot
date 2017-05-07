@@ -109,6 +109,7 @@ exports.streamAudio = function(remote, guild, channel) {
 	if (oldPlayer) {
 		var oldDispatcher = oldPlayer.dispatcher;
 		if (oldDispatcher) {
+			console.log("Ended previous!");
 			oldDispatcher.end("NewStreamAudio");
 		}
 	}
@@ -153,6 +154,61 @@ exports.streamAudio = function(remote, guild, channel) {
 		}
 	});
 };
+
+exports.playFile = function(name) {
+	var connection = guild.voiceConnection;
+	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
+	var voiceChannel = connection.channel;
+
+	var oldPlayer = connection.player;
+	if (oldPlayer) {
+		var oldDispatcher = oldPlayer.dispatcher;
+		if (oldDispatcher) {
+			console.log("Ended previous!");
+			oldDispatcher.end("NewStreamAudio");
+		}
+	}
+
+	console.log("Streaming Audio: " + remote);
+	const streamOptions = {seek: 0, volume: 0.2};
+
+	const stream = Ytdl(remote, {filter: 'audioonly'});
+	const dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + name + ".mp3");
+
+	exports.isPlaying[guild.id] = true;
+
+	dispatcher.on("error", error => {
+		console.log(error);
+	});
+
+	dispatcher.on("end", reason => {
+		if (reason == "NewStreamAudio" || reason == "StopMusic") return;
+		if (exports.isPlaying[guild.id]) {
+			console.log("Track Ended: " + reason);
+			var realSongData = exports.songData[guild.id];
+			var realSongs = exports.songs[guild.id];
+
+			if (realSongs.length > 0) {
+				var video = realSongs[0][0];
+				var videoId = typeof(video.id) == "object" ? video.id.videoId : video.id;
+				if (videoId == remote) realSongs.splice(0, 1);
+			}
+
+			if (voiceChannel.members.size > 1) {
+				var autoPlaylist = Data.guildGet(guild, Data.playlist);
+				if (realSongs.length === 0 && realSongData.isAuto === true) {
+					console.log("Track Ended, Playing Next Auto");
+					exports.playNextAuto(guild, channel);
+				} else {
+					exports.playNextQueue(guild, channel, true);
+				}
+			} else {
+				exports.stopMusic(guild);
+				Util.print(channel, "Auto stopping audio | No users in voice");
+			}
+		}
+	});
+}
 
 exports.joinMusic = function(guild, channel, func) {
 	var connection = guild.voiceConnection;
