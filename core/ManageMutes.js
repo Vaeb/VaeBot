@@ -1,12 +1,38 @@
 const FileSys = index.FileSys;
 
 var loadedData = Data.loadedData;
+var linkGuilds = index.linkGuilds;
 var muteEvents = [];
 
 exports.defaultMuteTime = 1800000;
 
-exports.checkMuted = function(id, guild) {
+function checkMutedInner(id, guild) {
 	return (Data.guildGet(guild, Data.muted, id) ? true : false);
+}
+
+exports.checkMuted = function(id, guild) {
+	var isMuted = checkMutedInner(id, guild);
+
+	if (!isMuted) {
+		var guildId = guild.id;
+
+		for (let i = 0; i < linkGuilds.length; i++) {
+			let linkData = linkGuilds[i];
+			if (linkData.includes(guildId)) {
+				for (let i2 = 0; i2 < linkData.length; i2++) {
+					let linkedGuildId = linkData[i2];
+					if (linkedGuildId != guildId) {
+						let linkedGuild = client.guilds.get(linkedGuildId);
+						isMuted = checkMutedInner(id, linkedGuild);
+						if (isMuted) break;
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	return isMuted;
 };
 
 exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker, noOut, timeScale) {
@@ -71,7 +97,7 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	exports.addUnMuteEvent(id, guild, muteTime, muteName);
 
-	// Remove the SendMessages role
+	// Remove the speaking role
 
 	var role = Util.getRole("SendMessages", targetMember);
 	if (role != null) {

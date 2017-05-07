@@ -12,6 +12,10 @@ const YtInfoObj = require("youtube-node");
 exports.YtInfo = new YtInfoObj();
 exports.NodeOpus = require("node-opus");
 
+exports.linkGuilds = [
+	["284746138995785729", "309785618932563968"]
+];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 global.index = module.exports;
@@ -199,7 +203,8 @@ function setupSecurity() {
 	if (!veilBuyer) return console.log("[ERROR_VP] Veil Buyer role not found!");
 	var newBuyer = newGuild.roles.find("name", "Buyer");
 	if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
-	var sendRole = Util.getRole("SendMessages", guild);
+	var sendRole = Util.getRole("SendMessages", newGuild);
+	var guildId = newGuild.id;
 	var guildName = newGuild.name;
 
 	console.log("Setting up security");
@@ -227,9 +232,9 @@ function setupSecurity() {
 		}
 
 		if (sendRole) {
-			var isMuted = Mutes.checkMuted(memberId, guild);
+			var isMuted = Mutes.checkMuted(memberId, newGuild);
 
-			if (isMuted == true) {
+			if (isMuted) {
 				console.log("Muted user " + memberName + " had already joined " + guildName);
 			} else {
 				member.addRole(sendRole);
@@ -281,13 +286,14 @@ client.on("guildMemberRemove", member => {
 client.on("guildMemberAdd", member => {
 	var guild = member.guild;
 
+	var guildId = guild.id;
 	var guildName = guild.name;
 	var memberId = member.id;
 	var memberName = Util.getFullName(member);
 
 	console.log("User joined: " + memberName + " (" + memberId + ")" + " @ " + guildName);
 
-	if (guild.id == "309785618932563968") {
+	if (guildId == "309785618932563968") {
 		var veilGuild = client.guilds.get("284746138995785729");
 		var veilBuyer = veilGuild.roles.find("name", "Buyer");
 		var newBuyer = guild.roles.find("name", "Buyer");
@@ -319,7 +325,7 @@ client.on("guildMemberAdd", member => {
 
 	var isMuted = Mutes.checkMuted(memberId, guild);
 
-	if (isMuted == true) {
+	if (isMuted) {
 		console.log("Muted user " + memberName + " joined " + guildName);
 	} else {
 		var sendRole = Util.getRole("SendMessages", guild);
