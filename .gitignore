@@ -10,12 +10,6 @@ yarn.lock
 Auth.js
 Test.js
 
-# Per Instance
-data/mutes.json
-data/history.json
-data/autoroles.json
-data/playlist.json
-
 # =========================
 # Everything below is .gitignore template
 # =========================

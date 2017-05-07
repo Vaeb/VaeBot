@@ -218,6 +218,8 @@ FileSys.readFile(mutesDir, "utf-8", (err, data) => {
 		}
 	}
 
+	console.log(exports.muted);
+
 	Object.defineProperty(exports.muted, "__name", {
 		value: "muted",
 		enumerable: false,
