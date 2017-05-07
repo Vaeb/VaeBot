@@ -395,7 +395,7 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 		}, Math.min(time, 2147483646))]);
 	})
 	.catch(error => {
-		console.log("Started timeout but user has left " + name + " " + id + " " + guild + " - " + time);
+		console.log("Started timeout [User has left] " + name + " " + id + " " + guild + " - " + time);
 		exports.muteEvents.push([id, baseGuild.id, setTimeout(function() {
 			exports.unMute(id, true, guild, Infinity, null, "System");
 		}, Math.min(time, 2147483646))]);
