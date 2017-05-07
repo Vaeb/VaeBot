@@ -598,7 +598,7 @@ client.on("message", msgObj => {
 	if (!isStaff) {
 		for (var i = 0; i < exports.blockedWords.length; i++) {
 			if (contentLower.includes(exports.blockedWords[i].toLowerCase())) {
-				newMsgObj.delete();
+				msgObj.delete();
 				return;
 			}
 		}
