@@ -194,22 +194,52 @@ function setBriefing() {
 	}, 2000); // Let's wait 2 seconds before starting countdown, just in case of floating point errors triggering multiple countdowns
 }
 
-function setupSecurity() {
+function setupSecurity(guild) {
+	var sendRole = Util.getRole("SendMessages", guild);
+	var guildId = guild.id;
+	var guildName = guild.name;
+
+	console.log("Setting up security for " + guild.name);
+
+	guild.members.forEach(member => {
+		var memberId = member.id;
+		var memberName = Util.getFullName(member);
+
+		if (sendRole) {
+			var isMuted = Mutes.checkMuted(memberId, guild);
+
+			if (isMuted) {
+				if (Util.hasRole(member, sendRole)) {
+					member.removeRole(sendRole)
+					.catch(console.error);
+					console.log("Muted user " + memberName + " had already joined " + guildName);
+				}
+			} else {
+				if (!Util.hasRole(member, sendRole)) {
+					member.addRole(sendRole)
+					.catch(console.error);
+					console.log("Assigned SendMessages to old member " + memberName);
+				}
+			}
+		}
+	});
+}
+
+function setupSecurityVeil() {
 	var veilGuild = client.guilds.get("284746138995785729");
 	if (!veilGuild) return console.log("[ERROR_VP] Veil guild not found!");
-	var newGuild = client.guilds.get("309785618932563968");
-	if (!newGuild) return console.log("[ERROR_VP] New Veil guild not found!");
+	var guild = client.guilds.get("309785618932563968");
+	if (!guild) return console.log("[ERROR_VP] New Veil guild not found!");
 	var veilBuyer = veilGuild.roles.find("name", "Buyer");
 	if (!veilBuyer) return console.log("[ERROR_VP] Veil Buyer role not found!");
-	var newBuyer = newGuild.roles.find("name", "Buyer");
+	var newBuyer = guild.roles.find("name", "Buyer");
 	if (!newBuyer) return console.log("[ERROR_VP] New Buyer role not found!");
-	var sendRole = Util.getRole("SendMessages", newGuild);
-	var guildId = newGuild.id;
-	var guildName = newGuild.name;
+	var guildId = guild.id;
+	var guildName = guild.name;
 
-	console.log("Setting up security");
+	console.log("Setting up Veil buyer security");
 
-	newGuild.members.forEach(member => {
+	guild.members.forEach(member => {
 		var memberId = member.id;
 		var memberName = Util.getFullName(member);
 		var veilMember = Util.getMemberById(memberId, veilGuild);
@@ -230,24 +260,6 @@ function setupSecurity() {
 			.catch(error => console.log("\n[E_AutoOldAddRole1] " + memberName + " | " + error));
 			console.log("Updated old member with Buyer role: " + memberName);
 		}
-
-		if (sendRole) {
-			var isMuted = Mutes.checkMuted(memberId, newGuild);
-
-			if (isMuted) {
-				if (Util.hasRole(member, sendRole)) {
-					member.removeRole(sendRole)
-					.catch(console.error);
-					console.log("Muted user " + memberName + " had already joined " + guildName);
-				}
-			} else {
-				if (!Util.hasRole(member, sendRole)) {
-					member.addRole(sendRole)
-					.catch(console.error);
-					console.log("Assigned SendMessages to old member " + memberName);
-				}
-			}
-		}
 	});
 }
 
@@ -265,7 +277,21 @@ client.on("ready", () => {
 		setBriefing();
 	}
 
-	setupSecurity();
+	var nowGuilds = client.guilds;
+
+	var securityNum = 0;
+
+	nowGuilds.forEach((guild, snowflake) => {
+		guild.fetchMembers()
+		.then((newGuild) => {
+			if (newGuild.id == "284746138995785729" || newGuild.id == "309785618932563968") {
+				securityNum++;
+				if (securityNum == 2) setupSecurityVeil();
+			}
+			setupSecurity(newGuild);
+		})
+		.catch(console.error);
+	});
 });
 
 client.on("disconnect", closeEvent => {
