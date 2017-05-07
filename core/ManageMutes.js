@@ -10,6 +10,30 @@ function checkMutedInner(id, guild) {
 	return (Data.guildGet(guild, Data.muted, id) ? true : false);
 }
 
+function getLinkedGuilds(guild) {
+	var linkedGuilds = [guild];
+
+	var guildId = guild.id;
+
+	for (let i = 0; i < linkGuilds.length; i++) {
+		let linkData = linkGuilds[i];
+		if (linkData.includes(guildId)) {
+			for (let i2 = 0; i2 < linkData.length; i2++) {
+				let linkedGuildId = linkData[i2];
+				if (linkedGuildId != guildId) {
+					let linkedGuild = client.guilds.get(linkedGuildId);
+					if (linkedGuild) {
+						linkedGuilds.push(linkedGuild);
+					}
+				}
+			}
+			break;
+		}
+	}
+	
+	return linkedGuilds;
+}
+
 exports.checkMuted = function(id, guild) {
 	var isMuted = checkMutedInner(id, guild);
 
@@ -23,8 +47,10 @@ exports.checkMuted = function(id, guild) {
 					let linkedGuildId = linkData[i2];
 					if (linkedGuildId != guildId) {
 						let linkedGuild = client.guilds.get(linkedGuildId);
-						isMuted = checkMutedInner(id, linkedGuild);
-						if (isMuted) break;
+						if (linkedGuild) {
+							isMuted = checkMutedInner(id, linkedGuild);
+							if (isMuted) break;
+						}
 					}
 				}
 				break;
