@@ -114,10 +114,10 @@ exports.streamAudio = function(remote, guild, channel) {
 	}
 
 	console.log("Streaming Audio: " + remote);
-	// const streamOptions = {seek: 0, volume: 1, passes: 1};
+	const streamOptions = {seek: 0, volume: 0.2};
 
 	const stream = Ytdl(remote, {filter: 'audioonly'});
-	const dispatcher = connection.playStream(stream);
+	const dispatcher = connection.playStream(stream, streamOptions);
 
 	exports.isPlaying[guild.id] = true;
 
