@@ -43,6 +43,9 @@ module.exports = Cmds.addCommand({
 				console.log("Enabled " + permName + " permission for " + newRole.name + " role");
 			}
 		}
+
+		console.log(setPerms);
+
 		newRole.setPermissions(setPerms)
 		.catch(console.error);
 	}
