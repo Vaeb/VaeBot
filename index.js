@@ -235,9 +235,11 @@ function setupSecurity() {
 			var isMuted = Mutes.checkMuted(memberId, newGuild);
 
 			if (isMuted) {
-				member.removeRole(sendRole)
-				.catch(console.error);
-				console.log("Muted user " + memberName + " had already joined " + guildName);
+				if (Util.hasRole(member, sendRole)) {
+					member.removeRole(sendRole)
+					.catch(console.error);
+					console.log("Muted user " + memberName + " had already joined " + guildName);
+				}
 			} else {
 				if (!Util.hasRole(member, sendRole)) {
 					member.addRole(sendRole)
