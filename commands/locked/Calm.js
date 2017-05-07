@@ -23,7 +23,7 @@ module.exports = Cmds.addCommand({
 
 		index.slowInterval[guild.id] = setInterval(function() {
 			if (chatQueue.length < 1) return;
-			
+
 			var msgObj = (chatQueue.splice(0, 1))[0];
 
 			var msgChannel = msgObj.channel;
@@ -33,7 +33,7 @@ module.exports = Cmds.addCommand({
 			var msgCreatedAt = msgObj.createdAt;
 
 			Util.sendEmbed(msgChannel, Util.getMostName(msgSpeaker), msgContent, Util.makeEmbedFooter(msgSpeaker, msgCreatedAt), null, 0x00E676, null);
-		}, 3000);
+		}, index.calmSpeed);
 
 		index.slowChat[guild.id] = true;
 	}
