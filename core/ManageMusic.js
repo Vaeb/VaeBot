@@ -118,7 +118,7 @@ exports.streamAudio = function(remote, guild, channel) {
 	const streamOptions = {seek: 0, volume: 0.2};
 
 	const stream = Ytdl(remote, {filter: 'audioonly'});
-	const dispatcher = connection.playStream(stream, streamOptions);
+	const dispatcher = connection.playOpusStream(stream, streamOptions);
 
 	exports.isPlaying[guild.id] = true;
 
