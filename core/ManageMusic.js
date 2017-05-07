@@ -123,12 +123,12 @@ exports.streamAudio = function(remote, guild, channel) {
 	exports.isPlaying[guild.id] = true;
 
 	dispatcher.on("error", error => {
-		console.log(error);
+		console.log("StreamError: " + error);
 	});
 
 	dispatcher.on("end", reason => {
-		console.log(reason);
-		if (reason == "nextTrack") {
+		console.log("Reason: " + reason);
+		if (reason == "Stream is not generating quickly enough.") {
 			if (exports.isPlaying[guild.id]) {
 				console.log("Track Ended: " + reason);
 				var realSongData = exports.songData[guild.id];
