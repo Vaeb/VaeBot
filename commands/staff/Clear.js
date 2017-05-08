@@ -136,13 +136,16 @@ module.exports = Cmds.addCommand({
 		numSearch = Math.min(numSearch, 1000);
 
 		var last = null;
-		if (userOrType == "cmd") last = msgObj;
+		if (userOrType == "cmd") {
+			last = msgObj;
+			numArgs *= 2;
+		}
 
 		Util.fetchMessagesEx(channel, numSearch, msgStore, last).then(() => {
 			console.log("Messages checked: " + msgStore.length);
 
 			var msgStoreUser = [];
-			for (var i = 0; i < msgStore.length; i++) {
+			for (let i = 0; i < msgStore.length; i++) {
 				if (checkFunc(msgStore[i], userId)) {
 					msgStoreUser.push(msgStore[i]);
 					if (msgStoreUser.length >= numArgs) break;
@@ -153,7 +156,7 @@ module.exports = Cmds.addCommand({
 			var chunkLength = 99;
 			console.log("Matches found: " + msgStoreUser.length);
 
-			for (var i = 0; i < storeLength; i += chunkLength) {
+			for (let i = 0; i < storeLength; i += chunkLength) {
 				var chunk = msgStoreUser.slice(i, i + chunkLength);
 
 				if (chunk.length > 1) {
