@@ -315,7 +315,7 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 
 	var mutedGuild = Data.guildGet(guild, Data.muted);
 
-	console.log("UnMute Name: " + name);
+	console.log("Unmute Name: " + name);
 
 	for (var targetId in mutedGuild) {
 		if (!mutedGuild.hasOwnProperty(targetId)) continue;
@@ -351,22 +351,18 @@ exports.unMute = function(name, isDefinite, guild, pos, channel, speaker) {
 			{name: "Mute History", value: muteHistoryString}
 		];
 
-		console.log(name + " " + speakerName + " " + muteHistoryString);
-
 		Util.sendLog(sendLogData, colAction);
 
 		exports.stopUnMuteTimeout(safeId, guild);
-
-		console.log("Success");
 
 		return true;
 	} else if (backupTarget != null) {
 		return exports.unMuteReal(backupTarget, guild, pos, channel, speaker);
 	} else if (channel != null) {
-		console.log("(Channel included) Unmute failed: Unable to find muted user (" + name + ")");
+		console.log("(Channel included) Unmute failed: Unable to find muted user (" + name + ") from " + speakerName);
 		Util.sendEmbed(channel, "Unmute Failed", "User not found", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
 	} else {
-		console.log("(Channel not included) Unmute failed: Unable to find muted user (" + name + ")");
+		console.log("(Channel not included) Unmute failed: Unable to find muted user (" + name + ") from " + speakerName);
 	}
 
 	return true;
@@ -391,18 +387,19 @@ exports.addUnMuteEvent = function(id, guild, time, name) {
 
 	exports.stopUnMuteTimeout(id, guild);
 
+	let timeoutFunc = function() {
+		console.log("Unmute timeout for " + name + " (" + id + ") has finished @ " + guild.name);
+		exports.unMute(id, true, guild, Infinity, null, "System");
+	};
+
 	guild.fetchMember(id)
 	.then(member => {
-		console.log("Started timeout " + name + " " + id + " " + guild + " - " + time);
-		exports.muteEvents.push([id, baseGuild.id, setTimeout(function() {
-			exports.unMute(id, true, guild, Infinity, null, "System");
-		}, Math.min(time, 2147483646))]);
+		console.log("Started unmute timeout for " + name + " (" + id + ") " + guild.name + " - " + time);
+		exports.muteEvents.push([id, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
 	})
 	.catch(error => {
-		console.log("Started timeout [User has left] " + name + " " + id + " " + guild + " - " + time);
-		exports.muteEvents.push([id, baseGuild.id, setTimeout(function() {
-			exports.unMute(id, true, guild, Infinity, null, "System");
-		}, Math.min(time, 2147483646))]);
+		console.log("Started unmute timeout [User has left] for " + name + " (" + id + ") " + guild.name + " - " + time);
+		exports.muteEvents.push([id, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
 	});
 };
 
