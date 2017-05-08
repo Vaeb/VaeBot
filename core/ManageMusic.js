@@ -228,9 +228,9 @@ exports.formatSong = function(data, isFile) {
 	}
 };
 
-exports.addSong = function(speaker, guild, channel, songInfo) {
+exports.addSong = function(speaker, guild, channel, songData) {
 	var realSongs = exports.guildQueue[guild.id];
-	realSongs.push([songInfo, speaker]);
+	realSongs.push([songData, speaker]);
 	if (realSongs.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
 		exports.playNextQueue(guild, channel, true);
 	} else {
