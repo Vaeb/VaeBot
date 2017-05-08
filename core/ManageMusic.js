@@ -99,7 +99,7 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 	if (doPrint) Util.sendDescEmbed(channel, "[Auto-Playlist-Started]", "Playing " + songData.title, Util.makeEmbedFooter(null), null, 0x00E676);
 };
 
-exports.streamAudio = function(streamId, guild, channel) {
+exports.streamAudio = function(songData, guild, channel) {
 	var connection = guild.voiceConnection;
 	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
 
@@ -122,16 +122,16 @@ exports.streamAudio = function(streamId, guild, channel) {
 
 		var voiceChannel = connection.channel;
 
-		console.log("Streaming Audio: " + streamId);
+		console.log("Streaming Audio: " + songId);
 		
 		const streamOptions = {seek: 0, volume: 0.2};
 		var dispatcher;
 		
 		if (!isFile) {
-			const stream = Ytdl(streamId, {filter: 'audioonly'});
+			const stream = Ytdl(songId, {filter: 'audioonly'});
 			dispatcher = connection.playStream(stream, streamOptions);
 		} else {
-			dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + streamId + ".mp3");
+			dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + songId + ".mp3");
 		}
 
 		exports.isPlaying[guild.id] = true;
@@ -151,7 +151,7 @@ exports.streamAudio = function(streamId, guild, channel) {
 					if (guildQueue.length > 0) {
 						var songData = guildQueue[0][0];
 						var songId = songData.id;
-						if (songId == streamId) guildQueue.splice(0, 1);
+						if (songId == songId) guildQueue.splice(0, 1);
 					}
 
 					if (voiceChannel.members.size > 1) {
