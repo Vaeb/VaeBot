@@ -52,7 +52,7 @@ module.exports = Cmds.addCommand({
 				var realSongs = Music.guildQueue[guild.id];
 				var autoPlaylist = Data.guildGet(guild, Data.playlist);
 				var firstInQueue = realSongs[0];
-				if (guildMusicInfo.isAuto == false && realSongs.length > 0 && guildMusicInfo.activeSong != null && guildMusicInfo.activeSong.title == firstInQueue[0].snippet.title) realSongs.splice(0, 1);
+				if (guildMusicInfo.isAuto == false && realSongs.length > 0 && guildMusicInfo.activeSong != null && guildMusicInfo.activeSong.title == firstInQueue[0].title) realSongs.splice(0, 1);
 				Music.playNextQueue(guild, channel, true);
 			}
 		}

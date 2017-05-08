@@ -24,7 +24,7 @@ module.exports = Cmds.addCommand({
 				var lastSong = realSongs[i];
 				console.log("Checking " + i + "_" + typeof(lastSong));
 				if (lastSong[1].id == speaker.id) {
-					var title = lastSong[0].snippet.title;
+					var title = lastSong[0].title;
 					Util.print(channel, "Removed", title, "from the queue");
 					var connection = guild.voiceConnection;
 					realSongs.splice(i, 1);
