@@ -429,7 +429,7 @@ exports.runLua = function(args, channel) {
 	//args = "os=nil;io=nil;debug=nil;package=nil;require=nil;loadfile=nil;dofile=nil;collectgarbage=nil;" + args;
 	var tagNum = Math.floor((new Date()).getTime());
 	var fileDir = "/tmp/script_" + tagNum + ".lua";
-	fileSystem.writeFile(fileDir, args, (err) => {
+	FileSys.writeFile(fileDir, args, (err) => {
 		if (err) {
 			console.log("Script creation error: " + err);
 			Util.print(channel, "Script creation error: " + err);
@@ -479,7 +479,7 @@ exports.runLua = function(args, channel) {
 				}
 			}
 			Util.print(channel, outStr.join("\n"));
-			fileSystem.unlink(fileDir);
+			FileSys.unlink(fileDir);
 		});
 	});
 };
@@ -1134,11 +1134,11 @@ exports.round = function(num, inc) {
 };
 
 exports.write = function(content, name) {
-	fileSystem.writeFile(name, content);
+	FileSys.writeFile(name, content);
 };
 
 exports.remove = function(name) {
-	fileSystem.unlink(name);
+	FileSys.unlink(name);
 };
 
 exports.getHistory = function(id, guild) {
