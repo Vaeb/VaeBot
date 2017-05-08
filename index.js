@@ -713,12 +713,12 @@ client.on("message", msgObj => {
 	}
 
 	if (guild != null) {
-		if (Music.songs[guild.id] == null) Music.songs[guild.id] = [];
+		if (Music.guildQueue[guild.id] == null) Music.guildQueue[guild.id] = [];
 
-		if (Music.songData[guild.id] == null) {
-			Music.songData[guild.id] = {
-				nowVideo: null,
-				nowAuthor: null,
+		if (Music.guildMusicInfo[guild.id] == null) {
+			Music.guildMusicInfo[guild.id] = {
+				activeSong: null,
+				activeAuthor: null,
 				voteSkips: [],
 				isAuto: false
 			};

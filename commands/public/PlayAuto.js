@@ -20,12 +20,12 @@ module.exports = Cmds.addCommand({
 		var autoSongs = autoPlaylist.songs;
 		for (var i = 0; i < autoSongs.length; i++) {
 			var newSong = autoSongs[i];
-			var video = newSong[0];
+			var songData = newSong[0];
 			var author = newSong[1];
-			var title = video.snippet.title;
+			var title = songData.snippet.title;
 			if (title.toLowerCase().indexOf(args) >= 0) {
 				Music.joinMusic(guild, channel, (connection) => {
-					Music.addSong(speaker, guild, channel, video);
+					Music.addSong(speaker, guild, channel, Music.formatSong(songData, false));
 				});
 				break;
 			}

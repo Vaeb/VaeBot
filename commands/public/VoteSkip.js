@@ -31,8 +31,8 @@ module.exports = Cmds.addCommand({
 				return;
 			}
 			var alreadyExists = false;
-			var realSongData = Music.songData[guild.id];
-			var voteSkips = realSongData.voteSkips;
+			var guildMusicInfo = Music.guildMusicInfo[guild.id];
+			var voteSkips = guildMusicInfo.voteSkips;
 			for (var i = 0; i < voteSkips.length; i++) {
 				if (voteSkips[i] == speaker.id) {
 					alreadyExists = true;
@@ -49,10 +49,10 @@ module.exports = Cmds.addCommand({
 			Util.print(channel, "Vote skip:", numVotes, voteStr);
 			console.log("Vote skip: " + numVotes/numMembers);
 			if (numVotes/numMembers >= 0.5) {
-				var realSongs = Music.songs[guild.id];
+				var realSongs = Music.guildQueue[guild.id];
 				var autoPlaylist = Data.guildGet(guild, Data.playlist);
 				var firstInQueue = realSongs[0];
-				if (realSongData.isAuto == false && realSongs.length > 0 && realSongData.nowVideo != null && realSongData.nowVideo.snippet.title == firstInQueue[0].snippet.title) realSongs.splice(0, 1);
+				if (guildMusicInfo.isAuto == false && realSongs.length > 0 && guildMusicInfo.activeSong != null && guildMusicInfo.activeSong.title == firstInQueue[0].snippet.title) realSongs.splice(0, 1);
 				Music.playNextQueue(guild, channel, true);
 			}
 		}

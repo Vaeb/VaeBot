@@ -15,12 +15,12 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongs = Music.songs[guild.id];
-		var realSongData = Music.songData[guild.id];
+		var realSongs = Music.guildQueue[guild.id];
+		var guildMusicInfo = Music.guildMusicInfo[guild.id];
 		var connection = guild.voiceConnection;
 		if (connection) {
 			if (Music.isPlaying[guild.id]) {
-				if (realSongData.isAuto == false) realSongs.splice(0, 1);
+				if (guildMusicInfo.isAuto == false) realSongs.splice(0, 1);
 				Music.stopMusic(guild);
 				Util.print(channel, "Stopping audio");
 			} else {

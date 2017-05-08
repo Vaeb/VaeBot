@@ -16,7 +16,7 @@ module.exports = Cmds.addCommand({
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		Music.joinMusic(guild, channel, connection => {
-			var realSongs = Music.songs[guild.id];
+			var realSongs = Music.guildQueue[guild.id];
 			if (realSongs.length > 0) {
 				Music.playNextQueue(guild, channel, true);
 			} else {

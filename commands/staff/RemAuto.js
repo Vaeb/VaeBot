@@ -20,9 +20,9 @@ module.exports = Cmds.addCommand({
 		var autoSongs = autoPlaylist.songs;
 		for (var i = autoSongs.length-1; i >= 0; i--) {
 			var newSong = autoSongs[i];
-			var video = newSong[0];
+			var songData = newSong[0];
 			var author = newSong[1];
-			var title = video.snippet.title;
+			var title = songData.snippet.title;
 			if (title.toLowerCase().indexOf(args) >= 0) {
 				Util.print(channel, "Removed", title, "from the auto-playlist");
 				autoSongs.splice(i, 1);

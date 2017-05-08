@@ -15,9 +15,9 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongData = Music.songData[guild.id];
-		if (realSongData.nowVideo != null) {
-			Util.sendDescEmbed(channel, "Now Playing", realSongData.nowVideo.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+		var guildMusicInfo = Music.guildMusicInfo[guild.id];
+		if (guildMusicInfo.activeSong != null) {
+			Util.sendDescEmbed(channel, "Now Playing", guildMusicInfo.activeSong.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
 		} else {
 			Util.sendDescEmbed(channel, "Now Playing", "No songs are being played", Util.makeEmbedFooter(speaker), null, 0x00E676);
 		}

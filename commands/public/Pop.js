@@ -15,7 +15,7 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongs = Music.songs[guild.id];
+		var realSongs = Music.guildQueue[guild.id];
 		console.log("\npop");
 		// console.log(realSongs);
 		console.log("-------POP---------");
@@ -28,7 +28,7 @@ module.exports = Cmds.addCommand({
 					Util.print(channel, "Removed", title, "from the queue");
 					var connection = guild.voiceConnection;
 					realSongs.splice(i, 1);
-					if (connection != null && Music.songData[guild.id].nowVideo != null && title == Music.songData[guild.id].nowVideo.snippet.title) Music.playNextQueue(guild, channel, true);
+					if (connection != null && Music.guildMusicInfo[guild.id].activeSong != null && title == Music.guildMusicInfo[guild.id].activeSong.title) Music.playNextQueue(guild, channel, true);
 					break;
 				}
 			}

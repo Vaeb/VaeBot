@@ -16,21 +16,21 @@ module.exports = Cmds.addCommand({
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		if (args.includes("http")) {
-			var videoId = /[^/=]+$/.exec(args);
-			if (videoId != null && videoId[0]) {
-				videoId = videoId[0];
-				index.YtInfo.getById(videoId, function(error, result) {
-					var video = result.items[0];
-					if (video != null) {
+			var songId = /[^/=]+$/.exec(args);
+			if (songId != null && songId[0]) {
+				songId = songId[0];
+				index.YtInfo.getById(songId, function(error, result) {
+					var songData = result.items[0];
+					if (songData != null) {
 						var autoPlaylist = Data.guildGet(guild, Data.playlist, "songs");
 						if (autoPlaylist == null) {
 							autoPlaylist = [];
 							Data.guildSet(guild, Data.playlist, "songNum", 0);
 							Data.guildSet(guild, Data.playlist, "songs", autoPlaylist);
 						}
-						autoPlaylist.push([video, speaker]);
+						autoPlaylist.push([songData, speaker]);
 						Data.guildSaveData(Data.playlist);
-						Util.sendDescEmbed(channel, "[" + autoPlaylist.length + "] Auto-Playlist Appended", video.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+						Util.sendDescEmbed(channel, "[" + autoPlaylist.length + "] Auto-Playlist Appended", songData.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
 					} else {
 						Util.print(channel, "Audio not found");
 					}
@@ -46,8 +46,8 @@ module.exports = Cmds.addCommand({
 					var items = result.items;
 					var hasFound = false;
 					for (var i = 0; i < items.length; i++) {
-						var video = items[i];
-						if (video != null && video.hasOwnProperty("id") && video.id.kind == "youtube#video") {
+						var songData = items[i];
+						if (songData != null && songData.hasOwnProperty("id") && songData.id.kind == "youtube#video") {
 							hasFound = true;
 							var autoPlaylist = Data.guildGet(guild, Data.playlist, "songs");
 							if (autoPlaylist == null) {
@@ -55,9 +55,9 @@ module.exports = Cmds.addCommand({
 								Data.guildSet(guild, Data.playlist, "songNum", 0);
 								Data.guildSet(guild, Data.playlist, "songs", autoPlaylist);
 							}
-							autoPlaylist.push([video, speaker]);
+							autoPlaylist.push([songData, speaker]);
 							Data.guildSaveData(Data.playlist);
-							Util.sendDescEmbed(channel, "[" + autoPlaylist.length + "] Auto-Playlist Appended", video.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+							Util.sendDescEmbed(channel, "[" + autoPlaylist.length + "] Auto-Playlist Appended", songData.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
 							break;
 						}
 					}

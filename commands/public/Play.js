@@ -15,19 +15,19 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongs = Music.songs[guild.id];
+		var realSongs = Music.guildQueue[guild.id];
 
 		if (Music.noPlay.hasOwnProperty(speaker.id)) return;
 
 		Music.joinMusic(guild, channel, connection => {
 			if (args.includes("http")) {
-				var videoId = /[^/=]+$/.exec(args);
-				if (videoId != null && videoId[0]) {
-					videoId = videoId[0];
-					index.YtInfo.getById(videoId, function(error, result) {
-						var video = result.items[0];
-						if (video != null) {
-							Music.addSong(speaker, guild, channel, video);
+				var songId = /[^/=]+$/.exec(args);
+				if (songId != null && songId[0]) {
+					songId = songId[0];
+					index.YtInfo.getById(songId, function(error, result) {
+						var songData = result.items[0];
+						if (songData != null) {
+							Music.addSong(speaker, guild, channel, Music.formatSong(songData, false));
 						} else {
 							Util.print(channel, "Audio not found");
 						}
@@ -43,10 +43,10 @@ module.exports = Cmds.addCommand({
 						var items = result.items;
 						var hasFound = false;
 						for (var i = 0; i < items.length; i++) {
-							var video = items[i];
-							if (video != null && video.hasOwnProperty("id") && video.id.kind == "youtube#video") {
+							var songData = items[i];
+							if (songData != null && songData.hasOwnProperty("id") && songData.id.kind == "youtube#video") {
 								hasFound = true;
-								Music.addSong(speaker, guild, channel, video);
+								Music.addSong(speaker, guild, channel, Music.formatSong(songData, false));
 								break;
 							}
 						}
