@@ -101,20 +101,24 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 };
 
 exports.streamAudio = function(streamId, guild, channel, isFile) {
+	var connection = guild.voiceConnection;
+	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
+
+	var oldPlayer = connection.player;
+
+	if (oldPlayer) {
+		var oldDispatcher = oldPlayer.dispatcher;
+		if (oldDispatcher) {
+			console.log("Ended previous!");
+			oldDispatcher.end("NewStreamAudio");
+		}
+	}
+
 	setTimeout(function() {
-		var connection = guild.voiceConnection;
+		connection = guild.voiceConnection;
 		if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
 
 		var voiceChannel = connection.channel;
-		var oldPlayer = connection.player;
-
-		if (oldPlayer) {
-			var oldDispatcher = oldPlayer.dispatcher;
-			if (oldDispatcher) {
-				console.log("Ended previous!");
-				oldDispatcher.end("NewStreamAudio");
-			}
-		}
 
 		console.log("Streaming Audio: " + streamId);
 		const streamOptions = {seek: 0, volume: 0.2};
