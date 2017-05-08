@@ -25,6 +25,7 @@ module.exports = Cmds.addCommand({
 
 const FileSys = index.FileSys,
 	DateFormat = index.DateFormat,
+	Exec = index.Exec,
 	Path = index.Path;
 
 exports.regexURLPerfect = new RegExp(
@@ -434,7 +435,7 @@ exports.runLua = function(args, channel) {
 			console.log("Script creation error: " + err);
 			Util.print(channel, "Script creation error: " + err);
 		}
-		exec("lua " + fileDir, (error, stdout, stderr) => {
+		Exec("lua " + fileDir, (error, stdout, stderr) => {
 			if (!stdout) stdout = "";
 			safeOut = Util.safe(stdout);
 			safeErr = Util.safe(stderr);
