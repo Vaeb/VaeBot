@@ -21,9 +21,9 @@ module.exports = Cmds.addCommand({
 		
 		for (var i = 0; i < commands.length; i++) {
 			var sendEmbedFields = [];
-			var holder = commands[i];
+			var cmdData = commands[i];
 
-			var fullCmds = holder[0];
+			var fullCmds = cmdData[0];
 			var trimCmds = [];
 			var isMatch = false;
 			
@@ -37,10 +37,18 @@ module.exports = Cmds.addCommand({
 
 			if (!isMatch) continue;
 
+			var cmdRequires = cmdData[2];
+			var cmdDesc = cmdData[3];
+			var cmdSyntax = cmdData[4];
+			var cmdExample = cmdData[5];
+
+			var cmdType = cmdRequires.staff ? "Staff" : cmdRequires.vaeb ? "Vaeb" : "Public";
+
 			sendEmbedFields.push({name: "Commands", value: trimCmds.join(" | "), inline: false});
-			sendEmbedFields.push({name: "Description", value: holder[3], inline: false});
-			sendEmbedFields.push({name: "Syntax", value: trimCmds[0] + " " + holder[4], inline: false});
-			sendEmbedFields.push({name: "Example", value: trimCmds[0] + " " + holder[5], inline: false});
+			sendEmbedFields.push({name: "Permission Level", value: cmdType, inline: false});
+			sendEmbedFields.push({name: "Description", value: cmdDesc, inline: false});
+			sendEmbedFields.push({name: "Syntax", value: trimCmds[0] + " " + cmdSyntax, inline: false});
+			sendEmbedFields.push({name: "Example", value: trimCmds[0] + " " + cmdExample, inline: false});
 
 			Util.sendEmbed(channel, "Command Syntax", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 
