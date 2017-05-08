@@ -31,12 +31,13 @@ exports.clearQueue = function(guild) {
 exports.chooseRandomSong = function(guild, autoPlaylist, lastId) {
 	var autoSongs = autoPlaylist.songs;
 	var newSong = autoSongs[Util.getRandomInt(0, autoSongs.length-1)];
-	var songData = newSong[0];
+	var songData = exports.formatSong(newSong[0], false);
+	var songInfo = [songData, newSong[1]];
 	var songId = songData.id;
 	if (autoSongs.length > 1 && songId == lastId) {
 		return exports.chooseRandomSong(guild, autoPlaylist, lastId);
 	} else {
-		return newSong;
+		return songInfo;
 	}
 };
 
@@ -58,13 +59,13 @@ exports.playRealSong = function(newSong, guild, channel, doPrint) {
 exports.playNextQueue = function(guild, channel, doPrint) {
 	console.log("\nCalled Playing Next Queue");
 	if (doPrint == null) doPrint = true;
-	var realSongs = exports.guildQueue[guild.id];
+	var guildQueue = exports.guildQueue[guild.id];
 	var autoPlaylist = Data.guildGet(guild, Data.playlist);
-	console.log("realSongs");
-	console.log(realSongs.length);
+	console.log("guildQueue");
+	console.log(guildQueue.length);
 	console.log("-------Playing Next Queue---------\n");
-	if (realSongs.length > 0) {
-		var newSong = realSongs[0];
+	if (guildQueue.length > 0) {
+		var newSong = guildQueue[0];
 		exports.playRealSong(newSong, guild, channel, doPrint);
 	} else if (autoPlaylist.hasOwnProperty("songs") && autoPlaylist.songs.length > 0) {
 		console.log("Playing Next Queue, Playing Next Auto");
@@ -121,6 +122,7 @@ exports.streamAudio = function(streamId, guild, channel, isFile) {
 		var voiceChannel = connection.channel;
 
 		console.log("Streaming Audio: " + streamId);
+		
 		const streamOptions = {seek: 0, volume: 0.2};
 		var dispatcher;
 		
@@ -143,17 +145,17 @@ exports.streamAudio = function(streamId, guild, channel, isFile) {
 				if (exports.isPlaying[guild.id]) {
 					console.log("Track Ended, Starting Next: " + reason);
 					var guildMusicInfo = exports.guildMusicInfo[guild.id];
-					var realSongs = exports.guildQueue[guild.id];
+					var guildQueue = exports.guildQueue[guild.id];
 
-					if (realSongs.length > 0) {
-						var songData = realSongs[0][0];
+					if (guildQueue.length > 0) {
+						var songData = guildQueue[0][0];
 						var songId = songData.id;
-						if (songId == streamId) realSongs.splice(0, 1);
+						if (songId == streamId) guildQueue.splice(0, 1);
 					}
 
 					if (voiceChannel.members.size > 1) {
 						var autoPlaylist = Data.guildGet(guild, Data.playlist);
-						if (realSongs.length === 0 && guildMusicInfo.isAuto === true) {
+						if (guildQueue.length === 0 && guildMusicInfo.isAuto === true) {
 							console.log("Track Ended, Playing Next Auto");
 							exports.playNextAuto(guild, channel);
 						} else {
@@ -166,7 +168,7 @@ exports.streamAudio = function(streamId, guild, channel, isFile) {
 				}
 			}
 		});
-	}, 2000);
+	}, 1000);
 };
 
 exports.playFile = function(name, guild, channel) {
@@ -235,11 +237,11 @@ exports.formatSong = function(data, isFile) {
 };
 
 exports.addSong = function(speaker, guild, channel, songData) {
-	var realSongs = exports.guildQueue[guild.id];
-	realSongs.push([songData, speaker]);
-	if (realSongs.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
+	var guildQueue = exports.guildQueue[guild.id];
+	guildQueue.push([songData, speaker]);
+	if (guildQueue.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
 		exports.playNextQueue(guild, channel, true);
 	} else {
-		Util.sendDescEmbed(channel, "[" + realSongs.length + "] Audio Queue Appended", songData.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+		Util.sendDescEmbed(channel, "[" + guildQueue.length + "] Audio Queue Appended", songData.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
 	}
 };

@@ -49,10 +49,10 @@ module.exports = Cmds.addCommand({
 			Util.print(channel, "Vote skip:", numVotes, voteStr);
 			console.log("Vote skip: " + numVotes/numMembers);
 			if (numVotes/numMembers >= 0.5) {
-				var realSongs = Music.guildQueue[guild.id];
+				var guildQueue = Music.guildQueue[guild.id];
 				var autoPlaylist = Data.guildGet(guild, Data.playlist);
-				var firstInQueue = realSongs[0];
-				if (guildMusicInfo.isAuto == false && realSongs.length > 0 && guildMusicInfo.activeSong != null && guildMusicInfo.activeSong.title == firstInQueue[0].title) realSongs.splice(0, 1);
+				var firstInQueue = guildQueue[0];
+				if (guildMusicInfo.isAuto == false && guildQueue.length > 0 && guildMusicInfo.activeSong != null && guildMusicInfo.activeSong.title == firstInQueue[0].title) guildQueue.splice(0, 1);
 				Music.playNextQueue(guild, channel, true);
 			}
 		}

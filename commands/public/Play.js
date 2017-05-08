@@ -15,7 +15,7 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongs = Music.guildQueue[guild.id];
+		var guildQueue = Music.guildQueue[guild.id];
 
 		if (Music.noPlay.hasOwnProperty(speaker.id)) return;
 

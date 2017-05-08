@@ -15,13 +15,13 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var realSongs = Music.guildQueue[guild.id];
+		var guildQueue = Music.guildQueue[guild.id];
 
 		var sendEmbedFields = [];
 
-		for (var i = 0; i < realSongs.length; i++) {
-			var songData = realSongs[i][0];
-			var author = realSongs[i][1];
+		for (var i = 0; i < guildQueue.length; i++) {
+			var songData = guildQueue[i][0];
+			var author = guildQueue[i][1];
 			sendEmbedFields.push({name: "[" + (i+1) + "] " + songData.title, value: "Added by " + Util.safeEveryone(author.toString()), inline: false});
 		}
 
