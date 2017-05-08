@@ -74,7 +74,7 @@ global.colCommand = 0x2196F3; // Log of command being executed
 exports.blockedUsers = {};
 exports.blockedWords = [];
 
-var runFuncs = [];
+exports.runFuncs = [];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -613,9 +613,9 @@ client.on("message", msgObj => {
 		speaker = author;
 	}
 
-	if (runFuncs.length > 0) {
-		for (let i = 0; i < runFuncs.length; i++) {
-			runFuncs[i](msgObj, channel, speaker);
+	if (exports.runFuncs.length > 0) {
+		for (let i = 0; i < exports.runFuncs.length; i++) {
+			exports.runFuncs[i](msgObj, channel, speaker);
 		}
 	}
 
