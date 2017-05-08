@@ -46,13 +46,12 @@ exports.playRealSong = function(newSong, guild, channel, doPrint) {
 	if (doPrint == null) doPrint = true;
 	var songData = newSong[0];
 	var author = newSong[1];
-	var songId = songData.id;
 	var guildMusicInfo = exports.guildMusicInfo[guild.id];
 	guildMusicInfo.activeSong = songData;
 	guildMusicInfo.activeAuthor = author;
 	guildMusicInfo.voteSkips = [];
 	guildMusicInfo.isAuto = false;
-	exports.streamAudio(songId, guild, channel);
+	exports.streamAudio(songData, guild, channel);
 	if (doPrint) Util.sendDescEmbed(channel, "Playing " + songData.title, "Added by " + Util.safeEveryone(author.toString()), Util.makeEmbedFooter(author), null, 0x00E676);
 };
 
@@ -92,16 +91,15 @@ exports.playNextAuto = function(guild, channel, doPrint) {
 	autoPlaylist.songNum = newSongNum;
 	Data.guildSaveData(Data.playlist);*/
 	console.log("Playing Next Auto");
-	var songId = songData.id;
 	guildMusicInfo.activeSong = songData;
 	guildMusicInfo.activeAuthor = author;
 	guildMusicInfo.voteSkips = [];
 	guildMusicInfo.isAuto = true;
-	exports.streamAudio(songId, guild, channel);
+	exports.streamAudio(songData, guild, channel);
 	if (doPrint) Util.sendDescEmbed(channel, "[Auto-Playlist-Started]", "Playing " + songData.title, Util.makeEmbedFooter(null), null, 0x00E676);
 };
 
-exports.streamAudio = function(streamId, guild, channel, isFile) {
+exports.streamAudio = function(streamId, guild, channel) {
 	var connection = guild.voiceConnection;
 	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
 
@@ -114,6 +112,9 @@ exports.streamAudio = function(streamId, guild, channel, isFile) {
 			oldDispatcher.end("NewStreamAudio");
 		}
 	}
+
+	var songId = songData.id;
+	var isFile = songData.isFile;
 
 	setTimeout(function() {
 		connection = guild.voiceConnection;
