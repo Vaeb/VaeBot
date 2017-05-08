@@ -33,6 +33,8 @@ exports.addCommand = function(structure) {
 };
 
 exports.getCommand = function(content) {
+	if (content.substr(0, 5) == "sudo ") content = content.substring(5);
+
 	var contentLower = content.toLowerCase();
 
 	for (var i = 0; i < exports.commands.length; i++) {
