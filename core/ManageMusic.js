@@ -142,7 +142,7 @@ exports.streamAudio = function(songData, guild, channel) {
 
 		dispatcher.on("end", reason => {
 			console.log("Track Ended: " + reason);
-			if (reason == "Stream is not generating quickly enough.") {
+			if (reason == "Stream is not generating quickly enough." || reason == "stream") {
 				if (exports.isPlaying[guild.id]) {
 					console.log("Track Ended, Starting Next: " + reason);
 					var guildMusicInfo = exports.guildMusicInfo[guild.id];
