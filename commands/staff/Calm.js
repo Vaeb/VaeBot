@@ -14,7 +14,7 @@ module.exports = Cmds.addCommand({
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
+	/*func: (cmd, args, msgObj, speaker, channel, guild) => {
 		if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
 		
 		if (index.slowChat[guild.id]) return;
@@ -37,6 +37,16 @@ module.exports = Cmds.addCommand({
 			// Util.sendEmbed(msgChannel, Util.getMostName(msgSpeaker), msgContent, Util.makeEmbedFooter(msgSpeaker, msgCreatedAt), null, 0x00E676, null);
 			msgChannel.send(Util.getMostName(msgSpeaker) + ": " + msgContent);
 		}, index.calmSpeed);
+
+		index.slowChat[guild.id] = true;
+	}*/
+
+	func: (cmd, args, msgObj, speaker, channel, guild) => {
+		if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
+
+		if (index.slowChat[guild.id]) return;
+
+		index.chatNext[guild.id] = (+ new Date()) + index.calmSpeed;
 
 		index.slowChat[guild.id] = true;
 	}

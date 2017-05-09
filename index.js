@@ -510,10 +510,11 @@ client.on("messageUpdate", (oldMsgObj, newMsgObj) => {
 
 exports.lockChannel = null;
 
-exports.calmSpeed = 5500;
+exports.calmSpeed = 7000;
 exports.slowChat = {};
 exports.slowInterval = {};
 exports.chatQueue = {};
+exports.chatNext = {};
 
 client.on("voiceStateUpdate", (oldMember, member) => {
 	var oldChannel = oldMember.voiceChannel; // May be null
@@ -727,8 +728,16 @@ client.on("message", msgObj => {
 	}
 
 	if (guild && exports.slowChat[guild.id] && author.bot == false && !isStaff) {
-		msgObj.delete();
-		exports.chatQueue[guild.id].push(msgObj);
+		var nowTime = + new Date();
+		if (nowTime > exports.chatNext[guild.id]) {
+			exports.chatNext[guild.id] = nowTime + exports.calmSpeed;
+		} else {
+			msgObj.delete();
+			var intervalNum = exports.calmSpeed / 1000;
+			//var timeUntilSend = (exports.chatNext[guild.id] - nowTime) / 1000;
+			author.send("Your message has been deleted. " + guild.name + " is temporarily in slow mode, meaning everyone must wait " + intervalNum + " seconds after the previous message before they can send one.")
+		}
+		// exports.chatQueue[guild.id].push(msgObj);
 	}
 
 	Cmds.checkMessage(msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff);
