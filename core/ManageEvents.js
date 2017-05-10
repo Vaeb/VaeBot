@@ -100,6 +100,10 @@ exports.remEvent = function(guild, eventName, actionName) {
 			actionDataEvent.splice(i, 1);
 		}
 	}
+
+	if (actionDataEvent.length == 0) {
+		allEvents[guild.id][eventName] = null;
+	}
 };
 
 exports.emit = function(guild, eventName) {
