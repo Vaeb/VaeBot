@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-	cmds: [";actions", ";guild actions"],
+	cmds: [";actions", ";guild actions", ";all actions"],
 
 	requires: {
 		guild: true,

@@ -1,14 +1,13 @@
 /*
 
-UserJoin
-UserLeave
-UserMute
-UserUnMute
-UserRoleAdded
-UserRoleRemoved
-
-RoleCreated
-RoleRemoved
+AddRole
+RemRole
+DM
+Mute
+UnMute
+Kick
+Ban
+DeleteMessage
 
 eventData
 	Guild
@@ -128,7 +127,7 @@ exports.emit = function(guild, eventName) {
 	}
 };
 
-exports.Actions.AddRole = function(guild, eventName, actionArgs, eventArgs) {
+exports.Actions.AddRole = (guild, eventName, actionArgs, eventArgs) => {
 	var member = eventArgs[0];
 
 	for (var i = 0; i < actionArgs.length; i++) {
@@ -145,7 +144,7 @@ exports.Actions.AddRole = function(guild, eventName, actionArgs, eventArgs) {
 	}
 };
 
-exports.Actions.RemRole = function(guild, eventName, actionArgs, eventArgs) {
+exports.Actions.RemRole = (guild, eventName, actionArgs, eventArgs) => {
 	var member = eventArgs[0];
 
 	for (var i = 0; i < actionArgs.length; i++) {
@@ -162,7 +161,7 @@ exports.Actions.RemRole = function(guild, eventName, actionArgs, eventArgs) {
 	}
 };
 
-exports.Actions.DM = function(guild, eventName, actionArgs, eventArgs) {
+exports.Actions.DM = (guild, eventName, actionArgs, eventArgs) => {
 	var member = eventArgs[0];
 
 	Util.print(member, ...actionArgs);
