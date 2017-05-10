@@ -128,3 +128,9 @@ exports.Actions.RemRole = function(guild, eventName, actionData, eventData) {
 		.catch(console.error);
 	}
 };
+
+exports.Actions.DM = function(guild, eventName, actionData, eventData) {
+	var member = eventData[0];
+
+	Util.print(member, ...actionData);
+};
