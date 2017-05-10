@@ -21,7 +21,11 @@ module.exports = Cmds.addCommand({
 		var actionName = args.substring(0, spaceIndex);
 		var actionFuncStr = args.substring(spaceIndex+1);
 
-		eval(`Events.${actionName} = ${actionFuncStr}`);
+		var evalStr = "Events.Actions." + actionName + " = " + actionFuncStr;
+
+		console.log(evalStr);
+
+		eval(evalStr);
 
 		Util.sendDescEmbed(channel, "Added Action", "Added action " + actionName + " for linking", Util.makeEmbedFooter(speaker), null, 0x00E676);
 	}

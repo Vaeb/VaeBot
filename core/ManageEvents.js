@@ -106,6 +106,8 @@ exports.remEvent = function(guild, eventName, actionName) {
 };
 
 exports.emit = function(guild, eventName) {
+	if (!guild) return;
+	
 	var eventArgs = Array.prototype.slice.call(arguments, 2);
 
 	if (!allEvents[guild.id]) allEvents[guild.id] = {};
