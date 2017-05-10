@@ -30,7 +30,7 @@ exports.getEvents = function(guild, checkEventName) {
 
 	if (!checkEventName) {
 		for (let eventName in guildEventsObj) {
-			if (!guildEventsObj.hasOwnProperty(eventName)) continue;
+			if (!guildEventsObj.hasOwnProperty(eventName) || guildEventsObj[eventName] == null) continue;
 
 			let actionDataEvent = guildEventsObj[eventName];
 
@@ -102,7 +102,7 @@ exports.remEvent = function(guild, eventName, actionName) {
 	}
 
 	if (actionDataEvent.length == 0) {
-		allEvents[guild.id][eventName] = null;
+		allEvents[guild.id][eventName] = undefined;
 	}
 };
 
