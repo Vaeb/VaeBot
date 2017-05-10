@@ -10,7 +10,7 @@ module.exports = Cmds.addCommand({
 
 	args: "",
 
-	example: "EchoMessage (guild, eventName, actionArgs, eventArgs) => { print(channel, ...eventArgs[3]) };",
+	example: "EchoMessage (guild, eventName, actionArgs, eventArgs) => { Util.print(channel, ...eventArgs[3]) };",
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 

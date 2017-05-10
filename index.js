@@ -758,11 +758,11 @@ client.on("message", msgObj => {
 
 	Cmds.checkMessage(msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff);
 
-	Events.emit(guild, "MessageCreate", speaker, channel, msgObj, content);
-
 	if (author.bot == true) { //RETURN IF BOT
 		return;
 	}
+
+	Events.emit(guild, "MessageCreate", speaker, channel, msgObj, content);
 
 	if (contentLower.includes(("👀").toLowerCase())) Util.print(channel, "👀");
 });
