@@ -74,7 +74,7 @@ module.exports = Cmds.addCommand({
 				}
 			}
 
-			Util.sendEmbed(channel, "Created Link", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+			Util.sendEmbed(channel, "Removed Link", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 		}
 	}
 });
