@@ -51,7 +51,7 @@ module.exports = Cmds.addCommand({
 				let actionName = actionData[0];
 				let actionArgs = actionData[1];
 
-				actionStr.push(actionName + " { " + actionArgs.join(" ") + " }");
+				actionStr.push(actionName + " " + actionArgs.join(" "));
 			}
 
 			sendEmbedFields.push({name: eventName, value: actionStr.join("\n"), inline: false});
