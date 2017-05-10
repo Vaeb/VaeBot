@@ -44,7 +44,7 @@ module.exports = Cmds.addCommand({
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
 
-		if (index.slowChat[guild.id]) return;
+		if (index.slowChat[guild.id]) return console.log("Slow is already active");
 
 		index.chatNext[guild.id] = (+ new Date()) + index.calmSpeed;
 
