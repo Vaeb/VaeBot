@@ -18,7 +18,7 @@
 */
 
 module.exports = Cmds.addCommand({
-	cmds: [";getlinks", ";links", ";triggers", ";events"],
+	cmds: [";getlinks", ";links", ";triggers"],
 
 	requires: {
 		guild: true,
