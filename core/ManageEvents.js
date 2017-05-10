@@ -42,7 +42,7 @@ exports.getEvents = function(guild, checkEventName) {
 				let actionName = nowData[0];
 				let actionArgs = nowData[2];
 
-				eventInfo.push(actionName, actionArgs);
+				eventInfo.push([actionName, actionArgs]);
 			}
 
 			fullInfo.push(eventInfo);
@@ -57,7 +57,7 @@ exports.getEvents = function(guild, checkEventName) {
 				let actionName = nowData[0];
 				let actionArgs = nowData[2];
 
-				fullInfo.push(actionName, actionArgs);
+				fullInfo.push([actionName, actionArgs]);
 			}
 		}
 	}
