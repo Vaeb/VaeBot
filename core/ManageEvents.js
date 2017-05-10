@@ -21,7 +21,51 @@ var allEvents = {};
 
 exports.Actions = {};
 
-exports.addEvent = function(guild, eventName, actionFunc, actionName, actionArgs) {
+exports.getEvents = function(guild, checkEventName) {
+	if (!allEvents[guild.id]) allEvents[guild.id] = {};
+
+	var fullInfo = [];
+
+	var guildEventsObj =  allEvents[guild.id];
+
+	if (!checkEventName) {
+		for (let eventName in guildEventsObj) {
+			if (!guildEventsObj.hasOwnProperty(eventName)) continue;
+
+			let actionDataEvent = guildEventsObj[eventName];
+
+			let eventInfo = [eventName];
+
+			for (let i = 0; i < actionDataEvent.length; i++) {
+				let nowData = actionDataEvent[i];
+
+				let actionName = nowData[0];
+				let actionArgs = nowData[2];
+
+				eventInfo.push(actionName, actionArgs);
+			}
+
+			fullInfo.push(eventInfo);
+		}
+	} else {
+		let actionDataEvent = guildEventsObj[checkEventName];
+
+		if (actionDataEvent) {
+			for (let i = 0; i < actionDataEvent.length; i++) {
+				let nowData = actionDataEvent[i];
+
+				let actionName = nowData[0];
+				let actionArgs = nowData[2];
+
+				fullInfo.push(actionName, actionArgs);
+			}
+		}
+	}
+
+	return fullInfo;
+};
+
+exports.addEvent = function(guild, eventName, actionName, actionFunc, actionArgs) {
 	if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
 	var actionDataGuild = allEvents[guild.id];
