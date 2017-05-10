@@ -39,15 +39,40 @@ module.exports = Cmds.addCommand({
 					var paramStr = args.substring(lastOpen+1, i);
 
 					if (event == null) {
-						event = paramStr;
+						event = paramStr.trim().split(" ");
 					} else {
-						actions.push(paramStr);
+						actions.push(paramStr.trim().split(" "));
 					}
 				}
 			}
 		}
 
+		if (event == null || event.length == 0) {
+			return Util.commandFailed(channel, speaker, "Invalid parameters: Event not provided");
+		} else if (actions.length == 0) {
+			return Util.commandFailed(channel, speaker, "Invalid parameters: Action(s) not provided");
+		}
+
 		console.log(event);
 		console.log(actions);
+
+		for (let i = 0; i < actions.length; i++) {
+			var actionData = actions[i];
+			var actionName = actionData[0];
+			var actionArgs = actionData.splice(1);
+
+			var actionFunc = Events.Actions[actionName];
+			
+			if (!actionFunc) {
+				Util.sendDescEmbed(channel, "Action Not Found", actionName, Util.makeEmbedFooter(speaker));
+				continue;
+			}
+
+			for (let j = 0; j < event.length; j++) {
+				let eventName = event[j];
+
+				Events.addEvent(guild, eventName, actionFunc, actionName, actionArgs);
+			}
+		}
 	}
 });

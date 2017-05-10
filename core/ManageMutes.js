@@ -143,11 +143,11 @@ exports.doMuteReal = function(targetMember, reason, guild, pos, channel, speaker
 
 	Data.guildSet(guild, Data.muted, id, [guild.id, endTime, muteName, reason, speakerId]);
 
-	// Add a timeout event for unmuting
+	// Finalise mute
 
 	exports.addUnMuteEvent(id, guild, muteTime, muteName);
 
-	// Remove the speaking role
+	Events.emit(guild, "UserMute", targetMember, reason, muteTime, speakerId);
 
 	exports.removeSend(targetMember);
 
@@ -248,11 +248,20 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 
 	Data.guildDelete(guild, Data.muted, id);
 
+	var muteHistory = Util.getHistory(targetMember.id, guild);
+	var muteHistoryString = Util.historyToString(muteHistory);
+
+	// Finalise unmute
+
+	exports.stopUnMuteTimeout(id, guild);
+
+	Events.emit(guild, "UserUnMute", targetMember, muteHistory, speakerId);
+	
 	exports.addSend(targetMember);
 
-	var muteName = Util.getName(targetMember);
+	// Output
 
-	var muteHistoryString = Util.historyToString(Util.getHistory(targetMember.id, guild));
+	var muteName = Util.getName(targetMember);
 
 	if (pos == Infinity) {
 		console.log("Unmuted " + muteName);
@@ -279,8 +288,6 @@ exports.unMuteReal = function(targetMember, guild, pos, channel, speaker) {
 	outStr.push("Guild: " + guild.name);
 	outStr.push("```");
 	Util.print(targetMember, outStr.join("\n"));
-
-	exports.stopUnMuteTimeout(id, guild);
 
 	return true;
 };
