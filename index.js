@@ -29,6 +29,7 @@ global.Data = require("./data/ManageData.js");
 global.Mutes = require("./core/ManageMutes.js");
 global.Music = require("./core/ManageMusic.js");
 global.Cmds = require("./core/ManageCommands.js");
+global.Events = require("./core/ManageEvents.js");
 global.Discord = require("discord.js");
 
 const Auth = require("./Auth.js");
