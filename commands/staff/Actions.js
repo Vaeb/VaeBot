@@ -17,8 +17,8 @@ module.exports = Cmds.addCommand({
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		var sendEmbedFields = [];
 
-		for (let actionName in exports.Actions) {
-			if (!exports.Actions.hasOwnProperty(actionName)) continue;
+		for (let actionName in Events.Actions) {
+			if (!Events.Actions.hasOwnProperty(actionName)) continue;
 
 			sendEmbedFields.push({name: actionName, value: "​", inline: false});
 		}
