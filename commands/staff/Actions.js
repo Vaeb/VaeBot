@@ -17,9 +17,12 @@ module.exports = Cmds.addCommand({
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		var sendEmbedFields = [];
 
-		sendEmbedFields.push({name: "AddRole", value: "​", inline: false});
-		sendEmbedFields.push({name: "RemRole", value: "​", inline: false});
+		for (let actionName in exports.Actions) {
+			if (!exports.Actions.hasOwnProperty(actionName)) continue;
 
-		Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+			sendEmbedFields.push({name: actionName, value: "​", inline: false});
+		}
+
+		Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 	}
 });

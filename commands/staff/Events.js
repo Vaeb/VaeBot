@@ -28,6 +28,6 @@ module.exports = Cmds.addCommand({
 		sendEmbedFields.push({name: "UserRoleRemove", value: "​", inline: false});
 		sendEmbedFields.push({name: "UserNicknameUpdate", value: "​", inline: false});
 
-		Util.sendEmbed(channel, "Events", "All events which can be used in ;link", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+		Util.sendEmbed(channel, "Events", "All events which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 	}
 });
