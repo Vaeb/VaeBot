@@ -22,5 +22,7 @@ module.exports = Cmds.addCommand({
 		var actionFuncStr = args.substring(spaceIndex+1);
 
 		eval(`Events.${actionName} = ${actionFuncStr}`);
+
+		Util.sendDescEmbed(channel, "Added Action", "Added action " + actionName + " for linking", Util.makeEmbedFooter(speaker), null, 0x00E676);
 	}
 });
