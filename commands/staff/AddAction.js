@@ -41,9 +41,3 @@ module.exports = Cmds.addCommand({
 		Util.sendEmbed(channel, "Guild Links", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 	}
 });
-
-exports.Actions.DM = (guild, eventName, actionArgs, eventArgs) => {
-	var member = eventArgs[0];
-
-	Util.print(member, ...actionArgs);
-};
