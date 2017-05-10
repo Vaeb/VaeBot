@@ -55,6 +55,8 @@ module.exports = Cmds.addCommand({
 		console.log(actions);
 
 		for (let i = 0; i < event.length; i++) {
+			let eventName = event[i];
+			
 			if (actions.length == 0) {
 				Events.remEvent(guild, eventName);
 			} else {
