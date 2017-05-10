@@ -56,6 +56,10 @@ module.exports = Cmds.addCommand({
 
 		for (let i = 0; i < event.length; i++) {
 			let eventName = event[i];
+
+			var sendEmbedFields = [];
+
+			sendEmbedFields.push({name: "Event", value: eventName, inline: false});
 			
 			if (actions.length == 0) {
 				Events.remEvent(guild, eventName);
@@ -65,8 +69,12 @@ module.exports = Cmds.addCommand({
 					let actionName = actionData[0];
 					
 					Events.remEvent(guild, eventName, actionName);
+
+					sendEmbedFields.push({name: "Action", value: actionName, inline: false});
 				}
 			}
+
+			Util.sendEmbed(channel, "Created Link", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 		}
 	}
 });

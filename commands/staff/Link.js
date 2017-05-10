@@ -61,7 +61,7 @@ module.exports = Cmds.addCommand({
 
 			for (let j = 0; j < actions.length; j++) {
 				let actionData = actions[j];
-				
+
 				let actionName = actionData[0];
 				let actionFunc = Events.Actions[actionName];
 				let actionArgs = actionData.splice(1);
@@ -72,6 +72,13 @@ module.exports = Cmds.addCommand({
 				}
 
 				Events.addEvent(guild, eventName, actionName, actionFunc, actionArgs);
+
+				var sendEmbedFields = [];
+
+				sendEmbedFields.push({name: "Event", value: eventName, inline: false});
+				sendEmbedFields.push({name: "Action", value: actionName, inline: false});
+
+				Util.sendEmbed(channel, "Created Link", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 			}
 		}
 	}
