@@ -17,8 +17,8 @@ module.exports = Cmds.addCommand({
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
 		var sendEmbedFields = [];
 
-		sendEmbedFields.push({name: "AddRole", value: null, inline: false});
-		sendEmbedFields.push({name: "RemRole", value: null, inline: false});
+		sendEmbedFields.push({name: "AddRole", value: "​", inline: false});
+		sendEmbedFields.push({name: "RemRole", value: "​", inline: false});
 
 		Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
 	}
