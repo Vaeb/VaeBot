@@ -10,96 +10,81 @@ UserRoleRemoved
 RoleCreated
 RoleRemoved
 
+eventData
+	Guild
+		eventName
+			actionName, actionFunc, actionArgs
+
 */
 
-var EventsHolder = index.EventsHolder;
-
-var eventFuncs = {};
-var eventEmitters = {};
+var allEvents = {};
 
 exports.Actions = {};
 
 exports.addEvent = function(guild, eventName, actionFunc, actionName, actionArgs) {
-	if (!eventEmitters[guild.id]) {
-		eventFuncs[guild.id] = {};
-		eventEmitters[guild.id] = new EventsHolder.EventEmitter();
-	}
+	if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataGuild = eventFuncs[guild.id];
+	var actionDataGuild = allEvents[guild.id];
 
-	var nowEmitter = eventEmitters[guild.id];
+	var actionDataEvent = actionDataGuild[eventName];
 
-	var actionData = actionDataGuild[eventName];
-
-	if (!actionData) {
-		actionData = [];
-		actionDataGuild[eventName] = actionData;
+	if (!actionDataEvent) {
+		actionDataEvent = [];
+		actionDataGuild[eventName] = actionDataEvent;
 	}
 
 	console.log(`Added event linking ${eventName} to ${actionName}`);
 
-	actionData.push([actionFunc, actionName, actionArgs]);
-
-	nowEmitter.addListener(eventName, actionFunc);
+	actionDataEvent.push([actionName, actionFunc, actionArgs]);
 };
 
 exports.remEvent = function(guild, eventName, actionName) {
-	if (!eventEmitters[guild.id]) {
-		eventFuncs[guild.id] = {};
-		eventEmitters[guild.id] = new EventsHolder.EventEmitter();
-	}
+	if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataGuild = eventFuncs[guild.id];
+	var actionDataEvent = allEvents[guild.id][eventName];
 
-	var nowEmitter = eventEmitters[guild.id];
-	var actionData = actionDataGuild[eventName];
-
-	if (!actionData || actionData.length == 0) {
+	if (!actionDataEvent || actionDataEvent.length == 0) {
 		return console.log(`Event ${eventName} not found`);
 	}
 
-	for (let i = actionData.length-1; i >= 0; i--) {
-		let nowData = actionData[i];
+	for (let i = actionDataEvent.length-1; i >= 0; i--) {
+		let nowData = actionDataEvent[i];
 		
-		if (actionName == null || nowData[1] == actionName) {
+		if (actionName == null || nowData[0] == actionName) {
 			console.log(`Removed event linking ${eventName} to ${actionName}`);
 
-			nowEmitter.removeListener(eventName, nowData[0]);
-			actionData.splice(i, 1);
+			actionDataEvent.splice(i, 1);
 		}
 	}
 };
 
 exports.emit = function(guild, eventName) {
-	var args = Array.prototype.slice.call(arguments, 2);
+	var eventArgs = Array.prototype.slice.call(arguments, 2);
 
-	if (!eventEmitters[guild.id]) {
-		eventFuncs[guild.id] = {};
-		eventEmitters[guild.id] = new EventsHolder.EventEmitter();
-	}
+	if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataGuild = eventFuncs[guild.id];
+	var actionDataEvent = allEvents[guild.id][eventName];
 
-	var nowEmitter = eventEmitters[guild.id];
-	var actionData = actionDataGuild[eventName];
+	if (!actionDataEvent || actionDataEvent.length == 0) return;
 
-	if (!actionData || actionData.length == 0) return;
+	for (let i = 0; i < actionDataEvent.length; i++) {
+		let nowData = actionDataEvent[i];
 
-	for (let i = 0; i < actionData.length; i++) {
-		let nowData = actionData[i];
-		let actionName = nowData[1];
+		let actionName = nowData[0];
+		let actionFunc = nowData[1];
+		let actionArgs = nowData[2];
 
 		console.log(`Calling action "${actionName}" linked to ${eventName}`);
 
-		nowEmitter.emit(eventName, guild, eventName, nowData[2], args);
+		actionFunc(guild, eventName, actionArgs, eventArgs);
 	}
 };
 
-exports.Actions.AddRole = function(guild, eventName, actionData, eventData) {
-	var member = eventData[0];
+exports.Actions.AddRole = function(guild, eventName, actionArgs, eventArgs) {
+	var member = eventArgs[0];
 
-	for (var i = 0; i < actionData.length; i++) {
-		var roleName = actionData[i];
+	for (var i = 0; i < actionArgs.length; i++) {
+		var roleName = actionArgs[i];
 		var roleObj = Util.getRole(roleName, guild);
 
 		if (!roleObj) {
@@ -112,11 +97,11 @@ exports.Actions.AddRole = function(guild, eventName, actionData, eventData) {
 	}
 };
 
-exports.Actions.RemRole = function(guild, eventName, actionData, eventData) {
-	var member = eventData[0];
+exports.Actions.RemRole = function(guild, eventName, actionArgs, eventArgs) {
+	var member = eventArgs[0];
 
-	for (var i = 0; i < actionData.length; i++) {
-		var roleName = actionData[i];
+	for (var i = 0; i < actionArgs.length; i++) {
+		var roleName = actionArgs[i];
 		var roleObj = Util.getRole(roleName, guild);
 
 		if (!roleObj) {
@@ -129,8 +114,8 @@ exports.Actions.RemRole = function(guild, eventName, actionData, eventData) {
 	}
 };
 
-exports.Actions.DM = function(guild, eventName, actionData, eventData) {
-	var member = eventData[0];
+exports.Actions.DM = function(guild, eventName, actionArgs, eventArgs) {
+	var member = eventArgs[0];
 
-	Util.print(member, ...actionData);
+	Util.print(member, ...actionArgs);
 };

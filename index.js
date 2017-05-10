@@ -12,7 +12,6 @@ const YtInfoObj = require("youtube-node");
 exports.YtInfo = new YtInfoObj();
 exports.NodeOpus = require("node-opus");
 exports.Exec = require("child_process").exec;
-exports.EventsHolder = require("events");
 
 exports.linkGuilds = [
 	["284746138995785729", "309785618932563968"]
