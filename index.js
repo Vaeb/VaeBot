@@ -37,12 +37,12 @@ const Auth = require('./Auth.js');
 
 exports.YtInfo.setKey(Auth.youtube);
 
-Discord.GuildMember.prototype.getProp = (p) => {
+/*Discord.GuildMember.prototype.getProp = (p) => {
   if (this[p] != null) return this[p];
   return this.user[p];
 };
 
-Discord.User.prototype.getProp = p => this[p];
+Discord.User.prototype.getProp = p => this[p];*/
 
 global.client = new Discord.Client({
   disabledEvents: ['TYPING_START'],
