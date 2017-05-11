@@ -437,8 +437,8 @@ exports.runLua = function(args, channel) {
 		}
 		Exec("lua " + fileDir, (error, stdout, stderr) => {
 			if (!stdout) stdout = "";
-			safeOut = Util.safe(stdout);
-			safeErr = Util.safe(stderr);
+			var safeOut = Util.safe(stdout);
+			// var safeErr = Util.safe(stderr);
 			var outStr = [];
 			if (error) {
 				outStr.push("**Execution error:**");
