@@ -1,80 +1,80 @@
 module.exports = Cmds.addCommand({
-	cmds: [";unlink ", ";remlink ", ";dellink ", ";untrigger ", ";unevent "],
+    cmds: [';unlink ', ';remlink ', ';dellink ', ';untrigger ', ';unevent '],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false,
+    },
 
-	desc: "UnLink an event from an action",
+    desc: 'UnLink an event from an action',
 
-	args: "({ [event_name_1] ... [event_name_n] }) ({ [action_1_name] }) ... ({ [action_o_name] })",
-	// args: "([event_name_1] ... [event_name_n]) (-[action_1_name] [action_1_param_1] ... [action_param_n]) ... (-[action_n_name] [action_n_param_1] ... [action_n_param_o])",
+    args: '({ [event_name_1] ... [event_name_n] }) ({ [action_1_name] }) ... ({ [action_o_name] })',
+    // args: "([event_name_1] ... [event_name_n]) (-[action_1_name] [action_1_param_1] ... [action_param_n]) ... (-[action_n_name] [action_n_param_1] ... [action_n_param_o])",
 
-	example: "{ UserJoin UserUnMute } { AddRole } { DM }",
-	// example: "UserJoin UserUnMute -AddRole SendMessages RandomRole -DM CmdInfo",
+    example: '{ UserJoin UserUnMute } { AddRole } { DM }',
+    // example: "UserJoin UserUnMute -AddRole SendMessages RandomRole -DM CmdInfo",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var event = null;
-		var actions = [];
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        let event = null;
+        const actions = [];
 
-		var numOpen = 0;
-		var lastOpen = 0;
+        let numOpen = 0;
+        let lastOpen = 0;
 
-		for (var i = 0; i < args.length; i++) {
-			var char = args[i];
+        for (let i = 0; i < args.length; i++) {
+            const char = args[i];
 
-			if (char == "{") {
-				if (numOpen == 0) {
-					lastOpen = i;
-				}
+            if (char == '{') {
+                if (numOpen == 0) {
+                    lastOpen = i;
+                }
 
-				numOpen++;
-			} else if (char == "}") {
-				numOpen--;
+                numOpen++;
+            } else if (char == '}') {
+                numOpen--;
 
-				if (numOpen == 0) {
-					var paramStr = args.substring(lastOpen+1, i);
+                if (numOpen == 0) {
+                    const paramStr = args.substring(lastOpen + 1, i);
 
-					if (event == null) {
-						event = paramStr.trim().split(" ");
-					} else {
-						actions.push(paramStr.trim().split(" "));
-					}
-				}
-			}
-		}
+                    if (event == null) {
+                        event = paramStr.trim().split(' ');
+                    } else {
+                        actions.push(paramStr.trim().split(' '));
+                    }
+                }
+            }
+        }
 
-		if (event == null || event.length == 0) {
-			return Util.commandFailed(channel, speaker, "Invalid parameters: Event not provided");
-		}
+        if (event == null || event.length == 0) {
+            return Util.commandFailed(channel, speaker, 'Invalid parameters: Event not provided');
+        }
 
-		console.log(event);
-		console.log(actions);
+        console.log(event);
+        console.log(actions);
 
-		for (let i = 0; i < event.length; i++) {
-			let eventName = event[i];
+        for (let i = 0; i < event.length; i++) {
+            const eventName = event[i];
 
-			var sendEmbedFields = [];
+            const sendEmbedFields = [];
 
-			sendEmbedFields.push({name: "Event", value: eventName, inline: false});
-			
-			if (actions.length == 0) {
-				Events.remEvent(guild, eventName);
-			} else {
-				for (let j = 0; j < actions.length; j++) {
-					let actionData = actions[i];
-					let actionName = actionData[0];
-					
-					Events.remEvent(guild, eventName, actionName);
+            sendEmbedFields.push({ name: 'Event', value: eventName, inline: false });
 
-					sendEmbedFields.push({name: "Action", value: actionName, inline: false});
-				}
-			}
+            if (actions.length == 0) {
+                Events.remEvent(guild, eventName);
+            } else {
+                for (let j = 0; j < actions.length; j++) {
+                    const actionData = actions[i];
+                    const actionName = actionData[0];
 
-			Util.sendEmbed(channel, "Removed Link", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
-		}
-	}
+                    Events.remEvent(guild, eventName, actionName);
+
+                    sendEmbedFields.push({ name: 'Action', value: actionName, inline: false });
+                }
+            }
+
+            Util.sendEmbed(channel, 'Removed Link', null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        }
+    },
 });

@@ -10,161 +10,157 @@ Ban
 DeleteMessage
 
 eventData
-	Guild
-		eventName
-			actionName, actionFunc, actionArgs
+    Guild
+        eventName
+            actionName, actionFunc, actionArgs
 
 */
 
-var allEvents = {};
+const allEvents = {};
 
 exports.Actions = {};
 
-exports.getEvents = function(guild, checkEventName) {
-	if (!allEvents[guild.id]) allEvents[guild.id] = {};
+exports.getEvents = function (guild, checkEventName) {
+    if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var fullInfo = [];
+    const fullInfo = [];
 
-	var guildEventsObj =  allEvents[guild.id];
+    const guildEventsObj = allEvents[guild.id];
 
-	if (!checkEventName) {
-		for (let eventName in guildEventsObj) {
-			if (!guildEventsObj.hasOwnProperty(eventName) || guildEventsObj[eventName] == null) continue;
+    if (!checkEventName) {
+        for (const [eventName, actionDataEvent] of Object.entries(guildEventsObj)) {
+            if (guildEventsObj[eventName] != null) {
+                const eventInfo = [eventName];
 
-			let actionDataEvent = guildEventsObj[eventName];
+                for (let i = 0; i < actionDataEvent.length; i++) {
+                    const nowData = actionDataEvent[i];
 
-			let eventInfo = [eventName];
+                    const actionName = nowData[0];
+                    const actionArgs = nowData[2];
 
-			for (let i = 0; i < actionDataEvent.length; i++) {
-				let nowData = actionDataEvent[i];
+                    eventInfo.push([actionName, actionArgs]);
+                }
 
-				let actionName = nowData[0];
-				let actionArgs = nowData[2];
+                fullInfo.push(eventInfo);
+            }
+        }
+    } else {
+        const actionDataEvent = guildEventsObj[checkEventName];
 
-				eventInfo.push([actionName, actionArgs]);
-			}
+        if (actionDataEvent) {
+            for (let i = 0; i < actionDataEvent.length; i++) {
+                const nowData = actionDataEvent[i];
 
-			fullInfo.push(eventInfo);
-		}
-	} else {
-		let actionDataEvent = guildEventsObj[checkEventName];
+                const actionName = nowData[0];
+                const actionArgs = nowData[2];
 
-		if (actionDataEvent) {
-			for (let i = 0; i < actionDataEvent.length; i++) {
-				let nowData = actionDataEvent[i];
+                fullInfo.push([actionName, actionArgs]);
+            }
+        }
+    }
 
-				let actionName = nowData[0];
-				let actionArgs = nowData[2];
-
-				fullInfo.push([actionName, actionArgs]);
-			}
-		}
-	}
-
-	return fullInfo;
+    return fullInfo;
 };
 
-exports.addEvent = function(guild, eventName, actionName, actionFunc, actionArgs) {
-	if (!allEvents[guild.id]) allEvents[guild.id] = {};
+exports.addEvent = function (guild, eventName, actionName, actionFunc, actionArgs) {
+    if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataGuild = allEvents[guild.id];
+    const actionDataGuild = allEvents[guild.id];
 
-	var actionDataEvent = actionDataGuild[eventName];
+    let actionDataEvent = actionDataGuild[eventName];
 
-	if (!actionDataEvent) {
-		actionDataEvent = [];
-		actionDataGuild[eventName] = actionDataEvent;
-	}
+    if (!actionDataEvent) {
+        actionDataEvent = [];
+        actionDataGuild[eventName] = actionDataEvent;
+    }
 
-	console.log(`Added event linking ${eventName} to ${actionName}`);
+    console.log(`Added event linking ${eventName} to ${actionName}`);
 
-	actionDataEvent.push([actionName, actionFunc, actionArgs]);
+    actionDataEvent.push([actionName, actionFunc, actionArgs]);
 };
 
-exports.remEvent = function(guild, eventName, actionName) {
-	if (!allEvents[guild.id]) allEvents[guild.id] = {};
+exports.remEvent = function (guild, eventName, actionName) {
+    if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataEvent = allEvents[guild.id][eventName];
+    const actionDataEvent = allEvents[guild.id][eventName];
 
-	if (!actionDataEvent || actionDataEvent.length == 0) {
-		return console.log(`Event ${eventName} not found`);
-	}
+    if (!actionDataEvent || actionDataEvent.length === 0) {
+        return console.log(`Event ${eventName} not found`);
+    }
 
-	for (let i = actionDataEvent.length-1; i >= 0; i--) {
-		let nowData = actionDataEvent[i];
-		
-		if (actionName == null || nowData[0] == actionName) {
-			console.log(`Removed event linking ${eventName} to ${actionName}`);
+    for (let i = actionDataEvent.length - 1; i >= 0; i--) {
+        const nowData = actionDataEvent[i];
 
-			actionDataEvent.splice(i, 1);
-		}
-	}
+        if (actionName == null || nowData[0] === actionName) {
+            console.log(`Removed event linking ${eventName} to ${actionName}`);
 
-	if (actionDataEvent.length == 0) {
-		allEvents[guild.id][eventName] = undefined;
-	}
+            actionDataEvent.splice(i, 1);
+        }
+    }
+
+    if (actionDataEvent.length === 0) {
+        allEvents[guild.id][eventName] = undefined;
+    }
+
+    return undefined;
 };
 
-exports.emit = function(guild, eventName) {
-	if (!guild) return;
-	
-	var eventArgs = Array.prototype.slice.call(arguments, 2);
+exports.emit = function (guild, eventName, ...eventArgs) {
+    if (!guild) return;
 
-	if (!allEvents[guild.id]) allEvents[guild.id] = {};
+    if (!allEvents[guild.id]) allEvents[guild.id] = {};
 
-	var actionDataEvent = allEvents[guild.id][eventName];
+    const actionDataEvent = allEvents[guild.id][eventName];
 
-	if (!actionDataEvent || actionDataEvent.length == 0) return;
+    if (!actionDataEvent || actionDataEvent.length === 0) return;
 
-	for (let i = 0; i < actionDataEvent.length; i++) {
-		let nowData = actionDataEvent[i];
+    for (let i = 0; i < actionDataEvent.length; i++) {
+        const nowData = actionDataEvent[i];
 
-		let actionName = nowData[0];
-		let actionFunc = nowData[1];
-		let actionArgs = nowData[2];
+        const actionName = nowData[0];
+        const actionFunc = nowData[1];
+        const actionArgs = nowData[2];
 
-		console.log(`Calling action "${actionName}" linked to ${eventName}`);
+        console.log(`Calling action "${actionName}" linked to ${eventName}`);
 
-		actionFunc(guild, eventName, actionArgs, eventArgs);
-	}
+        actionFunc(guild, eventName, actionArgs, eventArgs);
+    }
 };
 
 exports.Actions.AddRole = (guild, eventName, actionArgs, eventArgs) => {
-	var member = eventArgs[0];
+    const member = eventArgs[0];
 
-	for (var i = 0; i < actionArgs.length; i++) {
-		var roleName = actionArgs[i];
-		var roleObj = Util.getRole(roleName, guild);
+    for (let i = 0; i < actionArgs.length; i++) {
+        const roleName = actionArgs[i];
+        const roleObj = Util.getRole(roleName, guild);
 
-		if (!roleObj) {
-			console.log("[A_AddRole] " + roleName + " not found");
-			continue;
-		}
-
-		member.addRole(roleObj)
-		.catch(console.error);
-	}
+        if (!roleObj) {
+            console.log(`[A_AddRole] ${roleName} not found`);
+        } else {
+            member.addRole(roleObj)
+            .catch(console.error);
+        }
+    }
 };
 
 exports.Actions.RemRole = (guild, eventName, actionArgs, eventArgs) => {
-	var member = eventArgs[0];
+    const member = eventArgs[0];
 
-	for (var i = 0; i < actionArgs.length; i++) {
-		var roleName = actionArgs[i];
-		var roleObj = Util.getRole(roleName, guild);
+    for (let i = 0; i < actionArgs.length; i++) {
+        const roleName = actionArgs[i];
+        const roleObj = Util.getRole(roleName, guild);
 
-		if (!roleObj) {
-			console.log("[A_RemRole] " + roleName + " not found");
-			continue;
-		}
-
-		member.removeRole(roleObj)
-		.catch(console.error);
-	}
+        if (!roleObj) {
+            console.log(`[A_RemRole] ${roleName} not found`);
+        } else {
+            member.removeRole(roleObj)
+            .catch(console.error);
+        }
+    }
 };
 
 exports.Actions.DM = (guild, eventName, actionArgs, eventArgs) => {
-	var member = eventArgs[0];
+    const member = eventArgs[0];
 
-	Util.print(member, ...actionArgs);
+    Util.print(member, ...actionArgs);
 };

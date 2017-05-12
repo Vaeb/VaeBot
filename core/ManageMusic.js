@@ -5,244 +5,253 @@ exports.guildMusicInfo = {};
 exports.guildQueue = {};
 exports.noPlay = {};
 
-exports.stopMusic = function(guild, reason) {
-	var connection = guild.voiceConnection;
-	if (!connection) return false;
-	var voiceChannel = connection.channel;
-	var player = connection.player;
-	if (!player) return false;
-	var dispatcher = player.dispatcher;
-	if (!dispatcher) return false;
-	exports.isPlaying[guild.id] = false;
-	dispatcher.end(reason);
-	var guildMusicInfo = exports.guildMusicInfo[guild.id];
-	guildMusicInfo.activeSong = null;
-	guildMusicInfo.activeAuthor = null;
-	guildMusicInfo.voteSkips = [];
-	guildMusicInfo.isAuto = false;
-	return true;
+exports.stopMusic = function (guild, reason) {
+    const connection = guild.voiceConnection;
+    if (!connection) return false;
+    // const voiceChannel = connection.channel;
+    const player = connection.player;
+    if (!player) return false;
+    const dispatcher = player.dispatcher;
+    if (!dispatcher) return false;
+    exports.isPlaying[guild.id] = false;
+    dispatcher.end(reason);
+    const guildMusicInfo = exports.guildMusicInfo[guild.id];
+    guildMusicInfo.activeSong = null;
+    guildMusicInfo.activeAuthor = null;
+    guildMusicInfo.voteSkips = [];
+    guildMusicInfo.isAuto = false;
+    return true;
 };
 
-exports.clearQueue = function(guild) {
-	exports.guildQueue[guild.id] = [];
-	return exports.stopMusic(guild);
+exports.clearQueue = function (guild) {
+    exports.guildQueue[guild.id] = [];
+    return exports.stopMusic(guild);
 };
 
-exports.chooseRandomSong = function(guild, autoPlaylist, lastId) {
-	var autoSongs = autoPlaylist.songs;
-	var newSong = autoSongs[Util.getRandomInt(0, autoSongs.length-1)];
-	var songData = exports.formatSong(newSong[0], false);
-	var songInfo = [songData, newSong[1]];
-	var songId = songData.id;
-	if (autoSongs.length > 1 && songId == lastId) {
-		return exports.chooseRandomSong(guild, autoPlaylist, lastId);
-	} else {
-		return songInfo;
-	}
+exports.chooseRandomSong = function (guild, autoPlaylist, lastId) {
+    const autoSongs = autoPlaylist.songs;
+    const newSong = autoSongs[Util.getRandomInt(0, autoSongs.length - 1)];
+    const songData = exports.formatSong(newSong[0], false);
+    const songInfo = [songData, newSong[1]];
+    const songId = songData.id;
+    if (autoSongs.length > 1 && songId === lastId) {
+        return exports.chooseRandomSong(guild, autoPlaylist, lastId);
+    }
+    return songInfo;
 };
 
-exports.playRealSong = function(newSong, guild, channel, doPrint) {
-	console.log("Playing Real Song");
-	if (doPrint == null) doPrint = true;
-	var songData = newSong[0];
-	var author = newSong[1];
-	var guildMusicInfo = exports.guildMusicInfo[guild.id];
-	guildMusicInfo.activeSong = songData;
-	guildMusicInfo.activeAuthor = author;
-	guildMusicInfo.voteSkips = [];
-	guildMusicInfo.isAuto = false;
-	exports.streamAudio(songData, guild, channel);
-	if (doPrint) Util.sendDescEmbed(channel, "Playing " + songData.title, "Added by " + Util.safeEveryone(author.toString()), Util.makeEmbedFooter(author), null, 0x00E676);
+exports.playRealSong = function (newSong, guild, channel, doPrintParam) {
+    console.log('Playing Real Song');
+    let doPrint = doPrintParam;
+    if (doPrintParam == null) doPrint = true;
+    const songData = newSong[0];
+    const author = newSong[1];
+    const guildMusicInfo = exports.guildMusicInfo[guild.id];
+    guildMusicInfo.activeSong = songData;
+    guildMusicInfo.activeAuthor = author;
+    guildMusicInfo.voteSkips = [];
+    guildMusicInfo.isAuto = false;
+    exports.streamAudio(songData, guild, channel);
+    if (doPrint) {
+        Util.sendDescEmbed(channel, `Playing ${songData.title}`,
+            `Added by ${Util.safeEveryone(author.toString())}`,
+            Util.makeEmbedFooter(author), null, 0x00E676);
+    }
 };
 
-exports.playNextQueue = function(guild, channel, doPrint) {
-	console.log("\nCalled Playing Next Queue");
-	if (doPrint == null) doPrint = true;
-	var guildQueue = exports.guildQueue[guild.id];
-	var autoPlaylist = Data.guildGet(guild, Data.playlist);
-	console.log("guildQueue");
-	console.log(guildQueue.length);
-	console.log("-------Playing Next Queue---------\n");
-	if (guildQueue.length > 0) {
-		var newSong = guildQueue[0];
-		exports.playRealSong(newSong, guild, channel, doPrint);
-	} else if (autoPlaylist.hasOwnProperty("songs") && autoPlaylist.songs.length > 0) {
-		console.log("Playing Next Queue, Playing Next Auto");
-		exports.playNextAuto(guild, channel, true);
-	} else {
-		exports.stopMusic(guild);
-	}
+exports.playNextQueue = function (guild, channel, doPrintParam) {
+    console.log('\nCalled Playing Next Queue');
+    let doPrint = doPrintParam;
+    if (doPrintParam == null) doPrint = true;
+    const guildQueue = exports.guildQueue[guild.id];
+    const autoPlaylist = Data.guildGet(guild, Data.playlist);
+    console.log('guildQueue');
+    console.log(guildQueue.length);
+    console.log('-------Playing Next Queue---------\n');
+    if (guildQueue.length > 0) {
+        const newSong = guildQueue[0];
+        exports.playRealSong(newSong, guild, channel, doPrint);
+    } else if (autoPlaylist.songs && autoPlaylist.songs.length > 0) {
+        console.log('Playing Next Queue, Playing Next Auto');
+        exports.playNextAuto(guild, channel, true);
+    } else {
+        exports.stopMusic(guild);
+    }
 };
 
-exports.playNextAuto = function(guild, channel, doPrint) {
-	var autoPlaylist = Data.guildGet(guild, Data.playlist);
-	if (!autoPlaylist.hasOwnProperty("songs") || autoPlaylist.songs.length === 0) {
-		exports.stopMusic(guild);
-		return;
-	}
-	var guildMusicInfo = exports.guildMusicInfo[guild.id];
-	var lastId = "";
-	if (guildMusicInfo.isAuto === true) lastId = guildMusicInfo.activeSong.id;
-	var newSong = exports.chooseRandomSong(guild, autoPlaylist, lastId);
-	var songData = newSong[0];
-	var author = newSong[1];
-	/*var newSongNum = songNum+1;
-	if (newSongNum >= autoSongs.length) newSongNum = 0;
-	autoPlaylist.songNum = newSongNum;
-	Data.guildSaveData(Data.playlist);*/
-	console.log("Playing Next Auto");
-	guildMusicInfo.activeSong = songData;
-	guildMusicInfo.activeAuthor = author;
-	guildMusicInfo.voteSkips = [];
-	guildMusicInfo.isAuto = true;
-	exports.streamAudio(songData, guild, channel);
-	if (doPrint) Util.sendDescEmbed(channel, "[Auto-Playlist-Started]", "Playing " + songData.title, Util.makeEmbedFooter(null), null, 0x00E676);
+exports.playNextAuto = function (guild, channel, doPrint) {
+    const autoPlaylist = Data.guildGet(guild, Data.playlist);
+    if (!autoPlaylist.songs || autoPlaylist.songs.length === 0) {
+        exports.stopMusic(guild);
+        return;
+    }
+    const guildMusicInfo = exports.guildMusicInfo[guild.id];
+    let lastId = '';
+    if (guildMusicInfo.isAuto === true) lastId = guildMusicInfo.activeSong.id;
+    const newSong = exports.chooseRandomSong(guild, autoPlaylist, lastId);
+    const songData = newSong[0];
+    const author = newSong[1];
+    /* var newSongNum = songNum+1;
+    if (newSongNum >= autoSongs.length) newSongNum = 0;
+    autoPlaylist.songNum = newSongNum;
+    Data.guildSaveData(Data.playlist);*/
+    console.log('Playing Next Auto');
+    guildMusicInfo.activeSong = songData;
+    guildMusicInfo.activeAuthor = author;
+    guildMusicInfo.voteSkips = [];
+    guildMusicInfo.isAuto = true;
+    exports.streamAudio(songData, guild, channel);
+    if (doPrint) Util.sendDescEmbed(channel, '[Auto-Playlist-Started]', `Playing ${songData.title}`, Util.makeEmbedFooter(null), null, 0x00E676);
 };
 
-exports.streamAudio = function(songData, guild, channel) {
-	var connection = guild.voiceConnection;
-	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
+exports.streamAudio = function (songData, guild, channel) {
+    let connection = guild.voiceConnection;
+    if (connection == null) return Util.commandFailed(channel, 'System', 'Bot is not connected to a Voice Channel');
 
-	var oldPlayer = connection.player;
+    const oldPlayer = connection.player;
 
-	if (oldPlayer) {
-		var oldDispatcher = oldPlayer.dispatcher;
-		if (oldDispatcher) {
-			console.log("Ended previous!");
-			oldDispatcher.end("NewStreamAudio");
-		}
-	}
+    if (oldPlayer) {
+        const oldDispatcher = oldPlayer.dispatcher;
+        if (oldDispatcher) {
+            console.log('Ended previous!');
+            oldDispatcher.end('NewStreamAudio');
+        }
+    }
 
-	var songId = songData.id;
-	var isFile = songData.isFile;
+    const songId = songData.id;
+    const isFile = songData.isFile;
 
-	setTimeout(function() {
-		connection = guild.voiceConnection;
-		if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
+    setTimeout(() => {
+        connection = guild.voiceConnection;
+        if (connection == null) return Util.commandFailed(channel, 'System', 'Bot is not connected to a Voice Channel');
 
-		var voiceChannel = connection.channel;
+        const voiceChannel = connection.channel;
 
-		console.log("Streaming Audio: " + songId);
-		
-		const streamOptions = {seek: 0, volume: 0.2};
-		var dispatcher;
-		
-		if (!isFile) {
-			const stream = Ytdl(songId, {filter: 'audioonly'});
-			dispatcher = connection.playStream(stream, streamOptions);
-		} else {
-			dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + songId + ".mp3");
-		}
+        console.log(`Streaming Audio: ${songId}`);
 
-		exports.isPlaying[guild.id] = true;
+        const streamOptions = { seek: 0, volume: 0.2 };
+        let dispatcher;
 
-		dispatcher.on("error", error => {
-			console.log("StreamError: " + error);
-		});
+        if (!isFile) {
+            const stream = Ytdl(songId, { filter: 'audioonly' });
+            dispatcher = connection.playStream(stream, streamOptions);
+        } else {
+            dispatcher = connection.playFile(`/var/files/VaeBot/resources/music/${songId}.mp3`);
+        }
 
-		dispatcher.on("end", reason => {
-			console.log("Track Ended: " + reason);
-			if (reason == "Stream is not generating quickly enough." || reason == "stream") {
-				if (exports.isPlaying[guild.id]) {
-					console.log("Track Ended, Starting Next: " + reason);
-					var guildMusicInfo = exports.guildMusicInfo[guild.id];
-					var guildQueue = exports.guildQueue[guild.id];
+        exports.isPlaying[guild.id] = true;
 
-					if (guildQueue.length > 0) {
-						var songData = guildQueue[0][0];
-						var songId = songData.id;
-						if (songId == songId) guildQueue.splice(0, 1);
-					}
+        dispatcher.on('error', (error) => {
+            console.log(`StreamError: ${error}`);
+        });
 
-					if (voiceChannel.members.size > 1) {
-						var autoPlaylist = Data.guildGet(guild, Data.playlist);
-						if (guildQueue.length === 0 && guildMusicInfo.isAuto === true) {
-							console.log("Track Ended, Playing Next Auto");
-							exports.playNextAuto(guild, channel);
-						} else {
-							exports.playNextQueue(guild, channel, true);
-						}
-					} else {
-						exports.stopMusic(guild);
-						Util.print(channel, "Auto stopping audio | No users in voice");
-					}
-				}
-			}
-		});
-	}, 1000);
+        dispatcher.on('end', (reason) => {
+            console.log(`Track Ended: ${reason}`);
+            if (reason === 'Stream is not generating quickly enough.' || reason === 'stream') {
+                if (exports.isPlaying[guild.id]) {
+                    console.log(`Track Ended, Starting Next: ${reason}`);
+                    const guildMusicInfo = exports.guildMusicInfo[guild.id];
+                    const guildQueue = exports.guildQueue[guild.id];
+
+                    if (guildQueue.length > 0) {
+                        const songData2 = guildQueue[0][0];
+                        const songId2 = songData2.id;
+                        if (songId2 === songId) guildQueue.splice(0, 1);
+                    }
+
+                    if (voiceChannel.members.size > 1) {
+                        // const autoPlaylist = Data.guildGet(guild, Data.playlist);
+                        if (guildQueue.length === 0 && guildMusicInfo.isAuto === true) {
+                            console.log('Track Ended, Playing Next Auto');
+                            exports.playNextAuto(guild, channel);
+                        } else {
+                            exports.playNextQueue(guild, channel, true);
+                        }
+                    } else {
+                        exports.stopMusic(guild);
+                        Util.print(channel, 'Auto stopping audio | No users in voice');
+                    }
+                }
+            }
+        });
+
+        return undefined;
+    }, 1000);
+
+    return undefined;
 };
 
-exports.playFile = function(name, guild, channel) {
-	var connection = guild.voiceConnection;
-	if (connection == null) return Util.commandFailed(channel, "System", "Bot is not connected to a Voice Channel");
-	var voiceChannel = connection.channel;
+exports.playFile = function (name, guild, channel) {
+    const connection = guild.voiceConnection;
+    if (connection == null) return Util.commandFailed(channel, 'System', 'Bot is not connected to a Voice Channel');
+    // const voiceChannel = connection.channel;
 
-	var oldPlayer = connection.player;
-	if (oldPlayer) {
-		var oldDispatcher = oldPlayer.dispatcher;
-		if (oldDispatcher) {
-			console.log("Ended previous!");
-			oldDispatcher.end("NewStreamAudio");
-		}
-	}
+    const oldPlayer = connection.player;
+    if (oldPlayer) {
+        const oldDispatcher = oldPlayer.dispatcher;
+        if (oldDispatcher) {
+            console.log('Ended previous!');
+            oldDispatcher.end('NewStreamAudio');
+        }
+    }
 
-	console.log("Playing File: " + name);
-	const streamOptions = {seek: 0, volume: 0.2};
+    console.log(`Playing File: ${name}`);
+    // const streamOptions = { seek: 0, volume: 0.2 };
 
-	const dispatcher = connection.playFile("/var/files/VaeBot/resources/music/" + name + ".mp3");
+    const dispatcher = connection.playFile(`/var/files/VaeBot/resources/music/${name}.mp3`);
 
-	exports.isPlaying[guild.id] = true;
+    exports.isPlaying[guild.id] = true;
 
-	dispatcher.on("error", error => {
-		console.log(error);
-	});
+    dispatcher.on('error', (error) => {
+        console.log(error);
+    });
 
-	dispatcher.on("end", reason => {
-		console.log(reason);
-	});
+    dispatcher.on('end', (reason) => {
+        console.log(reason);
+    });
+
+    return undefined;
 };
 
-exports.joinMusic = function(guild, channel, func) {
-	var connection = guild.voiceConnection;
-	if (connection == null) {
-		var musicChannel = Util.findVoiceChannel("music", guild);
-		if (musicChannel) {
-			musicChannel.join()
-			.then(connection => {
-				func(connection);
-			})
-			.catch(error => console.log("\n[E_JoinMusic] " + error));
-		} else {
-			Util.print(channel, "Not connected to a voice channel");
-			return;
-		}
-	} else {
-		func(connection);
-	}
+exports.joinMusic = function (guild, channel, func) {
+    const connection = guild.voiceConnection;
+    if (connection == null) {
+        const musicChannel = Util.findVoiceChannel('music', guild);
+        if (musicChannel) {
+            musicChannel.join()
+            .then((connection2) => {
+                func(connection2);
+            })
+            .catch(error => console.log(`\n[E_JoinMusic] ${error}`));
+        } else {
+            Util.print(channel, 'Not connected to a voice channel');
+        }
+    } else {
+        func(connection);
+    }
 };
 
-exports.formatSong = function(data, isFile) {
-	if (isFile) {
-		return {
-			id: data,
-			title: data,
-			isFile: true
-		};
-	} else {
-		return {
-			id: typeof(data.id) == "object" ? data.id.videoId : data.id,
-			title: data.snippet.title,
-			isFile: false
-		};
-	}
+exports.formatSong = function (data, isFile) {
+    if (isFile) {
+        return {
+            id: data,
+            title: data,
+            isFile: true,
+        };
+    }
+    return {
+        id: typeof (data.id) === 'object' ? data.id.videoId : data.id,
+        title: data.snippet.title,
+        isFile: false,
+    };
 };
 
-exports.addSong = function(speaker, guild, channel, songData) {
-	var guildQueue = exports.guildQueue[guild.id];
-	guildQueue.push([songData, speaker]);
-	if (guildQueue.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
-		exports.playNextQueue(guild, channel, true);
-	} else {
-		Util.sendDescEmbed(channel, "[" + guildQueue.length + "] Audio Queue Appended", songData.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
-	}
+exports.addSong = function (speaker, guild, channel, songData) {
+    const guildQueue = exports.guildQueue[guild.id];
+    guildQueue.push([songData, speaker]);
+    if (guildQueue.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
+        exports.playNextQueue(guild, channel, true);
+    } else {
+        Util.sendDescEmbed(channel, `[${guildQueue.length}] Audio Queue Appended`, songData.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+    }
 };

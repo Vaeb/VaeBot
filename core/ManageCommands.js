@@ -1,132 +1,124 @@
 exports.commands = [];
 
 const quietChannels = {
-	"284746138995785729": true,
-	"289447389251502080": true,
-	"285040042001432577": true,
-	"284746888715042818": true,
-	"294244239485829122": true,
-	"290228574273798146": true
+    '284746138995785729': true,
+    '289447389251502080': true,
+    '285040042001432577': true,
+    '284746888715042818': true,
+    '294244239485829122': true,
+    '290228574273798146': true,
 };
 
 function isQuiet(channel, speaker) {
-	if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
-		return true;
-	}
-	return false;
+    if (quietChannels[channel.id] && !Util.checkStaff(channel.guild, speaker)) {
+        return true;
+    }
+    return false;
 }
 
-exports.addCommand = function(structure) {
-	var cmds = structure.cmds;
-	var fixedCmds = [];
+exports.addCommand = function (structure) {
+    const cmds = structure.cmds;
+    const fixedCmds = [];
 
-	for (var i = 0; i < cmds.length; i++) {
-		fixedCmds.push(cmds[i].toLowerCase());
-	}
+    for (let i = 0; i < cmds.length; i++) {
+        fixedCmds.push(cmds[i].toLowerCase());
+    }
 
-	var cmdData = [fixedCmds, structure.func, structure.requires, structure.desc, structure.args, structure.example];
+    const cmdData = [fixedCmds, structure.func, structure.requires, structure.desc, structure.args, structure.example];
 
-	exports.commands.push(cmdData);
-	exports.commands.sort();
+    exports.commands.push(cmdData);
+    exports.commands.sort();
 
-	return cmdData;
+    return cmdData;
 };
 
-exports.getCommand = function(content) {
-	if (content.substr(0, 5) == "sudo ") content = content.substring(5);
+exports.getCommand = function (contentParam) {
+    let content = contentParam;
 
-	var contentLower = content.toLowerCase();
+    if (content.substr(0, 5) === 'sudo ') content = content.substring(5);
 
-	for (var i = 0; i < exports.commands.length; i++) {
-		var cmdData = exports.commands[i];
-		var cmdNames = cmdData[0];
+    const contentLower = content.toLowerCase();
 
-		for (var i2 = 0; i2 < cmdNames.length; i2++) {
-			var cmd = cmdNames[i2];
-			var cmdLength = cmd.length;
-			var hasParameters = cmd[cmdLength-1] == " ";
-			if (hasParameters && contentLower.substr(0, cmdLength) == cmd || !hasParameters && contentLower == cmd) {
-				return cmdData;
-			}
-		}
-	}
+    for (let i = 0; i < exports.commands.length; i++) {
+        const cmdData = exports.commands[i];
+        const cmdNames = cmdData[0];
 
-	return null;
+        for (let i2 = 0; i2 < cmdNames.length; i2++) {
+            const cmd = cmdNames[i2];
+            const cmdLength = cmd.length;
+            const hasParameters = cmd[cmdLength - 1] === ' ';
+            if ((hasParameters && contentLower.substr(0, cmdLength) === cmd) || (!hasParameters && contentLower === cmd)) {
+                return cmdData;
+            }
+        }
+    }
+
+    return null;
 };
 
-exports.initCommands = function() {
-	Util.bulkRequire("./commands/");
+exports.initCommands = function () {
+    Util.bulkRequire('./commands/');
 };
 
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
-	if ((channel.id != "168743219788644352" || authorId == vaebId)/* && (guild.id != "257235915498323969" || channel.id == "257244216772526092")*/) { //script-builders
-		for (var i = 0; i < exports.commands.length; i++) {
+    if ((channel.id !== '168743219788644352' || authorId === vaebId)/* && (guild.id != "257235915498323969" || channel.id == "257244216772526092")*/) { // script-builders
+        for (let i = 0; i < exports.commands.length; i++) {
+            const cmdData = exports.commands[i];
+            const cmdNames = cmdData[0];
+            const cmdFunc = cmdData[1];
+            const cmdRequires = cmdData[2];
 
-			var cmdData = exports.commands[i];
-			var cmdNames = cmdData[0];
-			var cmdFunc = cmdData[1];
-			var cmdRequires = cmdData[2];
+            for (let i2 = 0; i2 < cmdNames.length; i2++) {
+                const cmd = cmdNames[i2];
+                const cmdLength = cmd.length;
+                const hasParameters = cmd[cmdLength - 1] === ' ';
+                if ((hasParameters && contentLower.substr(0, cmdLength) === cmd) || (!hasParameters && contentLower === cmd)) {
+                    if (cmdRequires.staff && !isStaff) {
+                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used by Staff', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                    } else if (cmdRequires.vaeb && authorId !== vaebId) {
+                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used by Vaeb', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                    } else if (cmdRequires.guild && guild == null) {
+                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used in Guilds', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                    } else if (cmdRequires.loud && isQuiet(channel, speaker)) {
+                        Util.sendEmbed(channel, 'Quiet Channel', 'This command cannot be used in this Channel (use #bot-commands)',
+                            Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                    } else {
+                        const args = content.substring(cmdLength);
+                        const argStr = args.length < 1 ? 'None' : args;
+                        let outLog = `${Util.getName(speaker)} (${speaker.id}) Ran command: ${cmd.trim()}`;
+                        if (hasParameters) outLog += ` | Args: ${argStr}`;
+                        console.log(outLog);
 
-			for (var i2 = 0; i2 < cmdNames.length; i2++) {
+                        if (cmdRequires.staff && guild != null) {
+                            const sendLogData = [
+                                'Command Entry',
+                                guild,
+                                speaker,
+                                { name: 'Username', value: speaker.toString() },
+                                { name: 'Channel Name', value: channel.toString() },
+                                { name: 'Command Name', value: cmd },
+                            ];
 
-				var cmd = cmdNames[i2];
-				var cmdLength = cmd.length;
-				var hasParameters = cmd[cmdLength-1] == " ";
-				if (hasParameters && contentLower.substr(0, cmdLength) == cmd || !hasParameters && contentLower == cmd) {
+                            if (hasParameters) {
+                                sendLogData.push({ name: 'Command Argument(s)', value: argStr });
+                            } else {
+                                sendLogData.push({ name: 'Command Argument(s)', value: 'N/A' });
+                            }
 
-					if (cmdRequires.staff && !isStaff) {
-						Util.sendEmbed(channel, "Restricted", "This command can only be used by Staff", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-					} else if (cmdRequires.vaeb && authorId != vaebId) {
-						Util.sendEmbed(channel, "Restricted", "This command can only be used by Vaeb", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-					} else if (cmdRequires.guild && guild == null) {
-						Util.sendEmbed(channel, "Restricted", "This command can only be used in Guilds", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-					} else if (cmdRequires.loud && isQuiet(channel, speaker)) {
-						Util.sendEmbed(channel, "Quiet Channel", "This command cannot be used in this Channel (use #bot-commands)", Util.makeEmbedFooter(speaker), null, 0x00E676, null);
-					} else {
+                            Util.sendLog(sendLogData, colCommand);
+                        }
 
-						var args = content.substring(cmdLength);
-						var argStr = args.length < 1 ? "None" : args;
-						var outLog = Util.getName(speaker) + " (" + speaker.id + ") Ran command: " + cmd.trim();
-						if (hasParameters) outLog += " | Args: " + argStr;
-						console.log(outLog);
+                        try {
+                            cmdFunc(cmd, args, msgObj, speaker, channel, guild, isStaff);
+                        } catch (err) {
+                            console.log(`COMMAND ERROR: ${err.stack}`);
+                        }
+                    }
 
-						if (cmdRequires.staff && guild != null) {
-
-							var sendLogData = [
-								"Command Entry",
-								guild,
-								speaker,
-								{name: "Username", value: speaker.toString()},
-								{name: "Channel Name", value: channel.toString()},
-								{name: "Command Name", value: cmd},
-							];
-
-							if (hasParameters) {
-								sendLogData.push({name: "Command Argument(s)", value: argStr});
-							} else {
-								sendLogData.push({name: "Command Argument(s)", value: "N/A"});
-							}
-							
-							Util.sendLog(sendLogData, colCommand);
-
-						}
-
-						try {
-							cmdFunc(cmd, args, msgObj, speaker, channel, guild, isStaff);
-						} catch(err) {
-							console.log("COMMAND ERROR: " + err.stack);
-						}
-
-					}
-
-					return;
-
-				}
-
-			}
-
-		}
-
-	}
+                    return;
+                }
+            }
+        }
+    }
 };
 
