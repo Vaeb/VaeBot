@@ -62,8 +62,7 @@ exports.regexURLPerfect = new RegExp(
         '(?::\\d{2,5})?' +
         // resource path
         '(?:[/?#]\\S*)?' +
-    '$', 'i',
-);
+    '$', 'i');
 
 exports.rolePermissions = [
     'CREATE_INSTANT_INVITE',
