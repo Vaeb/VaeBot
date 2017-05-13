@@ -81,7 +81,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                         Util.sendEmbed(channel, 'Restricted', 'This command can only be used in Guilds', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
                     } else if (cmdRequires.loud && isQuiet(channel, speaker)) {
                         Util.sendEmbed(channel, 'Quiet Channel', 'This command cannot be used in this Channel (use #bot-commands)',
-                            Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                          Util.makeEmbedFooter(speaker), null, 0x00E676, null);
                     } else {
                         const args = content.substring(cmdLength);
                         const argStr = args.length < 1 ? 'None' : args;

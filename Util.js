@@ -1086,13 +1086,13 @@ exports.sendLog = function (embData, embColor) {
     const embAvatar = exports.getAvatar(embAuthor);
 
     exports.sendEmbed(
-        embChannel,
-        embTitle,
-        null,
-        embFooter,
-        embAvatar,
-        embColor,
-        embFields);
+      embChannel,
+      embTitle,
+      null,
+      embFooter,
+      embAvatar,
+      embColor,
+      embFields);
 };
 
 exports.getHourStr = function (d) {
