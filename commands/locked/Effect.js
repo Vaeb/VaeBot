@@ -36,7 +36,7 @@ function setRoleColor(role, i, maxExclusive) {
     role.setColor(newColor)
     .catch(console.error); // 168, 184, 560, 175, 231, 179
 
-    setTimeout(setRoleColor, 10, role, nowIter, maxExclusive);
+    setTimeout(setRoleColor, 50, role, nowIter, maxExclusive);
 
     /* role.setColor(newColor)
     .then(() => setRoleColor(role, nowIter, maxExclusive))
@@ -61,6 +61,6 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         const Vaeben = Util.getRole('Vaeben', guild);
-        setRoleColor(Vaeben, 0, 150);
+        setRoleColor(Vaeben, 0, 100);
     },
 });
