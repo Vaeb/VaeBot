@@ -61,6 +61,6 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         const Vaeben = Util.getRole('Vaeben', guild);
-        setRoleColor(Vaeben, 0, 50);
+        setRoleColor(Vaeben, 0, 150);
     },
 });
