@@ -633,35 +633,37 @@ client.on('messageDelete', (msgObj) => {
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
-    guild.fetchAuditLogs({
-        // user: member,
-        limit: 1,
-        type: 'MESSAGE_DELETE',
-    })
-    .then((logs) => {
-        console.log('[MD] Got audit log data');
-        const entry = logs.entries.array()[0];
+    setTimeout(() => {
+        guild.fetchAuditLogs({
+            // user: member,
+            limit: 1,
+            type: 'MESSAGE_DELETE',
+        })
+        .then((logs) => {
+            console.log('[MD] Got audit log data');
+            const entry = logs.entries.array()[0];
 
-        // console.log(entry);
+            console.log(entry);
 
-        console.log(entry.executor.toString());
-        console.log(entry.target.toString());
+            console.log(entry.executor.toString());
+            console.log(entry.target.toString());
 
-        const sendLogData = [
-            'Message Deleted',
-            guild,
-            author,
-            { name: 'Username', value: author.toString() },
-            { name: 'Moderator', value: entry.executor.toString() },
-            { name: 'Channel Name', value: channel.toString() },
-            { name: 'Message', value: content },
-        ];
-        Util.sendLog(sendLogData, colMessage);
-    })
-    .catch((error) => {
-        console.log(error);
-        console.log('[MD] Failed to get audit log data');
-    });
+            const sendLogData = [
+                'Message Deleted',
+                guild,
+                author,
+                { name: 'Username', value: author.toString() },
+                { name: 'Moderator', value: entry.executor.toString() },
+                { name: 'Channel Name', value: channel.toString() },
+                { name: 'Message', value: content },
+            ];
+            Util.sendLog(sendLogData, colMessage);
+        })
+        .catch((error) => {
+            console.log(error);
+            console.log('[MD] Failed to get audit log data');
+        });
+    }, 5000);
 });
 
 const messageStamps = {};
