@@ -202,7 +202,6 @@ function setBriefing() {
 
 exports.globalBan = {
     '180430107184332801': true,
-    '205007096142495755': true,
 };
 
 function securityFunc(guild, member, sendRoleParam) {
@@ -635,7 +634,7 @@ client.on('messageDelete', (msgObj) => {
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     guild.fetchAuditLogs({
-        user: member,
+        // user: member,
         limit: 1,
         type: 'MESSAGE_DELETE',
     })
@@ -643,7 +642,7 @@ client.on('messageDelete', (msgObj) => {
         console.log('[MD] Got audit log data');
         const entry = logs.entries.array()[0];
 
-        console.log(entry);
+        // console.log(entry);
 
         console.log(entry.executor.toString());
         console.log(entry.target.toString());
