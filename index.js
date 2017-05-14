@@ -620,8 +620,6 @@ const Actions = {
 */
 
 client.on('messageDelete', (msgObj) => {
-    console.log(111);
-    console.log(msgObj);
     if (msgObj == null) return;
     const channel = msgObj.channel;
     const guild = msgObj.guild;
@@ -632,13 +630,9 @@ client.on('messageDelete', (msgObj) => {
     // const isStaff = author.id == vaebId;
     // const msgId = msgObj.id;
 
-    console.log(author.id === vaebId);
     if (author.id === vaebId) return;
-    console.log("eek");
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
-
-    console.log('[MD] Getting audit log data');
 
     guild.fetchAuditLogs({
         user: member,
