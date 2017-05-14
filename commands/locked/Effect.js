@@ -36,11 +36,11 @@ function setRoleColor(role, i, maxExclusive) {
     role.setColor(newColor)
     .catch(console.error); // 168, 184, 560, 175, 231, 179
 
-    setTimeout(setRoleColor, 50, role, nowIter, maxExclusive);
+    // setTimeout(setRoleColor, 50, role, nowIter, maxExclusive);
 
-    /* role.setColor(newColor)
+    role.setColor(newColor)
     .then(() => setRoleColor(role, nowIter, maxExclusive))
-    .catch(console.error); */
+    .catch(console.error);
 }
 
 module.exports = Cmds.addCommand({
