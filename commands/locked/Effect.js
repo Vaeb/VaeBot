@@ -33,8 +33,8 @@ function setRoleColor(role, i, maxExclusive) {
 
     if (nowIter === maxExclusive) nowIter = 0;
 
-    role.setColor(newColor)
-    .catch(console.error); // 168, 184, 560, 175, 231, 179
+    // role.setColor(newColor)
+    // .catch(console.error); // 168, 184, 560, 175, 231, 179
 
     // setTimeout(setRoleColor, 50, role, nowIter, maxExclusive);
 
