@@ -200,7 +200,7 @@ function setBriefing() {
     }, 2000); // Let's wait 2 seconds before starting countdown, just in case of floating point errors triggering multiple countdowns
 }
 
-const globalBan = {
+exports.globalBan = {
     '180430107184332801': true,
     '205007096142495755': true,
 };
@@ -217,7 +217,7 @@ function setupSecurity(guild) {
             const memberId = member.id;
             const memberName = Util.getFullName(member);
 
-            if (has.call(globalBan, memberId)) {
+            if (has.call(exports.globalBan, memberId)) {
                 member.ban();
                 console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
                 return;
