@@ -642,6 +642,12 @@ client.on('messageDelete', (msgObj) => {
     .then((logs) => {
         console.log('[MD] Got audit log data');
         const entry = logs.entries.array()[0];
+
+        console.log(entry);
+
+        console.log(entry.executor.toString());
+        console.log(entry.target.toString());
+
         const sendLogData = [
             'Message Deleted',
             guild,
