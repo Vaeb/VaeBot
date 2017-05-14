@@ -219,6 +219,7 @@ function setupSecurity(guild) {
 
             if (has.call(globalBan, memberId)) {
                 member.ban();
+                console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
                 return;
             }
 
