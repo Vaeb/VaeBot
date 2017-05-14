@@ -22,6 +22,7 @@ exports.linkGuilds = [
 
 global.index = module.exports;
 
+global.has = Object.prototype.hasOwnProperty;
 global.selfId = '224529399003742210';
 global.vaebId = '107593015014486016';
 
@@ -199,6 +200,11 @@ function setBriefing() {
     }, 2000); // Let's wait 2 seconds before starting countdown, just in case of floating point errors triggering multiple countdowns
 }
 
+const globalBan = {
+    '180430107184332801': true,
+    '205007096142495755': true,
+};
+
 function setupSecurity(guild) {
     const sendRole = Util.getRole('SendMessages', guild);
     // const guildId = guild.id;
@@ -211,6 +217,11 @@ function setupSecurity(guild) {
             const memberId = member.id;
             const memberName = Util.getFullName(member);
 
+            if (has.call(globalBan, memberId)) {
+                member.ban();
+                return;
+            }
+
             const isMuted = Mutes.checkMuted(memberId, guild);
 
             if (isMuted) {
@@ -221,7 +232,7 @@ function setupSecurity(guild) {
                 }
             } else if (!Util.hasRole(member, sendRole)) {
                 member.addRole(sendRole)
-                    .catch(console.error);
+                .catch(console.error);
                 console.log(`Assigned SendMessages to old member ${memberName}`);
             }
         });
@@ -635,8 +646,8 @@ client.on('message', (msgObj) => {
     }
 
     if (guild != null && author.bot === false && content.length > 0) {
-        if (!Object.prototype.hasOwnProperty.call(userStatus, authorId)) userStatus[authorId] = 0;
-        if (!Object.prototype.hasOwnProperty.call(messageStamps, authorId)) messageStamps[authorId] = [];
+        if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
+        if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
         const nowStamps = messageStamps[authorId];
         const stamp = (+new Date());
         nowStamps.unshift({ stamp, message: contentLower });

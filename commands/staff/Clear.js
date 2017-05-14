@@ -32,7 +32,7 @@ const checkFuncs = {
 
         for (let i = 0; i < attachments.length; i++) {
             const nowAtt = attachments[i];
-            if (Object.prototype.hasOwnProperty.call(nowAtt, 'width')) {
+            if (has.call(nowAtt, 'width')) {
                 return true;
             }
         }
@@ -45,7 +45,7 @@ const checkFuncs = {
 
         for (let i = 0; i < attachments.length; i++) {
             const nowAtt = attachments[i];
-            if (!Object.prototype.hasOwnProperty.call(nowAtt, 'width')) {
+            if (!has.call(nowAtt, 'width')) {
                 return true;
             }
         }

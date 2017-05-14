@@ -576,7 +576,7 @@ exports.pathRequire = (filePath) => {
 
     const dirName = /(\w+)[/\\]\w+\.js$/.exec(file)[1];
 
-    if (dirName && Object.prototype.hasOwnProperty.call(index.commandTypes, dirName)) {
+    if (dirName && has.call(index.commandTypes, dirName)) {
         const cmdTypes = index.commandTypes;
         for (const [commandType, commandKey] of Object.entries(cmdTypes)) {
             if (commandKey !== 'null') {
@@ -979,7 +979,7 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
     for (let i = 0; i < embFields.length; i++) {
         const nowField = embFields[i];
 
-        if (!Object.prototype.hasOwnProperty.call(nowField, 'inline')) nowField.inline = true;
+        if (!has.call(nowField, 'inline')) nowField.inline = true;
 
         let nowName = nowField.name;
         let nowValue = nowField.value;
@@ -1477,9 +1477,9 @@ exports.permEnabled = function (iPerms, permName) {
     const allowText = iPerms.Text;
     const allowVoice = iPerms.Voice;
 
-    if (Object.prototype.hasOwnProperty.call(allowGeneral, permName)) return allowGeneral[permName];
-    if (Object.prototype.hasOwnProperty.call(allowText, permName)) return allowText[permName];
-    if (Object.prototype.hasOwnProperty.call(allowVoice, permName)) return allowVoice[permName];
+    if (has.call(allowGeneral, permName)) return allowGeneral[permName];
+    if (has.call(allowText, permName)) return allowText[permName];
+    if (has.call(allowVoice, permName)) return allowVoice[permName];
 
     return undefined;
 };
