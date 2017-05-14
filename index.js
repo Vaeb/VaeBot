@@ -584,6 +584,41 @@ client.on('voiceStateUpdate', (oldMember, member) => {
     }
 });
 
+/*
+
+Audit log types
+
+const Actions = {
+  GUILD_UPDATE: 1,
+  CHANNEL_CREATE: 10,
+  CHANNEL_UPDATE: 11,
+  CHANNEL_DELETE: 12,
+  CHANNEL_OVERWRITE_CREATE: 13,
+  CHANNEL_OVERWRITE_UPDATE: 14,
+  CHANNEL_OVERWRITE_DELETE: 15,
+  MEMBER_KICK: 20,
+  MEMBER_PRUNE: 21,
+  MEMBER_BAN_ADD: 22,
+  MEMBER_BAN_REMOVE: 23,
+  MEMBER_UPDATE: 24,
+  MEMBER_ROLE_UPDATE: 25,
+  ROLE_CREATE: 30,
+  ROLE_UPDATE: 31,
+  ROLE_DELETE: 32,
+  INVITE_CREATE: 40,
+  INVITE_UPDATE: 41,
+  INVITE_DELETE: 42,
+  WEBHOOK_CREATE: 50,
+  WEBHOOK_UPDATE: 51,
+  WEBHOOK_DELETE: 52,
+  EMOJI_CREATE: 60,
+  EMOJI_UPDATE: 61,
+  EMOJI_DELETE: 62,
+  MESSAGE_DELETE: 72,
+};
+
+*/
+
 client.on('messageDelete', (msgObj) => {
     if (msgObj == null) return;
     const channel = msgObj.channel;
@@ -599,15 +634,25 @@ client.on('messageDelete', (msgObj) => {
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
-    const sendLogData = [
-        'Message Deleted',
-        guild,
-        author,
-        { name: 'Username', value: author.toString() },
-        { name: 'Channel Name', value: channel.toString() },
-        { name: 'Message', value: content },
-    ];
-    Util.sendLog(sendLogData, colMessage);
+    guild.fetchAuditLogs({
+        user: member,
+        limit: 1,
+        type: 'MESSAGE_DELETE',
+    })
+    .then((logs) => {
+        const entry = logs.entries.array()[0];
+        const sendLogData = [
+            'Message Deleted',
+            guild,
+            author,
+            { name: 'Username', value: author.toString() },
+            { name: 'Moderator', value: entry.executor.toString() },
+            { name: 'Channel Name', value: channel.toString() },
+            { name: 'Message', value: content },
+        ];
+        Util.sendLog(sendLogData, colMessage);
+    })
+    .catch(console.error);
 });
 
 const messageStamps = {};
