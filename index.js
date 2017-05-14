@@ -205,39 +205,47 @@ exports.globalBan = {
     '205007096142495755': true,
 };
 
+function securityFunc(guild, member, sendRoleParam) {
+    const guildName = guild.name;
+    // const guildId = guild.id;
+
+    const memberId = member.id;
+    const memberName = Util.getFullName(member);
+
+    let sendRole = sendRoleParam;
+    if (sendRole == null) sendRole = Util.getRole('SendMessages', guild);
+
+    if (has.call(exports.globalBan, memberId)) {
+        member.kick();
+        console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
+        return;
+    }
+
+    if (sendRole != null) {
+        const isMuted = Mutes.checkMuted(memberId, guild);
+
+        if (isMuted) {
+            if (Util.hasRole(member, sendRole)) {
+                member.removeRole(sendRole)
+                .catch(console.error);
+                console.log(`Muted user ${memberName} had already joined ${guildName}`);
+            }
+        } else if (!Util.hasRole(member, sendRole)) {
+            member.addRole(sendRole)
+            .catch(console.error);
+            console.log(`Assigned SendMessages to old member ${memberName}`);
+        }
+    }
+}
+
 function setupSecurity(guild) {
     const sendRole = Util.getRole('SendMessages', guild);
-    // const guildId = guild.id;
-    const guildName = guild.name;
 
-    if (sendRole) {
-        console.log(`Setting up security for ${guild.name} (${guild.members.size} members)`);
+    console.log(`Setting up security for ${guild.name} (${guild.members.size} members)`);
 
-        guild.members.forEach((member) => {
-            const memberId = member.id;
-            const memberName = Util.getFullName(member);
-
-            if (has.call(exports.globalBan, memberId)) {
-                member.ban();
-                console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
-                return;
-            }
-
-            const isMuted = Mutes.checkMuted(memberId, guild);
-
-            if (isMuted) {
-                if (Util.hasRole(member, sendRole)) {
-                    member.removeRole(sendRole)
-                    .catch(console.error);
-                    console.log(`Muted user ${memberName} had already joined ${guildName}`);
-                }
-            } else if (!Util.hasRole(member, sendRole)) {
-                member.addRole(sendRole)
-                .catch(console.error);
-                console.log(`Assigned SendMessages to old member ${memberName}`);
-            }
-        });
-    }
+    guild.members.forEach((member) => {
+        securityFunc(guild, member, sendRole);
+    });
 }
 
 function setupSecurityVeil() {
@@ -284,6 +292,11 @@ function setupSecurityVeil() {
 
 Cmds.initCommands();
 
+const veilGuilds = {
+    '284746138995785729': true,
+    '309785618932563968': true,
+};
+
 client.on('ready', () => {
     console.log(`\nConnected as ${client.user.username}!\n`);
 
@@ -298,14 +311,16 @@ client.on('ready', () => {
 
     let remaining = nowGuilds.size;
 
+    const veilGuildsNum = Object.keys(veilGuilds).length;
+
     nowGuilds.forEach((guild) => {
         guild.fetchMembers()
         .then((newGuild) => {
             remaining--;
 
-            if (newGuild.id === '284746138995785729' || newGuild.id === '309785618932563968') {
+            if (has.call(veilGuilds, newGuild.id)) {
                 securityNum++;
-                if (securityNum === 2) setupSecurityVeil();
+                if (securityNum === veilGuildsNum) setupSecurityVeil();
             }
 
             setupSecurity(newGuild);
@@ -390,6 +405,12 @@ client.on('guildMemberAdd', (member) => {
             .catch(error => console.log(`\n[E_AutoAddRole1] ${error}`));
             console.log('Awarded new member with Buyer role');
         }
+    }
+
+    if (has.call(exports.globalBan, memberId)) {
+        member.kick();
+        console.log(`Globally banned user ${memberName} joined ${guildName}`);
+        return;
     }
 
     const isMuted = Mutes.checkMuted(memberId, guild);
