@@ -634,12 +634,15 @@ client.on('messageDelete', (msgObj) => {
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
+    console.log('[MD] Getting audit log data');
+
     guild.fetchAuditLogs({
         user: member,
         limit: 1,
         type: 'MESSAGE_DELETE',
     })
     .then((logs) => {
+        console.log('[MD] Got audit log data');
         const entry = logs.entries.array()[0];
         const sendLogData = [
             'Message Deleted',
@@ -652,7 +655,10 @@ client.on('messageDelete', (msgObj) => {
         ];
         Util.sendLog(sendLogData, colMessage);
     })
-    .catch(console.error);
+    .catch((error) => {
+        console.log(error);
+        console.log('[MD] Failed to get audit log data');
+    });
 });
 
 const messageStamps = {};
