@@ -201,7 +201,7 @@ function setBriefing() {
 }
 
 exports.globalBan = {
-    '180430107184332801': true,
+    // '180430107184332801': true,
 };
 
 function securityFunc(guild, member, sendRoleParam) {
