@@ -618,6 +618,29 @@ const Actions = {
 
 */
 
+function chooseRelevantEntry(entries, options) {
+    if (options.action == null || options.time == null) {
+        console.log(options);
+        console.log('Options did not contain necessary properties');
+        return undefined;
+    }
+
+    const strongest = [null, null];
+
+    entries.forEach((entry) => {
+        if (entry.action !== options.action) return;
+
+        const timeScore = -Math.abs(options.time - entry.createdTimestamp);
+
+        if (strongest[0] == null || timeScore > strongest[0]) {
+            strongest[0] = timeScore;
+            strongest[1] = entry;
+        }
+    });
+
+    return strongest[1];
+}
+
 client.on('messageDelete', (msgObj) => {
     if (msgObj == null) return;
     const channel = msgObj.channel;
@@ -625,6 +648,9 @@ client.on('messageDelete', (msgObj) => {
     const member = msgObj.member;
     const author = msgObj.author;
     const content = msgObj.content;
+
+    const evTime = +new Date();
+
     // const contentLower = content.toLowerCase();
     // const isStaff = author.id == vaebId;
     // const msgId = msgObj.id;
@@ -633,7 +659,7 @@ client.on('messageDelete', (msgObj) => {
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
-    setTimeout(() => {
+    /* setTimeout(() => {
         guild.fetchAuditLogs({
             // user: member,
             limit: 1,
@@ -642,6 +668,43 @@ client.on('messageDelete', (msgObj) => {
         .then((logs) => {
             console.log('[MD] Got audit log data');
             const entry = logs.entries.array()[0];
+
+            console.log(entry);
+
+            console.log(entry.executor.toString());
+            console.log(entry.target.toString());
+
+            const sendLogData = [
+                'Message Deleted',
+                guild,
+                author,
+                { name: 'Username', value: author.toString() },
+                { name: 'Moderator', value: entry.executor.toString() },
+                { name: 'Channel Name', value: channel.toString() },
+                { name: 'Message', value: content },
+            ];
+            Util.sendLog(sendLogData, colMessage);
+        })
+        .catch((error) => {
+            console.log(error);
+            console.log('[MD] Failed to get audit log data');
+        });
+    }, 5000); */
+
+    setTimeout(() => {
+        guild.fetchAuditLogs({
+            // user: member,
+            type: 'MESSAGE_DELETE',
+        })
+        .then((logs) => {
+            console.log('[MD] Got audit log data');
+            const entries = logs.entries;
+
+            const entry = chooseRelevantEntry(entries, {
+                time: evTime,
+                target: author,
+                action: 'MESSAGE_DELETE',
+            });
 
             console.log(entry);
 
