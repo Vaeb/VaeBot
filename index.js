@@ -628,7 +628,7 @@ function chooseRelevantEntry(entries, options) {
     const strongest = [null, null];
 
     entries.forEach((entry) => {
-        if (entry.action !== options.action) return;
+        if (entry.action !== options.action || (options.target != null && entry.target.id !== options.target.id)) return;
 
         const timeScore = -Math.abs(options.time - entry.createdTimestamp);
 
