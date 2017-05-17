@@ -472,13 +472,10 @@ exports.runLua = function (args, channel) {
                     outStr.push(safeOut);
                     outStr.push('```');
                 } else {
-                    const headers = {
-                        'Content-Type': 'text/plain',
-                    };
                     const options = {
-                        url: 'http://hastebin.com/documents',
+                        url: 'https://hastebin.com/documents',
                         method: 'POST',
-                        headers,
+                        headers: { 'Content-Type': 'text/plain' },
                         body: stdout,
                     };
                     index.Request(options, (error2, response, bodyParam) => {
@@ -486,7 +483,7 @@ exports.runLua = function (args, channel) {
                         if (error2 || !body || !body.key) {
                             Util.print(channel, 'Hastebin upload error:', error2);
                         } else {
-                            Util.print(channel, 'Output:', `http://hastebin.com/raw/${body.key}`);
+                            Util.print(channel, 'Output:', `https://hastebin.com/raw/${body.key}`);
                         }
                     });
                 }
@@ -888,7 +885,7 @@ exports.getMention = function (obj) {
 
 exports.getAvatar = function (user, outStr) {
     if (user != null && exports.isObject(user)) {
-        return (user.avatarURL || (user.user ? user.user.avatarURL : null));
+        return (user.displayAvatarURL || (user.user ? user.user.displayAvatarURL : null));
     }
     return (outStr === true ? 'null' : null);
 };

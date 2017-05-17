@@ -618,7 +618,7 @@ const Actions = {
 
 */
 
-function chooseRelevantEntry(entries, options) {
+/* function chooseRelevantEntry(entries, options) {
     if (options.action == null || options.time == null) {
         console.log(options);
         console.log('Options did not contain necessary properties');
@@ -639,7 +639,7 @@ function chooseRelevantEntry(entries, options) {
     });
 
     return strongest[1];
-}
+} */
 
 client.on('messageDelete', (msgObj) => {
     if (msgObj == null) return;
@@ -649,7 +649,7 @@ client.on('messageDelete', (msgObj) => {
     const author = msgObj.author;
     const content = msgObj.content;
 
-    const evTime = +new Date();
+    // const evTime = +new Date();
 
     // const contentLower = content.toLowerCase();
     // const isStaff = author.id == vaebId;
@@ -659,15 +659,15 @@ client.on('messageDelete', (msgObj) => {
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
-    /* setTimeout(() => {
+    setTimeout(() => {
         guild.fetchAuditLogs({
             // user: member,
-            limit: 1,
+            // limit: 1,
             type: 'MESSAGE_DELETE',
         })
         .then((logs) => {
             console.log('[MD] Got audit log data');
-            const entry = logs.entries.array()[0];
+            const entry = logs.entries.first();
 
             console.log(entry);
 
@@ -689,12 +689,12 @@ client.on('messageDelete', (msgObj) => {
             console.log(error);
             console.log('[MD] Failed to get audit log data');
         });
-    }, 5000); */
+    }, 2000);
 
-    setTimeout(() => {
+    /* setTimeout(() => {
         guild.fetchAuditLogs({
             // user: member,
-            type: 'MESSAGE_DELETE',
+            type: 72,
         })
         .then((logs) => {
             console.log('[MD] Got audit log data');
@@ -726,7 +726,7 @@ client.on('messageDelete', (msgObj) => {
             console.log(error);
             console.log('[MD] Failed to get audit log data');
         });
-    }, 5000);
+    }, 5000); */
 });
 
 const messageStamps = {};
