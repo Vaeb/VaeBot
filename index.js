@@ -201,6 +201,7 @@ function setBriefing() {
 }
 
 exports.globalBan = {
+    '201740276472086528': true,
     // '180430107184332801': true,
 };
 
