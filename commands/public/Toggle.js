@@ -15,28 +15,40 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        const props = args.toLowerCase();
         const guildAutoRoles = Data.guildGet(guild, Data.autoRoles);
-        props.split(' ').forEach((prop) => {
+        const props = args.toLowerCase().trim().split(' ');
+        const rolesAdded = [];
+        const rolesRemoved = [];
+
+        for (let i = 0; i < props.length; i++) {
+            const prop = props[i];
+
             if (!Object.prototype.hasOwnProperty.call(guildAutoRoles, prop)) {
-                Util.commandFailed(channel, speaker, 'AutoRole not found');
                 return;
             }
+
             const roleName = guildAutoRoles[prop];
             const roleObj = Util.getRole(roleName, guild);
+
             if (!Util.hasRole(speaker, roleObj)) {
                 speaker.addRole(roleObj);
-                const sendEmbedFields = [
-                    { name: 'Role Name', value: roleObj.name },
-                ];
-                Util.sendEmbed(channel, 'AutoRole Added', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), 0x00E676, sendEmbedFields);
+                rolesAdded.push(roleObj.name);
             } else {
                 speaker.removeRole(roleObj);
-                const sendEmbedFields = [
-                    { name: 'Role Name', value: roleObj.name },
-                ];
-                Util.sendEmbed(channel, 'AutoRole Removed', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), 0x00E676, sendEmbedFields);
+                rolesRemoved.push(roleObj.name);
             }
-        });
+        }
+
+        const sendEmbedFields = [];
+
+        if (rolesAdded.length > 0) {
+            sendEmbedFields.push({ name: 'Roles Added', value: rolesAdded.join('\n') });
+        }
+
+        if (rolesRemoved.length > 0) {
+            sendEmbedFields.push({ name: 'Roles Removed', value: rolesRemoved.join('\n') });
+        }
+
+        Util.sendEmbed(channel, 'User Roles Altered', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), 0x00E676, sendEmbedFields);
     },
 });
