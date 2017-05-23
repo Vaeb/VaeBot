@@ -787,7 +787,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (guild != null && author.bot === false && content.length > 0) {
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== vaebId) {
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
         const nowStamps = messageStamps[authorId];
