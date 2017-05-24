@@ -597,7 +597,11 @@ exports.checkStaff = function (guild, member) {
 };
 
 exports.commandFailed = function (channel, speaker, message) {
-    exports.sendEmbed(channel, 'Command Failed', message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
+    if (channel != null) {
+        exports.sendEmbed(channel, 'Command Failed', message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
+    } else {
+        console.log(`[Command_Failed] ${speaker.id}: ${message}`);
+    }
     return false;
 };
 

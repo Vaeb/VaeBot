@@ -856,7 +856,7 @@ client.on('message', (msgObj) => {
                                 console.log(`[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
                                 if (grad2 >= checkGrad2) {
                                     console.log(`[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
-                                    Mutes.doMuteReal(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
+                                    Mutes.doMute(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
                                     userStatus[authorId] = 0;
                                 } else {
                                     console.log(`[2] ${Util.getName(speaker)} was put on alert`);
@@ -867,7 +867,7 @@ client.on('message', (msgObj) => {
                         }, 350);
                     } else if (userStatus[authorId] === 2) {
                         console.log(`[3] ${Util.getName(speaker)} muted, repeated warns`);
-                        Mutes.doMuteReal(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
+                        Mutes.doMute(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
                         userStatus[authorId] = 0;
                     }
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {

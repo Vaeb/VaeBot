@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';mute ', ';warn ', ';mutehammer '],
+    cmds: [';mute ', ';mutehammer '],
 
     requires: {
         guild: true,
@@ -28,6 +28,6 @@ module.exports = Cmds.addCommand({
             position = Infinity;
         }*/
 
-        Mutes.doMute(args, guild, position, channel, speaker);
+        Mutes.doMuteName(args, guild, position, channel, speaker);
     },
 });

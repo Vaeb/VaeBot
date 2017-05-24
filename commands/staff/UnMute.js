@@ -15,6 +15,6 @@ module.exports = Cmds.addCommand({
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		Mutes.unMute(args, false, guild, Util.getPosition(speaker), channel, speaker);
+		Mutes.unMuteName(args, false, guild, Util.getPosition(speaker), channel, speaker);
 	}
 });

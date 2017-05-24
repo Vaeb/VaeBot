@@ -18,7 +18,7 @@ module.exports = Cmds.addCommand({
 		var target = Util.getMemberByMixed(args, guild);
 		if (target == null) return Util.commandFailed(channel, speaker, "User not found");
 		var targetId = target.id;
-		var didWork = Mutes.unMute(target.id, false, guild, Util.getPosition(speaker), null, speaker);
+		var didWork = Mutes.unMuteName(target.id, false, guild, Util.getPosition(speaker), null, speaker);
 
 		if (didWork) {
 			Data.guildDelete(guild, Data.history, targetId);

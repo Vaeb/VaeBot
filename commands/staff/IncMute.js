@@ -29,7 +29,7 @@ module.exports = Cmds.addCommand({
 
 		var reason = nowMute[3];
 
-		var timeRemaining = Mutes.doMuteReal(target, reason, guild, Util.getPosition(speaker), channel, speaker, true);
+		var timeRemaining = Mutes.doMute(target, reason, guild, Util.getPosition(speaker), channel, speaker, true);
 
 		var sendEmbedFields = [
 			{name: "Username", value: Util.getMention(target)},
