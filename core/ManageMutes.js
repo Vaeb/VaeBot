@@ -82,6 +82,8 @@ exports.checkMuted = function (id, guild) {
 };
 
 exports.doMuteReal = function (targetMember, reason, guild, pos, channel, speaker, noOut, timeScaleParam) {
+    // Set some variable data
+
     const id = targetMember.id;
     const muteName = Util.getName(targetMember);
 
@@ -115,7 +117,7 @@ exports.doMuteReal = function (targetMember, reason, guild, pos, channel, speake
         return false;
     }
 
-    // Save mute information to file
+    // Save mute information to linked file
 
     const nowDate = Date.now();
     let muteTime;
@@ -155,7 +157,7 @@ exports.doMuteReal = function (targetMember, reason, guild, pos, channel, speake
         index.dailyMutes.push([id, `${muteName}#${targetMember.discriminator}`, reason, timeRemaining]);
     }
 
-    // Embed mute information in channel
+    // Output mute information in channel
 
     const d = new Date();
     d.setTime(endTime);
@@ -183,7 +185,7 @@ exports.doMuteReal = function (targetMember, reason, guild, pos, channel, speake
     );
     */
 
-    // Embed mute information in log
+    // Output mute information in log
 
     const sendLogData = [
         'User Muted',
@@ -207,20 +209,38 @@ exports.doMuteReal = function (targetMember, reason, guild, pos, channel, speake
     outStr.push('```');
     Util.print(targetMember, outStr.join('\n'));
 
-    return timeRemaining;
+    return timeRemaining; // Formatted string
 };
 
 exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
+    // Set some variable data
+
     const id = targetMember.id;
+    const muteName = Util.getName(targetMember);
+
+    // Get speaker data (if one exists)
 
     const speakerValid = Util.isObject(speaker);
     let speakerName = speaker;
     let speakerId = null;
 
+    // Get original mute data
+
+    const mutedData = Data.guildGet(guild, Data.muted, id);
+
+    const origModId = mutedData[4];
+    const origMod = Util.getMemberById(origModId, guild);
+    const origModPos = origMod != null ? Util.getPosition(origMod) : -1;
+
+    const muteHistory = Util.getHistory(id, guild);
+    const muteHistoryString = Util.historyToString(muteHistory);
+
     if (speakerValid) {
         speakerName = speaker.toString();
         speakerId = speaker.id;
     }
+
+    // Check if user is allowed to be unmuted
 
     if (speakerId !== vaebId && pos <= Util.getPosition(targetMember)) {
         if (channel != null) {
@@ -230,11 +250,6 @@ exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
         return false;
     }
 
-    const mutedData = Data.guildGet(guild, Data.muted, id);
-    const origModId = mutedData[4];
-    const origMod = Util.getMemberById(origModId, guild);
-    const origModPos = origMod != null ? Util.getPosition(origMod) : -1;
-
     if (speakerValid && speakerId !== vaebId && speakerId !== selfId && (origModId === vaebId || pos < origModPos)) {
         if (channel != null) {
             console.log(`${speakerName}_Moderator who muted has higher privilege`);
@@ -243,10 +258,9 @@ exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
         return false;
     }
 
-    Data.guildDelete(guild, Data.muted, id);
+    // Remove mute information from linked file
 
-    const muteHistory = Util.getHistory(targetMember.id, guild);
-    const muteHistoryString = Util.historyToString(muteHistory);
+    Data.guildDelete(guild, Data.muted, id);
 
     // Finalise unmute
 
@@ -256,9 +270,7 @@ exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
 
     exports.addSend(targetMember);
 
-    // Output
-
-    const muteName = Util.getName(targetMember);
+     // Output mute information in channel
 
     if (pos === Infinity) {
         console.log(`Unmuted ${muteName}`);
@@ -271,6 +283,8 @@ exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
         Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(speaker), Util.getAvatar(targetMember), 0x00E676, sendEmbedFields);
     }
 
+     // Output unmute information in log
+
     const sendLogData = [
         'User Unmuted',
         guild,
@@ -281,12 +295,14 @@ exports.unMuteReal = function (targetMember, guild, pos, channel, speaker) {
     ];
     Util.sendLog(sendLogData, colAction);
 
+    // DM muted user with unmute information
+
     const outStr = ['**You have been unmuted**\n```'];
     outStr.push(`Guild: ${guild.name}`);
     outStr.push('```');
     Util.print(targetMember, outStr.join('\n'));
 
-    return true;
+    return true; // Success
 };
 
 exports.doMute = function (name, guild, pos, channel, speaker) {
