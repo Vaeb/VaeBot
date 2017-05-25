@@ -202,6 +202,7 @@ function setBriefing() {
 
 exports.globalBan = {
     '201740276472086528': true,
+    '75736018761818112': true,
     // '180430107184332801': true,
 };
 
@@ -680,7 +681,7 @@ client.on('messageDelete', (msgObj) => {
                 guild,
                 author,
                 { name: 'Username', value: author.toString() },
-                { name: 'Moderator', value: entry.executor.toString() },
+                // { name: 'Moderator', value: entry.executor.toString() },
                 { name: 'Channel Name', value: channel.toString() },
                 { name: 'Message', value: content },
             ];
