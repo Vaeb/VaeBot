@@ -1180,7 +1180,7 @@ exports.getHistory = function (id, guild) {
 exports.historyToString = function (num) {
     let timeHours = exports.round(num / 3600000, 0.1);
     timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
-    return timeHours + (timeHours === 1 ? ' hour' : ' hours');
+    return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
 exports.getSafeId = function (idParam) {
