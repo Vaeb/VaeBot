@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-	cmds: [";run ", ";exec ", ";eval "],
+	cmds: [";eval ", ";run ", ";exec "],
 
 	requires: {
 		guild: false,
