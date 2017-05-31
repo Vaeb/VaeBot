@@ -133,7 +133,7 @@ module.exports = Cmds.addCommand({
             checkFunc = checkFuncs[userOrType];
         }
 
-        let numSearch = userOrType !== 'all' ? numArgs * 10 : numArgs;
+        let numSearch = userOrType !== 'all' ? numArgs * 30 : numArgs;
         numSearch = Math.min(numSearch, 1000);
 
         let last = null;
