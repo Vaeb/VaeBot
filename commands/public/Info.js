@@ -24,6 +24,14 @@ module.exports = Cmds.addCommand({
         const highestRole = Util.getHighestRole(target);
         const powerRating = `${Util.toFixedCut(Util.getPermRating(guild, target), 3)}%`;
 
+        const guildMembers = Array.from(guild.members.values());
+        guildMembers.sort((a, b) => a.joinedTimestamp - b.joinedTimestamp);
+        const joinOrder = guildMembers.map(member => member.id);
+        const joinPos = joinOrder.indexOf(target.id) + 1;
+        const joinPosStr = `${Util.getSuffix(joinPos)} / ${guild.members.size}`;
+
+        const joinedAtStr = (target.joinedAt != null ? Util.getDateString(target.joinedAt) : 'N/A');
+
         const sendEmbedFields = [];
 
         sendEmbedFields.push({ name: 'ID', value: target.id });
@@ -43,7 +51,7 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({ name: 'Server Mic Muted', value: Util.capitalize(target.serverMute) });
         sendEmbedFields.push({ name: 'Server Deafened', value: Util.capitalize(target.serverDeaf) });
         sendEmbedFields.push({ name: 'Registered', value: (createdAt != null ? Util.getDateString(createdAt) : 'N/A') });
-        sendEmbedFields.push({ name: `Joined ${guild.name}`, value: (target.joinedAt != null ? Util.getDateString(target.joinedAt) : 'N/A') });
+        sendEmbedFields.push({ name: `Joined ${guild.name}`, value: `${joinedAtStr} : ${joinPosStr}` });
         sendEmbedFields.push({ name: 'Avatar', value: Util.getAvatar(target, true) });
 
         // var newDesc = Util.getAvatar(target, true) // + "\n" + */("+").repeat(numSep);
