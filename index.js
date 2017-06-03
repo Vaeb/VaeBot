@@ -752,13 +752,13 @@ const muteGrad = 9;
 const waitTime = 5.5;
 const endAlert = 15;
 
-const replaceAll = function (str, search, replacement) {
+/* const replaceAll = function (str, search, replacement) {
     return str.split(search).join(replacement);
 };
 let contentLower = 'lol <qe23> tege <> <e321z> dz';
 contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
-console.log(contentLower);
+console.log(contentLower); */
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
