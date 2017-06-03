@@ -752,10 +752,19 @@ const muteGrad = 9;
 const waitTime = 5.5;
 const endAlert = 15;
 
+/* const replaceAll = function (str, search, replacement) {
+    return str.split(search).join(replacement);
+};
+let contentLower = 'lol <qe:#23> tege <:> <e32:1z> dz';
+contentLower = contentLower.replace(/<([^ ]*?[:#@][^ ]*?)>/gm, '');
+// contentLower = replaceAll(contentLower, ' ', '');
+console.log(contentLower); */
+
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     let contentLower = msgObj.content.toLowerCase();
+    contentLower = contentLower.replace(/<([^ ]*?[:#@][^ ]*?)>/gm, '');
     contentLower = Util.replaceAll(contentLower, ' ', '');
     contentLower = Util.replaceAll(contentLower, 'one', '1');
     contentLower = Util.replaceAll(contentLower, 'won', '1');
@@ -771,6 +780,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
         triggered = true;
     } else {
         // const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
+        // const trigger = [/[123][123][123]/g, /muteme/g];
         const trigger = [/[123][123][123]/g, /muteme/g];
         for (let i = 0; i < trigger.length; i++) {
             if (trigger[i].test(contentLower)) {
