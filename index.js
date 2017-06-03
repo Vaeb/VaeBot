@@ -748,13 +748,24 @@ const endAlert = 15;
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker.id === vaebId) return;
+
     const contentLower = Util.replaceAll(msgObj.content.toLowerCase(), ' ', '');
-    const trigger = ['12', '32', '22', 'muteme', 'onetwo', 'oneto'];
-    for (let i = 0; i < trigger.length; i++) {
-        if (contentLower.includes(trigger[i].toLowerCase())) {
-            Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
-            break;
+    let triggered = false;
+
+    if (contentLower === '3' || contentLower === 'three') {
+        triggered = true;
+    } else {
+        const trigger = ['12', '32', '22', 'muteme', 'onetwo', 'oneto', 'threetwo', 'threeto'];
+        for (let i = 0; i < trigger.length; i++) {
+            if (contentLower.includes(trigger[i].toLowerCase())) {
+                triggered = true;
+                break;
+            }
         }
+    }
+
+    if (triggered) {
+        Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
     }
 });
 
