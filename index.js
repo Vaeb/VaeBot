@@ -781,7 +781,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     } else {
         // const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
         // const trigger = [/[123][123][123]/g, /muteme/g];
-        const trigger = [/[123][^\d]?.?[^\d]?[123][^\d]?.?[^\d]?\d/g, /muteme/g];
+        const trigger = [/[123][^\d]?[^\d]?[^\d]?[123][^\d]?[^\d]?[^\d]?\d/g, /muteme/g];
         for (let i = 0; i < trigger.length; i++) {
             if (trigger[i].test(contentLower)) {
                 triggered = true;
