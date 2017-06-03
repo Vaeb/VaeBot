@@ -812,8 +812,6 @@ client.on('message', (msgObj) => {
         speaker = Util.getMemberById(selfId, guild);
         content = content.substring(5);
         contentLower = content.toLowerCase();
-    } else if (speaker == null) {
-        speaker = author;
     }
 
     if (exports.runFuncs.length > 0) {
@@ -940,7 +938,7 @@ client.on('message', (msgObj) => {
         // exports.chatQueue[guild.id].push(msgObj);
     }
 
-    Cmds.checkMessage(msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff);
+    Cmds.checkMessage(msgObj, speaker || author, channel, guild, content, contentLower, authorId, isStaff);
 
     if (author.bot === true) { // RETURN IF BOT
         return;
