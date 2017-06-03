@@ -237,9 +237,9 @@ exports.permRating = [
     ['SEND_MESSAGES', 10],
 ];
 
-function replaceAll(str, search, replacement) {
+exports.replaceAll = function (str, search, replacement) {
     return str.split(search).join(replacement);
-}
+};
 
 function getURLChecker() {
     const SCHEME = '[a-z\\d.-]+://';
@@ -284,9 +284,9 @@ function getURLChecker() {
     };
 
     function checkURLs(txtParam, optionsParam) {
-        let txt = replaceAll(txtParam, '\\', '');
-        txt = replaceAll(txt, '*', '');
-        txt = replaceAll(txt, '_', '');
+        let txt = exports.replaceAll(txtParam, '\\', '');
+        txt = exports.replaceAll(txt, '*', '');
+        txt = exports.replaceAll(txt, '_', '');
 
         if (txt.includes('roblox')) console.log(txt);
 
@@ -507,7 +507,7 @@ exports.doXOR = function (a, b) {
 
 exports.capitalize2 = function (strParam, repUnder) {
     let str = String(strParam);
-    if (repUnder) str = replaceAll(str, '_', ' ');
+    if (repUnder) str = exports.replaceAll(str, '_', ' ');
     str = str.replace(/[0-9a-z]+/ig, (txt) => { console.log(txt); return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
     return str;
 };
@@ -1576,7 +1576,7 @@ exports.getMemberPowers = function (guild) {
 exports.strToPerm = function (strParam) {
     let str = strParam;
 
-    str = replaceAll(str.toUpperCase(), ' ', '_');
+    str = exports.replaceAll(str.toUpperCase(), ' ', '_');
 
     let matchPerm = null;
     let matchTop = 0;
