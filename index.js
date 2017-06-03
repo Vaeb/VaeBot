@@ -755,14 +755,23 @@ const endAlert = 15;
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
-    const contentLower = Util.replaceAll(msgObj.content.toLowerCase(), ' ', '');
+    let contentLower = msgObj.content.toLowerCase();
+    contentLower = Util.replaceAll(contentLower, ' ', '');
+    contentLower = Util.replaceAll(contentLower, 'one', '1');
+    contentLower = Util.replaceAll(contentLower, 'won', '1');
+    contentLower = Util.replaceAll(contentLower, 'two', '2');
+    contentLower = Util.replaceAll(contentLower, 'too', '2');
+    contentLower = Util.replaceAll(contentLower, 'to', '2');
+    contentLower = Util.replaceAll(contentLower, 'three', '3');
+    contentLower = Util.replaceAll(contentLower, 'free', '3');
+
     let triggered = false;
 
     if (contentLower === '3' || contentLower === 'three') {
         triggered = true;
     } else {
         // const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
-        const trigger = [/[123][123][123]/g, /muteme/g, /onet.?o/g, /threet.?o/g];
+        const trigger = [/[123][123][123]/g, /muteme/g];
         for (let i = 0; i < trigger.length; i++) {
             if (trigger[i].test(contentLower)) {
                 triggered = true;
