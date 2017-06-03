@@ -752,19 +752,19 @@ const muteGrad = 9;
 const waitTime = 5.5;
 const endAlert = 15;
 
-/* const replaceAll = function (str, search, replacement) {
+const replaceAll = function (str, search, replacement) {
     return str.split(search).join(replacement);
 };
-let contentLower = 'lol <qe:#23> tege <:> <e32:1z> dz';
-contentLower = contentLower.replace(/<([^ ]*?[:#@][^ ]*?)>/gm, '');
+let contentLower = 'lol <qe23> tege <> <e321z> dz';
+contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
-console.log(contentLower); */
+console.log(contentLower);
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     let contentLower = msgObj.content.toLowerCase();
-    contentLower = contentLower.replace(/<([^ ]*?[:#@][^ ]*?)>/gm, '');
+    contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
     contentLower = Util.replaceAll(contentLower, ' ', '');
     contentLower = Util.replaceAll(contentLower, 'one', '1');
     contentLower = Util.replaceAll(contentLower, 'won', '1');
