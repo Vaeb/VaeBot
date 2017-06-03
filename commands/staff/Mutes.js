@@ -27,6 +27,7 @@ module.exports = Cmds.addCommand({
 			var nowMute = mutedGuild[targetId];
 			var endTime = nowMute[1];
 			var time = endTime-nowDate;
+            console.log(time);
 			var timeStr = Util.formatTime(time);
 			var targUser = Util.getUserById(targetId);
 			var targName = targUser == null ? nowMute[2] : Util.getMostName(targUser);

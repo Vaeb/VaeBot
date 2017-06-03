@@ -705,6 +705,7 @@ exports.formatTime = function (time) {
     const numMinutes = exports.round(time / 60000, 0.1);
     const numHours = exports.round(time / 3600000, 0.1);
     const numDays = exports.round(time / 86400000, 0.1);
+    const numYears = exports.round(time / 31536000000, 0.1);
 
     if (numSeconds < 60) {
         timeStr = numSeconds.toFixed(0);
@@ -715,9 +716,12 @@ exports.formatTime = function (time) {
     } else if (numHours < 60) {
         timeStr = numHours % 1 === 0 ? numHours.toFixed(0) : numHours.toFixed(1);
         formatStr = `${timeStr} hour`;
-    } else if (numDays < 60) {
+    } else if (numDays < 365) {
         timeStr = numDays % 1 === 0 ? numDays.toFixed(0) : numDays.toFixed(1);
         formatStr = `${timeStr} day`;
+    } else {
+        timeStr = numYears % 1 === 0 ? numYears.toFixed(0) : numYears.toFixed(1);
+        formatStr = `${timeStr} year`;
     }
 
     if (timeStr !== '1') formatStr += 's';
