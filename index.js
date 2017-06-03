@@ -542,6 +542,12 @@ client.on('messageUpdate', (oldMsgObj, newMsgObj) => {
         }
     }
 
+    if (exports.runFuncs.length > 0) {
+        for (let i = 0; i < exports.runFuncs.length; i++) {
+            exports.runFuncs[i](newMsgObj, member, channel, guild);
+        }
+    }
+
     Events.emit(guild, 'MessageUpdate', member, channel, oldContent, content);
 
     if (oldContent !== content) {
