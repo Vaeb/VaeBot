@@ -761,7 +761,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (contentLower === '3' || contentLower === 'three') {
         triggered = true;
     } else {
-        const trigger = [/12/g, /32/g, /22/g, /muteme/g, /onet.?o/g, /threet.?o/g];
+        const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
         for (let i = 0; i < trigger.length; i++) {
             if (trigger[i].test(contentLower)) {
                 triggered = true;
