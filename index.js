@@ -744,6 +744,25 @@ const muteGrad = 9;
 const waitTime = 5.5;
 const endAlert = 15;
 
+Cmds.addCommand({
+    cmds: [';muteme', ';memute', ';mute me', 'muteme', '123', '321', ';123', '`123`', '```123```', '`;123`', '```;123```'],
+
+    requires: {
+        guild: true,
+        loud: false,
+    },
+
+    desc: '',
+
+    args: '',
+
+    example: '',
+
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
+    },
+});
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
