@@ -746,23 +746,16 @@ const muteGrad = 9;
 const waitTime = 5.5;
 const endAlert = 15;
 
-Cmds.addCommand({
-    cmds: [';muteme', ';memute', ';mute me', 'muteme', '123', '321', ';123', '`123`', '```123```', '`;123`', '```;123```'],
-
-    requires: {
-        guild: true,
-        loud: false,
-    },
-
-    desc: '',
-
-    args: '',
-
-    example: '',
-
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
-    },
+exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+    if (guild == null || msgObj == null || speaker.id === vaebId) return;
+    const contentLower = Util.replaceAll(msgObj.content.toLowerCase(), ' ', '');
+    const trigger = ['12', '32', '22', 'muteme', 'onetwo', 'oneto'];
+    for (let i = 0; i < trigger.length; i++) {
+        if (contentLower.includes(trigger[i].toLowerCase())) {
+            Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
+            break;
+        }
+    }
 });
 
 client.on('message', (msgObj) => {
@@ -808,7 +801,7 @@ client.on('message', (msgObj) => {
 
     if (exports.runFuncs.length > 0) {
         for (let i = 0; i < exports.runFuncs.length; i++) {
-            exports.runFuncs[i](msgObj, channel, speaker);
+            exports.runFuncs[i](msgObj, speaker, channel, guild);
         }
     }
 
