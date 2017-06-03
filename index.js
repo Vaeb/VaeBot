@@ -753,7 +753,7 @@ const waitTime = 5.5;
 const endAlert = 15;
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
-    if (guild == null || msgObj == null || speaker.id === vaebId) return;
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     const contentLower = Util.replaceAll(msgObj.content.toLowerCase(), ' ', '');
     let triggered = false;
