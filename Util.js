@@ -1450,7 +1450,7 @@ exports.getHighestRole = function (member) {
 };
 
 exports.getPosition = function (speaker) {
-    if (speaker == null || !exports.isObject(speaker)) return undefined;
+    if (speaker == null || !exports.isObject(speaker) || speaker.guild == null) return undefined;
 
     if (speaker.id === speaker.guild.ownerID) return 999999999;
 
