@@ -755,9 +755,9 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (contentLower === '3' || contentLower === 'three') {
         triggered = true;
     } else {
-        const trigger = ['12', '32', '22', 'muteme', 'onetwo', 'oneto', 'threetwo', 'threeto'];
+        const trigger = [/12/g, /32/g, /22/g, /muteme/g, /onet.?o/g, /threet.?o/g];
         for (let i = 0; i < trigger.length; i++) {
-            if (contentLower.includes(trigger[i].toLowerCase())) {
+            if (trigger[i].test(contentLower)) {
                 triggered = true;
                 break;
             }
