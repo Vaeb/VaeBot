@@ -760,7 +760,7 @@ contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
 console.log(contentLower); */
 
-exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+/* exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     let contentLower = msgObj.content.toLowerCase();
@@ -768,10 +768,15 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     contentLower = Util.replaceAll(contentLower, ' ', '');
     contentLower = Util.replaceAll(contentLower, 'one', '1');
     contentLower = Util.replaceAll(contentLower, 'won', '1');
+    contentLower = Util.replaceAll(contentLower, 'uno', '1');
+    contentLower = Util.replaceAll(contentLower, 'una', '1');
     contentLower = Util.replaceAll(contentLower, 'two', '2');
+    contentLower = Util.replaceAll(contentLower, 'dose', '2');
+    contentLower = Util.replaceAll(contentLower, 'dos', '2');
     contentLower = Util.replaceAll(contentLower, 'too', '2');
     contentLower = Util.replaceAll(contentLower, 'to', '2');
     contentLower = Util.replaceAll(contentLower, 'three', '3');
+    contentLower = Util.replaceAll(contentLower, 'tres', '3');
     contentLower = Util.replaceAll(contentLower, 'free', '3');
 
     let triggered = false;
@@ -793,7 +798,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (triggered) {
         Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
     }
-});
+}); */
 
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
