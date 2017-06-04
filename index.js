@@ -677,14 +677,14 @@ client.on('messageDelete', (msgObj) => {
                 // limit: 1,
                 type: 'MESSAGE_DELETE',
             })
-            .then((logs) => {
-                console.log('[MD] Got audit log data');
-                const entry = logs.entries.first();
+            .then((/* logs */) => {
+                // console.log('[MD] Got audit log data');
+                // const entry = logs.entries.first();
 
-                console.log(entry);
+                // console.log(entry);
 
-                console.log(entry.executor.toString());
-                console.log(entry.target.toString());
+                // console.log(entry.executor.toString());
+                // console.log(entry.target.toString());
 
                 const sendLogData = [
                     'Message Deleted',
