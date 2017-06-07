@@ -204,6 +204,7 @@ exports.globalBan = {
     '201740276472086528': true,
     '75736018761818112': true,
     '123146298504380416': true,
+    '234426310934396928': true,
 };
 
 function securityFunc(guild, member, sendRoleParam) {
@@ -217,7 +218,8 @@ function securityFunc(guild, member, sendRoleParam) {
     if (sendRole == null) sendRole = Util.getRole('SendMessages', guild);
 
     if (has.call(exports.globalBan, memberId)) {
-        member.kick();
+        member.kick()
+        .catch(console.error);
         console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
         return;
     }
@@ -412,7 +414,8 @@ client.on('guildMemberAdd', (member) => {
     }
 
     if (has.call(exports.globalBan, memberId)) {
-        member.kick();
+        member.kick()
+        .catch(console.error);
         console.log(`Globally banned user ${memberName} joined ${guildName}`);
         return;
     }
