@@ -316,6 +316,11 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
 
     // Upload mute information to trello
 
+    Trello.findCard(targetId, (cardData) => {
+        const cardId = cardData.id;
+        Trello.dueComplete(cardId);
+    });
+
     Trello.addCard('Mutes', mostName, {
         'User ID': targetId,
         'Reason': reason,
@@ -416,6 +421,11 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
     outStr.push(`Guild: ${guild.name}`);
     outStr.push('```');
     Util.print(targetMember, outStr.join('\n'));
+
+    Trello.findCard(targetId, (cardData) => {
+        const cardId = cardData.id;
+        Trello.dueComplete(cardId);
+    });
 
     return true; // Success
 };

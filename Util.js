@@ -1637,3 +1637,33 @@ exports.updateMessageCache = function (channel, speaker) {
         }
     });
 };
+
+exports.banMember = function (member, reason) {
+    const memberId = member.id;
+    const memberMostName = exports.getMostName(member);
+
+    if (reason == null || reason.length < 1) reason = 'No reason provided';
+
+    member.ban()
+    .catch(console.error);
+
+    Trello.addCard('Bans', memberMostName, {
+        'User ID': memberId,
+        'Reason': reason,
+    });
+};
+
+exports.kickMember = function (member, reason) {
+    const memberId = member.id;
+    const memberMostName = exports.getMostName(member);
+
+    if (reason == null || reason.length < 1) reason = 'No reason provided';
+
+    member.kick()
+    .catch(console.error);
+
+    Trello.addCard('Kicks', memberMostName, {
+        'User ID': memberId,
+        'Reason': reason,
+    });
+};
