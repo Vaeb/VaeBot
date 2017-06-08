@@ -66,7 +66,7 @@ exports.findCard = function (targetId, callback) {
         console.log(data);
         console.log('--TRELLO FEEDBACK END--');
 
-        const ok = err == null;
+        const ok = err == null && data.cards.length > 0;
 
         callback(ok, ok ? data.cards[0] : err);
     });
