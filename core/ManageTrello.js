@@ -1,11 +1,13 @@
 const TrelloHandler = index.TrelloHandler;
 
 const lists = {
-    mute: '59392e154996d41c2127c335',
+    mutes: '59392e154996d41c2127c335',
 };
 
 exports.addCard = function (listName, cardName, cardDesc) {
-    if (!has(lists, listName)) {
+    listName = listName.toLowerCase();
+
+    if (!has.call(lists, listName)) {
         console.log(`List ${listName} does not exist`);
         return false;
     }
