@@ -1,4 +1,5 @@
 const TrelloHandler = index.TrelloHandler;
+const DateFormat = index.DateFormat;
 
 const lists = {
     mutes: '59392e154996d41c2127c335',
@@ -29,10 +30,12 @@ exports.addCard = function (listName, cardName, cardDesc) {
     cardDesc = cardDesc.substr(0, 16384);
 
     const listId = lists[listName];
+    const nowDate = new Date();
+    const nowDateStr = DateFormat(nowDate, '[dd/mm/yyyy]');
 
     TrelloHandler.post('/1/cards', {
         idList: listId,
-        name: cardName,
+        name: `${nowDateStr} ${cardName}`,
         desc: cardDesc,
         pos: 'top',
     }, (err, data) => {

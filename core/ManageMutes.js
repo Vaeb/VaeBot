@@ -200,7 +200,7 @@ exports.doWarn = function (targetMember, reason, guild, authPosition, channel, s
     const dateEnd = new Date();
     dateEnd.setTime(endTime);
 
-    const endStr = DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss GMT');
+    const endStr = `${DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
 
     Data.guildSet(guild, Data.muted, targetId, [guild.id, endTime, muteName, reason, speakerId]);
 
@@ -282,8 +282,8 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
     const dateEnd = new Date();
     dateEnd.setTime(endTime);
 
-    const startStr = DateFormat(dateStart, '[dd/mm/yyyy] HH:MM:ss GMT');
-    const endStr = DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss GMT');
+    const startStr = `${DateFormat(dateStart, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
+    const endStr = `${DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
 
     Data.guildSet(guild, Data.muted, targetId, [guild.id, endTime, muteName, reason, speakerId]);
 
