@@ -316,18 +316,33 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
 
     // Upload mute information to trello
 
-    Trello.findCard(targetId, (cardData) => {
-        const cardId = cardData.id;
-        Trello.dueComplete(cardId);
-    });
-
-    Trello.addCard('Mutes', mostName, {
+    const cardDesc = {
         'User ID': targetId,
         'Reason': reason,
         'Length': timeRemaining,
         'Start': startStr,
         'End': endStr,
-    }, dateEnd);
+    };
+
+    if (!noOut) {
+        Trello.findCard(targetId, (ok, cardData) => {
+            if (ok) {
+                const cardId = cardData.id;
+                Trello.dueComplete(cardId, () => {
+                    Trello.addCard('Mutes', mostName, cardDesc, dateEnd);
+                });
+            } else {
+                Trello.addCard('Mutes', mostName, cardDesc, dateEnd);
+            }
+        });
+    } else {
+        Trello.findCard(targetId, (ok, cardData) => {
+            if (ok) {
+                const cardId = cardData.id;
+                Trello.setDesc(cardId, cardDesc);
+            }
+        });
+    }
 
     return timeRemaining; // Formatted string
 };
@@ -422,12 +437,57 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
     outStr.push('```');
     Util.print(targetMember, outStr.join('\n'));
 
-    Trello.findCard(targetId, (cardData) => {
-        const cardId = cardData.id;
-        Trello.dueComplete(cardId);
+    Trello.findCard(targetId, (ok, cardData) => {
+        if (ok) {
+            const cardId = cardData.id;
+            Trello.dueComplete(cardId);
+        }
     });
 
     return true; // Success
+};
+
+exports.undoMute = function (targetMember, guild, authPosition, channel, speaker) {
+    const targetId = targetMember.id;
+    const didWork = exports.unMuteName(targetId, false, guild, Util.getPosition(speaker), null, speaker);
+
+    if (didWork) {
+        let newMuteTime = 0;
+        const oldHistory = Data.guildGet(guild, Data.history, targetId);
+        if (oldHistory) {
+            const muteTime = oldHistory[0];
+            if (muteTime > Mutes.defaultMuteLength) {
+                newMuteTime = muteTime * 0.5;
+                oldHistory[0] = newMuteTime;
+                Data.guildSaveData(Data.history);
+            } else {
+                Data.guildDelete(guild, Data.history, targetId);
+            }
+        }
+
+        const sendEmbedFields = [
+            { name: 'Username', value: Util.getMention(targetMember) },
+            { name: 'Mute History', value: Util.historyToString(newMuteTime) },
+        ];
+        Util.sendEmbed(channel, 'Reverted Mute', null, Util.makeEmbedFooter(speaker), Util.getAvatar(targetMember), 0x00E676, sendEmbedFields);
+
+        const sendLogData = [
+            'Reverted Mute',
+            guild,
+            targetMember,
+            { name: 'Username', value: targetMember.toString() },
+            { name: 'Moderator', value: speaker.toString() },
+            { name: 'Mute History', value: Util.historyToString(newMuteTime) },
+        ];
+        Util.sendLog(sendLogData, colAction);
+
+        Trello.findCard(targetId, (ok, cardData) => {
+            if (ok) {
+                const cardId = cardData.id;
+                Trello.addLabel(cardId, 'Reverted');
+            }
+        });
+    }
 };
 
 exports.doMuteName = function (name, guild, authPosition, channel, speaker, isWarn) {
