@@ -100,6 +100,18 @@ exports.setDesc = function (cardId, cardDesc) {
     });
 };
 
+exports.setDue = function (cardId, dueDate) {
+    TrelloHandler.put(`/1/cards/${cardId}/due`, {
+        value: dueDate,
+    }, (err, data) => {
+        console.log('--TRELLO FEEDBACK START--');
+        console.log(err);
+        console.log('--<>--');
+        console.log(data);
+        console.log('--TRELLO FEEDBACK END--');
+    });
+};
+
 exports.addLabel = function (cardId, labelName) {
     labelName = labelName.toLowerCase();
 

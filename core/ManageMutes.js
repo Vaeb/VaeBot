@@ -340,6 +340,7 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
             if (ok) {
                 const cardId = cardData.id;
                 Trello.setDesc(cardId, cardDesc);
+                Trello.setDue(cardId, dateEnd);
             }
         });
     }
