@@ -1,4 +1,3 @@
-const Trello = index.Trello;
 const DateFormat = index.DateFormat;
 
 exports.muteEvents = [];
