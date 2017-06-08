@@ -2,10 +2,13 @@ console.log('\n-STARTING-\n');
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
+const Auth = require('./Auth.js');
+
 exports.FileSys = require('fs');
 exports.DateFormat = require('dateformat');
 exports.Request = require('request');
 exports.Urban = require('urban');
+const TrelloObj = require('node-trello');
 exports.Ytdl = require('ytdl-core');
 exports.Path = require('path');
 exports.NodeOpus = require('node-opus');
@@ -13,6 +16,7 @@ exports.Exec = require('child_process').exec;
 const YtInfoObj = require('youtube-node');
 
 exports.YtInfo = new YtInfoObj();
+exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
 
 exports.linkGuilds = [
     ['284746138995785729', '309785618932563968'],
@@ -28,13 +32,12 @@ global.vaebId = '107593015014486016';
 
 global.Util = require('./Util.js');
 global.Data = require('./data/ManageData.js');
+global.Trello = require('./core/ManageTrello.js');
 global.Mutes = require('./core/ManageMutes.js');
 global.Music = require('./core/ManageMusic.js');
 global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
-
-const Auth = require('./Auth.js');
 
 exports.YtInfo.setKey(Auth.youtube);
 
@@ -981,7 +984,7 @@ client.on('message', (msgObj) => {
 
 console.log('-CONNECTING-\n');
 
-client.login(Auth.token);
+client.login(Auth.discordToken);
 
 process.on('unhandledRejection', (err) => {
     console.error(`Uncaught Promise Error: \n${err.stack}`);
