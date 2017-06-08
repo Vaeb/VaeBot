@@ -5,8 +5,10 @@ const lists = {
     mutes: '59392e154996d41c2127c335',
 };
 
-exports.addCard = function (listName, cardName, cardDesc) {
+exports.addCard = function (listName, cardName, cardDesc, dueDate) {
     listName = listName.toLowerCase();
+
+    if (dueDate == null) dueDate = null;
 
     if (!has.call(lists, listName)) {
         console.log(`List ${listName} does not exist`);
@@ -38,6 +40,7 @@ exports.addCard = function (listName, cardName, cardDesc) {
         name: `${nowDateStr} ${cardName}`,
         desc: cardDesc,
         pos: 'top',
+        due: dueDate,
     }, (err, data) => {
         console.log('--TRELLO FEEDBACK START--');
         console.log(err);

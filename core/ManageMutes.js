@@ -322,7 +322,7 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
         'Length': timeRemaining,
         'Start': startStr,
         'End': endStr,
-    });
+    }, dateEnd);
 
     return timeRemaining; // Formatted string
 };
