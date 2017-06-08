@@ -1,6 +1,9 @@
+const Trello = index.Trello;
+const DateFormat = index.DateFormat;
+
 exports.muteEvents = [];
 
-exports.defaultMuteTime = 1800000;
+exports.defaultMuteLength = 1800000;
 
 /*
 
@@ -12,8 +15,8 @@ exports.defaultMuteTime = 1800000;
 
 */
 
-function checkMutedInner(id, guild) {
-    return (!!Data.guildGet(guild, Data.muted, id));
+function checkMutedInner(targetId, guild) {
+    return (!!Data.guildGet(guild, Data.muted, targetId));
 }
 
 exports.removeSend = function (member) {
@@ -60,8 +63,8 @@ exports.addSend = function (member) {
     }
 };
 
-exports.checkMuted = function (id, guild) {
-    let isMuted = checkMutedInner(id, guild);
+exports.checkMuted = function (targetId, guild) {
+    let isMuted = checkMutedInner(targetId, guild);
 
     if (!isMuted) {
         const guildId = guild.id;
@@ -72,7 +75,7 @@ exports.checkMuted = function (id, guild) {
             const linkedGuildId = linkedGuild.id;
 
             if (linkedGuildId !== guildId) {
-                isMuted = checkMutedInner(id, linkedGuild);
+                isMuted = checkMutedInner(targetId, linkedGuild);
                 if (isMuted) break;
             }
         }
@@ -81,12 +84,89 @@ exports.checkMuted = function (id, guild) {
     return isMuted;
 };
 
-exports.doWarn = function (targetMember, reason, guild, pos, channel, speaker, noOut) {
+function checkAllowed(targetMember, authPosition, channel, speaker, targetId, speakerValid, speakerId, speakerName) {
+    if (authPosition <= Util.getPosition(targetMember)) {
+        if (channel != null) {
+            console.log(`${speakerName}_User has equal or higher rank`);
+            Util.commandFailed(channel, speaker, 'User has equal or higher rank');
+        }
+        return false;
+    }
+
+    if (speakerValid && (targetId === vaebId && speakerId !== vaebId)) {
+        if (channel != null) {
+            Util.commandFailed(channel, speaker, "You cannot mute VaeBot's developer");
+        }
+        return false;
+    }
+
+    return undefined;
+}
+
+function updateMuteLength(guild, targetId, muteName, timeScale) {
+    let muteLength;
+
+    const oldHistory = Data.guildGet(guild, Data.history, targetId);
+
+    if (oldHistory && (timeScale >= 1 || oldHistory[0] !== exports.defaultMuteLength)) {
+        muteLength = oldHistory[0] * timeScale;
+
+        if (muteLength < 0) muteLength = oldHistory[0];
+
+        Data.guildRun(guild, Data.history, targetId, ((result) => {
+            result[0] = muteLength;
+        }));
+    } else {
+        muteLength = exports.defaultMuteLength; // 1800000
+
+        Data.guildSet(guild, Data.history, targetId, [muteLength, muteName]);
+    }
+
+    return muteLength;
+}
+
+function sendMuteLog(guild, targetMember, speakerName, reason, endStr, timeRemaining) {
+    const sendLogData = [
+        'User Muted',
+        guild,
+        targetMember,
+        { name: 'Username', value: targetMember.toString() },
+        { name: 'Moderator', value: speakerName },
+        { name: 'Mute Reason', value: reason },
+        { name: 'Mute Expires', value: endStr },
+        { name: 'Mute History', value: timeRemaining },
+    ];
+    Util.sendLog(sendLogData, colAction);
+}
+
+function sendMuteDM(guild, reason, endStr, timeRemaining, targetMember) {
+    const outStr = ['**You have been muted**\n```'];
+    outStr.push(`Guild: ${guild.name}`);
+    outStr.push(`Reason: ${reason}`);
+    outStr.push(`Mute expires: ${endStr}`);
+    outStr.push(`Time remaining: ${timeRemaining}`);
+    outStr.push('```');
+    Util.print(targetMember, outStr.join('\n'));
+}
+
+function sendMuteChannel(channel, noOut, targetMember, reason, endStr, timeRemaining, speaker) {
+    if (channel && !noOut) {
+        const sendEmbedFields = [
+            { name: 'Username', value: Util.getMention(targetMember) },
+            { name: 'Mute Reason', value: reason },
+            { name: 'Mute Expires', value: endStr },
+            { name: 'Time Remaining', value: timeRemaining },
+        ];
+        Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(speaker), Util.getAvatar(targetMember), 0x00E676, sendEmbedFields);
+    }
+}
+
+exports.doWarn = function (targetMember, reason, guild, authPosition, channel, speaker, noOut) {
     // Set some variable data
 
-    const id = targetMember.id;
+    const targetId = targetMember.id;
     const muteName = Util.getName(targetMember);
-    const isMuted = exports.checkMuted(id, guild);
+    const isMuted = exports.checkMuted(targetId, guild);
 
     // Get speaker information (if one exists)
 
@@ -109,60 +189,40 @@ exports.doWarn = function (targetMember, reason, guild, pos, channel, speaker, n
         return false;
     }
 
-    if (pos <= Util.getPosition(targetMember)) {
-        if (channel != null) {
-            console.log(`${speakerName}_User has equal or higher rank`);
-            Util.commandFailed(channel, speaker, 'User has equal or higher rank');
-        }
-        return false;
-    }
-
-    if (speakerValid && (id === vaebId && speakerId !== vaebId)) {
-        if (channel != null) {
-            Util.commandFailed(channel, speaker, "You cannot mute VaeBot's developer");
-        }
-        return false;
-    }
+    const returnVal1 = checkAllowed(targetMember, authPosition, channel, speaker, targetId, speakerValid, speakerId, speakerName);
+    if (returnVal1 != null) return returnVal1;
 
     // Save mute information to linked file
 
-    const nowDate = Date.now();
-    const muteTime = exports.defaultMuteTime;
+    const muteLength = exports.defaultMuteLength;
 
-    const endTime = nowDate + muteTime;
+    const endTime = Date.now() + muteLength;
 
-    Data.guildSet(guild, Data.muted, id, [guild.id, endTime, muteName, reason, speakerId]);
+    const dateEnd = new Date();
+    dateEnd.setTime(endTime);
+
+    const endStr = DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss GMT');
+
+    Data.guildSet(guild, Data.muted, targetId, [guild.id, endTime, muteName, reason, speakerId]);
 
     // Finalise mute
 
-    exports.addUnMuteEvent(id, guild, muteTime, muteName);
+    exports.addUnMuteEvent(targetId, guild, muteLength, muteName);
 
-    Events.emit(guild, 'UserMute', targetMember, reason, muteTime, speakerId);
+    Events.emit(guild, 'UserMute', targetMember, reason, muteLength, speakerId);
 
     exports.removeSend(targetMember);
 
     // Save the mute for briefing
 
-    const timeRemaining = Util.historyToString(muteTime);
+    const timeRemaining = Util.historyToString(muteLength);
     if (guild.id === '168742643021512705') {
-        index.dailyMutes.push([id, `${muteName}#${targetMember.discriminator}`, reason, timeRemaining]);
+        index.dailyMutes.push([targetId, `${muteName}#${targetMember.discriminator}`, reason, timeRemaining]);
     }
 
     // Output mute information in channel
 
-    const d = new Date();
-    d.setTime(endTime);
-    const endStr = `[${Util.getDayStr(d)}/${Util.getMonthStr(d)}/${Util.getYearStr(d)}] ${Util.getHourStr(d)}:${Util.getMinStr(d)} GMT`;
-
-    if (channel && !noOut) {
-        const sendEmbedFields = [
-            { name: 'Username', value: Util.getMention(targetMember) },
-            { name: 'Mute Reason', value: reason },
-            { name: 'Mute Expires', value: endStr },
-            { name: 'Time Remaining', value: timeRemaining },
-        ];
-        Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(speaker), Util.getAvatar(targetMember), 0x00E676, sendEmbedFields);
-    }
+    sendMuteChannel(channel, noOut, targetMember, reason, endStr, timeRemaining, speaker);
 
     /*
     Util.sendEmbed(
@@ -178,36 +238,21 @@ exports.doWarn = function (targetMember, reason, guild, pos, channel, speaker, n
 
     // Output mute information in log
 
-    const sendLogData = [
-        'User Muted',
-        guild,
-        targetMember,
-        { name: 'Username', value: targetMember.toString() },
-        { name: 'Moderator', value: speakerName },
-        { name: 'Mute Reason', value: reason },
-        { name: 'Mute Expires', value: endStr },
-        { name: 'Mute History', value: timeRemaining },
-    ];
-    Util.sendLog(sendLogData, colAction);
+    sendMuteLog(guild, targetMember, speakerName, reason, endStr, timeRemaining);
 
     // DM muted user with mute information
 
-    const outStr = ['**You have been muted**\n```'];
-    outStr.push(`Guild: ${guild.name}`);
-    outStr.push(`Reason: ${reason}`);
-    outStr.push(`Mute expires: ${endStr}`);
-    outStr.push(`Time remaining: ${timeRemaining}`);
-    outStr.push('```');
-    Util.print(targetMember, outStr.join('\n'));
+    sendMuteDM(guild, reason, endStr, timeRemaining, targetMember);
 
     return timeRemaining; // Formatted string
 };
 
-exports.doMute = function (targetMember, reason, guild, pos, channel, speaker, noOut, timeScaleParam) {
+exports.doMute = function (targetMember, reason, guild, authPosition, channel, speaker, noOut, timeScaleParam) {
     // Set some variable data
 
-    const id = targetMember.id;
+    const targetId = targetMember.id;
     const muteName = Util.getName(targetMember);
+    const mostName = Util.getMostName(targetMember);
 
     const timeScale = timeScaleParam == null ? 2 : timeScaleParam;
 
@@ -224,120 +269,69 @@ exports.doMute = function (targetMember, reason, guild, pos, channel, speaker, n
 
     // Check if user is allowed to be muted
 
-    if (pos <= Util.getPosition(targetMember)) {
-        if (channel != null) {
-            console.log(`${speakerName}_User has equal or higher rank`);
-            Util.commandFailed(channel, speaker, 'User has equal or higher rank');
-        }
-        return false;
-    }
-
-    if (speakerValid && (id === vaebId && speakerId !== vaebId)) {
-        if (channel != null) {
-            Util.commandFailed(channel, speaker, "You cannot mute VaeBot's developer");
-        }
-        return false;
-    }
+    const returnVal1 = checkAllowed(targetMember, authPosition, channel, speaker, targetId, speakerValid, speakerId, speakerName);
+    if (returnVal1 != null) return returnVal1;
 
     // Save mute information to linked file
 
-    const nowDate = Date.now();
-    let muteTime;
+    const muteLength = updateMuteLength(guild, targetId, muteName, timeScale);
 
-    const oldHistory = Data.guildGet(guild, Data.history, id);
+    const endTime = Date.now() + muteLength;
 
-    if (oldHistory && (timeScale >= 1 || oldHistory[0] !== exports.defaultMuteTime)) {
-        muteTime = oldHistory[0] * timeScale;
+    const dateStart = new Date();
 
-        if (muteTime < 0) muteTime = oldHistory[0];
+    const dateEnd = new Date();
+    dateEnd.setTime(endTime);
 
-        Data.guildRun(guild, Data.history, id, ((result) => {
-            result[0] = muteTime;
-        }));
-    } else {
-        muteTime = exports.defaultMuteTime; // 1800000
+    const startStr = DateFormat(dateStart, '[dd/mm/yyyy] HH:MM:ss GMT');
+    const endStr = DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss GMT');
 
-        Data.guildSet(guild, Data.history, id, [muteTime, muteName]);
-    }
-
-    const endTime = nowDate + muteTime;
-
-    Data.guildSet(guild, Data.muted, id, [guild.id, endTime, muteName, reason, speakerId]);
+    Data.guildSet(guild, Data.muted, targetId, [guild.id, endTime, muteName, reason, speakerId]);
 
     // Finalise mute
 
-    exports.addUnMuteEvent(id, guild, muteTime, muteName);
+    exports.addUnMuteEvent(targetId, guild, muteLength, muteName);
 
-    Events.emit(guild, 'UserMute', targetMember, reason, muteTime, speakerId);
+    Events.emit(guild, 'UserMute', targetMember, reason, muteLength, speakerId);
 
     exports.removeSend(targetMember);
 
     // Save the mute for briefing
 
-    const timeRemaining = Util.historyToString(muteTime);
+    const timeRemaining = Util.historyToString(muteLength);
     if (guild.id === '168742643021512705') {
-        index.dailyMutes.push([id, `${muteName}#${targetMember.discriminator}`, reason, timeRemaining]);
+        index.dailyMutes.push([targetId, `${muteName}#${targetMember.discriminator}`, reason, timeRemaining]);
     }
 
     // Output mute information in channel
 
-    const d = new Date();
-    d.setTime(endTime);
-    const endStr = `[${Util.getDayStr(d)}/${Util.getMonthStr(d)}/${Util.getYearStr(d)}] ${Util.getHourStr(d)}:${Util.getMinStr(d)} GMT`;
-
-    if (channel && !noOut) {
-        const sendEmbedFields = [
-            { name: 'Username', value: Util.getMention(targetMember) },
-            { name: 'Mute Reason', value: reason },
-            { name: 'Mute Expires', value: endStr },
-            { name: 'Time Remaining', value: timeRemaining },
-        ];
-        Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(speaker), Util.getAvatar(targetMember), 0x00E676, sendEmbedFields);
-    }
-
-    /*
-    Util.sendEmbed(
-        Channel Object,
-        Title String,
-        Description String,
-        Username + ID String,
-        Avatar URL String,
-        Color Number,
-        Fields Array
-    );
-    */
+    sendMuteChannel(channel, noOut, targetMember, reason, endStr, timeRemaining, speaker);
 
     // Output mute information in log
 
-    const sendLogData = [
-        'User Muted',
-        guild,
-        targetMember,
-        { name: 'Username', value: targetMember.toString() },
-        { name: 'Moderator', value: speakerName },
-        { name: 'Mute Reason', value: reason },
-        { name: 'Mute Expires', value: endStr },
-        { name: 'Mute History', value: timeRemaining },
-    ];
-    Util.sendLog(sendLogData, colAction);
+    sendMuteLog(guild, targetMember, speakerName, reason, endStr, timeRemaining);
 
     // DM muted user with mute information
 
-    const outStr = ['**You have been muted**\n```'];
-    outStr.push(`Guild: ${guild.name}`);
-    outStr.push(`Reason: ${reason}`);
-    outStr.push(`Mute expires: ${endStr}`);
-    outStr.push(`Time remaining: ${timeRemaining}`);
-    outStr.push('```');
-    Util.print(targetMember, outStr.join('\n'));
+    sendMuteDM(guild, reason, endStr, timeRemaining, targetMember);
+
+    // Upload mute information to trello
+
+    Trello.addCard('Mutes', mostName, {
+        'User ID': targetId,
+        'Reason': reason,
+        'Length': timeRemaining,
+        'Start': startStr,
+        'End': endStr,
+    });
 
     return timeRemaining; // Formatted string
 };
 
-exports.unMute = function (targetMember, guild, pos, channel, speaker) {
+exports.unMute = function (targetMember, guild, authPosition, channel, speaker) {
     // Set some variable data
 
-    const id = targetMember.id;
+    const targetId = targetMember.id;
     const muteName = Util.getName(targetMember);
 
     // Get speaker data (if one exists)
@@ -348,13 +342,13 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
 
     // Get original mute data
 
-    const mutedData = Data.guildGet(guild, Data.muted, id);
+    const mutedData = Data.guildGet(guild, Data.muted, targetId);
 
     const origModId = mutedData[4];
     const origMod = Util.getMemberById(origModId, guild);
     const origModPos = origMod != null ? Util.getPosition(origMod) : -1;
 
-    const muteHistory = Util.getHistory(id, guild);
+    const muteHistory = Util.getHistory(targetId, guild);
     const muteHistoryString = Util.historyToString(muteHistory);
 
     if (speakerValid) {
@@ -364,7 +358,7 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
 
     // Check if user is allowed to be unmuted
 
-    if (speakerId !== vaebId && pos <= Util.getPosition(targetMember)) {
+    if (speakerId !== vaebId && authPosition <= Util.getPosition(targetMember)) {
         if (channel != null) {
             console.log(`${speakerName}_User has equal or higher rank`);
             Util.commandFailed(channel, speaker, 'User has equal or higher rank');
@@ -372,7 +366,7 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
         return false;
     }
 
-    if (speakerValid && speakerId !== vaebId && speakerId !== selfId && (origModId === vaebId || pos < origModPos)) {
+    if (speakerValid && speakerId !== vaebId && speakerId !== selfId && (origModId === vaebId || authPosition < origModPos)) {
         if (channel != null) {
             console.log(`${speakerName}_Moderator who muted has higher privilege`);
             Util.commandFailed(channel, speaker, 'Moderator who muted has higher privilege');
@@ -382,11 +376,11 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
 
     // Remove mute information from linked file
 
-    Data.guildDelete(guild, Data.muted, id);
+    Data.guildDelete(guild, Data.muted, targetId);
 
     // Finalise unmute
 
-    exports.stopUnMuteTimeout(id, guild);
+    exports.stopUnMuteTimeout(targetId, guild);
 
     Events.emit(guild, 'UserUnMute', targetMember, muteHistory, speakerId);
 
@@ -394,7 +388,7 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
 
      // Output mute information in channel
 
-    if (pos === Infinity) {
+    if (authPosition === Infinity) {
         console.log(`Unmuted ${muteName}`);
     } else if (channel != null) {
         const sendEmbedFields = [
@@ -427,7 +421,7 @@ exports.unMute = function (targetMember, guild, pos, channel, speaker) {
     return true; // Success
 };
 
-exports.doMuteName = function (name, guild, pos, channel, speaker, isWarn) {
+exports.doMuteName = function (name, guild, authPosition, channel, speaker, isWarn) {
     const data = Util.getDataFromString(name, [
         function (str) {
             return Util.getMemberByMixed(str, guild);
@@ -447,13 +441,13 @@ exports.doMuteName = function (name, guild, pos, channel, speaker, isWarn) {
     const reason = data[1];
 
     if (!isWarn) {
-        exports.doMute(targetMember, reason, guild, pos, channel, speaker);
+        exports.doMute(targetMember, reason, guild, authPosition, channel, speaker);
     } else {
-        exports.doWarn(targetMember, reason, guild, pos, channel, speaker);
+        exports.doWarn(targetMember, reason, guild, authPosition, channel, speaker);
     }
 };
 
-exports.unMuteName = function (nameParam, isDefinite, guild, pos, channel, speaker) {
+exports.unMuteName = function (nameParam, isDefinite, guild, authPosition, channel, speaker) {
     const safeId = Util.getSafeId(nameParam);
     const name = nameParam.toLowerCase();
 
@@ -472,7 +466,7 @@ exports.unMuteName = function (nameParam, isDefinite, guild, pos, channel, speak
             const targetNick = targetMember.nickname;
             // console.log(targetName);
             if ((safeId && safeId === targetId) || (targetNick != null && (targetNick.toLowerCase().includes(name)))) {
-                return exports.unMute(targetMember, guild, pos, channel, speaker);
+                return exports.unMute(targetMember, guild, authPosition, channel, speaker);
             } else if (targetName.toLowerCase().includes(name)) {
                 backupTarget = targetMember;
             }
@@ -504,7 +498,7 @@ exports.unMuteName = function (nameParam, isDefinite, guild, pos, channel, speak
 
         return true;
     } else if (backupTarget != null) {
-        return exports.unMute(backupTarget, guild, pos, channel, speaker);
+        return exports.unMute(backupTarget, guild, authPosition, channel, speaker);
     } else if (channel != null) {
         console.log(`(Channel included) Unmute failed: Unable to find muted user (${name}) from ${speakerName}`);
         Util.sendEmbed(channel, 'Unmute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
@@ -515,38 +509,38 @@ exports.unMuteName = function (nameParam, isDefinite, guild, pos, channel, speak
     return true;
 };
 
-exports.stopUnMuteTimeout = function (id, guild) {
+exports.stopUnMuteTimeout = function (targetId, guild) {
     const baseGuild = Data.getBaseGuild(guild);
     for (let i = exports.muteEvents.length - 1; i >= 0; i--) {
         const oldTimeout = exports.muteEvents[i];
-        if (oldTimeout[0] === id && oldTimeout[1] === baseGuild.id) {
+        if (oldTimeout[0] === targetId && oldTimeout[1] === baseGuild.id) {
             clearTimeout(oldTimeout[2]);
-            console.log(`Removed timeout ${id}`);
+            console.log(`Removed timeout ${targetId}`);
             exports.muteEvents.splice(i, 1);
         }
     }
 };
 
-exports.addUnMuteEvent = function (id, guild, timeParam, name) {
+exports.addUnMuteEvent = function (targetId, guild, timeParam, name) {
     const baseGuild = Data.getBaseGuild(guild);
 
     const time = Math.max(timeParam, 0);
 
-    exports.stopUnMuteTimeout(id, guild);
+    exports.stopUnMuteTimeout(targetId, guild);
 
     const timeoutFunc = function () {
-        console.log(`Unmute timeout for ${name} (${id}) has finished @ ${guild.name}`);
-        exports.unMuteName(id, true, guild, Infinity, null, 'System');
+        console.log(`Unmute timeout for ${name} (${targetId}) has finished @ ${guild.name}`);
+        exports.unMuteName(targetId, true, guild, Infinity, null, 'System');
     };
 
-    guild.fetchMember(id)
+    guild.fetchMember(targetId)
     .then(() => {
-        console.log(`Started unmute timeout for ${name} (${id}) ${guild.name} - ${time}`);
-        exports.muteEvents.push([id, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
+        console.log(`Started unmute timeout for ${name} (${targetId}) ${guild.name} - ${time}`);
+        exports.muteEvents.push([targetId, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
     })
     .catch(() => {
-        console.log(`Started unmute timeout [User has left] for ${name} (${id}) ${guild.name} - ${time}`);
-        exports.muteEvents.push([id, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
+        console.log(`Started unmute timeout [User has left] for ${name} (${targetId}) ${guild.name} - ${time}`);
+        exports.muteEvents.push([targetId, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
     });
 };
 

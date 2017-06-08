@@ -28,7 +28,7 @@ module.exports = Cmds.addCommand({
 			if (historyGuild.hasOwnProperty(targetId)) ++numElements;
 		}
 
-		var nowTime = Mutes.defaultMuteTime;
+		var nowTime = Mutes.defaultMuteLength;
 		var iterations = 0;
 
 		while (numFound < numElements) {

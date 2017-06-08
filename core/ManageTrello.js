@@ -12,6 +12,20 @@ exports.addCard = function (listName, cardName, cardDesc) {
         return false;
     }
 
+    if (Util.isObject(cardDesc)) {
+        const cardDescNew = [];
+
+        for (const [key, value] of Object.entries(cardDesc)) {
+            if (typeof key === 'number') {
+                cardDescNew.push(`${value}`);
+            } else {
+                cardDescNew.push(`${key}: ${value}`);
+            }
+        }
+
+        cardDesc = cardDescNew.join('\n\n');
+    }
+
     cardDesc = cardDesc.substr(0, 16384);
 
     const listId = lists[listName];

@@ -660,7 +660,7 @@ exports.getRandomInt = function (minParam, maxParam) { // inclusive, exclusive
 
 */
 
-exports.isObject = function (val) {
+exports.isObject = function (val) { // Or array
     if (val == null) return false;
     return (typeof (val) === 'object');
 };

@@ -25,7 +25,7 @@ module.exports = Cmds.addCommand({
 			var oldHistory = Data.guildGet(guild, Data.history, targetId);
 			if (oldHistory) {
 				var muteTime = oldHistory[0];
-				if (muteTime > Mutes.defaultMuteTime) {
+				if (muteTime > Mutes.defaultMuteLength) {
 					newMuteTime = muteTime*0.5;
 					oldHistory[0] = newMuteTime;
 					Data.guildSaveData(Data.history);
