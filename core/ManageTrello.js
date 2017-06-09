@@ -29,7 +29,7 @@ const labels = {
 
 */
 
-const cardCache = [];
+exports.cardCache = [];
 
 function fixDesc(cardDesc) {
     let cardDescStr;
@@ -64,10 +64,10 @@ function sortCards(a, b) { // Newest first
 }
 
 exports.findCard = function (targetId, callback) {
-    for (let i = 0; i < cardCache.length; i++) {
-        if (cardCache[i].targetId === targetId) {
+    for (let i = 0; i < exports.cardCache.length; i++) {
+        if (exports.cardCache[i].targetId === targetId) {
             console.log('Found card from cache');
-            callback(true, cardCache[i].cardData);
+            callback(true, exports.cardCache[i].cardData);
             return undefined;
         }
     }
@@ -94,23 +94,23 @@ exports.findCard = function (targetId, callback) {
 
             let alreadyExists = false;
 
-            for (let i = 0; i < cardCache.length; i++) {
-                if (cardCache[i].cardId === cardId) {
-                    cardCache[i].targetId = targetId;
+            for (let i = 0; i < exports.cardCache.length; i++) {
+                if (exports.cardCache[i].cardId === cardId) {
+                    exports.cardCache[i].targetId = targetId;
                     alreadyExists = true;
                     break;
                 }
             }
 
             if (!alreadyExists) {
-                cardCache.push({
+                exports.cardCache.push({
                     'cardData': cardData,
                     'cardId': cardId,
                     'stampCreated': stampCreated,
                     'targetId': targetId,
                 });
 
-                cardCache.sort(sortCards);
+                exports.cardCache.sort(sortCards);
             }
 
             callback(ok, cardData);
@@ -219,7 +219,7 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
             const cardId = data.id;
             const stampCreated = getStampFromId(cardId);
 
-            cardCache.push({
+            exports.cardCache.push({
                 'cardData': data,
                 'cardId': cardId,
                 'stampCreated': stampCreated,
