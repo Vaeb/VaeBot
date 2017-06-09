@@ -78,11 +78,11 @@ exports.findCard = function (targetId, callback) {
         card_fields: 'desc',
         cards_limit: 1,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[FindCard] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[FindCard] TRELLO FEEDBACK END--');
 
         const ok = err == null && data.cards.length > 0;
 
@@ -126,11 +126,11 @@ exports.dueComplete = function (cardId, callback) {
     TrelloHandler.put(`/1/cards/${cardId}/dueComplete`, {
         value: true,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[DueComplete] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[DueComplete] TRELLO FEEDBACK END--');
 
         if (callback) callback();
     });
@@ -142,11 +142,11 @@ exports.setDesc = function (cardId, cardDesc) {
     TrelloHandler.put(`/1/cards/${cardId}/desc`, {
         value: cardDesc,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[SetDesc] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[SetDesc] TRELLO FEEDBACK END--');
     });
 };
 
@@ -154,11 +154,11 @@ exports.setDue = function (cardId, dueDate) {
     TrelloHandler.put(`/1/cards/${cardId}/due`, {
         value: dueDate,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[SetDue] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[SetDue] TRELLO FEEDBACK END--');
     });
 };
 
@@ -175,11 +175,11 @@ exports.addLabel = function (cardId, labelName) {
     TrelloHandler.post(`/1/cards/${cardId}/idLabels`, {
         value: labelId,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[AddLabel] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[AddLabel] TRELLO FEEDBACK END--');
     });
 
     return true;
@@ -195,6 +195,8 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
 
     if (dueDate == null) dueDate = null;
 
+    const id = cardDesc['User ID'];
+
     cardDesc = fixDesc(cardDesc);
 
     const listId = lists[listName];
@@ -208,12 +210,12 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
         pos: 'top',
         due: dueDate,
     }, (err, data) => {
-        console.log('--TRELLO FEEDBACK START--');
+        console.log('--[AddCard] TRELLO FEEDBACK START--');
         console.log(err);
         console.log('--<>--');
         console.log(data);
 
-        console.log('--TRELLO FEEDBACK END--');
+        console.log('--[AddCard] TRELLO FEEDBACK END--');
 
         if (!err && data) {
             const cardId = data.id;
@@ -223,7 +225,7 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
                 'cardData': data,
                 'cardId': cardId,
                 'stampCreated': stampCreated,
-                'targetId': null,
+                'targetId': id != null ? id : null,
             });
         }
     });
