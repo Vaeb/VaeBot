@@ -336,7 +336,7 @@ exports.setupCache = function (guild) {
             const nowCard = nowCards[i];
             const cacheList = cache[guildId][nowCard.idList];
 
-            let targetId = getTargetIdFromDesc(nowCard.desc);
+            const targetId = getTargetIdFromDesc(nowCard.desc);
 
             const cacheCard = makeCacheCard(nowCard, targetId);
 
