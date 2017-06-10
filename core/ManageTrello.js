@@ -291,7 +291,7 @@ exports.setupCache = function (guild) {
 
     const boardId = boards[guildId];
 
-    console.log(`\nFetching trello data for ${guildId}`);
+    console.log(`\nFetching trello data for ${guild.name}\n`);
 
     TrelloHandler.get(`/1/boards/${boardId}`, {
         'lists': 'open',
@@ -304,7 +304,7 @@ exports.setupCache = function (guild) {
             return;
         }
 
-        console.log(`Cached trello data for ${guildId}`);
+        console.log(`\nCached trello data for ${guild.name}\n`);
 
         cache[guildId] = {};
 
@@ -333,7 +333,7 @@ exports.setupCache = function (guild) {
             const cacheList = cache[guildId][cacheListId];
             const cacheCards = cacheList.cards;
             cacheCards.sort(sortCards);
-            console.log(cacheCards);
+            // console.log(cacheCards);
         }
     });
 
