@@ -86,6 +86,18 @@ function fixDesc(cardDesc) {
     return cardDescStr;
 }
 
+function getTargetIdFromDesc(desc) {
+    let targetId = desc.match(/User ID: (\d+)/);
+
+    if (targetId && targetId.length > 1 && targetId[1]) {
+        targetId = targetId[1];
+    } else {
+        targetId = null;
+    }
+
+    return targetId;
+}
+
 function getStampFromId(id) {
     return 1000 * parseInt(id.substring(0, 8), 16);
 }
@@ -324,7 +336,9 @@ exports.setupCache = function (guild) {
             const nowCard = nowCards[i];
             const cacheList = cache[guildId][nowCard.idList];
 
-            const cacheCard = makeCacheCard(nowCard);
+            let targetId = getTargetIdFromDesc(nowCard.desc);
+
+            const cacheCard = makeCacheCard(nowCard, targetId);
 
             cacheList.cards.push(cacheCard);
         }
