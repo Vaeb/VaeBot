@@ -334,6 +334,8 @@ client.on('ready', () => {
 
             setupSecurity(newGuild);
 
+            Trello.setupCache(newGuild);
+
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
                 Mutes.restartTimeouts();

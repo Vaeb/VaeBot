@@ -285,7 +285,7 @@ exports.setupCache = function (guild) {
     const guildId = guild.id;
 
     if (!has.call(boards, guildId)) {
-        console.log(`Board ${guildId} does not exist`);
+        // console.log(`Board ${guildId} does not exist`);
         return false;
     }
 
