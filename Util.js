@@ -1638,32 +1638,40 @@ exports.updateMessageCache = function (channel, speaker) {
     });
 };
 
-exports.banMember = function (member, reason) {
+exports.banMember = function (member, moderator, reason) {
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
 
     if (reason == null || reason.length < 1) reason = 'No reason provided';
+
+    let modFullName = moderator;
+    if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
     member.ban()
     .catch(console.error);
 
     Trello.addCard(member.guild, 'Bans', memberMostName, {
         'User ID': memberId,
+        'Moderator': modFullName,
         'Reason': reason,
     });
 };
 
-exports.kickMember = function (member, reason) {
+exports.kickMember = function (member, moderator, reason) {
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
 
     if (reason == null || reason.length < 1) reason = 'No reason provided';
+
+    let modFullName = moderator;
+    if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
     member.kick()
     .catch(console.error);
 
     Trello.addCard(member.guild, 'Kicks', memberMostName, {
         'User ID': memberId,
+        'Moderator': modFullName,
         'Reason': reason,
     });
 };

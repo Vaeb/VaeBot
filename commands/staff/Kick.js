@@ -36,7 +36,7 @@ module.exports = Cmds.addCommand({
         outStr.push("```");
         Util.print(target, outStr.join("\n"));
 
-        Util.kickMember(target, reason);
+        Util.kickMember(target, speaker, reason);
 
         Util.print(channel, "Kicked", Util.fix(targName), "(" + targId + ") for", Util.fix(reason));
         if (guild.id == "168742643021512705") index.dailyKicks.push([targId, targName + "#" + target.discriminator, reason]);

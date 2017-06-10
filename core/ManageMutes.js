@@ -259,10 +259,12 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
 
     const speakerValid = Util.isObject(speaker);
     let speakerName = speaker;
+    let speakerFullName = speaker;
     let speakerId = null;
 
     if (speakerValid) {
         speakerName = speaker.toString();
+        speakerFullName = Util.getFullName(speaker);
         speakerId = speaker.id;
     }
 
@@ -318,6 +320,7 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
 
     const cardDesc = {
         'User ID': targetId,
+        'Moderator': speakerFullName,
         'Reason': reason,
         'Length': timeRemaining,
         'Start': startStr,
