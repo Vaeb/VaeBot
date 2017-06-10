@@ -1647,7 +1647,7 @@ exports.banMember = function (member, reason) {
     member.ban()
     .catch(console.error);
 
-    Trello.addCard('Bans', memberMostName, {
+    Trello.addCard(member.guild, 'Bans', memberMostName, {
         'User ID': memberId,
         'Reason': reason,
     });
@@ -1662,7 +1662,7 @@ exports.kickMember = function (member, reason) {
     member.kick()
     .catch(console.error);
 
-    Trello.addCard('Kicks', memberMostName, {
+    Trello.addCard(member.guild, 'Kicks', memberMostName, {
         'User ID': memberId,
         'Reason': reason,
     });

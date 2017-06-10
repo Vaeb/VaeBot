@@ -1,6 +1,10 @@
 const TrelloHandler = index.TrelloHandler;
 const DateFormat = index.DateFormat;
 
+const boards = {
+    '284746138995785729': '59392df2d36f09ca35556339', // Veil
+};
+
 const lists = {
     mutes: '59392e154996d41c2127c335',
     kicks: '59392e1330235b9cc7a28f94',
@@ -11,7 +15,25 @@ const labels = {
     reverted: '59396434a65061821399b435',
 };
 
+const cache = {};
+exports.cache = cache;
+
 /*
+
+    cache {
+        guildId: {
+            listId: {
+                id: 123,
+                cards: [ // Ordered from newest
+                    {
+                        id: 123,
+                        stampCreated: 123,
+                        targetId: 123,
+                    }
+                ]
+            }
+        }
+    }
 
     -UnMute
         -Mark last card for that user as dueComplete
@@ -25,11 +47,20 @@ const labels = {
 
     -UndoMute
         -Mark last card for that user as dueComplete
-        -Mark last card for that user with 'Undone' label
+        -Mark last card for that user *without Reverted label* with Reverted label
 
 */
 
-exports.cardCache = [];
+/*
+
+    -Cache all lists in board
+        -Cache all cards in lists
+
+    -When a new card is added or a card is altered, alter it in cache and API
+
+    -Get card data from cache
+
+*/
 
 function fixDesc(cardDesc) {
     let cardDescStr;
@@ -63,11 +94,35 @@ function sortCards(a, b) { // Newest first
     return b.stampCreated - a.stampCreated;
 }
 
-exports.findCard = function (targetId, callback) {
-    for (let i = 0; i < exports.cardCache.length; i++) {
-        if (exports.cardCache[i].targetId === targetId) {
-            console.log('Found card from cache');
-            callback(true, exports.cardCache[i].cardData);
+function makeCacheCard(nowCard, targetId) {
+    if (targetId == null) targetId = null;
+
+    const nowCardId = nowCard.id;
+
+    const cacheCard = Util.cloneObj(nowCard);
+    cacheCard.stampCreated = getStampFromId(nowCardId);
+    cacheCard.targetId = targetId;
+
+    return cacheCard;
+}
+
+exports.findCard = function (guild, listName, targetId, callback) {
+    listName = listName.toLowerCase();
+
+    if (!has.call(lists, listName)) {
+        console.log(`List ${listName} does not exist`);
+        return false;
+    }
+
+    const guildId = guild.id;
+    const listId = lists[listName];
+
+    const cacheCards = cache[guildId][listId].cards;
+
+    for (let i = 0; i < cacheCards.length; i++) {
+        if (cacheCards[i].targetId === targetId) {
+            console.log(`>> FOUND CARD FOR ${targetId} FROM CACHE <<`);
+            callback(true, cacheCards[i]);
             return undefined;
         }
     }
@@ -90,30 +145,25 @@ exports.findCard = function (targetId, callback) {
             const cardData = data.cards[0];
             const cardId = cardData.id;
 
-            const stampCreated = getStampFromId(cardId);
+            let cacheCard = null;
 
-            let alreadyExists = false;
-
-            for (let i = 0; i < exports.cardCache.length; i++) {
-                if (exports.cardCache[i].cardId === cardId) {
-                    exports.cardCache[i].targetId = targetId;
-                    alreadyExists = true;
+            for (let i = 0; i < cacheCards.length; i++) {
+                if (cacheCards[i].id === cardId) {
+                    cacheCard = cacheCards[i];
+                    cacheCard.targetId = targetId;
+                    console.log(`>> UPDATED EXISTING TARGETID FOR ${targetId} <<`);
                     break;
                 }
             }
 
-            if (!alreadyExists) {
-                exports.cardCache.push({
-                    'cardData': cardData,
-                    'cardId': cardId,
-                    'stampCreated': stampCreated,
-                    'targetId': targetId,
-                });
+            if (cacheCard == null) {
+                cacheCard = makeCacheCard(cardData, targetId);
 
-                exports.cardCache.sort(sortCards);
+                cacheCards.push(cacheCard);
+                cacheCards.sort(sortCards);
             }
 
-            callback(ok, cardData);
+            callback(ok, cacheCard);
         } else {
             callback(ok, err);
         }
@@ -122,7 +172,7 @@ exports.findCard = function (targetId, callback) {
     return undefined;
 };
 
-exports.dueComplete = function (cardId, callback) {
+exports.dueComplete = function (guild, cardId, callback) {
     TrelloHandler.put(`/1/cards/${cardId}/dueComplete`, {
         value: true,
     }, (err, data) => {
@@ -136,7 +186,7 @@ exports.dueComplete = function (cardId, callback) {
     });
 };
 
-exports.setDesc = function (cardId, cardDesc) {
+exports.setDesc = function (guild, cardId, cardDesc) {
     cardDesc = fixDesc(cardDesc);
 
     TrelloHandler.put(`/1/cards/${cardId}/desc`, {
@@ -150,7 +200,7 @@ exports.setDesc = function (cardId, cardDesc) {
     });
 };
 
-exports.setDue = function (cardId, dueDate) {
+exports.setDue = function (guild, cardId, dueDate) {
     TrelloHandler.put(`/1/cards/${cardId}/due`, {
         value: dueDate,
     }, (err, data) => {
@@ -162,7 +212,7 @@ exports.setDue = function (cardId, dueDate) {
     });
 };
 
-exports.addLabel = function (cardId, labelName) {
+exports.addLabel = function (guild, cardId, labelName) {
     labelName = labelName.toLowerCase();
 
     if (!has.call(labels, labelName)) {
@@ -185,7 +235,7 @@ exports.addLabel = function (cardId, labelName) {
     return true;
 };
 
-exports.addCard = function (listName, cardName, cardDesc, dueDate) {
+exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
     listName = listName.toLowerCase();
 
     if (!has.call(lists, listName)) {
@@ -193,13 +243,15 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
         return false;
     }
 
+    const guildId = guild.id;
+    const listId = lists[listName];
+
     if (dueDate == null) dueDate = null;
 
-    const id = cardDesc['User ID'];
+    const targetId = cardDesc['User ID'];
 
     cardDesc = fixDesc(cardDesc);
 
-    const listId = lists[listName];
     const nowDate = new Date();
     const nowDateStr = DateFormat(nowDate, '[dd/mm/yyyy]');
 
@@ -218,15 +270,70 @@ exports.addCard = function (listName, cardName, cardDesc, dueDate) {
         console.log('--[AddCard] TRELLO FEEDBACK END--');
 
         if (!err && data) {
-            const cardId = data.id;
-            const stampCreated = getStampFromId(cardId);
+            const cacheCards = cache[guildId][listId].cards;
+            const cacheCard = makeCacheCard(data, targetId);
 
-            exports.cardCache.push({
-                'cardData': data,
-                'cardId': cardId,
-                'stampCreated': stampCreated,
-                'targetId': id != null ? id : null,
-            });
+            cacheCards.push(cacheCard);
+            cacheCards.sort(sortCards);
+        }
+    });
+
+    return true;
+};
+
+exports.setupCache = function (guild) {
+    const guildId = guild.id;
+
+    if (!has.call(boards, guildId)) {
+        console.log(`Board ${guildId} does not exist`);
+        return false;
+    }
+
+    const boardId = boards[guildId];
+
+    console.log(`\nFetching trello data for ${guildId}`);
+
+    TrelloHandler.get(`/1/boards/${boardId}`, {
+        'lists': 'open',
+        'cards': 'open',
+    }, (err, data) => {
+        if (err) {
+            console.log(err);
+            console.log('--<>--');
+            console.log(data);
+            return;
+        }
+
+        console.log(`Cached trello data for ${guildId}`);
+
+        cache[guildId] = {};
+
+        const nowLists = data.lists;
+        for (let i = 0; i < nowLists.length; i++) {
+            const nowList = nowLists[i];
+            const nowListId = nowList.id;
+
+            const cacheList = Util.cloneObj(nowList);
+            cacheList.cards = [];
+
+            cache[guildId][nowListId] = cacheList;
+        }
+
+        const nowCards = data.cards;
+        for (let i = 0; i < nowCards.length; i++) {
+            const nowCard = nowCards[i];
+            const cacheList = cache[guildId][nowCard.idList];
+
+            const cacheCard = makeCacheCard(nowCard);
+
+            cacheList.cards.push(cacheCard);
+        }
+
+        for (const cacheListId of Object.keys(cache[guildId])) {
+            const cacheList = cache[guildId][cacheListId];
+            const cacheCards = cacheList.cards;
+            cacheCards.sort(sortCards);
+            console.log(cacheCards);
         }
     });
 

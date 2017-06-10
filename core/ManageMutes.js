@@ -325,22 +325,22 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
     };
 
     if (!noOut) {
-        Trello.findCard(targetId, (ok, cardData) => {
+        Trello.findCard(guild, 'Mutes', targetId, (ok, cardData) => {
             if (ok) {
                 const cardId = cardData.id;
-                Trello.dueComplete(cardId, () => {
-                    Trello.addCard('Mutes', mostName, cardDesc, dateEnd);
+                Trello.dueComplete(guild, cardId, () => {
+                    Trello.addCard(guild, 'Mutes', mostName, cardDesc, dateEnd);
                 });
             } else {
-                Trello.addCard('Mutes', mostName, cardDesc, dateEnd);
+                Trello.addCard(guild, 'Mutes', mostName, cardDesc, dateEnd);
             }
         });
     } else {
-        Trello.findCard(targetId, (ok, cardData) => {
+        Trello.findCard(guild, 'Mutes', targetId, (ok, cardData) => {
             if (ok) {
                 const cardId = cardData.id;
-                Trello.setDesc(cardId, cardDesc);
-                Trello.setDue(cardId, dateEnd);
+                Trello.setDesc(guild, cardId, cardDesc);
+                Trello.setDue(guild, cardId, dateEnd);
             }
         });
     }
@@ -438,10 +438,10 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
     outStr.push('```');
     Util.print(targetMember, outStr.join('\n'));
 
-    Trello.findCard(targetId, (ok, cardData) => {
+    Trello.findCard(guild, 'Mutes', targetId, (ok, cardData) => {
         if (ok) {
             const cardId = cardData.id;
-            Trello.dueComplete(cardId);
+            Trello.dueComplete(guild, cardId);
         }
     });
 
@@ -482,10 +482,10 @@ exports.undoMute = function (targetMember, guild, authPosition, channel, speaker
         ];
         Util.sendLog(sendLogData, colAction);
 
-        Trello.findCard(targetId, (ok, cardData) => {
+        Trello.findCard(guild, 'Mutes', targetId, (ok, cardData) => {
             if (ok) {
                 const cardId = cardData.id;
-                Trello.addLabel(cardId, 'Reverted');
+                Trello.addLabel(guild, cardId, 'Reverted');
             }
         });
     }
