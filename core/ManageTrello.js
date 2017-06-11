@@ -129,6 +129,11 @@ exports.findCard = function (guild, listName, targetId, callback) {
     const guildId = guild.id;
     const listId = lists[listName];
 
+    if (!cache[guildId]) {
+        console.log('Guild not found in cache');
+        return false;
+    }
+
     const cacheCards = cache[guildId][listId].cards;
 
     for (let i = 0; i < cacheCards.length; i++) {
@@ -282,6 +287,11 @@ exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
         console.log('--[AddCard] TRELLO FEEDBACK END--');
 
         if (!err && data) {
+            if (!cache[guildId]) {
+                console.log('Guild not found in cache');
+                return;
+            }
+
             const cacheCards = cache[guildId][listId].cards;
             const cacheCard = makeCacheCard(data, targetId);
 
