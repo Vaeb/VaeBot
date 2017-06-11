@@ -817,7 +817,7 @@ client.on('message', (msgObj) => {
     let content = msgObj.content;
     const authorId = author.id;
 
-    if (guild.id !== '166601083584643072') return;
+    // if (guild.id !== '166601083584643072') return;
 
     if (content.substring(content.length - 5) === ' -del' && authorId === vaebId) {
         msgObj.delete();
