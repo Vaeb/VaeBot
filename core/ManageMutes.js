@@ -276,6 +276,7 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
     // Save mute information to linked file
 
     const muteLength = updateMuteLength(guild, targetId, muteName, timeScale);
+    const muteNum = Math.log2(muteLength / (1000 * 60 * 60)) + 2;
 
     const endTime = Date.now() + muteLength;
 
@@ -322,7 +323,7 @@ exports.doMute = function (targetMember, reason, guild, authPosition, channel, s
         'User ID': targetId,
         'Moderator': speakerFullName,
         'Reason': reason,
-        'Length': timeRemaining,
+        'Length': `${timeRemaining} (${Util.getSuffix(muteNum)} offense)`,
         'Start': startStr,
         'End': endStr,
     };
