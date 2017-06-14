@@ -1393,7 +1393,7 @@ exports.getNum = function (str, min, max) {
 };
 
 exports.getInt = function (str, min, max) {
-    const num = parseInt(str, 10);
+    const num = parseInt(str, 10); // Number() is better generally
     if (isNaN(num)) return undefined;
     return exports.clamp(num, min, max);
 };
