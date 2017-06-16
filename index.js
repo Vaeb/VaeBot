@@ -438,8 +438,7 @@ client.on('guildMemberAdd', (member) => {
         }
     }
 
-    // if (memberId == "208661173153824769") member.setNickname("<- weird person");
-    // if (memberId == "264481367545479180") member.setNickname("devourer of penis");
+    if (memberId === '280579952263430145') member.setNickname('<- mentally challenged');
 
     Events.emit(guild, 'UserJoin', member);
 
@@ -510,10 +509,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
     }
 
     if (previousNick !== nowNick) {
-        // if (member.id == "208661173153824769" && nowNick != "<- weird person") member.setNickname("<- weird person");
-        // if (member.id == "264481367545479180" && nowNick != "devourer of penis") member.setNickname("devourer of penis");
-        // if (member.id == selfId && nowNick != null && nowNick != "") member.setNickname("");
-        // if (member.id == vaebId && nowNick != null && nowNick != "") member.setNickname("");
+        if (member.id === '280579952263430145' && nowNick !== '<- mentally challenged') member.setNickname('<- mentally challenged');
         Events.emit(guild, 'UserNicknameUpdate', member, previousNick, nowNick);
 
         const sendLogData = [
