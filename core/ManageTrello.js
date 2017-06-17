@@ -119,6 +119,8 @@ function makeCacheCard(nowCard, targetId) {
 }
 
 exports.findCard = function (guild, listName, targetId, callback) {
+    if (!cache[guild.id]) return false;
+
     listName = listName.toLowerCase();
 
     if (!has.call(lists, listName)) {
@@ -128,11 +130,6 @@ exports.findCard = function (guild, listName, targetId, callback) {
 
     const guildId = guild.id;
     const listId = lists[listName];
-
-    if (!cache[guildId]) {
-        console.log('Guild not found in cache');
-        return false;
-    }
 
     const cacheCards = cache[guildId][listId].cards;
 
@@ -190,6 +187,8 @@ exports.findCard = function (guild, listName, targetId, callback) {
 };
 
 exports.dueComplete = function (guild, cardId, callback) {
+    if (!cache[guild.id]) return false;
+
     TrelloHandler.put(`/1/cards/${cardId}/dueComplete`, {
         value: true,
     }, (err, data) => {
@@ -201,9 +200,13 @@ exports.dueComplete = function (guild, cardId, callback) {
 
         if (callback) callback();
     });
+
+    return true;
 };
 
 exports.setDesc = function (guild, cardId, cardDesc) {
+    if (!cache[guild.id]) return false;
+
     cardDesc = fixDesc(cardDesc);
 
     TrelloHandler.put(`/1/cards/${cardId}/desc`, {
@@ -215,9 +218,13 @@ exports.setDesc = function (guild, cardId, cardDesc) {
         console.log(data);
         console.log('--[SetDesc] TRELLO FEEDBACK END--');
     });
+
+    return true;
 };
 
 exports.setDue = function (guild, cardId, dueDate) {
+    if (!cache[guild.id]) return false;
+
     TrelloHandler.put(`/1/cards/${cardId}/due`, {
         value: dueDate,
     }, (err, data) => {
@@ -227,9 +234,13 @@ exports.setDue = function (guild, cardId, dueDate) {
         console.log(data);
         console.log('--[SetDue] TRELLO FEEDBACK END--');
     });
+
+    return true;
 };
 
 exports.addLabel = function (guild, cardId, labelName) {
+    if (!cache[guild.id]) return false;
+
     labelName = labelName.toLowerCase();
 
     if (!has.call(labels, labelName)) {
@@ -253,6 +264,8 @@ exports.addLabel = function (guild, cardId, labelName) {
 };
 
 exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
+    if (!cache[guild.id]) return false;
+
     listName = listName.toLowerCase();
 
     if (!has.call(lists, listName)) {
@@ -287,11 +300,6 @@ exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
         console.log('--[AddCard] TRELLO FEEDBACK END--');
 
         if (!err && data) {
-            if (!cache[guildId]) {
-                console.log('Guild not found in cache');
-                return;
-            }
-
             const cacheCards = cache[guildId][listId].cards;
             const cacheCard = makeCacheCard(data, targetId);
 
