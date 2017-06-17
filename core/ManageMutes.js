@@ -63,6 +63,11 @@ exports.addSend = function (member) {
 };
 
 exports.checkMuted = function (targetId, guild) {
+    if (guild == null) {
+        console.log('[CheckMuted] No guild argument');
+        return false;
+    }
+
     let isMuted = checkMutedInner(targetId, guild);
 
     if (!isMuted) {

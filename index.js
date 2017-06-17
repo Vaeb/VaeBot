@@ -850,7 +850,8 @@ client.on('message', (msgObj) => {
         }
     }
 
-    const isMuted = Mutes.checkMuted(author.id, guild);
+    let isMuted = false;
+    if (guild != null) isMuted = Mutes.checkMuted(author.id, guild);
 
     if (guild != null && author.bot === false && content.length > 0 && !isMuted && author.id !== vaebId && author.id !== guild.owner.id) {
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
