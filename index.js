@@ -207,6 +207,7 @@ exports.globalBan = {
     '201740276472086528': true,
     '75736018761818112': true,
     '123146298504380416': true,
+    '263372398059847681': true,
 };
 
 function securityFunc(guild, member, sendRoleParam) {
