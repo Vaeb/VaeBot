@@ -256,7 +256,7 @@ function setupSecurity(guild) {
 }
 
 function setupSecurityVeil() {
-    const veilGuild = client.guilds.get('284746138995785729');
+    /* const veilGuild = client.guilds.get('284746138995785729');
     if (!veilGuild) return console.log('[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
     if (!guild) return console.log('[ERROR_VP] New Veil guild not found!');
@@ -295,7 +295,7 @@ function setupSecurityVeil() {
         }
     });
 
-    return undefined;
+    return undefined; */
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
