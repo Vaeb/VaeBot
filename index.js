@@ -389,6 +389,8 @@ client.on('guildMemberAdd', (member) => {
 
     console.log(`User joined: ${memberName} (${memberId}) @ ${guildName}`);
 
+    // test
+
     /* if (guildId === '309785618932563968') {
         const veilGuild = client.guilds.get('284746138995785729');
         const veilBuyer = veilGuild.roles.find('name', 'Buyer');
