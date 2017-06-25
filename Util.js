@@ -1315,7 +1315,7 @@ exports.getMemberByName = (name, guild) => {
             // Add bonus points depending on when our match start
             const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
             // ^ 0.001 if we match the beginning, higher for later matches
-            value += 2 ** (level-1 + (1-p));
+            value += 2 ** (level-2 + (1-p));
             
             if (value > strongest[0]) strongest = [value,member];
         }
