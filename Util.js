@@ -1282,16 +1282,16 @@ exports.getMemberByName = (name, guild) => {
         // minimum level is 3, as we later on use (level-2) and want it > 0
         if (currentNameLower == str2Lower) {
             nameMatched = currentName;
-            level = 5; // will become 5 (see lower)
+            level = 6; // will become 7 (see lower)
         } else if (realNameLower == str2Lower) {
             nameMatched = realName;
-            level = 4; // will become 4 (see lower)
+            level = 5; // will become 6 (see lower)
         } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
             nameMatched = currentName;
-            level = 4;
+            level = 5;
         } else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
             nameMatched = realName;
-            level = 3;
+            level = 4;
         }
         
         if (nameMatched) {
@@ -1309,13 +1309,13 @@ exports.getMemberByName = (name, guild) => {
                 if (ch == nameMatched[i+nameMatch]) numCaps++;
             }
             numCaps = numCaps / name.length;
-            value += 2 ** (level-1 + numCaps);
+            value += 2 ** (level-2 + numCaps);
             // ^ actually adds a level if 100% of the caps match
             
             // Add bonus points depending on when our match start
             const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
             // ^ 0.001 if we match the beginning, higher for later matches
-            value += 2 ** (level-2 + (1-p));
+            value += 2 ** (level-3 + (1-p));
             
             if (value > strongest[0]) strongest = [value,member];
         }
