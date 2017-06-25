@@ -1249,11 +1249,15 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
+exports.stripUnicode = str => str.replace(/[^\0-\x7F]/g, '');
+
 exports.getMemberByName = (name, guild) => {
 	// [v2.0] Visible name match, real name match, caps match, length match, position match
 	// [v3.0] einsteinK rewrote stuff and did some stuff, not sure what
 	//			
     if (guild == null) return undefined;
+	
+	const removeUnicode = name.replace(/[^\0-\x7F]/g, '') == name;
 
     const str2Lower = name.toLowerCase();
 
@@ -1263,9 +1267,12 @@ exports.getMemberByName = (name, guild) => {
 
     members.forEach((member) => {
 		let realName = exports.getName(member);
+		if (removeUnicode) realName = exports.stripUnicode(realName);
 		let realNameLower = realName.toLowerCase();
 		let currentName = member.nickname || realName;
+		if (removeUnicode) currentName = exports.stripUnicode(currentName);
 		let currentNameLower = currentName.toLowerCase();
+		
 		
 		// Maybe it's a proper match, which is linked to a level
 		let level = 0;
@@ -1276,7 +1283,7 @@ exports.getMemberByName = (name, guild) => {
 		if (currentNameLower == str2Lower) {
 			nameMatched = currentName;
 			level = 5; // will become 5 (see lower)
-		} else if (realNameLower == str2lower) {
+		} else if (realNameLower == str2Lower) {
 			nameMatched = realName;
 			level = 4; // will become 4 (see lower)
 		} else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
@@ -1305,9 +1312,6 @@ exports.getMemberByName = (name, guild) => {
 			// ^ actually adds a level if 100% of the caps match
 			
 			// Add bonus points depending on when our match start
-			nameMatched = nameMatch.replace(/\W/g, '');
-			nameMatch = nameMatched.indexOf(str2lower) || nameMatch;
-			// ^ get rid of non-alphanumeric stuff (e.g. emojis at start)
 			const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
 			// ^ 0.001 if we match the beginning, higher for later matches
 			value += (level-2) ** (1 - p);
