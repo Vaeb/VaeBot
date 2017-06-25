@@ -1254,7 +1254,7 @@ exports.stripUnicode = str => str.replace(/[^\0-\x7F]/g, '');
 exports.getMemberByName = (name, guild) => {
     // [v2.0] Visible name match, real name match, caps match, length match, position match
     // [v3.0] einsteinK rewrote stuff and did some stuff, not sure what
-    //            
+	
     if (guild == null) return undefined;
     
     const removeUnicode = name.replace(/[^\0-\x7F]/g, '') == name;
