@@ -1,30 +1,30 @@
 module.exports = Cmds.addCommand({
-	cmds: [";queue"],
+    cmds: [";queue"],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "List all queued songs",
+    desc: "List all queued songs",
 
-	args: "",
+    args: "",
 
-	example: "",
+    example: "",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var guildQueue = Music.guildQueue[guild.id];
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        var guildQueue = Music.guildQueue[guild.id];
 
-		var sendEmbedFields = [];
+        var sendEmbedFields = [];
 
-		for (var i = 0; i < guildQueue.length; i++) {
-			var songData = guildQueue[i][0];
-			var author = guildQueue[i][1];
-			sendEmbedFields.push({name: "[" + (i+1) + "] " + songData.title, value: "Added by " + Util.safeEveryone(author.toString()), inline: false});
-		}
+        for (var i = 0; i < guildQueue.length; i++) {
+            var songData = guildQueue[i][0];
+            var author = guildQueue[i][1];
+            sendEmbedFields.push({name: "[" + (i+1) + "] " + songData.title, value: "Added by " + Util.safeEveryone(author.toString()), inline: false});
+        }
 
-		Util.sendEmbed(channel, "Audio Queue", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
-	}
+        Util.sendEmbed(channel, "Audio Queue", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+    }
 });

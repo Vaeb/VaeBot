@@ -1,28 +1,28 @@
 module.exports = Cmds.addCommand({
-	cmds: [";roles"],
+    cmds: [";roles"],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "Get all guild roles",
+    desc: "Get all guild roles",
 
-	args: "",
+    args: "",
 
-	example: "",
+    example: "",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var sendEmbedFields = [];
-		var guildRoles = Util.getGuildRoles(guild);
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        var sendEmbedFields = [];
+        var guildRoles = Util.getGuildRoles(guild);
 
-		for (var i = 0; i < guildRoles.length; i++) {
-			var nowRole = guildRoles[i];
-			sendEmbedFields.push({name: nowRole.name, value: "Position: " + nowRole.position + " | Mentionable: " + nowRole.mentionable  + " | Color: " + nowRole.color, inline: false});
-		}
+        for (var i = 0; i < guildRoles.length; i++) {
+            var nowRole = guildRoles[i];
+            sendEmbedFields.push({name: nowRole.name, value: "Position: " + nowRole.position + " | Mentionable: " + nowRole.mentionable  + " | Color: " + nowRole.color, inline: false});
+        }
 
-		Util.sendEmbed(channel, "Guild Roles", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
-	}
+        Util.sendEmbed(channel, "Guild Roles", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+    }
 });

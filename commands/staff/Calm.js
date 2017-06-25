@@ -1,53 +1,53 @@
 module.exports = Cmds.addCommand({
-	cmds: [";calm", ";calmchat", ";slow", ";slowchat"],
+    cmds: [";calm", ";calmchat", ";slow", ";slowchat"],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "Slows down chat speed",
+    desc: "Slows down chat speed",
 
-	args: "",
+    args: "",
 
-	example: "",
+    example: "",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	/*func: (cmd, args, msgObj, speaker, channel, guild) => {
-		if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
-		
-		if (index.slowChat[guild.id]) return;
+    /*func: (cmd, args, msgObj, speaker, channel, guild) => {
+        if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
+        
+        if (index.slowChat[guild.id]) return;
 
-		var chatQueue = [];
+        var chatQueue = [];
 
-		index.chatQueue[guild.id] = chatQueue;
+        index.chatQueue[guild.id] = chatQueue;
 
-		index.slowInterval[guild.id] = setInterval(function() {
-			if (chatQueue.length < 1) return;
+        index.slowInterval[guild.id] = setInterval(function() {
+            if (chatQueue.length < 1) return;
 
-			var msgObj = (chatQueue.splice(0, 1))[0];
+            var msgObj = (chatQueue.splice(0, 1))[0];
 
-			var msgChannel = msgObj.channel;
-			var msgGuild = msgObj.guild;
-			var msgSpeaker = msgObj.member;
-			var msgContent = msgObj.content;
-			var msgCreatedAt = msgObj.createdAt;
+            var msgChannel = msgObj.channel;
+            var msgGuild = msgObj.guild;
+            var msgSpeaker = msgObj.member;
+            var msgContent = msgObj.content;
+            var msgCreatedAt = msgObj.createdAt;
 
-			// Util.sendEmbed(msgChannel, Util.getMostName(msgSpeaker), msgContent, Util.makeEmbedFooter(msgSpeaker, msgCreatedAt), null, 0x00E676, null);
-			msgChannel.send(Util.getMostName(msgSpeaker) + ": " + msgContent);
-		}, index.calmSpeed);
+            // Util.sendEmbed(msgChannel, Util.getMostName(msgSpeaker), msgContent, Util.makeEmbedFooter(msgSpeaker, msgCreatedAt), null, 0x00E676, null);
+            msgChannel.send(Util.getMostName(msgSpeaker) + ": " + msgContent);
+        }, index.calmSpeed);
 
-		index.slowChat[guild.id] = true;
-	}*/
+        index.slowChat[guild.id] = true;
+    }*/
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        if (speaker.id != guild.ownerID && speaker.id != vaebId) return Util.commandFailed(channel, speaker, "Command is owner-only");
 
-		if (index.slowChat[guild.id]) return console.log("Slow is already active");
+        if (index.slowChat[guild.id]) return console.log("Slow is already active");
 
-		index.chatNext[guild.id] = (+ new Date()) + index.calmSpeed;
+        index.chatNext[guild.id] = (+ new Date()) + index.calmSpeed;
 
-		index.slowChat[guild.id] = true;
-	}
+        index.slowChat[guild.id] = true;
+    }
 });

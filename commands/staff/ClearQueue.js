@@ -1,21 +1,21 @@
 module.exports = Cmds.addCommand({
-	cmds: [";clearqueue"],
+    cmds: [';clearqueue'],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false,
+    },
 
-	desc: "Clears VaeBot's queue of music",
+    desc: "Clears VaeBot's queue of music",
 
-	args: "",
+    args: '',
 
-	example: "",
+    example: '',
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		Music.clearQueue(guild);
-		Util.print(channel, "Cleared queue");
-	}
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        Music.clearQueue(guild);
+        Util.print(channel, 'Cleared queue');
+    },
 });

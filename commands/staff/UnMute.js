@@ -1,20 +1,20 @@
 module.exports = Cmds.addCommand({
-	cmds: [";unmute ", ";unwarn ", ";unmutehammer "],
+    cmds: [";unmute ", ";unwarn ", ";unmutehammer "],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "Unmute a user",
+    desc: "Unmute a user",
 
-	args: "([@user] | [id] | [name])",
+    args: "([@user] | [id] | [name])",
 
-	example: "vae",
+    example: "vae",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		Mutes.unMuteName(args, false, guild, Util.getPosition(speaker), channel, speaker);
-	}
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        Mutes.unMuteName(args, false, guild, Util.getPosition(speaker), channel, speaker);
+    }
 });

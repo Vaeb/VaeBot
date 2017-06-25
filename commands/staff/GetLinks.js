@@ -1,62 +1,62 @@
 /*
 
-	[
-		[
-			eventName,
-			[actionName, [actionArgs]],
-			[actionName, [actionArgs]],
-			[actionName, [actionArgs]]
-		],
-		[
-			eventName,
-			[actionName, [actionArgs]],
-			[actionName, [actionArgs]],
-			[actionName, [actionArgs]]
-		]
-	]
+    [
+        [
+            eventName,
+            [actionName, [actionArgs]],
+            [actionName, [actionArgs]],
+            [actionName, [actionArgs]]
+        ],
+        [
+            eventName,
+            [actionName, [actionArgs]],
+            [actionName, [actionArgs]],
+            [actionName, [actionArgs]]
+        ]
+    ]
 
 */
 
 module.exports = Cmds.addCommand({
-	cmds: [";getlinks", ";links", ";triggers"],
+    cmds: [";getlinks", ";links", ";triggers"],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "Output all created links",
+    desc: "Output all created links",
 
-	args: "",
+    args: "",
 
-	example: "",
+    example: "",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var guildEvents = Events.getEvents(guild);
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        var guildEvents = Events.getEvents(guild);
 
-		var sendEmbedFields = [];
+        var sendEmbedFields = [];
 
-		for (let i = 0; i < guildEvents.length; i++) {
-			let eventData = guildEvents[i];
+        for (let i = 0; i < guildEvents.length; i++) {
+            let eventData = guildEvents[i];
 
-			let eventName = eventData[0];
+            let eventName = eventData[0];
 
-			let actionStr = [];
+            let actionStr = [];
 
-			for (let j = 1; j < eventData.length; j++) {
-				let actionData = eventData[j];
-				
-				let actionName = actionData[0];
-				let actionArgs = actionData[1];
+            for (let j = 1; j < eventData.length; j++) {
+                let actionData = eventData[j];
+                
+                let actionName = actionData[0];
+                let actionArgs = actionData[1];
 
-				actionStr.push(actionName + " " + actionArgs.join(" "));
-			}
+                actionStr.push(actionName + " " + actionArgs.join(" "));
+            }
 
-			sendEmbedFields.push({name: eventName, value: actionStr.join("\n"), inline: false});
-		}
+            sendEmbedFields.push({name: eventName, value: actionStr.join("\n"), inline: false});
+        }
 
-		Util.sendEmbed(channel, "Guild Links", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
-	}
+        Util.sendEmbed(channel, "Guild Links", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+    }
 });

@@ -1,22 +1,22 @@
 module.exports = Cmds.addCommand({
-	cmds: [";username "],
+    cmds: [";username "],
 
-	requires: {
-		guild: false,
-		loud: false
-	},
+    requires: {
+        guild: false,
+        loud: false
+    },
 
-	desc: "Set VaeBot's username",
+    desc: "Set VaeBot's username",
 
-	args: "[username]",
+    args: "[username]",
 
-	example: "VaeBot9000",
+    example: "VaeBot9000",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		client.user.setUsername(args)
-			.catch(console.error);
-		Util.print(channel, "Set username to " + args);
-	}
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        client.user.setUsername(args)
+            .catch(console.error);
+        Util.print(channel, "Set username to " + args);
+    }
 });

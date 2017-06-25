@@ -1,28 +1,28 @@
 module.exports = Cmds.addCommand({
-	cmds: [";actions", ";guild actions", ";all actions"],
+    cmds: [";actions", ";guild actions", ";all actions"],
 
-	requires: {
-		guild: true,
-		loud: false
-	},
+    requires: {
+        guild: true,
+        loud: false
+    },
 
-	desc: "Output all actions that can be used in ;link",
+    desc: "Output all actions that can be used in ;link",
 
-	args: "",
+    args: "",
 
-	example: "",
+    example: "",
 
-	///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
-	func: (cmd, args, msgObj, speaker, channel, guild) => {
-		var sendEmbedFields = [];
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
+        var sendEmbedFields = [];
 
-		for (let actionName in Events.Actions) {
-			if (!Events.Actions.hasOwnProperty(actionName)) continue;
+        for (let actionName in Events.Actions) {
+            if (!Events.Actions.hasOwnProperty(actionName)) continue;
 
-			sendEmbedFields.push({name: actionName, value: "​", inline: false});
-		}
+            sendEmbedFields.push({name: actionName, value: "​", inline: false});
+        }
 
-		Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
-	}
+        Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+    }
 });
