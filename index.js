@@ -473,6 +473,14 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
+            if (nowRole.name === 'Buyer') {
+                const message = 'Please join the Veil Buyers Discord, https://discord.gg/PRq6fcg.';
+                const title = 'Congratulations on your purchase of Veil';
+                const footer = Util.makeEmbedFooter('AutoMessage');
+
+                Util.sendDescEmbed(member, title, message, footer, null, 0x00BCD4);
+            }
+
             if (nowRole.name === 'SendMessages' && Mutes.checkMuted(member.id, guild)) {
                 member.removeRole(nowRole);
                 console.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
