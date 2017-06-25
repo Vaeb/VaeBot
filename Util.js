@@ -1279,13 +1279,13 @@ exports.getMemberByName = (name, guild) => {
         let nameMatch = 0;
         let nameMatched = null;
         // let's call those 4 blocks "cases" for explaining things later
-        // minimum level is 3, as we later on use (level-2) and want it > 0
+        // minimum level is 4, as we later on use (level-3) and want it > 0
         if (currentNameLower == str2Lower) {
             nameMatched = currentName;
-            level = 6; // will become 7 (see lower)
+            level = 7;
         } else if (realNameLower == str2Lower) {
             nameMatched = realName;
-            level = 5; // will become 6 (see lower)
+            level = 6;
         } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
             nameMatched = currentName;
             level = 5;
@@ -1300,8 +1300,7 @@ exports.getMemberByName = (name, guild) => {
             
             // Add bonus points if we match a (relatively) big part
             const filled = name.length / realName.length; // 0 < filled <= 1
-            value += 2 ** (level-1 + filled);
-			// ^ increases a level in the first two cases
+            value += 2 ** (level-1 + Math.min(filled,0.999));
             
             // Add bonus points if we match a lot of caps
             let numCaps = 0;
