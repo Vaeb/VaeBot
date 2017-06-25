@@ -1252,12 +1252,12 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
 exports.stripUnicode = str => str.replace(/[^\0-\x7F]/g, '');
 
 exports.getMemberByName = (name, guild) => {
-	// [v2.0] Visible name match, real name match, caps match, length match, position match
-	// [v3.0] einsteinK rewrote stuff and did some stuff, not sure what
-	//			
+    // [v2.0] Visible name match, real name match, caps match, length match, position match
+    // [v3.0] einsteinK rewrote stuff and did some stuff, not sure what
+    //            
     if (guild == null) return undefined;
-	
-	const removeUnicode = name.replace(/[^\0-\x7F]/g, '') == name;
+    
+    const removeUnicode = name.replace(/[^\0-\x7F]/g, '') == name;
 
     const str2Lower = name.toLowerCase();
 
@@ -1266,58 +1266,58 @@ exports.getMemberByName = (name, guild) => {
     let strongest = [0, undefined];
 
     members.forEach((member) => {
-		let realName = exports.getName(member);
-		if (removeUnicode) realName = exports.stripUnicode(realName);
-		let realNameLower = realName.toLowerCase();
-		let currentName = member.nickname || realName;
-		if (removeUnicode) currentName = exports.stripUnicode(currentName);
-		let currentNameLower = currentName.toLowerCase();
-		
-		
-		// Maybe it's a proper match, which is linked to a level
-		let level = 0;
-		let nameMatch = 0;
-		let nameMatched = null;
-		// let's call those 4 blocks "cases" for explaining things later
-		// minimum level is 3, as we later on use (level-2) and want it > 0
-		if (currentNameLower == str2Lower) {
-			nameMatched = currentName;
-			level = 5; // will become 5 (see lower)
-		} else if (realNameLower == str2Lower) {
-			nameMatched = realName;
-			level = 4; // will become 4 (see lower)
-		} else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
-			nameMatched = currentName;
-			level = 4;
-		} else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
-			nameMatched = realName;
-			level = 3;
-		}
-		
-		if (nameMatched) {
-			// Just casting the level to a value for combined comparison
-			let value = 2 ** level;
-			
-			// Add bonus points if we match a (relatively) big part
+        let realName = exports.getName(member);
+        if (removeUnicode) realName = exports.stripUnicode(realName);
+        let realNameLower = realName.toLowerCase();
+        let currentName = member.nickname || realName;
+        if (removeUnicode) currentName = exports.stripUnicode(currentName);
+        let currentNameLower = currentName.toLowerCase();
+        
+        
+        // Maybe it's a proper match, which is linked to a level
+        let level = 0;
+        let nameMatch = 0;
+        let nameMatched = null;
+        // let's call those 4 blocks "cases" for explaining things later
+        // minimum level is 3, as we later on use (level-2) and want it > 0
+        if (currentNameLower == str2Lower) {
+            nameMatched = currentName;
+            level = 5; // will become 5 (see lower)
+        } else if (realNameLower == str2Lower) {
+            nameMatched = realName;
+            level = 4; // will become 4 (see lower)
+        } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
+            nameMatched = currentName;
+            level = 4;
+        } else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
+            nameMatched = realName;
+            level = 3;
+        }
+        
+        if (nameMatched) {
+            // Just casting the level to a value for combined comparison
+            let value = 2 ** level;
+            
+            // Add bonus points if we match a (relatively) big part
             const filled = name.length / realName.length; // 0 < filled <= 1
-			value += level ** filled; // increases a level in the first two cases
-			
-			// Add bonus points if we match a lot of caps
-			let numCaps = 0;
-			for (let i=0; ch=name[i++];) {
-				if (ch == nameMatched[i+nameMatch]) numCaps++;
-			}
-			numCaps = numCaps / name.length;
-			value += (level-1) ** numCaps;
-			// ^ actually adds a level if 100% of the caps match
-			
-			// Add bonus points depending on when our match start
-			const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
-			// ^ 0.001 if we match the beginning, higher for later matches
-			value += (level-2) ** (1 - p);
-			
-			if (value > strongest[0]) strongest = [value,member];
-		}
+            value += level ** filled; // increases a level in the first two cases
+            
+            // Add bonus points if we match a lot of caps
+            let numCaps = 0;
+            for (let i=0; ch=name[i++];) {
+                if (ch == nameMatched[i+nameMatch]) numCaps++;
+            }
+            numCaps = numCaps / name.length;
+            value += (level-1) ** numCaps;
+            // ^ actually adds a level if 100% of the caps match
+            
+            // Add bonus points depending on when our match start
+            const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
+            // ^ 0.001 if we match the beginning, higher for later matches
+            value += (level-2) ** (1 - p);
+            
+            if (value > strongest[0]) strongest = [value,member];
+        }
     });
 
     return strongest[1];
