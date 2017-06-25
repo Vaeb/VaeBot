@@ -480,7 +480,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             }
 
             if (nowRole.name === 'Buyer') {
-                const message = 'Please join the Veil Buyers Discord, https://discord.gg/PRq6fcg.';
+                const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
 
