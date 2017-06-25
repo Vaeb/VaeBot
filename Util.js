@@ -1267,10 +1267,10 @@ exports.getMemberByName = (name, guild) => {
 
     members.forEach((member) => {
         let realName = exports.getName(member);
-        if (removeUnicode) realName = exports.stripUnicode(realName);
+        if (removeUnicode) realName = exports.stripUnicode(realName) || realName;
         let realNameLower = realName.toLowerCase();
         let currentName = member.nickname || realName;
-        if (removeUnicode) currentName = exports.stripUnicode(currentName);
+        if (removeUnicode) currentName = exports.stripUnicode(currentName) || currentName;
         let currentNameLower = currentName.toLowerCase();
         
         
@@ -1279,24 +1279,25 @@ exports.getMemberByName = (name, guild) => {
         let nameMatch = 0;
         let nameMatched = null;
         // let's call those 4 blocks "cases" for explaining things later
-        // minimum level is 4, as we do 3x --level and need level > 0
+        // minimum level is 5, as we do 4x --level and need level > 0
         if (currentNameLower == str2Lower) {
             nameMatched = currentName;
-            level = 7;
+            level = 8;
         } else if (realNameLower == str2Lower) {
             nameMatched = realName;
-            level = 6;
+            level = 7;
         } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
             nameMatched = currentName;
-            level = 5;
+            level = 6;
         } else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
             nameMatched = realName;
-            level = 4;
+            level = 5;
         }
         
         if (nameMatched) {
             // Just casting the level to a value for combined comparison
-            let value = 2 ** level;
+			// Also decrease the level here so nothing can increase it "globally"
+            let value = 2 ** level--;
             
             // Add bonus points if we match a (relatively) big part
             const filled = name.length / realName.length; // 0 < filled <= 1
