@@ -1249,8 +1249,19 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
-exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, caps match, length match, position match
+exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match
     if (guild == null) return undefined;
+
+    let removeUnicode = true;
+    const origName = name.trim();
+
+    name = name.replace(/[^\x00-\x7F]/g, '');
+    name = name.trim();
+
+    if (name.length === 0) {
+        name = origName;
+        removeUnicode = false;
+    }
 
     const str2Lower = name.toLowerCase();
 
@@ -1262,6 +1273,8 @@ exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real 
         let value = 0;
 
         let realName = member.nickname != null ? member.nickname : exports.getName(member);
+        if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
+        realName = realName.trim();
         let realstr2Lower = realName.toLowerCase();
         let nameMatch = realstr2Lower.indexOf(str2Lower);
 
@@ -1269,6 +1282,8 @@ exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real 
             value += 2 ** 4;
         } else {
             realName = exports.getName(member);
+            if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
+            realName = realName.trim();
             realstr2Lower = realName.toLowerCase();
             nameMatch = realstr2Lower.indexOf(str2Lower);
             if (nameMatch >= 0) {
