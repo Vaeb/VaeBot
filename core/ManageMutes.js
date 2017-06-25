@@ -629,6 +629,7 @@ exports.restartTimeouts = function () {
     const hasChecked = {};
     for (const [guildId] of Object.entries(Data.muted)) {
         const baseGuild = Data.getBaseGuild(guilds.get(guildId));
+        if (baseGuild == null) console.log('Null baseGuild');
         const baseId = baseGuild.id;
         if (!hasChecked[baseId]) {
             hasChecked[baseId] = true;
