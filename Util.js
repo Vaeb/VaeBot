@@ -1249,19 +1249,15 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
-exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match
+exports.stripUnicode = str => str.replace(/[^\0-\x7F]/g, '');
+
+exports.getMemberByName = (name, guild) => {
+    // [v2.0] Visible name match, real name match, caps match, length match, position match
+    // [v3.0] einsteinK rewrote stuff and did some stuff, not sure what
+
     if (guild == null) return undefined;
-
-    let removeUnicode = true;
-    const origName = name.trim();
-
-    name = name.replace(/[^\x00-\x7F]/g, '');
-    name = name.trim();
-
-    if (name.length === 0) {
-        name = origName;
-        removeUnicode = false;
-    }
+    
+    const removeUnicode = name.replace(/[^\0-\x7F]/g, '') == name;
 
     const str2Lower = name.toLowerCase();
 
@@ -1270,56 +1266,59 @@ exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real 
     let strongest = [0, undefined];
 
     members.forEach((member) => {
-        let value = 0;
-
-        let realName = member.nickname != null ? member.nickname : exports.getName(member);
-        if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
-        realName = realName.trim();
-        let realstr2Lower = realName.toLowerCase();
-        let nameMatch = realstr2Lower.indexOf(str2Lower);
-
-        if (nameMatch >= 0) {
-            value += 2 ** 4;
-        } else {
-            realName = exports.getName(member);
-            if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
-            realName = realName.trim();
-            realstr2Lower = realName.toLowerCase();
-            nameMatch = realstr2Lower.indexOf(str2Lower);
-            if (nameMatch >= 0) {
-                value += 2 ** (3);
-            }
+        let realName = exports.getName(member);
+        if (removeUnicode) realName = exports.stripUnicode(realName);
+        let realNameLower = realName.toLowerCase();
+        let currentName = member.nickname || realName;
+        if (removeUnicode) currentName = exports.stripUnicode(currentName);
+        let currentNameLower = currentName.toLowerCase();
+        
+        
+        // Maybe it's a proper match, which is linked to a level
+        let level = 0;
+        let nameMatch = 0;
+        let nameMatched = null;
+        // let's call those 4 blocks "cases" for explaining things later
+        // minimum level is 4, as we do 3x --level and need level > 0
+        if (currentNameLower == str2Lower) {
+            nameMatched = currentName;
+            level = 7;
+        } else if (realNameLower == str2Lower) {
+            nameMatched = realName;
+            level = 6;
+        } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
+            nameMatched = currentName;
+            level = 5;
+        } else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
+            nameMatched = realName;
+            level = 4;
         }
-
-        if (nameMatch >= 0) {
-            // console.log("\n(" + i + ") " + realName + ": " + value);
-            const filled = Math.min(name.length / realName.length, 0.999);
-            // console.log("filled: " + filled);
-            value += 2 ** (2 + filled);
-
-            const maxCaps = Math.min(name.length, realName.length);
+        
+        if (nameMatched) {
+            // Just casting the level to a value for combined comparison
+            let value = 2 ** level;
+            
+            // Add bonus points if we match a (relatively) big part
+            const filled = name.length / realName.length; // 0 < filled <= 1
+            value += 2 ** (--level + Math.min(filled,0.999));
+            
+            // Add bonus points if we match a lot of caps
             let numCaps = 0;
-            for (let j = 0; j < maxCaps; j++) {
-                if (name[j] === realName[nameMatch + j]) numCaps++;
+            for (let i=0; ch=name[i++];) {
+                if (ch == nameMatched[i+nameMatch]) numCaps++;
             }
-            const caps = Math.min(numCaps / maxCaps, 0.999);
-            // console.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
-            value += 2 ** (1 + caps);
-
-            const totalPosition = realName.length - name.length;
-            const perc = 1 - (totalPosition * nameMatch === 0 ? 0.001 : nameMatch / totalPosition);
-            // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
-            value += 2 ** perc;
-
-            // console.log(value);
-            matchStrength.push([value, member]);
+            numCaps = numCaps / name.length;
+            value += 2 ** (--level + numCaps);
+            // ^ actually adds a level if 100% of the caps match
+            
+            // Add bonus points depending on when our match start
+            const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
+            // ^ 0.001 if we match the beginning, higher for later matches
+            value += 2 ** (--level + (1-p));
+            
+            if (value > strongest[0]) strongest = [value,member];
         }
     });
-
-    for (let i = 0; i < matchStrength.length; i++) {
-        const strength = matchStrength[i];
-        if (strength[0] > strongest[0]) strongest = strength;
-    }
 
     return strongest[1];
 };
