@@ -1267,9 +1267,11 @@ exports.getMemberByName = (name, guild) => {
 
     members.forEach((member) => {
         let realName = exports.getName(member);
+        const realNameUni = realName;
         if (removeUnicode) realName = exports.stripUnicode(realName) || realName;
         let realNameLower = realName.toLowerCase();
         let currentName = member.nickname || realName;
+        const currentNameUni = currentName;
         if (removeUnicode) currentName = exports.stripUnicode(currentName) || currentName;
         let currentNameLower = currentName.toLowerCase();
         
@@ -1277,30 +1279,34 @@ exports.getMemberByName = (name, guild) => {
         // Maybe it's a proper match, which is linked to a level
         let level = 0;
         let nameMatch = 0;
-        let nameMatched = null;
+        let nameMatched, nameMatchedUni;
         // let's call those 4 blocks "cases" for explaining things later
         // minimum level is 5, as we do 4x --level and need level > 0
         if (currentNameLower == str2Lower) {
             nameMatched = currentName;
+            nameMatchedUni = currentNameUni;
             level = 8;
         } else if (realNameLower == str2Lower) {
             nameMatched = realName;
+            nameMatchedUni = realNameUni;
             level = 7;
         } else if ((nameMatch=currentNameLower.indexOf(str2Lower)) !== 1) {
             nameMatched = currentName;
+            nameMatchedUni = currentNameUni;
             level = 6;
         } else if ((nameMatch=realNameLower.indexOf(str2Lower)) !== -1) {
             nameMatched = realName;
+            nameMatchedUni = realNameUni;
             level = 5;
         }
         
         if (nameMatched) {
             // Just casting the level to a value for combined comparison
-			// Also decrease the level here so nothing can increase it "globally"
+            // Also decrease the level here so nothing can increase it "globally"
             let value = 2 ** level--;
             
             // Add bonus points if we match a (relatively) big part
-            const filled = name.length / realName.length; // 0 < filled <= 1
+            const filled = name.length / nameMatchedUni.length; // 0 < filled <= 1
             value += 2 ** (--level + Math.min(filled,0.999));
             
             // Add bonus points if we match a lot of caps
