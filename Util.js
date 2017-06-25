@@ -1249,7 +1249,7 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
-exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match
+exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match //
     if (guild == null) return undefined;
 
     let removeUnicode = true;
