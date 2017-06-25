@@ -328,6 +328,12 @@ client.on('ready', () => {
         .then((newGuild) => {
             remaining--;
 
+            if (newGuild == null) {
+                console.log(newGuild);
+                console.log('Found null guild');
+                return;
+            }
+
             if (has.call(veilGuilds, newGuild.id)) {
                 securityNum++;
                 if (securityNum === veilGuildsNum) setupSecurityVeil();
