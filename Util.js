@@ -1300,7 +1300,8 @@ exports.getMemberByName = (name, guild) => {
             
             // Add bonus points if we match a (relatively) big part
             const filled = name.length / realName.length; // 0 < filled <= 1
-            value += level ** filled; // increases a level in the first two cases
+            value += 2 ** (level + filled);
+			// ^ increases a level in the first two cases
             
             // Add bonus points if we match a lot of caps
             let numCaps = 0;
@@ -1308,13 +1309,13 @@ exports.getMemberByName = (name, guild) => {
                 if (ch == nameMatched[i+nameMatch]) numCaps++;
             }
             numCaps = numCaps / name.length;
-            value += (level-1) ** numCaps;
+            value += 2 ** (level-1 + numCaps);
             // ^ actually adds a level if 100% of the caps match
             
             // Add bonus points depending on when our match start
             const p = nameMatch === 0 ? 0.001 : nameMatch/nameMatched.length;
             // ^ 0.001 if we match the beginning, higher for later matches
-            value += (level-2) ** (1 - p);
+            value += 2 ** (level - 1 - p);
             
             if (value > strongest[0]) strongest = [value,member];
         }
