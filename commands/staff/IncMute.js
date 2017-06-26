@@ -15,6 +15,14 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
+        const speakerPos = Util.getHighestRole(speaker).position;
+        const headModRole = Util.getRole('Head Mod', guild);
+
+        if (headModRole != null) {
+            const headModPos = headModRole.position;
+            if (speakerPos < headModPos) return Util.commandFailed(channel, speaker, 'This command can only be used by Head Mod+');
+        }
+
         const target = Util.getMemberByMixed(args, guild);
 
         if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
