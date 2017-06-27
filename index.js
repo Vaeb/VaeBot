@@ -480,7 +480,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            if (nowRole.name === 'Buyer') {
+            if (nowRole.name === 'Buyer' && guild.id === '284746138995785729') {
                 const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
@@ -772,7 +772,7 @@ const warnGrad = 13.5; // Higher = More Spam (Messages per Second) | 10 = 1 mess
 const sameGrad = 4;
 const muteGrad = 9;
 const waitTime = 5.5;
-const endAlert = 15;
+const endAlert = 40;
 
 /* const replaceAll = function (str, search, replacement) {
     return str.split(search).join(replacement);
