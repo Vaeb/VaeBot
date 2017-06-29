@@ -14,6 +14,7 @@ exports.Path = require('path');
 exports.NodeOpus = require('node-opus');
 exports.Exec = require('child_process').exec;
 const YtInfoObj = require('youtube-node');
+exports.Translate = require('google-translate-api');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
