@@ -154,6 +154,17 @@ const connection = index.MySQL.createConnection({
 
 exports.connection = connection;
 
+exports.query = function (statement, inputs) {
+    return new Promise((resolve, reject) => {
+        connection.query(statement, inputs, (err, result, resultData) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(result, resultData);
+        });
+    });
+};
+
 function dataToString(value) {
     if (typeof value === 'string') {
         return `'${value}'`;
@@ -172,7 +183,9 @@ exports.getRecords = function (guild, tableName, identity, callback) {
 
     conditionStr = conditionStr.join(' OR ');
 
-    connection.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr, callback);
+    exports.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr)
+    .then(callback)
+    .catch(console.error);
 };
 
 exports.updateRecords = function (guild, tableName, identity, data, callback) {
@@ -193,7 +206,9 @@ exports.updateRecords = function (guild, tableName, identity, data, callback) {
     updateStr = updateStr.join(',');
     conditionStr = conditionStr.join(' OR ');
 
-    connection.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr, callback);
+    exports.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr)
+    .then(callback)
+    .catch(console.error);
 };
 
 exports.addRecord = function (guild, tableName, data, callback) {
@@ -210,7 +225,9 @@ exports.addRecord = function (guild, tableName, data, callback) {
     columnStr = columnStr.join(',');
     valueStr = valueStr.join(',');
 
-    connection.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr, callback);
+    exports.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr)
+    .then(callback)
+    .catch(console.error);
 };
 
 exports.connect = function (dbGuilds) {
@@ -236,10 +253,12 @@ exports.connect = function (dbGuilds) {
 
             const sqlCmdStr = sqlCmd.join('\n');
 
-            connection.query(sqlCmdStr, sanValues, (error, results, fields) => {
+            exports.query(sqlCmdStr, sanValues)
+            .then((error, results, fields) => {
                 console.log(`[MySQL] Finished: ${guild.name}`);
                 if (error) throw error;
-            });
+            })
+            .catch(console.error);
         }
     });
 };
