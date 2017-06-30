@@ -172,7 +172,7 @@ exports.getRecords = function (guild, tableName, identity, callback) {
 
     conditionStr = conditionStr.join(' OR ');
 
-    connection.query(`SELECT * FROM ${tableName} WHERE ${conditionStr}`, valueArr, callback);
+    connection.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr, callback);
 };
 
 exports.updateRecords = function (guild, tableName, identity, data, callback) {
@@ -193,7 +193,7 @@ exports.updateRecords = function (guild, tableName, identity, data, callback) {
     updateStr = updateStr.join(',');
     conditionStr = conditionStr.join(' OR ');
 
-    connection.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr}`, valueArr, callback);
+    connection.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr, callback);
 };
 
 exports.addRecord = function (guild, tableName, data, callback) {
@@ -210,7 +210,7 @@ exports.addRecord = function (guild, tableName, data, callback) {
     columnStr = columnStr.join(',');
     valueStr = valueStr.join(',');
 
-    connection.query(`INSERT INTO ${tableName}(${columnStr}) values (${valueStr})`, valueArr, callback);
+    connection.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr, callback);
 };
 
 exports.connect = function (dbGuilds) {
@@ -227,14 +227,16 @@ exports.connect = function (dbGuilds) {
             console.log(`[MySQL] Setting up database for ${guild.name}`);
 
             const sqlCmd = [];
+            const sanValues = [];
 
             guild.members.forEach((member) => {
-                sqlCmd.push(`INSERT IGNORE INTO members VALUES(${member.id},NULL);`);
+                sqlCmd.push('INSERT IGNORE INTO members VALUES(?,NULL);');
+                sanValues.push(Number(member.id));
             });
 
             const sqlCmdStr = sqlCmd.join('\n');
 
-            connection.query(sqlCmdStr, (error, results, fields) => {
+            connection.query(sqlCmdStr, sanValues, (error, results, fields) => {
                 console.log(`[MySQL] Finished: ${guild.name}`);
                 if (error) throw error;
             });
