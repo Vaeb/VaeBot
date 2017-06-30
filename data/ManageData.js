@@ -208,7 +208,7 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 };
 
 exports.addRecord = function (guild, tableName, data) {
-    let columnStr = '';
+    let columnStr = [];
     let valueStr = [];
     const valueArr = [];
 
