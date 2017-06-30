@@ -254,9 +254,8 @@ exports.connect = function (dbGuilds) {
             const sqlCmdStr = sqlCmd.join('\n');
 
             exports.query(sqlCmdStr, sanValues)
-            .then((error, results, fields) => {
+            .then(() => {
                 console.log(`[MySQL] Finished: ${guild.name}`);
-                if (error) throw error;
             })
             .catch(console.error);
         }
