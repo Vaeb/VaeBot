@@ -237,9 +237,6 @@ exports.connect = function (dbGuilds) {
             connection.query(sqlCmdStr, (error, results, fields) => {
                 console.log(`[MySQL] Finished: ${guild.name}`);
                 if (error) throw error;
-                console.log('The solution is: ', results[0].solution);
-                console.log('--Fields--');
-                console.log(fields);
             });
         }
     });
