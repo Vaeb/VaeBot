@@ -172,7 +172,7 @@ function dataToString(value) {
     return `${value}`;
 }
 
-exports.getRecords = function (guild, tableName, identity, callback) {
+exports.getRecords = function (guild, tableName, identity) {
     let conditionStr = [];
     const valueArr = [];
 
@@ -183,12 +183,10 @@ exports.getRecords = function (guild, tableName, identity, callback) {
 
     conditionStr = conditionStr.join(' OR ');
 
-    exports.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr)
-    .then(callback)
-    .catch(console.error);
+    return exports.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr);
 };
 
-exports.updateRecords = function (guild, tableName, identity, data, callback) {
+exports.updateRecords = function (guild, tableName, identity, data) {
     let updateStr = [];
     let conditionStr = [];
     const valueArr = [];
@@ -206,12 +204,10 @@ exports.updateRecords = function (guild, tableName, identity, data, callback) {
     updateStr = updateStr.join(',');
     conditionStr = conditionStr.join(' OR ');
 
-    exports.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr)
-    .then(callback)
-    .catch(console.error);
+    return exports.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr);
 };
 
-exports.addRecord = function (guild, tableName, data, callback) {
+exports.addRecord = function (guild, tableName, data) {
     let columnStr = '';
     let valueStr = [];
     const valueArr = [];
@@ -225,9 +221,7 @@ exports.addRecord = function (guild, tableName, data, callback) {
     columnStr = columnStr.join(',');
     valueStr = valueStr.join(',');
 
-    exports.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr)
-    .then(callback)
-    .catch(console.error);
+    return exports.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr);
 };
 
 exports.connect = function (dbGuilds) {
