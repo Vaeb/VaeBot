@@ -327,6 +327,8 @@ client.on('ready', () => {
 
     const veilGuildsNum = Object.keys(veilGuilds).length;
 
+    const dbGuilds = [];
+
     nowGuilds.forEach((guild) => {
         guild.fetchMembers()
         .then((newGuild) => {
@@ -343,12 +345,17 @@ client.on('ready', () => {
                 if (securityNum === veilGuildsNum) setupSecurityVeil();
             }
 
+            if (newGuild.id === '284746138995785729') {
+                dbGuilds.push(newGuild);
+            }
+
             setupSecurity(newGuild);
 
             Trello.setupCache(newGuild);
 
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
+                Data.connect(dbGuilds);
                 Mutes.restartTimeouts();
             }
         })
@@ -359,6 +366,7 @@ client.on('ready', () => {
 
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
+                Data.connect(dbGuilds);
                 Mutes.restartTimeouts();
             }
         });

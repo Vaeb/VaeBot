@@ -153,14 +153,39 @@ const connection = index.MySQL.createConnection({
 
 exports.connection = connection;
 
-connection.connect((err) => {
-    if (err) {
-        console.error(`[MySQL] Error connecting: ${err.stack}`);
-        return;
-    }
+exports.connect = function (dbGuilds) {
+    connection.connect((err) => {
+        if (err) {
+            console.error(`[MySQL] Error connecting: ${err.stack}`);
+            return;
+        }
 
-    console.log(`[MySQL] Connected as id ${connection.threadId}`);
-});
+        console.log(`[MySQL] Connected as id ${connection.threadId}`);
+
+        for (let i = 0; i < dbGuilds.length; i++) {
+            const guild = dbGuilds[i];
+            console.log(`[MySQL] Setting up database for ${guild.name}`);
+
+            const sqlCmd = [];
+
+            guild.members.forEach((member) => {
+                sqlCmd.push(`insert ignore into members values(${member.id}, null);`);
+            });
+
+            const sqlCmdStr = sqlCmd.join('\n');
+
+            connection.query(sqlCmdStr, (error, results, fields) => {
+                console.log(`[MySQL] Finished: ${guild.name}`);
+                if (error) throw error;
+                console.log('The solution is: ', results[0].solution);
+                console.log('--Fields--');
+                console.log(fields);
+            });
+        }
+
+        connection.end();
+    });
+};
 
 FileSys.readFile(autoRoleDir, 'utf-8', (err, data) => {
     if (err) throw err;
