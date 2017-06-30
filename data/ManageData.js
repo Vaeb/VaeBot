@@ -149,6 +149,7 @@ const connection = index.MySQL.createConnection({
     user: 'vaebot',
     password: index.dbPass,
     database: 'veil',
+    multipleStatements: true,
 });
 
 exports.connection = connection;
