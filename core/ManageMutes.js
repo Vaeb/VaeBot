@@ -6,7 +6,16 @@ exports.defaultMuteLength = 1800000;
 
 /*
 
-    [ Saving a mute saves it to all linked guild ]
+    -Storing a mute (active)
+        Guild:
+            {
+                userId: User id
+                modId: Moderator id
+                endTick: Mute end tick
+                muteReason: Mute reason
+            }
+
+    -Storing a mute (history)
     Muting someone
         -Checks history in current guild (because all linked should be the same)
         -Sets history in all linked guilds
