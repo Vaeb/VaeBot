@@ -1,27 +1,33 @@
 module.exports = Cmds.addCommand({
-    cmds: [";eval ", ";run ", ";exec "],
+    cmds: [';eval ', ';run ', ';exec '],
 
     requires: {
         guild: false,
-        loud: false
+        loud: false,
     },
 
-    desc: "Execute JavaScript code",
+    desc: 'Execute JavaScript code',
 
-    args: "[code]",
+    args: '[code]',
 
-    example: "return 5*2;",
+    example: 'return 5*2;',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        args = "(function() {\n" + args + "\n})()";
-        var outStr = ["**Output:**"];
-        var result = eval(args);
-        console.log("Eval result: " + result);
-        outStr.push("```");
-        outStr.push(result);
-        outStr.push("```");
-        if (result !== undefined) Util.print(channel, outStr.join("\n"));
-    }
+        args = `(async function() {\n${args}\n})()`;
+        const outStr = ['**Output:**'];
+        const result = eval(args);
+        result.then((result) => {
+            console.log(`Eval result: ${result}`);
+            outStr.push('```');
+            outStr.push(result);
+            outStr.push('```');
+            if (result !== undefined) Util.print(channel, outStr.join('\n'));
+        })
+        .catch((err) => {
+            console.log('Eval Error:');
+            console.log(err);
+        });
+    },
 });
