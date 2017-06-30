@@ -15,6 +15,7 @@ exports.NodeOpus = require('node-opus');
 exports.Exec = require('child_process').exec;
 const YtInfoObj = require('youtube-node');
 exports.Translate = require('google-translate-api');
+exports.MySQL = require('mysql');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
@@ -22,6 +23,8 @@ exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
 exports.linkGuilds = [
     ['284746138995785729', '309785618932563968'],
 ];
+
+exports.dbPass = Auth.dbPass;
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 

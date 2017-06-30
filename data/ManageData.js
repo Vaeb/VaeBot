@@ -144,6 +144,24 @@ exports.guildDelete = function (guild, obj, index) {
     exports.guildSaveData(obj);
 };
 
+const connection = index.MySQL.createConnection({
+    host: 'localhost',
+    user: 'vaebot',
+    password: index.dbPass,
+    database: 'veil',
+});
+
+exports.connection = connection;
+
+connection.connect((err) => {
+    if (err) {
+        console.error(`[MySQL] Error connecting: ${err.stack}`);
+        return;
+    }
+
+    console.log(`[MySQL] Connected as id ${connection.threadId}`);
+});
+
 FileSys.readFile(autoRoleDir, 'utf-8', (err, data) => {
     if (err) throw err;
 
