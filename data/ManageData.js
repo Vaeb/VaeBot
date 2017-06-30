@@ -154,6 +154,65 @@ const connection = index.MySQL.createConnection({
 
 exports.connection = connection;
 
+function dataToString(value) {
+    if (typeof value === 'string') {
+        return `'${value}'`;
+    }
+    return `${value}`;
+}
+
+exports.getRecords = function (guild, tableName, identity, callback) {
+    let conditionStr = [];
+    const valueArr = [];
+
+    for (const [column, value] of Object.entries(identity)) {
+        conditionStr.push(`${column}=?`);
+        valueArr.push(dataToString(value));
+    }
+
+    conditionStr = conditionStr.join(' OR ');
+
+    connection.query(`SELECT * FROM ${tableName} WHERE ${conditionStr}`, valueArr, callback);
+};
+
+exports.updateRecords = function (guild, tableName, identity, data, callback) {
+    let updateStr = [];
+    let conditionStr = [];
+    const valueArr = [];
+
+    for (const [column, value] of Object.entries(data)) {
+        updateStr.push(`${column}=?`);
+        valueArr.push(dataToString(value));
+    }
+
+    for (const [column, value] of Object.entries(identity)) {
+        conditionStr.push(`${column}=?`);
+        valueArr.push(dataToString(value));
+    }
+
+    updateStr = updateStr.join(',');
+    conditionStr = conditionStr.join(' OR ');
+
+    connection.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr}`, valueArr, callback);
+};
+
+exports.addRecord = function (guild, tableName, data, callback) {
+    let columnStr = '';
+    let valueStr = [];
+    const valueArr = [];
+
+    for (const [column, value] of Object.entries(data)) {
+        columnStr.push(column);
+        valueStr.push('?');
+        valueArr.push(dataToString(value));
+    }
+
+    columnStr = columnStr.join(',');
+    valueStr = valueStr.join(',');
+
+    connection.query(`INSERT INTO ${tableName}(${columnStr}) values (${valueStr})`, valueArr, callback);
+};
+
 exports.connect = function (dbGuilds) {
     connection.connect((err) => {
         if (err) {
@@ -170,7 +229,7 @@ exports.connect = function (dbGuilds) {
             const sqlCmd = [];
 
             guild.members.forEach((member) => {
-                sqlCmd.push(`insert ignore into members values(${member.id}, null);`);
+                sqlCmd.push(`INSERT IGNORE INTO members VALUES(${member.id},NULL);`);
             });
 
             const sqlCmdStr = sqlCmd.join('\n');
@@ -183,8 +242,6 @@ exports.connect = function (dbGuilds) {
                 console.log(fields);
             });
         }
-
-        connection.end();
     });
 };
 
