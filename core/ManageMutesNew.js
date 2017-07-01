@@ -12,6 +12,12 @@ exports.defaultMuteLength = 1800000;
     -ChangeMute command to change mute time, reason, etc.
     -Warn can mute a user for any amount of time, but defaults to 0.5 hours (and does not affect next mute time)
 
+    ToDo:
+        -Write UnMute
+        -Write RemMute
+        -Write ChangeMute
+        -TEST
+
 */
 
 function sendMuteMessage(guild, channel, userMember, moderator, muteLength, reason, messageType, endStr) { // Send mute log, direct message, etc.
