@@ -85,7 +85,8 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                     } else {
                         const args = content.substring(cmdLength);
                         const argStr = args.length < 1 ? 'None' : args;
-                        let outLog = `\n> ${Util.getName(speaker)} (${speaker.id}) | ${channel.name} (${channel.id}) | ${guild.name} (${guild.id})\n    Command Executed: ${cmd.trim()}`;
+                        const guildData = guild != null ? `${guild.name} (${guild.id})` : 'NoGuild';
+                        let outLog = `\n> ${Util.getName(speaker)} (${speaker.id}) | ${channel.name} (${channel.id}) | ${guildData}\n    Command Executed: ${cmd.trim()}`;
                         if (hasParameters) outLog += ` | Arguments: ${argStr}`;
                         console.log(outLog);
 
