@@ -1642,6 +1642,34 @@ exports.isMap = function (obj) {
     return obj instanceof Map;
 };
 
+exports.arrayToCollection = function (arr) {
+    const newCol = new Discord.Collection();
+    for (let i = 0; i < arr.length; i++) {
+        const value = arr[i];
+        newCol.set(value.id, value);
+    }
+    return newCol;
+};
+
+exports.chunkObj = function (obj, chunkSize) {
+    const chunks = [];
+    if (exports.isMap(obj)) {
+        const objArray = obj.array();
+        const size = obj.size;
+        for (let i = 0; i < size; i += chunkSize) {
+            const chunkArr = objArray.slice(i, i + chunkSize);
+            const chunk = exports.arrayToCollection(chunkArr);
+            chunks.push(chunk);
+        }
+    } else {
+        const size = obj.length;
+        for (let i = 0; i < size; i += chunkSize) {
+            const chunk = obj.slice(i, i + chunkSize);
+            chunks.push(chunk);
+        }
+    }
+};
+
 exports.deleteMessages = function (messages) {
     let numMessages;
     let firstMessage;
@@ -1656,6 +1684,8 @@ exports.deleteMessages = function (messages) {
 
     if (numMessages < 1) {
         console.log('You must have at least 1 message to delete');
+    } else {
+        console.log(`Deleting ${numMessages} messages`);
     }
 
     if (numMessages === 1) {
@@ -1664,10 +1694,14 @@ exports.deleteMessages = function (messages) {
             console.log(`[E_DeleteMessages1] ${err}`);
         });
     } else {
-        firstMessage.channel.bulkDelete(messages)
-        .catch((err) => {
-            console.log(`[E_DeleteMessages2] ${err}`);
-        });
+        const chunks = exports.chunkObj(messages, 99);
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            firstMessage.channel.bulkDelete(chunk)
+            .catch((err) => {
+                console.log(`[E_DeleteMessages2] ${err}`);
+            });
+        }
     }
 };
 
