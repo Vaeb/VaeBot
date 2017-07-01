@@ -37,7 +37,7 @@ module.exports = Cmds.addCommand({
                 let rand = String(Math.random());
                 const dotPos = rand.indexOf('.');
                 if (dotPos) rand = rand.substring(dotPos + 1);
-                const subStr = `Hi ${targName}! (${rand})`;
+                const subStr = 'HI FRIEND!';
                 if ((sendStr.join('\n') + '\n' + subStr).length >= 2000) break;
                 sendStr.push(subStr);
             }
