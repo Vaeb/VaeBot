@@ -257,7 +257,7 @@ exports.connectInitial = function (dbGuilds) {
             .catch(console.error);
         }
 
-        connection.end();
+        // connection.end();
     })
     .catch((err) => {
         console.error(`[MySQL] Error connecting: ${err.stack}`);
