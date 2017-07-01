@@ -37,11 +37,13 @@ global.vaebId = '107593015014486016';
 global.Util = require('./Util.js');
 global.Data = require('./data/ManageData.js');
 global.Trello = require('./core/ManageTrello.js');
-global.Mutes = require('./core/ManageMutes.js');
+global.Mutes = require('./core/ManageMutes.js'); // Will be replaced with MutesNew upon completion
 global.Music = require('./core/ManageMusic.js');
 global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
+
+global.MutesNew = require('./core/ManageMutesNew.js');
 
 exports.YtInfo.setKey(Auth.youtube);
 

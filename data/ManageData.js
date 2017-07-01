@@ -183,8 +183,16 @@ exports.getRecords = function (guild, tableName, identity) {
     let conditionStr = [];
     const valueArr = [];
 
-    for (const [column, value] of Object.entries(identity)) {
-        conditionStr.push(`${column}=?`);
+    for (const [column, valueData] of Object.entries(identity)) {
+        let value = valueData;
+        let operator = '=';
+
+        if (Util.isObject(valueData)) {
+            value = valueData.value;
+            operator = valueData.operator || '=';
+        }
+
+        conditionStr.push(`${column}${operator}?`);
         valueArr.push(dataToString(value));
     }
 
@@ -256,6 +264,8 @@ exports.connectInitial = function (dbGuilds) {
             })
             .catch(console.error);
         }
+
+        MutesNew.initialize();
 
         // connection.end();
     })
