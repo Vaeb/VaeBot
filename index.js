@@ -355,7 +355,7 @@ client.on('ready', () => {
 
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
-                Data.connect(dbGuilds);
+                Data.connectInitial(dbGuilds);
                 Mutes.restartTimeouts();
             }
         })
@@ -366,7 +366,7 @@ client.on('ready', () => {
 
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
-                Data.connect(dbGuilds);
+                Data.connectInitial(dbGuilds);
                 Mutes.restartTimeouts();
             }
         });

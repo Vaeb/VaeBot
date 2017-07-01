@@ -231,7 +231,7 @@ exports.addRecord = function (guild, tableName, data) {
     return exports.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr);
 };
 
-exports.connect = function (dbGuilds) {
+exports.connectInitial = function (dbGuilds) {
     exports.connect()
     .then(() => {
         console.log(`[MySQL] Connected as id ${connection.threadId}`);
