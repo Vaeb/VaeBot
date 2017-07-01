@@ -1646,9 +1646,9 @@ exports.deleteMessages = function (messages) {
     let numMessages;
     let firstMessage;
 
-    if (isMap(messages)) {
+    if (exports.isMap(messages)) {
         numMessages = messages.size;
-        firstMessage =  messages.first();
+        firstMessage = messages.first();
     } else {
         numMessages = messages.length;
         firstMessage = messages[0];
@@ -1658,7 +1658,7 @@ exports.deleteMessages = function (messages) {
         console.log('You must have at least 1 message to delete');
     }
 
-    if (numMessages == 1) {
+    if (numMessages === 1) {
         firstMessage.delete()
         .catch((err) => {
             console.log(`[E_DeleteMessages1] ${err}`);
@@ -1667,15 +1667,15 @@ exports.deleteMessages = function (messages) {
         firstMessage.channel.bulkDelete(messages)
         .catch((err) => {
             console.log(`[E_DeleteMessages2] ${err}`);
-        })
+        });
     }
 };
 
 exports.fetchMessages = async function (channel, numScan, check) {
-    if (!check) check = (m => true);
+    if (!check) check = (() => true);
     const scanMessages = await channel.fetchMessages({ limit: numScan });
     const foundMessages = scanMessages.filterArray(check);
-    console.log(`Num Messages Found: ${foundMessages.length}`)
+    console.log(`Num Messages Found: ${foundMessages.length}`);
     return foundMessages;
 };
 
