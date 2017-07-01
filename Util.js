@@ -1638,6 +1638,47 @@ exports.updateMessageCache = (channel, speaker) => {
     });
 };
 
+exports.isMap = function (obj) {
+    return obj instanceof Map;
+};
+
+exports.deleteMessages = function (messages) {
+    let numMessages;
+    let firstMessage;
+
+    if (isMap(messages)) {
+        numMessages = messages.size;
+        firstMessage =  messages.first();
+    } else {
+        numMessages = messages.length;
+        firstMessage = messages[0];
+    }
+
+    if (numMessages < 1) {
+        console.log('You must have at least 1 message to delete');
+    }
+
+    if (numMessages == 1) {
+        firstMessage.delete()
+        .catch((err) => {
+            console.log(`[E_DeleteMessages1] ${err}`);
+        });
+    } else {
+        firstMessage.channel.bulkDelete(messages)
+        .catch((err) => {
+            console.log(`[E_DeleteMessages2] ${err}`);
+        })
+    }
+};
+
+exports.fetchMessages = async function (channel, numScan, check) {
+    if (!check) check = (m => true);
+    const scanMessages = await channel.fetchMessages({ limit: numScan });
+    const foundMessages = scanMessages.filterArray(check);
+    console.log(`Num Messages Found: ${foundMessages.length}`)
+    return foundMessages;
+};
+
 exports.banMember = (member, moderator, reason) => {
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
