@@ -253,6 +253,8 @@ exports.connect = function (dbGuilds) {
             })
             .catch(console.error);
         }
+
+        connection.end();
     });
 };
 

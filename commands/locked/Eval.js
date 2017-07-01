@@ -17,8 +17,8 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         args = `(async function() {\n${args}\n})()`;
         const outStr = ['**Output:**'];
-        const result = eval(args);
-        result.then((result) => {
+        eval(args)
+        .then((result) => {
             console.log(`Eval result: ${result}`);
             outStr.push('```');
             outStr.push(result);

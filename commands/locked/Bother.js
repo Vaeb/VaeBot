@@ -1,47 +1,57 @@
 module.exports = Cmds.addCommand({
-    cmds: [";bother "],
+    cmds: [';bother '],
 
     requires: {
         guild: false,
-        loud: false
+        loud: false,
     },
 
-    desc: "Hi friend",
+    desc: 'Hi friend',
 
-    args: "([@user] | [id] | [name])",
+    args: '([@user] | [id] | [name])',
 
-    example: "vae",
+    example: 'vae',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var target = Util.getEitherByMixed(args, guild);
-        if (target == null) return Util.commandFailed(channel, speaker, "User not found");
-        var targName = Util.getName(target);
-        Util.print(channel, "Bothering", targName);
+        const target = Util.getEitherByMixed(args, guild);
 
-        var interval;
-        var n = 0;
-        var sendStr = (targName + "\n").repeat(199);
-        interval = setInterval(function() {
+        if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
+
+        const targName = Util.getName(target);
+
+        Util.print(channel, 'Bothering', targName);
+
+        let n = 0;
+
+        const interval = setInterval(() => {
             if (n > 50) {
                 clearInterval(interval);
                 return;
             }
-            var sendStr = [];
-            for (let i = 0; i < 199; i++) {
-                var rand = String(Math.random());
-                var dotPos = rand.indexOf(".");
-                if (dotPos) rand = rand.substring(dotPos+1);
-                sendStr.push(targName);
+
+            let sendStr = [];
+
+            while (true) {
+                let rand = String(Math.random());
+                const dotPos = rand.indexOf('.');
+                if (dotPos) rand = rand.substring(dotPos + 1);
+                const subStr = `Hi ${targName}! (${rand})`;
+                if ((sendStr.join('\n') + '\n' + subStr).length >= 2000) break;
+                sendStr.push(subStr);
             }
-            sendStr = sendStr.join("\n");
+
+            sendStr = sendStr.join('\n');
+
             try {
                 Util.print(target, sendStr);
-            } catch(err) {
-                console.log("BOTHER ERROR: " + err);
+            } catch (err) {
+                console.log(`BOTHER ERROR: ${err}`);
             }
-            n = n + 1;
+            n += 1;
         }, 50);
-    }
+
+        return undefined;
+    },
 });
