@@ -157,10 +157,17 @@ exports.connection = connection;
 exports.query = function (statement, inputs) {
     return new Promise((resolve, reject) => {
         connection.query(statement, inputs, (err, result, resultData) => {
-            if (err) {
-                return reject(err);
-            }
+            if (err) return reject(err);
             return resolve(result, resultData);
+        });
+    });
+};
+
+exports.connect = function () {
+    return new Promise((resolve, reject) => {
+        connection.connect((err) => {
+            if (err) return reject(err);
+            return resolve();
         });
     });
 };
@@ -225,12 +232,8 @@ exports.addRecord = function (guild, tableName, data) {
 };
 
 exports.connect = function (dbGuilds) {
-    connection.connect((err) => {
-        if (err) {
-            console.error(`[MySQL] Error connecting: ${err.stack}`);
-            return;
-        }
-
+    exports.connect()
+    .then(() => {
         console.log(`[MySQL] Connected as id ${connection.threadId}`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
@@ -255,6 +258,9 @@ exports.connect = function (dbGuilds) {
         }
 
         connection.end();
+    })
+    .catch((err) => {
+        console.error(`[MySQL] Error connecting: ${err.stack}`);
     });
 };
 
