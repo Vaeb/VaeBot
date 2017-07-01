@@ -1668,6 +1668,7 @@ exports.chunkObj = function (obj, chunkSize) {
             chunks.push(chunk);
         }
     }
+    return chunks;
 };
 
 exports.deleteMessages = function (messages) {
