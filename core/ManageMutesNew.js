@@ -172,7 +172,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderator, mut
 
     Data.addRecord(guild, 'mutes', {
         'user_id': Number(userId), // BIGINT
-        'mod_id': moderator.id, // BIGINT
+        'mod_id': Number(moderator.id), // BIGINT
         'mute_reason': reason, // TEXT
         'end_tick': endTick, // BIGINT
     });
