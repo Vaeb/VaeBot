@@ -40,7 +40,7 @@ module.exports = Cmds.addCommand({
         let reason;
 
         if (data2) {
-            time = Number(data2[0]);
+            time = Number(data2[0]) * 1000 * 60 * 60;
             reason = data2[1];
         } else {
             reason = data[1];
