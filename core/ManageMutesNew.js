@@ -178,15 +178,18 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
             }
 
             if (timeoutRemaining > 0) {
+                console.log(`Mute shard timeout for ${userId} @ ${guild.name} ended; Starting next shard...`);
                 addTimeout(guild, userId, endTick);
                 return;
             }
+
+            console.log(`Mute timeout for ${userId} @ ${guild.name} ended; Unmuting...`);
 
             exports.unMute(guild, null, userId, 'System');
         }, remaining)),
     });
 
-    console.log(`Added mute timeout for ${userId} @ ${guild.id}`);
+    console.log(`Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
 function canMute(member, moderator) { // Check if member can be muted
@@ -369,9 +372,10 @@ exports.remMute = async function () { // Undo mute
 };
 
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
-    const nowTick = +new Date();
+    // const nowTick = +new Date();
     await Promise.all(client.guilds.map(async (guild) => {
-        const results = await Data.getRecords(guild, 'mutes', { end_tick: { value: nowTick, operator: '>' } });
+        // const results = await Data.getRecords(guild, 'mutes', { end_tick: { value: nowTick, operator: '>' } });
+        const results = await Data.getRecords(guild, 'mutes', { active: 1 });
         for (let i = 0; i < results.length; i++) {
             const muteData = results[i];
             const userId = muteData.user_id;

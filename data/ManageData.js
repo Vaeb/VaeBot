@@ -186,6 +186,8 @@ exports.fromBuffer = function (buffer) {
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
 exports.getRecords = function (guild, tableName, identity) {
+    if (guild.id !== '284746138995785729') return false; // Until multi-guild integration
+
     let conditionStr = [];
     const valueArr = [];
 
@@ -212,6 +214,8 @@ exports.getRecords = function (guild, tableName, identity) {
 };
 
 exports.updateRecords = function (guild, tableName, identity, data) {
+    if (guild.id !== '284746138995785729') return false;
+
     let updateStr = [];
     let conditionStr = [];
     const valueArr = [];
@@ -235,6 +239,8 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 };
 
 exports.addRecord = function (guild, tableName, data) {
+    if (guild.id !== '284746138995785729') return false;
+
     let columnStr = [];
     let valueStr = [];
     const valueArr = [];
