@@ -318,16 +318,16 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const totalMutes = pastMutes.length;
 
-    let isMuted = false;
+    let muteId;
 
     for (let i = 0; i < pastMutes.length; i++) {
         if (Data.fromBuffer(pastMutes[i].active) === 1) {
-            isMuted = true;
+            muteId = pastMutes[i].mute_id; // Number
             break;
         }
     }
 
-    if (!isMuted) {
+    if (!muteId) {
         return Util.commandFailed(channel, moderatorResolvable, 'User is not muted');
     }
 
@@ -336,6 +336,14 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
     if (!canMute(userMember, moderatorResolvable)) {
         return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
+
+    // Update mute SQL record
+
+    Data.updateRecords(guild, 'mutes', {
+        mute_id: muteId,
+    }, {
+        active: 0,
+    });
 
     // Remove mute timeout (if stopped early)
 
