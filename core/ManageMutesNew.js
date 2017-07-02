@@ -226,8 +226,6 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         moderatorId = selfId;
     }
 
-    const timeRemainingStr = Util.historyToString(muteLength);
-
     console.log(`Started addMute on ${userId}`);
 
     const nowTick = +new Date();
@@ -246,6 +244,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     dateEnd.setTime(Date.now() + muteLength);
 
     const endStr = `${DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
+    const timeRemainingStr = Util.historyToString(muteLength);
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
