@@ -297,6 +297,8 @@ exports.addRecord = function (guild, tableName, data) {
 };
 
 exports.connectInitial = function (dbGuilds) {
+    console.log('[MySQL] Initialising connection to database');
+
     exports.connect()
     .then(() => {
         console.log(`[MySQL] Connected as id ${connection.threadId}`);
