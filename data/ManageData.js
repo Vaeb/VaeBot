@@ -213,6 +213,34 @@ exports.getRecords = function (guild, tableName, identity) {
     return exports.query(queryStr, valueArr);
 };
 
+exports.deleteRecords = function (guild, tableName, identity) {
+    if (guild.id !== '284746138995785729') return false; // Until multi-guild integration
+
+    let conditionStr = [];
+    const valueArr = [];
+
+    for (const [column, valueData] of Object.entries(identity)) {
+        let value = valueData;
+        let operator = '=';
+
+        if (Util.isObject(valueData)) {
+            value = valueData.value;
+            operator = valueData.operator || '=';
+        }
+
+        conditionStr.push(`${column}${operator}?`);
+        // valueArr.push(dataToString(value));
+        valueArr.push(value);
+    }
+
+    conditionStr = conditionStr.join(' OR ');
+
+    const queryStr = `DELETE FROM ${tableName} WHERE ${conditionStr};`;
+    console.log(queryStr);
+
+    return exports.query(queryStr, valueArr);
+};
+
 exports.updateRecords = function (guild, tableName, identity, data) {
     if (guild.id !== '284746138995785729') return false;
 
@@ -235,7 +263,9 @@ exports.updateRecords = function (guild, tableName, identity, data) {
     updateStr = updateStr.join(',');
     conditionStr = conditionStr.join(' OR ');
 
-    return exports.query(`UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`, valueArr);
+    const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
+
+    return exports.query(queryStr, valueArr);
 };
 
 exports.addRecord = function (guild, tableName, data) {
@@ -255,7 +285,9 @@ exports.addRecord = function (guild, tableName, data) {
     columnStr = columnStr.join(',');
     valueStr = valueStr.join(',');
 
-    return exports.query(`INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`, valueArr);
+    const queryStr = `INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`;
+
+    return exports.query(queryStr, valueArr);
 };
 
 exports.connectInitial = function (dbGuilds) {
