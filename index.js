@@ -234,19 +234,19 @@ function securityFunc(guild, member, sendRoleParam) {
     }
 
     if (sendRole != null) {
-        const isMuted = Mutes.checkMuted(memberId, guild);
-
-        if (isMuted) {
-            if (Util.hasRole(member, sendRole)) {
-                member.removeRole(sendRole)
+        Mutes.checkMuted(guild, memberId).then((isMuted) => {
+            if (isMuted) {
+                if (Util.hasRole(member, sendRole)) {
+                    member.removeRole(sendRole)
+                    .catch(console.error);
+                    console.log(`Muted user ${memberName} had already joined ${guildName}`);
+                }
+            } else if (!Util.hasRole(member, sendRole)) {
+                member.addRole(sendRole)
                 .catch(console.error);
-                console.log(`Muted user ${memberName} had already joined ${guildName}`);
+                console.log(`Assigned SendMessages to old member ${memberName}`);
             }
-        } else if (!Util.hasRole(member, sendRole)) {
-            member.addRole(sendRole)
-            .catch(console.error);
-            console.log(`Assigned SendMessages to old member ${memberName}`);
-        }
+        });
     }
 }
 
@@ -445,19 +445,19 @@ client.on('guildMemberAdd', (member) => {
         return;
     }
 
-    const isMuted = Mutes.checkMuted(memberId, guild);
+    Mutes.checkMuted(guild, memberId).then((isMuted) => {
+        if (isMuted) {
+            console.log(`Muted user ${memberName} joined ${guildName}`);
+        } else {
+            const sendRole = Util.getRole('SendMessages', guild);
 
-    if (isMuted) {
-        console.log(`Muted user ${memberName} joined ${guildName}`);
-    } else {
-        const sendRole = Util.getRole('SendMessages', guild);
-
-        if (sendRole) {
-            member.addRole(sendRole)
-            .catch(console.error);
-            console.log(`Assigned SendMessages to new member ${memberName}`);
+            if (sendRole) {
+                member.addRole(sendRole)
+                .catch(console.error);
+                console.log(`Assigned SendMessages to new member ${memberName}`);
+            }
         }
-    }
+    });
 
     if (memberId === '280579952263430145') member.setNickname('<- mentally challenged');
 
@@ -498,19 +498,21 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendDescEmbed(member, title, message, footer, null, 0x00BCD4);
             }
 
-            if (nowRole.name === 'SendMessages' && Mutes.checkMuted(member.id, guild)) {
-                member.removeRole(nowRole);
-                console.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
-            } else {
-                const sendLogData = [
-                    'Role Added',
-                    guild,
-                    member,
-                    { name: 'Username', value: member.toString() },
-                    { name: 'Role Name', value: nowRole.name },
-                ];
-                Util.sendLog(sendLogData, colUser);
-            }
+            Mutes.checkMuted(guild, member.id).then((isMuted) => {
+                if (nowRole.name === 'SendMessages' && isMuted) {
+                    member.removeRole(nowRole);
+                    console.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
+                } else {
+                    const sendLogData = [
+                        'Role Added',
+                        guild,
+                        member,
+                        { name: 'Username', value: member.toString() },
+                        { name: 'Role Name', value: nowRole.name },
+                    ];
+                    Util.sendLog(sendLogData, colUser);
+                }
+            });
 
             Events.emit(guild, 'UserRoleAdd', member, nowRole);
         });
@@ -518,20 +520,22 @@ client.on('guildMemberUpdate', (oldMember, member) => {
 
     if (rolesRemoved.size > 0) {
         rolesRemoved.forEach((nowRole) => {
-            if (nowRole.name === 'SendMessages' && !Mutes.checkMuted(member.id, guild)) {
-                member.addRole(nowRole)
-                .catch(console.error);
-                console.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
-            } else {
-                const sendLogData = [
-                    'Role Removed',
-                    guild,
-                    member,
-                    { name: 'Username', value: member.toString() },
-                    { name: 'Role Name', value: nowRole.name },
-                ];
-                Util.sendLog(sendLogData, colUser);
-            }
+            Mutes.checkMuted(guild, member.id).then((isMuted) => {
+                if (nowRole.name === 'SendMessages' && !isMuted) {
+                    member.addRole(nowRole)
+                    .catch(console.error);
+                    console.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
+                } else {
+                    const sendLogData = [
+                        'Role Removed',
+                        guild,
+                        member,
+                        { name: 'Username', value: member.toString() },
+                        { name: 'Role Name', value: nowRole.name },
+                    ];
+                    Util.sendLog(sendLogData, colUser);
+                }
+            });
 
             Events.emit(guild, 'UserRoleRemove', member, nowRole);
         });
@@ -879,10 +883,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    let isMuted = false;
-    if (guild != null) isMuted = Mutes.checkMuted(author.id, guild);
-
-    if (guild != null && author.bot === false && content.length > 0 && !isMuted && author.id !== vaebId && author.id !== guild.owner.id) {
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== vaebId && author.id !== guild.owner.id) {
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
         const nowStamps = messageStamps[authorId];

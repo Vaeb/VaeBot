@@ -12,11 +12,11 @@ module.exports = Cmds.addCommand({
 
     example: 'vae',
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
         const target = Util.getEitherByMixed(args, guild);
         if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
 
-        const isMuted = Mutes.checkMuted(target.id, guild);
+        const isMuted = await Mutes.checkMuted(guild, target.id);
         const historyStr = Util.historyToString(Util.getHistory(target.id, guild));
 
         const createdAt = target.createdAt || target.user.createdAt;
