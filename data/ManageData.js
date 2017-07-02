@@ -299,11 +299,11 @@ exports.addRecord = function (guild, tableName, data) {
     return exports.query(queryStr, valueArr);
 };
 
-exports.connectInitial = function (dbGuilds) {
+exports.connectInitial = async function (dbGuilds) {
     console.log('[MySQL] Initialising connection to database');
 
-    exports.connect()
-    .then(() => {
+    try {
+        await exports.connect();
         console.log(`[MySQL] Connected as id ${connection.threadId}`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
@@ -329,11 +329,15 @@ exports.connectInitial = function (dbGuilds) {
 
         Mutes.initialize();
 
+        console.log('Finished initialising SQL data');
+
         // connection.end();
-    })
-    .catch((err) => {
+
+        return true;
+    } catch (err) {
         console.error(`[MySQL] Error connecting: ${err.stack}`);
-    });
+        return false;
+    }
 };
 
 FileSys.readFile(autoRoleDir, 'utf-8', (err, data) => {

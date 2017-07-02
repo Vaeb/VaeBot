@@ -331,44 +331,47 @@ client.on('ready', () => {
     const dbGuilds = [];
 
     nowGuilds.forEach((guild) => {
-        guild.fetchMembers()
-        .then((newGuild) => {
-            remaining--;
+    guild.fetchMembers()
+    .then((newGuild) => {
+        remaining--;
 
-            if (newGuild == null) {
-                console.log(newGuild);
-                console.log('Found null guild');
-                return;
-            }
+        if (newGuild.id === '284746138995785729') {
+            dbGuilds.push(newGuild);
+        }
 
-            if (has.call(veilGuilds, newGuild.id)) {
-                securityNum++;
-                if (securityNum === veilGuildsNum) setupSecurityVeil();
-            }
+        if (remaining === 0) {
+            console.log('\nFetched all Guild members!\n');
+            Data.connectInitial(dbGuilds).then(() => {
+                connsole.log('Starting security setup');
 
-            if (newGuild.id === '284746138995785729') {
-                dbGuilds.push(newGuild);
-            }
+                nowGuilds.forEach((guild) => {
+                    guild.fetchMembers()
+                    .then((newGuild) => {
 
-            setupSecurity(newGuild);
+                        if (newGuild == null) {
+                            console.log(newGuild);
+                            console.log('Found null guild');
+                            return;
+                        }
 
-            Trello.setupCache(newGuild);
+                        if (has.call(veilGuilds, newGuild.id)) {
+                            securityNum++;
+                            if (securityNum === veilGuildsNum) setupSecurityVeil();
+                        }
 
-            if (remaining === 0) {
-                console.log('\nFetched all Guild members!\n');
-                Data.connectInitial(dbGuilds);
-            }
-        })
-        .catch((error) => {
-            remaining--;
+                        setupSecurity(newGuild);
 
-            console.log(`E_READY_FETCH_MEMBERS: ${error}`);
-
-            if (remaining === 0) {
-                console.log('\nFetched all Guild members!\n');
-                Data.connectInitial(dbGuilds);
-            }
-        });
+                        Trello.setupCache(newGuild);
+                    })
+                    .catch((error) => {
+                        console.log(`E_READY_FETCH_MEMBERS: ${error}`);
+                    });
+                });
+            })
+        }
+    })
+    .catch((error) => {
+        console.log('\nSOMETHING BROKE PLEASE RESTART THE BOT\n');
     });
 });
 
