@@ -460,11 +460,11 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Get changed data and format it
 
+    const muteLengthStrOld = Util.historyToString(muteLengthOld);
+    const muteLengthStrNew = Util.historyToString(muteLengthNew);
+
     const dateEndOld = new Date(); dateEndOld.setTime(endTickOld);
     const dateEndNew = new Date(); dateEndNew.setTime(endTickNew);
-
-    const muteLengthStrOld = Util.historyToString(endTickOld);
-    const muteLengthStrNew = Util.historyToString(endTickNew);
 
     const endStrOld = `${DateFormat(dateEndOld, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
     const endStrNew = `${DateFormat(dateEndNew, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
