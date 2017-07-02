@@ -260,6 +260,8 @@ function canMute(member, moderator) { // Check if member can be muted
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
     // Resolve parameter data
 
+    if (!muteData) muteData = {};
+
     let muteLength = muteData.time;
     const muteReason = muteData.reason || 'N/A';
 
