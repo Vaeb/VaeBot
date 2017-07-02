@@ -258,8 +258,8 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
     console.log(`Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
-function canMute(member, moderator) { // Check if member can be muted
-    if (!member) return true;
+function higherRank(moderator, member) { // Check if member can be muted
+    if (!member || typeof member === 'string' || member.id === selfId) return true;
 
     const memberPos = Util.getPosition(member);
     const moderatorPos = typeof moderator === 'string' ? Infinity : Util.getPosition(moderator);
@@ -303,7 +303,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Verify they can be muted
 
-    if (!canMute(userMember, moderatorResolvable)) {
+    if (!higherRank(moderatorResolvable, userMember)) {
         return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
 
@@ -397,16 +397,12 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     console.log(`Started changeMute on ${userId}`);
 
-    // Verify mute can be changed
-
-    if (!canMute(userMember, moderatorResolvable)) {
-        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
-    }
-
-    // Get mute data and check they are actually muted
+    // Get mute data
 
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const totalMutes = pastMutes.length;
+
+    // Check they are actually muted
 
     let muteId;
     let muteRecord;
@@ -421,6 +417,16 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     if (!muteId) {
         return Util.commandFailed(channel, moderatorResolvable, 'User is not muted');
+    }
+
+    // Verify mute can be changed
+
+    if (!higherRank(moderatorResolvable, userMember)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
+    }
+
+    if (!higherRank(moderatorResolvable, Util.getMemberById(muteRecord.mod_id, guild))) {
+        return Util.commandFailed(channel, moderatorResolvable, 'Moderator who muted has higher privilege');
     }
 
     // Change mute in DB
@@ -523,28 +529,36 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     console.log(`Started unMute on ${userId}`);
 
-    // Verify they can be unmuted
-
-    if (!canMute(userMember, moderatorResolvable)) { // Also need to check current mod doesn't equal/outrank them
-        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
-    }
-
-    // Get mute time data and check they are actually muted
+    // Get mute data
 
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const totalMutes = pastMutes.length;
 
+    // Check they are actually muted
+
     let muteId;
+    let muteRecord;
 
     for (let i = 0; i < pastMutes.length; i++) {
         if (Data.fromBuffer(pastMutes[i].active) === 1) {
             muteId = pastMutes[i].mute_id; // Number
+            muteRecord = pastMutes[i];
             break;
         }
     }
 
     if (!muteId) {
         return Util.commandFailed(channel, moderatorResolvable, 'User is not muted');
+    }
+
+    // Verify mute can be changed
+
+    if (!higherRank(moderatorResolvable, userMember)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
+    }
+
+    if (!higherRank(moderatorResolvable, Util.getMemberById(muteRecord.mod_id, guild))) {
+        return Util.commandFailed(channel, moderatorResolvable, 'Moderator who muted has higher privilege');
     }
 
     // Update mute SQL record
