@@ -144,11 +144,11 @@ exports.guildDelete = function (guild, obj, index) {
     exports.guildSaveData(obj);
 };
 
-function emptyPromise() {
+exports.emptyPromise = function () {
     return new Promise((resolve) => {
         resolve([]);
     });
-}
+};
 
 let connection;
 
@@ -195,7 +195,7 @@ exports.fromBuffer = function (buffer) {
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
 exports.getRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return emptyPromise(); // Until multi-guild integration
+    if (guild.id !== '284746138995785729') return exports.emptyPromise(); // Until multi-guild integration
 
     let conditionStr = [];
     const valueArr = [];
@@ -214,7 +214,7 @@ exports.getRecords = function (guild, tableName, identity) {
         valueArr.push(value);
     }
 
-    conditionStr = conditionStr.join(' OR ');
+    conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
     // console.log(queryStr);
@@ -223,7 +223,7 @@ exports.getRecords = function (guild, tableName, identity) {
 };
 
 exports.deleteRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return emptyPromise(); // Until multi-guild integration
+    if (guild.id !== '284746138995785729') return exports.emptyPromise(); // Until multi-guild integration
 
     let conditionStr = [];
     const valueArr = [];
@@ -242,7 +242,7 @@ exports.deleteRecords = function (guild, tableName, identity) {
         valueArr.push(value);
     }
 
-    conditionStr = conditionStr.join(' OR ');
+    conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `DELETE FROM ${tableName} WHERE ${conditionStr};`;
     console.log(queryStr);
@@ -251,7 +251,7 @@ exports.deleteRecords = function (guild, tableName, identity) {
 };
 
 exports.updateRecords = function (guild, tableName, identity, data) {
-    if (guild.id !== '284746138995785729') return emptyPromise();
+    if (guild.id !== '284746138995785729') return exports.emptyPromise();
 
     let updateStr = [];
     let conditionStr = [];
@@ -270,7 +270,7 @@ exports.updateRecords = function (guild, tableName, identity, data) {
     }
 
     updateStr = updateStr.join(',');
-    conditionStr = conditionStr.join(' OR ');
+    conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
 
@@ -278,7 +278,7 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 };
 
 exports.addRecord = function (guild, tableName, data) {
-    if (guild.id !== '284746138995785729') return emptyPromise();
+    if (guild.id !== '284746138995785729') return exports.emptyPromise();
 
     let columnStr = [];
     let valueStr = [];
