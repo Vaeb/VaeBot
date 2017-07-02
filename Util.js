@@ -1210,16 +1210,14 @@ exports.getSafeId = (idParam) => {
     return id[0];
 };
 
-exports.getMemberById = (idParam, guild) => {
-    let id = idParam;
-
-    if (guild == null || id == null) return undefined;
+exports.getMemberById = (id, guild) => {
+    if (id == null || guild == null) return null;
 
     if (id.substr(0, 1) === '<' && id.substr(id.length - 1, 1) === '>') id = exports.getSafeId(id);
 
-    if (id == null || id.length < 1) return undefined;
+    if (id == null || id.length < 1) return null;
 
-    return guild.members.find(member => member.id === id);
+    return guild.members.get(id);
 };
 
 exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
@@ -1250,8 +1248,22 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
+exports.getDiscriminatorFromName = (name) => {
+    const discrimPattern = /#(\d\d\d\d)$/gm;
+    let discrim = discrimPattern.exec(name);
+    discrim = discrim ? discrim[1] : null;
+    return discrim;
+};
+
 exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match //
     if (guild == null) return undefined;
+
+    const nameDiscrim = exports.getDiscriminatorFromName(name);
+    if (nameDiscrim) {
+        const namePre = name.substr(0, name.length - 5);
+        const member = guild.members.find(m => m.user.username === namePre && m.user.discriminator === nameDiscrim);
+        if (member) return member;
+    }
 
     let removeUnicode = true;
     const origName = name.trim();
