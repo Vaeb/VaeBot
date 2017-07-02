@@ -172,6 +172,10 @@ exports.connect = function () {
     });
 };
 
+exports.fromBuffer = function (buffer) {
+    return buffer.readUIntBE(0, 1);
+};
+
 /* function dataToString(value) {
     if (typeof value === 'string') {
         return `'${value}'`;

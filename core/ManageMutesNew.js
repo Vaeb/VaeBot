@@ -21,13 +21,22 @@ exports.defaultMuteLength = 1800000;
 
 */
 
-function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorMention, muteLength, totalMutes, reason, endStr) { // Send mute log, direct message, etc.
+function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr) { // Send mute log, direct message, etc.
     // Will keep DM as text (rather than embed) to save send time
 
     const hasMember = userMember != null;
+    const memberMention = hasMember ? userMember.toString() : `<@${userId}>`;
 
     if (actionType === 'Mute') {
-        if (messageType === 'DM') {
+        if (messageType === 'Channel') {
+            const sendEmbedFields = [
+                { name: 'Username', value: memberMention },
+                { name: 'Mute Reason', value: reason },
+                { name: 'Mute Expires', value: endStr },
+                { name: 'Time Remaining', value: muteLength },
+            ];
+            Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+        } else if (messageType === 'DM') {
             if (!hasMember) return;
 
             const outStr = ['**You have been muted**\n```'];
@@ -42,7 +51,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 'User Muted',
                 guild,
                 userMember || userId,
-                { name: 'Username', value: hasMember ? userMember.toString() : `<@${userId}>` }, // Can resolve from user id
+                { name: 'Username', value: memberMention }, // Can resolve from user id
                 { name: 'Moderator', value: moderatorMention },
                 { name: 'Mute Reason', value: reason },
                 { name: 'Mute Length', value: reason },
@@ -53,7 +62,13 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             Util.sendLog(sendLogData, colAction);
         }
     } else if (actionType === 'UnMute') {
-        if (messageType === 'DM') {
+        if (messageType === 'Channel') {
+            const sendEmbedFields = [
+                { name: 'Username', value: memberMention },
+                { name: 'Mute History', value: `${totalMutes} mutes` },
+            ];
+            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+        } else if (messageType === 'DM') {
             if (!hasMember) return;
 
             const outStr = ['**You have been unmuted**\n```'];
@@ -62,10 +77,10 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             Util.print(userMember, outStr.join('\n'));
         } else if (messageType === 'Log') {
             const sendLogData = [
-                'User UnMuted',
+                'User Unmuted',
                 guild,
                 userMember || userId,
-                { name: 'Username', value: hasMember ? userMember.toString() : `<@${userId}>` }, // Can resolve from user id
+                { name: 'Username', value: memberMention }, // Can resolve from user id
                 { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
                 { name: 'Mute History', value: `${totalMutes} mutes` },
             ];
@@ -214,6 +229,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const numMutes = pastMutes.length;
+    const totalMutes = numMutes + 1;
 
     if (muteLength == null) {
         muteLength = exports.defaultMuteLength * (2 ** numMutes);
@@ -254,8 +270,9 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorMention, muteLength, reason, endStr);
-    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorMention, muteLength, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
 
     console.log('Completed addMute');
 
@@ -294,19 +311,24 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     console.log(`Started unMute on ${userId}`);
 
-    const nowTick = +new Date();
+    // const nowTick = +new Date();
 
     // Check they are actually muted
 
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
-    const numMutes = pastMutes.length;
+    const totalMutes = pastMutes.length;
+
     let isMuted = false;
 
     for (let i = 0; i < pastMutes.length; i++) {
-        if (pastMutes[i].active === 1) {
+        if (Data.fromBuffer(pastMutes[i].active) === 1) {
             isMuted = true;
             break;
         }
+    }
+
+    if (!isMuted) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User is not muted');
     }
 
     // Verify they can be unmuted
@@ -325,8 +347,9 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'UnMute', 'DM', userMember, moderatorMention);
-    sendMuteMessage(guild, channel, userId, 'UnMute', 'Log', userMember, moderatorMention);
+    sendMuteMessage(guild, channel, userId, 'UnMute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes);
+    sendMuteMessage(guild, channel, userId, 'UnMute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes);
+    sendMuteMessage(guild, channel, userId, 'UnMute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes);
 
     console.log('Completed unMute');
 
