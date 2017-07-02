@@ -152,6 +152,8 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             Util.sendLog(sendLogData, colAction);
         }
     }
+
+    console.log(`Sent a ${messageType} alert for the ${actionType} event`);
 }
 
 function remSendMessages(member) { // Remove SendMessages role
@@ -199,11 +201,12 @@ function addSendMessages(member) { // Add SendMessages role
 }
 
 function remTimeout(guild, userId) { // Remove mute timeout
+    console.log(`Removing any active mute timeouts for ${userId} @ ${guild.name}`);
     for (let i = muteTimeouts.length - 1; i >= 0; i--) {
         const timeoutData = muteTimeouts[i];
         if (timeoutData.guildId === guild.id && timeoutData.userId === userId) {
             clearTimeout(timeoutData.timeout);
-            console.log(`Removed mute timeout for ${userId}`);
+            console.log(`Removed mute timeout for ${userId} @ ${guild.name}`);
             muteTimeouts.splice(i, 1);
         }
     }
@@ -588,4 +591,5 @@ exports.initialize = async function () { // Get mute data from db, start all ini
             addTimeout(guild, userId, endTick);
         }
     }));
+    console.log('Finished initializing mute timeouts');
 };
