@@ -172,12 +172,14 @@ exports.connect = function () {
     });
 };
 
-function dataToString(value) {
+/* function dataToString(value) {
     if (typeof value === 'string') {
         return `'${value}'`;
     }
     return `${value}`;
-}
+} */
+
+// SELECT * FROM members WHERE user_id='107593015014486016';
 
 exports.getRecords = function (guild, tableName, identity) {
     let conditionStr = [];
@@ -193,12 +195,16 @@ exports.getRecords = function (guild, tableName, identity) {
         }
 
         conditionStr.push(`${column}${operator}?`);
-        valueArr.push(dataToString(value));
+        // valueArr.push(dataToString(value));
+        valueArr.push(value);
     }
 
     conditionStr = conditionStr.join(' OR ');
 
-    return exports.query(`SELECT * FROM ${tableName} WHERE ${conditionStr};`, valueArr);
+    const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
+    console.log(queryStr);
+
+    return exports.query(queryStr, valueArr);
 };
 
 exports.updateRecords = function (guild, tableName, identity, data) {
@@ -208,12 +214,14 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 
     for (const [column, value] of Object.entries(data)) {
         updateStr.push(`${column}=?`);
-        valueArr.push(dataToString(value));
+        // valueArr.push(dataToString(value));
+        valueArr.push(value);
     }
 
     for (const [column, value] of Object.entries(identity)) {
         conditionStr.push(`${column}=?`);
-        valueArr.push(dataToString(value));
+        // valueArr.push(dataToString(value));
+        valueArr.push(value);
     }
 
     updateStr = updateStr.join(',');
@@ -230,7 +238,8 @@ exports.addRecord = function (guild, tableName, data) {
     for (const [column, value] of Object.entries(data)) {
         columnStr.push(column);
         valueStr.push('?');
-        valueArr.push(dataToString(value));
+        // valueArr.push(dataToString(value));
+        valueArr.push(value);
     }
 
     columnStr = columnStr.join(',');
