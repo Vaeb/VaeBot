@@ -316,7 +316,7 @@ exports.connectInitial = function (dbGuilds) {
             .catch(console.error);
         }
 
-        MutesNew.initialize();
+        Mutes.initialize();
 
         // connection.end();
     })

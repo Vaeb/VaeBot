@@ -37,13 +37,12 @@ global.vaebId = '107593015014486016';
 global.Util = require('./Util.js');
 global.Data = require('./data/ManageData.js');
 global.Trello = require('./core/ManageTrello.js');
-global.Mutes = require('./core/ManageMutes.js'); // Will be replaced with MutesNew upon completion
+global.Mutes = require('./core/ManageMutesNew.js');
+global.MutesOld = require('./core/ManageMutes.js'); // Will be replaced with MutesNew upon completion
 global.Music = require('./core/ManageMusic.js');
 global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
-
-global.MutesNew = require('./core/ManageMutesNew.js');
 
 exports.YtInfo.setKey(Auth.youtube);
 
@@ -358,7 +357,6 @@ client.on('ready', () => {
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
                 Data.connectInitial(dbGuilds);
-                Mutes.restartTimeouts();
             }
         })
         .catch((error) => {
@@ -369,7 +367,6 @@ client.on('ready', () => {
             if (remaining === 0) {
                 console.log('\nFetched all Guild members!\n');
                 Data.connectInitial(dbGuilds);
-                Mutes.restartTimeouts();
             }
         });
     });
@@ -831,7 +828,7 @@ console.log(contentLower); */
     }
 
     if (triggered) {
-        Mutes.doMute(speaker, 'Muted Themself', guild, Infinity, channel, speaker.displayName);
+        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
     }
 }); */
 
@@ -954,7 +951,7 @@ client.on('message', (msgObj) => {
                                 console.log(`[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
                                 if (grad2 >= checkGrad2) {
                                     console.log(`[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
-                                    Mutes.doMute(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
+                                    Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                                     userStatus[authorId] = 0;
                                 } else {
                                     console.log(`[2] ${Util.getName(speaker)} was put on alert`);
@@ -965,7 +962,7 @@ client.on('message', (msgObj) => {
                         }, 350);
                     } else if (userStatus[authorId] === 2) {
                         console.log(`[3] ${Util.getName(speaker)} muted, repeated warns`);
-                        Mutes.doMute(speaker, '[Auto-Mute] Spamming', guild, Infinity, channel, 'System');
+                        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                         userStatus[authorId] = 0;
                     }
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {

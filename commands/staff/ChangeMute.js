@@ -1,16 +1,16 @@
 module.exports = Cmds.addCommand({
-    cmds: [';mute ', ';mutehammer '],
+    cmds: [';changemute ', ';setmute ', 'altermute '],
 
     requires: {
         guild: true,
         loud: false,
     },
 
-    desc: 'Mute a user (in all guild channels) and add the mute to their record',
+    desc: 'Change details of an active mute',
 
-    args: '([@user] | [id] | [name]) ([reason])',
+    args: '([@user] | [id] | [name]) ([mute_length]) ([reason])',
 
-    example: 'vae being weird',
+    example: 'vae 3 spamming multiple channels',
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ module.exports = Cmds.addCommand({
             reason = data[1];
         }
 
-        Mutes.addMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
+        Mutes.changeMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
 
         return true;
     },

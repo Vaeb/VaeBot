@@ -1,12 +1,12 @@
 module.exports = Cmds.addCommand({
-    cmds: [';unmute ', ';unwarn ', ';unmutehammer '],
+    cmds: [';clearmutes ', ';cleanslate ', ';clearhistory '],
 
     requires: {
         guild: true,
         loud: false,
     },
 
-    desc: 'Unmute a user',
+    desc: "Clear a user's mute history and unmute them if they are muted",
 
     args: '([@user] | [id] | [name])',
 
@@ -17,6 +17,6 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         args = args.trim();
 
-        Mutes.unMute(guild, channel, args, speaker);
+        Mutes.clearMutes(guild, channel, args, speaker);
     },
 });

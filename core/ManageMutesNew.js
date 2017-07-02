@@ -150,6 +150,58 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
 
             Util.sendLog(sendLogData, colAction);
         }
+    } else if (actionType === 'RemMute') {
+        if (messageType === 'Channel') {
+            const sendEmbedFields = [
+                { name: 'Username', value: memberMention },
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+            Util.sendEmbed(channel, 'Reverted Mute', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+        } else if (messageType === 'DM') {
+            if (!hasMember) return;
+
+            const outStr = ['**Your last mute has been reverted**\n```'];
+            outStr.push(`Guild: ${guild.name}`);
+            outStr.push('```');
+            Util.print(userMember, outStr.join('\n'));
+        } else if (messageType === 'Log') {
+            const sendLogData = [
+                'Reverted Mute',
+                guild,
+                userMember || userId,
+                { name: 'Username', value: memberMention }, // Can resolve from user id
+                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+
+            Util.sendLog(sendLogData, colAction);
+        }
+    } else if (actionType === 'ClearMutes') {
+        if (messageType === 'Channel') {
+            const sendEmbedFields = [
+                { name: 'Username', value: memberMention },
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+            Util.sendEmbed(channel, 'Cleared Mute History', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+        } else if (messageType === 'DM') {
+            if (!hasMember) return;
+
+            const outStr = ['**Your mute history has been cleared**\n```'];
+            outStr.push(`Guild: ${guild.name}`);
+            outStr.push('```');
+            Util.print(userMember, outStr.join('\n'));
+        } else if (messageType === 'Log') {
+            const sendLogData = [
+                'Cleared Mute History',
+                guild,
+                userMember || userId,
+                { name: 'Username', value: memberMention }, // Can resolve from user id
+                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+
+            Util.sendLog(sendLogData, colAction);
+        }
     }
 
     console.log(`Sent a ${messageType} alert for the ${actionType} event`);
@@ -266,7 +318,7 @@ function higherRank(moderator, member) { // Check if member can be muted
     return (moderatorPos > memberPos && member.id !== vaebId) || (Util.isObject(moderator) && moderator.id === vaebId);
 }
 
-function resolveUser(guild, userResolvable) {
+function resolveUser(guild, userResolvable, isMod) {
     const resolvedData = {
         member: userResolvable,
         id: userResolvable,
@@ -277,20 +329,29 @@ function resolveUser(guild, userResolvable) {
     let system = false;
 
     if (typeof userResolvable === 'string') {
-        userType = 1; // ID or System
-        system = userResolvable.match(/[a-z]/i);
+        if (Util.getMemberById(userResolvable, guild)) { // ID
+            userType = 1; // ID
+        } else {
+            userType = 2; // Name or System
+            system = isMod && userResolvable.match(/[a-z]/i); // When resolving moderator the only use of text should be when the moderator is the system.
+        }
     }
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
         resolvedData.mention = userResolvable.toString();
-    } else if (userType === 1) { // String
+    } else if (userType === 1) { // ID
+        resolvedData.member = guild.members.get(userResolvable);
+        resolvedData.mention = resolvedData.member ? resolvedData.member.toString() : userResolvable;
+    } else if (userType === 2) { // Name or System
         if (system) {
             resolvedData.member = guild.members.get(selfId);
             resolvedData.id = selfId;
         } else {
-            resolvedData.member = guild.members.get(userResolvable);
-            resolvedData.mention = resolvedData.toString();
+            resolvedData.member = Util.getMemberByName(userResolvable, guild);
+            if (!resolvedData.member) return 'User not found';
+            resolvedData.id = resolvedData.member.id;
+            resolvedData.mention = resolvedData.member.toString();
         }
     }
 
@@ -305,8 +366,12 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     let muteLength = muteData.time;
     const muteReason = muteData.reason || 'N/A';
 
-    const resolvedUser = resolveUser(userResolvable);
-    const resolvedModerator = resolveUser(moderatorResolvable);
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, resolvedUser);
+    }
 
     console.log(`Started addMute on ${resolvedUser.id}`);
 
@@ -379,8 +444,12 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(userResolvable);
-    const resolvedModerator = resolveUser(moderatorResolvable);
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, resolvedUser);
+    }
 
     console.log(`Started changeMute on ${resolvedUser.id}`);
 
@@ -489,8 +558,12 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(userResolvable);
-    const resolvedModerator = resolveUser(moderatorResolvable);
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, resolvedUser);
+    }
 
     console.log(`Started unMute on ${resolvedUser.id}`);
 
@@ -556,10 +629,17 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 exports.remMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    const resolvedUser = resolveUser(userResolvable);
-    // const resolvedModerator = resolveUser(moderatorResolvable);
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, resolvedUser);
+    }
+
+    console.log(`Started remMute on ${resolvedUser.id}`);
 
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
+    const totalMutes = pastMutes.length - 1;
     const hasBeenMuted = pastMutes.length > 0;
     const lastMute = hasBeenMuted ? pastMutes[pastMutes.length - 1] : null;
 
@@ -580,6 +660,55 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
     }
 
     Data.deleteRecords(guild, 'mutes', { mute_id: lastMute.mute_id });
+
+    // Send the relevant messages
+
+    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+
+    console.log('Completed remMute');
+
+    return true;
+};
+
+exports.clearMutes = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
+    exports.unMute(guild, null, userResolvable, moderatorResolvable);
+
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, resolvedUser);
+    }
+
+    console.log(`Started clearMutes on ${resolvedUser.id}`);
+
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
+    const totalMutes = 0;
+    const hasBeenMuted = pastMutes.length > 0;
+
+    // Verify mutes can be removed
+
+    if (!higherRank(moderatorResolvable, resolvedUser.member)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
+    }
+
+    // Check they have actually been muted
+
+    if (!hasBeenMuted) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has never been muted');
+    }
+
+    Data.deleteRecords(guild, 'mutes', { user_id: resolvedUser.id });
+
+    // Send the relevant messages
+
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+
+    console.log('Completed remMute');
 
     return true;
 };

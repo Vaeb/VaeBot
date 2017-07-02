@@ -15,11 +15,8 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        const target = Util.getMemberByMixed(args, guild);
-        if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
+        args = args.trim();
 
-        Mutes.undoMute(target, guild, Util.getPosition(speaker), channel, speaker);
-
-        return undefined;
+        Mutes.remMute(guild, channel, args, speaker);
     },
 });
