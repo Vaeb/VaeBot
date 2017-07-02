@@ -144,6 +144,12 @@ exports.guildDelete = function (guild, obj, index) {
     exports.guildSaveData(obj);
 };
 
+function emptyPromise() {
+    return new Promise((resolve) => {
+        resolve([]);
+    });
+}
+
 const connection = index.MySQL.createConnection({
     host: 'localhost',
     user: 'vaebot',
@@ -186,7 +192,7 @@ exports.fromBuffer = function (buffer) {
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
 exports.getRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return false; // Until multi-guild integration
+    if (guild.id !== '284746138995785729') return emptyPromise(); // Until multi-guild integration
 
     let conditionStr = [];
     const valueArr = [];
@@ -208,13 +214,13 @@ exports.getRecords = function (guild, tableName, identity) {
     conditionStr = conditionStr.join(' OR ');
 
     const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
-    console.log(queryStr);
+    // console.log(queryStr);
 
     return exports.query(queryStr, valueArr);
 };
 
 exports.deleteRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return false; // Until multi-guild integration
+    if (guild.id !== '284746138995785729') return emptyPromise(); // Until multi-guild integration
 
     let conditionStr = [];
     const valueArr = [];
@@ -242,7 +248,7 @@ exports.deleteRecords = function (guild, tableName, identity) {
 };
 
 exports.updateRecords = function (guild, tableName, identity, data) {
-    if (guild.id !== '284746138995785729') return false;
+    if (guild.id !== '284746138995785729') return emptyPromise();
 
     let updateStr = [];
     let conditionStr = [];
@@ -269,7 +275,7 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 };
 
 exports.addRecord = function (guild, tableName, data) {
-    if (guild.id !== '284746138995785729') return false;
+    if (guild.id !== '284746138995785729') return emptyPromise();
 
     let columnStr = [];
     let valueStr = [];
