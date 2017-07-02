@@ -14,22 +14,24 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        // var botUser = Util.getMemberById(selfId, guild);
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
+        const activeMutes = await Data.getRecords(guild, 'mutes', { active: 1 });
 
-        const nowDate = Date.now();
-        const mutedGuild = Data.guildGet(guild, Data.muted);
+        const nowDate = +new Date();
 
         const sendEmbedFields = [];
 
-        for (const [targetId, nowMute] of Object.entries(mutedGuild)) {
-            const endTime = nowMute[1];
-            const time = endTime - nowDate;
-            console.log(time);
-            const timeStr = Util.formatTime(time);
+        for (let i = 0; i < activeMutes.length; i++) {
+            const nowMute = activeMutes[i];
+            const targetId = nowMute.user_id;
+            const endTime = nowMute.end_tick;
+            const reason = nowMute.reason;
+
+            const remaining = endTime - nowDate;
+            const timeStr = Util.formatTime(remaining);
             const targUser = Util.getUserById(targetId);
-            const targName = targUser == null ? nowMute[2] : Util.getMostName(targUser);
-            sendEmbedFields.push({ name: targName, value: `​\nUser: <@${targetId}>\n\nReason: ${nowMute[3]}\n\nRemaining: ${timeStr}\n​`, inline: false });
+            const targName = targUser == null ? targetId : Util.getMostName(targUser);
+            sendEmbedFields.push({ name: targName, value: `​\nUser: <@${targetId}>\n\nReason: ${reason}\n\nRemaining: ${timeStr}\n​`, inline: false });
         }
 
         Util.sendEmbed(channel, 'Active Mutes', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
