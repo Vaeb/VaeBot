@@ -331,47 +331,47 @@ client.on('ready', () => {
     const dbGuilds = [];
 
     nowGuilds.forEach((guild) => {
-    guild.fetchMembers()
-    .then((newGuild) => {
-        remaining--;
+        guild.fetchMembers()
+        .then((newGuild) => {
+            remaining--;
 
-        if (newGuild.id === '284746138995785729') {
-            dbGuilds.push(newGuild);
-        }
+            if (newGuild.id === '284746138995785729') {
+                dbGuilds.push(newGuild);
+            }
 
-        if (remaining === 0) {
-            console.log('\nFetched all Guild members!\n');
-            Data.connectInitial(dbGuilds).then(() => {
-                connsole.log('Starting security setup');
+            if (remaining === 0) {
+                console.log('\nFetched all Guild members!\n');
+                Data.connectInitial(dbGuilds).then(() => {
+                    console.log('Starting security setup');
 
-                nowGuilds.forEach((guild) => {
-                    guild.fetchMembers()
-                    .then((newGuild) => {
+                    nowGuilds.forEach((guild2) => {
+                        guild2.fetchMembers()
+                        .then((newGuild2) => {
+                            if (newGuild2 == null) {
+                                console.log(newGuild2);
+                                console.log('Found null guild');
+                                return;
+                            }
 
-                        if (newGuild == null) {
-                            console.log(newGuild);
-                            console.log('Found null guild');
-                            return;
-                        }
+                            if (has.call(veilGuilds, newGuild2.id)) {
+                                securityNum++;
+                                if (securityNum === veilGuildsNum) setupSecurityVeil();
+                            }
 
-                        if (has.call(veilGuilds, newGuild.id)) {
-                            securityNum++;
-                            if (securityNum === veilGuildsNum) setupSecurityVeil();
-                        }
+                            setupSecurity(newGuild2);
 
-                        setupSecurity(newGuild);
-
-                        Trello.setupCache(newGuild);
-                    })
-                    .catch((error) => {
-                        console.log(`E_READY_FETCH_MEMBERS: ${error}`);
+                            Trello.setupCache(newGuild2);
+                        })
+                        .catch((error) => {
+                            console.log(`E_READY_FETCH_MEMBERS: ${error}`);
+                        });
                     });
                 });
-            })
-        }
-    })
-    .catch((error) => {
-        console.log('\nSOMETHING BROKE PLEASE RESTART THE BOT\n');
+            }
+        })
+        .catch((error) => {
+            console.log(`\nSOMETHING BROKE PLEASE RESTART THE BOT ${error}\n`);
+        });
     });
 });
 
