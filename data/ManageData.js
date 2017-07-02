@@ -253,7 +253,7 @@ exports.connectInitial = function (dbGuilds) {
 
             guild.members.forEach((member) => {
                 sqlCmd.push('INSERT IGNORE INTO members VALUES(?,NULL);');
-                sanValues.push(Number(member.id));
+                sanValues.push(member.id);
             });
 
             const sqlCmdStr = sqlCmd.join('\n');

@@ -210,7 +210,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     console.log(`Started addMute on ${userId}`);
 
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: Number(userId) });
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const numMutes = pastMutes.length;
 
     if (muteLength == null) {
@@ -236,8 +236,8 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     // Add their mute to the database
 
     Data.addRecord(guild, 'mutes', {
-        'user_id': Number(userId), // BIGINT
-        'mod_id': Number(moderatorId), // BIGINT
+        'user_id': userId, // VARCHAR(24)
+        'mod_id': moderatorId, // VARCHAR(24)
         'mute_reason': reason, // TEXT
         'end_tick': endTick, // BIGINT
     });
