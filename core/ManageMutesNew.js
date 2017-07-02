@@ -21,7 +21,7 @@ exports.defaultMuteLength = 1800000;
 
 */
 
-function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr) { // Send mute log, direct message, etc.
+function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, timeRemainingStr, reason, endStr) { // Send mute log, direct message, etc.
     // Will keep DM as text (rather than embed) to save send time
 
     const hasMember = userMember != null;
@@ -33,7 +33,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Username', value: memberMention },
                 { name: 'Mute Reason', value: reason },
                 { name: 'Mute Expires', value: endStr },
-                { name: 'Time Remaining', value: muteLength },
+                { name: 'Time Remaining', value: timeRemainingStr },
             ];
             Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
         } else if (messageType === 'DM') {
@@ -43,7 +43,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             outStr.push(`Guild: ${guild.name}`);
             outStr.push(`Reason: ${reason}`);
             outStr.push(`Mute expires: ${endStr}`);
-            outStr.push(`Time remaining: ${muteLength}`);
+            outStr.push(`Time remaining: ${timeRemainingStr}`);
             outStr.push('```');
             Util.print(userMember, outStr.join('\n'));
         } else if (messageType === 'Log') {
@@ -226,6 +226,8 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         moderatorId = selfId;
     }
 
+    const timeRemainingStr = Util.historyToString(muteLength);
+
     console.log(`Started addMute on ${userId}`);
 
     const nowTick = +new Date();
@@ -273,9 +275,9 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'Mute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
-    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
-    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLength, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes, timeRemainingStr, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes, timeRemainingStr, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes, timeRemainingStr, reason, endStr);
 
     console.log('Completed addMute');
 
