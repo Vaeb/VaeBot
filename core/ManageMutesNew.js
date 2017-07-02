@@ -1,6 +1,7 @@
 const DateFormat = index.DateFormat;
 
 const muteTimeouts = [];
+let muteTimeoutId = 0;
 
 exports.defaultMuteLength = 1800000;
 
@@ -20,29 +21,57 @@ exports.defaultMuteLength = 1800000;
 
 */
 
-function sendMuteMessage(guild, channel, userMember, moderator, muteLength, reason, messageType, endStr) { // Send mute log, direct message, etc.
+function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorMention, muteLength, totalMutes, reason, endStr) { // Send mute log, direct message, etc.
     // Will keep DM as text (rather than embed) to save send time
 
-    if (messageType === 'DM') {
-        const outStr = ['**You have been muted**\n```'];
-        outStr.push(`Guild: ${guild.name}`);
-        outStr.push(`Reason: ${reason}`);
-        outStr.push(`Mute expires: ${endStr}`);
-        outStr.push(`Time remaining: ${muteLength}`);
-        outStr.push('```');
-        Util.print(userMember, outStr.join('\n'));
-    } else if (messageType === 'Log') {
-        const sendLogData = [
-            'User Muted',
-            guild,
-            userMember,
-            { name: 'Username', value: userMember.toString() },
-            { name: 'Moderator', value: moderator.user.username },
-            { name: 'Mute Reason', value: reason },
-            { name: 'Mute Expires', value: endStr },
-            { name: 'Mute History', value: muteLength },
-        ];
-        Util.sendLog(sendLogData, colAction);
+    const hasMember = userMember != null;
+
+    if (actionType === 'Mute') {
+        if (messageType === 'DM') {
+            if (!hasMember) return;
+
+            const outStr = ['**You have been muted**\n```'];
+            outStr.push(`Guild: ${guild.name}`);
+            outStr.push(`Reason: ${reason}`);
+            outStr.push(`Mute expires: ${endStr}`);
+            outStr.push(`Time remaining: ${muteLength}`);
+            outStr.push('```');
+            Util.print(userMember, outStr.join('\n'));
+        } else if (messageType === 'Log') {
+            const sendLogData = [
+                'User Muted',
+                guild,
+                userMember || userId,
+                { name: 'Username', value: hasMember ? userMember.toString() : `<@${userId}>` }, // Can resolve from user id
+                { name: 'Moderator', value: moderatorMention },
+                { name: 'Mute Reason', value: reason },
+                { name: 'Mute Length', value: reason },
+                { name: 'Mute Expires', value: endStr },
+                { name: 'Mute History', value: `${totalMutes} mutes` },
+            ];
+
+            Util.sendLog(sendLogData, colAction);
+        }
+    } else if (actionType === 'UnMute') {
+        if (messageType === 'DM') {
+            if (!hasMember) return;
+
+            const outStr = ['**You have been unmuted**\n```'];
+            outStr.push(`Guild: ${guild.name}`);
+            outStr.push('```');
+            Util.print(userMember, outStr.join('\n'));
+        } else if (messageType === 'Log') {
+            const sendLogData = [
+                'User UnMuted',
+                guild,
+                userMember || userId,
+                { name: 'Username', value: hasMember ? userMember.toString() : `<@${userId}>` }, // Can resolve from user id
+                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
+                { name: 'Mute History', value: `${totalMutes} mutes` },
+            ];
+
+            Util.sendLog(sendLogData, colAction);
+        }
     }
 }
 
@@ -95,7 +124,7 @@ function remTimeout(guild, userId) { // Remove mute timeout
         const timeoutData = muteTimeouts[i];
         if (timeoutData.guildId === guild.id && timeoutData.userId === userId) {
             clearTimeout(timeoutData.timeout);
-            console.log(`Removed timeout for ${userId}`);
+            console.log(`Removed mute timeout for ${userId}`);
             muteTimeouts.splice(i, 1);
         }
     }
@@ -116,10 +145,23 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
     const timeoutLength = Math.min(remaining, 2147483646);
     const timeoutRemaining = remaining - timeoutLength;
 
+    if (timeoutRemaining > 0) console.log(`Split ${userId} mute timeout into multiple timeouts: ${timeoutRemaining}`);
+
+    const nowTimeoutId = muteTimeoutId++;
+
     muteTimeouts.push({
+        'timeoutId': nowTimeoutId,
         'guildId': guild.id,
         'userId': userId,
         'timeout': (setTimeout(() => {
+            for (let i = 0; i < muteTimeouts.length; i++) {
+                const timeoutData = muteTimeouts[i];
+                if (timeoutData.timeoutId === nowTimeoutId) {
+                    muteTimeouts.splice(i, 1);
+                    break;
+                }
+            }
+
             if (timeoutRemaining > 0) {
                 addTimeout(guild, userId, endTick);
                 return;
@@ -128,6 +170,8 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
             exports.unMute(guild, null, userId, 'System');
         }, remaining)),
     });
+
+    console.log(`Added mute timeout for ${userId} @ ${guild.id}`);
 }
 
 function canMute(member, moderator) { // Check if member can be muted
@@ -138,22 +182,39 @@ function canMute(member, moderator) { // Check if member can be muted
     return (moderatorPos > memberPos && member.id !== vaebId) || (Util.isObject(moderator) && moderator.id === vaebId);
 }
 
-exports.addMute = async function (guild, channel, userResolvable, moderator, muteLength, reason) { // Add mute
+exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteLength, reason) { // Add mute
     let userType = 0; // Member
     let userMember = userResolvable;
     let userId = userResolvable;
 
+    let moderatorType = 0; // Member
+    let moderatorMention = moderatorResolvable;
+    let moderatorId = moderatorResolvable;
+
     if (typeof userResolvable === 'string') userType = 1; // ID
 
-    if (userType === 0) {
+    if (typeof moderatorResolvable === 'string') moderatorType = 1; // System
+
+    if (userType === 0) { // Member
         userId = userResolvable.id;
-    } else if (userType === 1) {
+    } else if (userType === 1) { // ID
         userMember = guild.members.get(userResolvable);
     }
 
+    if (moderatorType === 0) { // Member
+        moderatorMention = moderatorResolvable.toString();
+        moderatorId = moderatorResolvable.id;
+    } else if (moderatorType === 1) { // System
+        moderatorId = selfId;
+    }
+
+    console.log(`Started addMute on ${userId}`);
+
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: Number(userId) });
+    const numMutes = pastMutes.length;
+
     if (muteLength == null) {
-        const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: Number(userId) });
-        muteLength = exports.defaultMuteLength * (2 ** (pastMutes.length));
+        muteLength = exports.defaultMuteLength * (2 ** numMutes);
     }
 
     const nowTick = +new Date();
@@ -168,43 +229,33 @@ exports.addMute = async function (guild, channel, userResolvable, moderator, mut
 
     // Verify they can be muted
 
-    if (!canMute(userMember, moderator)) {
-        return Util.commandFailed(channel, moderator, 'User has equal or higher rank');
+    if (!canMute(userMember, moderatorResolvable)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
-
-    console.log('Can mute');
 
     // Add their mute to the database
 
     Data.addRecord(guild, 'mutes', {
         'user_id': Number(userId), // BIGINT
-        'mod_id': Number(moderator.id), // BIGINT
+        'mod_id': Number(moderatorId), // BIGINT
         'mute_reason': reason, // TEXT
         'end_tick': endTick, // BIGINT
     });
-
-    console.log('Added mute to database');
 
     // Add mute timeout (and automatically remove any active timeouts)
 
     addTimeout(guild, userId, endTick);
 
-    console.log('Added timeout success');
-
     // Remove SendMessages role
 
     remSendMessages(userMember);
 
-    console.log('Removed SendMessages');
-
     // Send the relevant messages
 
-    if (userMember) {
-        sendMuteMessage(guild, channel, userMember, moderator, muteLength, reason, 'DM', endStr);
-        sendMuteMessage(guild, channel, userMember, moderator, muteLength, reason, 'Log', endStr);
-    }
+    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorMention, muteLength, reason, endStr);
+    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorMention, muteLength, reason, endStr);
 
-    console.log('Sent DMs');
+    console.log('Completed addMute');
 
     return true;
 };
@@ -213,8 +264,56 @@ exports.changeMute = async function () { // Change a mute's time, reason, etc.
 
 };
 
-exports.unMute = async function (guild, channel, userResolvable, moderator) { // Stop mute early
+exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
+    let userType = 0; // Member
+    let userMember = userResolvable;
+    let userId = userResolvable;
 
+    let moderatorType = 0; // Member
+    let moderatorMention = moderatorResolvable;
+    // let moderatorId = moderatorResolvable;
+
+    if (typeof userResolvable === 'string') userType = 1; // ID
+
+    if (typeof moderatorResolvable === 'string') moderatorType = 1; // System
+
+    if (userType === 0) { // Member
+        userId = userResolvable.id;
+    } else if (userType === 1) { // ID
+        userMember = guild.members.get(userResolvable);
+    }
+
+    if (moderatorType === 0) { // Member
+        moderatorMention = moderatorResolvable.toString();
+        // moderatorId = moderatorResolvable.id;
+    } else if (moderatorType === 1) { // System
+        // moderatorId = selfId;
+    }
+
+    console.log(`Started unMute on ${userId}`);
+
+    // Verify they can be unmuted
+
+    if (!canMute(userMember, moderatorResolvable)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
+    }
+
+    // Remove mute timeout (if stopped early)
+
+    remTimeout(guild, userId);
+
+    // Add SendMessages role
+
+    addSendMessages(userMember);
+
+    // Send the relevant messages
+
+    sendMuteMessage(guild, channel, userId, 'UnMute', 'DM', userMember, moderatorMention);
+    sendMuteMessage(guild, channel, userId, 'UnMute', 'Log', userMember, moderatorMention);
+
+    console.log('Completed unMute');
+
+    return true;
 };
 
 exports.remMute = async function () { // Undo mute
