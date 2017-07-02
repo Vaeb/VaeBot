@@ -266,6 +266,37 @@ function higherRank(moderator, member) { // Check if member can be muted
     return (moderatorPos > memberPos && member.id !== vaebId) || (Util.isObject(moderator) && moderator.id === vaebId);
 }
 
+function resolveUser(guild, userResolvable) {
+    const resolvedData = {
+        member: userResolvable,
+        id: userResolvable,
+        mention: userResolvable,
+    };
+
+    let userType = 0; // Member
+    let system = false;
+
+    if (typeof userResolvable === 'string') {
+        userType = 1; // ID or System
+        system = userResolvable.match(/[a-z]/i);
+    }
+
+    if (userType === 0) { // Member
+        resolvedData.id = userResolvable.id;
+        resolvedData.mention = userResolvable.toString();
+    } else if (userType === 1) { // String
+        if (system) {
+            resolvedData.member = guild.members.get(selfId);
+            resolvedData.id = selfId;
+        } else {
+            resolvedData.member = guild.members.get(userResolvable);
+            resolvedData.mention = resolvedData.toString();
+        }
+    }
+
+    return resolvedData;
+}
+
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
     // Resolve parameter data
 
@@ -274,36 +305,14 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     let muteLength = muteData.time;
     const muteReason = muteData.reason || 'N/A';
 
-    let userType = 0; // Member
-    let userMember = userResolvable;
-    let userId = userResolvable;
+    const resolvedUser = resolveUser(userResolvable);
+    const resolvedModerator = resolveUser(moderatorResolvable);
 
-    let moderatorType = 0; // Member
-    let moderatorMention = moderatorResolvable;
-    let moderatorId = moderatorResolvable;
-
-    if (typeof userResolvable === 'string') userType = 1; // ID
-
-    if (typeof moderatorResolvable === 'string') moderatorType = 1; // System
-
-    if (userType === 0) { // Member
-        userId = userResolvable.id;
-    } else if (userType === 1) { // ID
-        userMember = guild.members.get(userResolvable);
-    }
-
-    if (moderatorType === 0) { // Member
-        moderatorMention = moderatorResolvable.toString();
-        moderatorId = moderatorResolvable.id;
-    } else if (moderatorType === 1) { // System
-        moderatorId = selfId;
-    }
-
-    console.log(`Started addMute on ${userId}`);
+    console.log(`Started addMute on ${resolvedUser.id}`);
 
     // Verify they can be muted
 
-    if (!higherRank(moderatorResolvable, userMember)) {
+    if (!higherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
 
@@ -311,7 +320,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     const startTick = +new Date();
 
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
     const numMutes = pastMutes.length;
     const totalMutes = numMutes + 1;
 
@@ -332,14 +341,14 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     // Add their mute to the database
 
     Data.updateRecords(guild, 'mutes', {
-        user_id: userId,
+        user_id: resolvedUser.id,
     }, {
         active: 0,
     })
     .then(() => {
         Data.addRecord(guild, 'mutes', {
-            'user_id': userId, // VARCHAR(24)
-            'mod_id': moderatorId, // VARCHAR(24)
+            'user_id': resolvedUser.id, // VARCHAR(24)
+            'mod_id': resolvedModerator.id, // VARCHAR(24)
             'mute_reason': muteReason, // TEXT
             'start_tick': startTick, // BIGINT
             'end_tick': endTick, // BIGINT
@@ -350,17 +359,17 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Add mute timeout (and automatically remove any active timeouts)
 
-    addTimeout(guild, userId, endTick);
+    addTimeout(guild, resolvedUser.id, endTick);
 
     // Remove SendMessages role
 
-    remSendMessages(userMember);
+    remSendMessages(resolvedUser.member);
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'Mute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr);
-    sendMuteMessage(guild, channel, userId, 'Mute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr);
-    sendMuteMessage(guild, channel, userId, 'Mute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'DM', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Log', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
 
     console.log('Completed addMute');
 
@@ -370,36 +379,14 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
     // Resolve parameter data
 
-    let userType = 0; // Member
-    let userMember = userResolvable;
-    let userId = userResolvable;
+    const resolvedUser = resolveUser(userResolvable);
+    const resolvedModerator = resolveUser(moderatorResolvable);
 
-    let moderatorType = 0; // Member
-    let moderatorMention = moderatorResolvable;
-    // let moderatorId = moderatorResolvable;
-
-    if (typeof userResolvable === 'string') userType = 1; // ID
-
-    if (typeof moderatorResolvable === 'string') moderatorType = 1; // System
-
-    if (userType === 0) { // Member
-        userId = userResolvable.id;
-    } else if (userType === 1) { // ID
-        userMember = guild.members.get(userResolvable);
-    }
-
-    if (moderatorType === 0) { // Member
-        moderatorMention = moderatorResolvable.toString();
-        // moderatorId = moderatorResolvable.id;
-    } else if (moderatorType === 1) { // System
-        // moderatorId = selfId;
-    }
-
-    console.log(`Started changeMute on ${userId}`);
+    console.log(`Started changeMute on ${resolvedUser.id}`);
 
     // Get mute data
 
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
     const totalMutes = pastMutes.length;
 
     // Check they are actually muted
@@ -421,7 +408,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Verify mute can be changed
 
-    if (!higherRank(moderatorResolvable, userMember)) {
+    if (!higherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
 
@@ -490,9 +477,9 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Send relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'ChangeMute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
-    sendMuteMessage(guild, channel, userId, 'ChangeMute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
-    sendMuteMessage(guild, channel, userId, 'ChangeMute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
 
     console.log('Completed changeMute');
 
@@ -502,36 +489,14 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
     // Resolve parameter data
 
-    let userType = 0; // Member
-    let userMember = userResolvable;
-    let userId = userResolvable;
+    const resolvedUser = resolveUser(userResolvable);
+    const resolvedModerator = resolveUser(moderatorResolvable);
 
-    let moderatorType = 0; // Member
-    let moderatorMention = moderatorResolvable;
-    // let moderatorId = moderatorResolvable;
-
-    if (typeof userResolvable === 'string') userType = 1; // ID
-
-    if (typeof moderatorResolvable === 'string') moderatorType = 1; // System
-
-    if (userType === 0) { // Member
-        userId = userResolvable.id;
-    } else if (userType === 1) { // ID
-        userMember = guild.members.get(userResolvable);
-    }
-
-    if (moderatorType === 0) { // Member
-        moderatorMention = moderatorResolvable.toString();
-        // moderatorId = moderatorResolvable.id;
-    } else if (moderatorType === 1) { // System
-        // moderatorId = selfId;
-    }
-
-    console.log(`Started unMute on ${userId}`);
+    console.log(`Started unMute on ${resolvedUser.id}`);
 
     // Get mute data
 
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
     const totalMutes = pastMutes.length;
 
     // Check they are actually muted
@@ -553,7 +518,7 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Verify mute can be changed
 
-    if (!higherRank(moderatorResolvable, userMember)) {
+    if (!higherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
     }
 
@@ -564,32 +529,59 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
     // Update mute SQL record
 
     Data.updateRecords(guild, 'mutes', {
-        user_id: userId,
+        user_id: resolvedUser.id,
     }, {
         active: 0,
     });
 
     // Remove mute timeout (if stopped early)
 
-    remTimeout(guild, userId);
+    remTimeout(guild, resolvedUser.id);
 
     // Add SendMessages role
 
-    addSendMessages(userMember);
+    addSendMessages(resolvedUser.member);
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, userId, 'UnMute', 'Channel', userMember, moderatorResolvable, moderatorMention, totalMutes);
-    sendMuteMessage(guild, channel, userId, 'UnMute', 'DM', userMember, moderatorResolvable, moderatorMention, totalMutes);
-    sendMuteMessage(guild, channel, userId, 'UnMute', 'Log', userMember, moderatorResolvable, moderatorMention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
     console.log('Completed unMute');
 
     return true;
 };
 
-exports.remMute = async function () { // Undo mute
+exports.remMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
+    exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
+    const resolvedUser = resolveUser(userResolvable);
+    // const resolvedModerator = resolveUser(moderatorResolvable);
+
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
+    const hasBeenMuted = pastMutes.length > 0;
+    const lastMute = hasBeenMuted ? pastMutes[pastMutes.length - 1] : null;
+
+    // Verify mute can be removed
+
+    if (!higherRank(moderatorResolvable, resolvedUser.member)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has equal or higher rank');
+    }
+
+    if (hasBeenMuted && !higherRank(moderatorResolvable, Util.getMemberById(lastMute.mod_id, guild))) {
+        return Util.commandFailed(channel, moderatorResolvable, 'Moderator who muted has higher privilege');
+    }
+
+    // Check they have actually been muted
+
+    if (!hasBeenMuted) {
+        return Util.commandFailed(channel, moderatorResolvable, 'User has never been muted');
+    }
+
+    Data.deleteRecords(guild, 'mutes', { mute_id: lastMute.mute_id });
+
+    return true;
 };
 
 exports.checkMuted = function (guild, userId) {
