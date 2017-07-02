@@ -578,6 +578,14 @@ exports.remMute = async function () { // Undo mute
 
 };
 
+exports.checkMuted = function (guild, userId) {
+    return new Promise((resolve, reject) => {
+        Data.getRecords(guild, 'mutes', { user_id: userId, active: 1 })
+        .then(activeMutes => resolve(activeMutes.length > 0))
+        .catch(err => reject(err));
+    });
+};
+
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
     // const nowTick = +new Date();
     await Promise.all(client.guilds.map(async (guild) => {
