@@ -278,7 +278,7 @@ function setupSecurityVeil() {
     guild.members.forEach((member) => {
         const memberId = member.id;
 
-        if (memberId === vaebId) return;
+        if (memberId === vaebId || memberId === selfId) return;
 
         const memberName = Util.getFullName(member);
         const veilMember = Util.getMemberById(memberId, veilGuild);
