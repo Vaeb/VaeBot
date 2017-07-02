@@ -15,7 +15,6 @@ exports.defaultMuteLength = 1800000;
 
     ToDo:
         -Write RemMute
-        -Write ChangeMute
         -TEST
 
 */
