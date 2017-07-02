@@ -20,11 +20,18 @@ exports.defaultMuteLength = 1800000;
 
 */
 
+function getMuteHistoryStr(totalMutes) {
+    let out = `${totalMutes} mute`;
+    if (totalMutes !== 1) out += 's';
+    return out;
+}
+
 function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr) { // Send mute log, direct message, etc.
     // Will keep DM as text (rather than embed) to save send time
 
     const hasMember = userMember != null;
     const memberMention = hasMember ? userMember.toString() : `<@${userId}>`;
+    const muteHistoryStr = getMuteHistoryStr(totalMutes);
 
     if (actionType === 'Mute') {
         if (messageType === 'Channel') {
@@ -55,7 +62,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Mute Reason', value: muteReason },
                 { name: 'Mute Expires', value: endStr },
                 { name: 'Mute Length', value: muteLengthStr },
-                { name: 'Mute History', value: `${totalMutes} mutes` },
+                { name: 'Mute History', value: muteHistoryStr },
             ];
 
             Util.sendLog(sendLogData, colAction);
@@ -64,7 +71,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
         if (messageType === 'Channel') {
             const sendEmbedFields = [
                 { name: 'Username', value: memberMention },
-                { name: 'Mute History', value: `${totalMutes} mutes` },
+                { name: 'Mute History', value: muteHistoryStr },
             ];
             Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
         } else if (messageType === 'DM') {
@@ -81,7 +88,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 userMember || userId,
                 { name: 'Username', value: memberMention }, // Can resolve from user id
                 { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
-                { name: 'Mute History', value: `${totalMutes} mutes` },
+                { name: 'Mute History', value: muteHistoryStr },
             ];
 
             Util.sendLog(sendLogData, colAction);
@@ -139,7 +146,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'New Mute Expires', value: endStr.new },
                 { name: 'Old Mute Length', value: muteLengthStr.old },
                 { name: 'New Mute Length', value: muteLengthStr.new },
-                { name: 'Mute History', value: `${totalMutes} mutes` },
+                { name: 'Mute History', value: muteHistoryStr },
             ];
 
             Util.sendLog(sendLogData, colAction);
