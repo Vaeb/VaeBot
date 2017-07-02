@@ -210,6 +210,8 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     console.log(`Started addMute on ${userId}`);
 
+    const nowTick = +new Date();
+
     const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
     const numMutes = pastMutes.length;
 
@@ -217,7 +219,6 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         muteLength = exports.defaultMuteLength * (2 ** numMutes);
     }
 
-    const nowTick = +new Date();
     const endTick = nowTick + muteLength;
 
     const dateEnd = new Date();
@@ -240,6 +241,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         'mod_id': moderatorId, // VARCHAR(24)
         'mute_reason': reason, // TEXT
         'end_tick': endTick, // BIGINT
+        'active': 1, // BIT
     });
 
     // Add mute timeout (and automatically remove any active timeouts)
@@ -291,6 +293,21 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
     }
 
     console.log(`Started unMute on ${userId}`);
+
+    const nowTick = +new Date();
+
+    // Check they are actually muted
+
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userId });
+    const numMutes = pastMutes.length;
+    let isMuted = false;
+
+    for (let i = 0; i < pastMutes.length; i++) {
+        if (pastMutes[i].active === 1) {
+            isMuted = true;
+            break;
+        }
+    }
 
     // Verify they can be unmuted
 
