@@ -1197,6 +1197,7 @@ exports.getHistory = (id, guild) => {
 exports.historyToString = (num) => {
     let timeHours = exports.round(num / 3600000, 0.1);
     timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
+    console.log(`[RANDOM] timeHours: ${timeHours}`);
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
