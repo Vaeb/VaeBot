@@ -329,7 +329,7 @@ function resolveUser(guild, userResolvable, isMod) {
     let system = false;
 
     if (typeof userResolvable === 'string') {
-        if (Util.isId(userResolvable)) { // ID
+        if (Util.isId(userResolvable)) { // ID [IMPORTANT] This needs to be improved; as it is right now any number between 16 and 19 characters will be treated as an ID, when it could just be someone's name
             userType = 1; // ID
         } else {
             userType = 2; // Name or System
