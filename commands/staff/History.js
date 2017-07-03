@@ -14,55 +14,36 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        // var botUser = Util.getMemberById(selfId, guild);
-
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
         const sendEmbedFields = [];
 
-        const historyGuild = Data.guildGet(guild, Data.history);
+        const allMutes = await Data.getRecords(guild, 'mutes');
 
-        let numElements = 0;
-        let numFound = 0;
+        const maxMutes = {};
+        const muteHistory = {};
+        const muteHistoryKeys = [];
 
-        for (const targetId in historyGuild) {
-            if (historyGuild.hasOwnProperty(targetId)) ++numElements;
+        for (let i = 0; i < allMutes.length; i++) {
+            const muteRecord = allMutes[i];
+            const userId = muteRecord.user_id;
+            if (!has.call(maxMutes, userId)) maxMutes[userId] = 0;
+            maxMutes[userId]++;
         }
 
-        let nowTime = Mutes.defaultMuteLength;
-        let iterations = 0;
-
-        while (numFound < numElements) {
-            const nowFound = [];
-
-            // console.log(numFound + "_" + numElements + "NOW: " + nowTime);
-
-            for (const targetId in historyGuild) {
-                if (historyGuild.hasOwnProperty(targetId)) {
-                    const userName = historyGuild[targetId][1];
-                    const userTime = historyGuild[targetId][0];
-
-                    // console.log(userTime);
-
-                    if (userTime == nowTime) {
-                        ++numFound;
-                        const targMention = `<@${targetId}>`;
-                        nowFound.push(targMention);
-                    }
-                }
+        for (const [userId, numMutes] of Object.entries(maxMutes)) {
+            if (!has.call(muteHistory, numMutes)) {
+                muteHistory[numMutes] = [];
+                muteHistoryKeys.push(numMutes);
             }
+            muteHistory[numMutes].push(`<@${userId}>`);
+        }
 
-            if (nowFound.length > 0) {
-                const timeStr = Util.historyToString(nowTime);
-                const nowValue = `​\n${nowFound.join('\n\n\n')}\n​`;
-                sendEmbedFields.push({ name: timeStr, value: nowValue, inline: false });
-            }
+        muteHistoryKeys.sort();
 
-            nowTime *= 2;
-            ++iterations;
-            if (iterations > 100) {
-                Util.print(channel, '[ERROR] History formatting timed out');
-                return;
-            }
+        for (let i = 0; i < muteHistoryKeys.length; i++) {
+            const key = muteHistoryKeys[i];
+            const keyMutes = muteHistory[key];
+            sendEmbedFields.push({ name: `${keyMutes} Mutes`, value: keyMutes.join('\n'), inline: false });
         }
 
         Util.sendEmbed(channel, 'Mute History', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
