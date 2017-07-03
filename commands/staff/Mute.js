@@ -19,7 +19,7 @@ module.exports = Cmds.addCommand({
 
         const data = Util.getDataFromString(args, [
             function (str) {
-                return Util.getMemberByMixed(str, guild);
+                return Util.getMemberByMixed(str, guild) || Util.isId(str);
             },
         ], true);
 

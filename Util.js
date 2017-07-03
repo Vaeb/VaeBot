@@ -1201,9 +1201,16 @@ exports.historyToString = (num) => {
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
-exports.getSafeId = (idParam) => {
-    let id = idParam;
+exports.getSafeId = (id) => {
     id = id.match(/\d+/);
+
+    if (id == null) return undefined;
+
+    return id[0];
+};
+
+exports.isId = (id) => {
+    id = id.match(/^\d+$/);
 
     if (id == null) return undefined;
 
