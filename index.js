@@ -825,6 +825,32 @@ console.log(contentLower); */
     }
 }); */
 
+exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
+
+    let contentLower = msgObj.content.toLowerCase();
+    contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/which/g, 'what');
+    contentLower = contentLower.replace(/great/g, 'best');
+    contentLower = contentLower.replace(/finest/g, 'best');
+    contentLower = contentLower.replace(/perfect/g, 'best');
+    contentLower = contentLower.replace(/top/g, 'best');
+    contentLower = contentLower.replace(/hack/g, 'exploit');
+    contentLower = contentLower.replace(/hax/g, 'exploit');
+    contentLower = contentLower.replace(/le?v.?l\d/g, 'exploit');
+
+    let triggered = 0;
+
+    const trigger = [/what/g, /best/g, /exploit/g];
+    for (let i = 0; i < trigger.length; i++) {
+        if (trigger[i].test(contentLower)) triggered++;
+    }
+
+    if (triggered == trigger.length) {
+        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Asking stupid questions' });
+    }
+});
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
