@@ -300,7 +300,7 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
             console.log(`Mute timeout for ${userId} @ ${guild.name} ended; Unmuting...`);
 
             exports.unMute(guild, null, userId, 'System');
-        }, remaining)),
+        }, timeoutLength)),
     });
 
     console.log(`Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
