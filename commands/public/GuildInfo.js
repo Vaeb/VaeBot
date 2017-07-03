@@ -32,7 +32,7 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({ name: 'Created', value: createdStr });
         sendEmbedFields.push({ name: 'Icon', value: guild.iconURL('png') });
 
-        sendEmbedFields.sort((a, b) => (String(a.name.length) + String(a.value.length)) - (String(b.name.length) + String(b.value.length)));
+        sendEmbedFields.sort((a, b) => (String(a.name) + String(a.value)).length - (String(b.name) + String(b.value)).length);
 
         Util.sendEmbed(channel, 'Guild Info', null, Util.makeEmbedFooter(speaker), guild.iconURL, 0x00E676, sendEmbedFields);
     },
