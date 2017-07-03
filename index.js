@@ -214,6 +214,7 @@ exports.globalBan = {
     '123146298504380416': true,
     '263372398059847681': true,
     '238981466606927873': true,
+    '189687397951209472': true, // xCraySECx / Nico Nico
 };
 
 function securityFunc(guild, member, sendRoleParam) {
