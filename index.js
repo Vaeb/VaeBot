@@ -302,16 +302,48 @@ function setupSecurityVeil() {
     return undefined;
 }
 
-// //////////////////////////////////////////////////////////////////////////////////////////////
-
-Cmds.initCommands();
-
 const veilGuilds = {
     '284746138995785729': true,
     '309785618932563968': true,
 };
 
-client.on('ready', () => {
+exports.secure = function () {
+    console.log('Starting security setup');
+
+    let securityNum = 0;
+    const veilGuildsNum = Object.keys(veilGuilds).length;
+
+    client.guilds.forEach((guild) => {
+        guild.fetchMembers()
+        .then((newGuild) => {
+            if (newGuild == null) {
+                console.log(newGuild);
+                console.log('Found null guild');
+                return;
+            }
+
+            if (has.call(veilGuilds, newGuild.id)) {
+                securityNum++;
+                if (securityNum === veilGuildsNum) setupSecurityVeil();
+            }
+
+            setupSecurity(newGuild);
+
+            Trello.setupCache(newGuild);
+        })
+        .catch((error) => {
+            console.log(`E_READY_FETCH_MEMBERS: ${error}`);
+        });
+    });
+};
+
+// //////////////////////////////////////////////////////////////////////////////////////////////
+
+Cmds.initCommands();
+
+// Index_Ready -> Data_SQL -> Mutes_Initialize -> Index_Secure
+
+client.on('ready', async () => {
     console.log(`\nConnected as ${client.user.username}!\n`);
 
     if (madeBriefing === false) {
@@ -319,59 +351,19 @@ client.on('ready', () => {
         setBriefing();
     }
 
-    const nowGuilds = client.guilds;
-
-    let securityNum = 0;
-
-    let remaining = nowGuilds.size;
-
-    const veilGuildsNum = Object.keys(veilGuilds).length;
-
     const dbGuilds = [];
 
-    nowGuilds.forEach((guild) => {
-        guild.fetchMembers()
-        .then((newGuild) => {
-            remaining--;
+    await Promise.all(client.guilds.map(async (guild) => {
+        const newGuild = await guild.fetchMembers();
 
-            if (newGuild.id === '284746138995785729') {
-                dbGuilds.push(newGuild);
-            }
+        if (newGuild.id === '284746138995785729') {
+            dbGuilds.push(newGuild);
+        }
+    }));
 
-            if (remaining === 0) {
-                console.log('\nFetched all Guild members!\n');
-                Data.connectInitial(dbGuilds).then(() => {
-                    console.log('Starting security setup');
-
-                    nowGuilds.forEach((guild2) => {
-                        guild2.fetchMembers()
-                        .then((newGuild2) => {
-                            if (newGuild2 == null) {
-                                console.log(newGuild2);
-                                console.log('Found null guild');
-                                return;
-                            }
-
-                            if (has.call(veilGuilds, newGuild2.id)) {
-                                securityNum++;
-                                if (securityNum === veilGuildsNum) setupSecurityVeil();
-                            }
-
-                            setupSecurity(newGuild2);
-
-                            Trello.setupCache(newGuild2);
-                        })
-                        .catch((error) => {
-                            console.log(`E_READY_FETCH_MEMBERS: ${error}`);
-                        });
-                    });
-                });
-            }
-        })
-        .catch((error) => {
-            console.log(`\nSOMETHING BROKE PLEASE RESTART THE BOT ${error}\n`);
-        });
-    });
+    console.log('\nFetched all Guild members!\n');
+    Data.connectInitial(dbGuilds)
+    .catch(err => console.log(`[E_DataConnect] ${err}`));
 });
 
 client.on('disconnect', (closeEvent) => {
