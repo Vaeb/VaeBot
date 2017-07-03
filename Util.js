@@ -1194,11 +1194,18 @@ exports.getHistory = (id, guild) => {
     return 0;
 };
 
-exports.historyToString = (num) => {
+exports.historyToStringOld = (num) => {
     let timeHours = exports.round(num / 3600000, 0.1);
     timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
     console.log(`[RANDOM] timeHours: ${timeHours}`);
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
+};
+
+exports.historyToString = (num) => {
+    let timeHours = num / 3600000;
+    console.log(`[RANDOM] timeHours: ${timeHours}`);
+    timeHours += (timeHours == 1 ? ' hour' : ' hours');
+    return timeHours;
 };
 
 exports.matchWholeNumber = (str) => {
