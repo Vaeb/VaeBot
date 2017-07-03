@@ -826,7 +826,7 @@ console.log(contentLower); */
 }); */
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
 
     let contentLower = msgObj.content.toLowerCase();
     contentLower = contentLower.replace(/\s/g, '');
