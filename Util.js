@@ -1201,6 +1201,12 @@ exports.historyToString = (num) => {
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
+exports.matchWholeNumber = (str) => {
+    let result = str.match(/^\d+(?:\.\d+)?$/);
+    result = result ? result[0] : undefined;
+    return result;
+};
+
 exports.getSafeId = (id) => {
     id = id.match(/\d+/);
 

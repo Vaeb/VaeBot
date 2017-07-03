@@ -29,8 +29,7 @@ module.exports = Cmds.addCommand({
 
         const data2 = Util.getDataFromString(data[1], [
             function (str) {
-                let timeHours = str.match(/^\d+$/);
-                timeHours = timeHours ? timeHours[0] : undefined;
+                const timeHours = Util.matchWholeNumber(str);
                 return timeHours;
             },
         ], true);
