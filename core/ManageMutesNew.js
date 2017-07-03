@@ -248,7 +248,6 @@ function addSendMessages(member) { // Add SendMessages role
 }
 
 function remTimeout(guild, userId) { // Remove mute timeout
-    console.log(`Removing any active mute timeouts for ${userId} @ ${guild.name}`);
     for (let i = muteTimeouts.length - 1; i >= 0; i--) {
         const timeoutData = muteTimeouts[i];
         if (timeoutData.guildId === guild.id && timeoutData.userId === userId) {
@@ -273,8 +272,6 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
 
     const timeoutLength = Math.min(remaining, 2147483646);
     const timeoutRemaining = remaining - timeoutLength;
-
-    if (timeoutRemaining > 0) console.log(`Split ${userId} mute timeout into multiple timeouts: ${timeoutRemaining}`);
 
     const nowTimeoutId = muteTimeoutId++;
 
