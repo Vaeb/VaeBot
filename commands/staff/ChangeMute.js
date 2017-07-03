@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Change details of an active mute',
 
-    args: '([@user] | [id] | [name]) ([mute_length]) ([reason])',
+    args: '([@user] | [id] | [name]) ([mute_length_hours]) ([reason])',
 
     example: 'vae 3 spamming multiple channels',
 

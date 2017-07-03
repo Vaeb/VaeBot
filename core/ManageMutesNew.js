@@ -13,10 +13,6 @@ exports.defaultMuteLength = 1800000;
     -ChangeMute command to change mute time, reason, etc.
     -Warn can mute a user for any amount of time, but defaults to 0.5 hours (and does not affect next mute time)
 
-    ToDo:
-        -Write RemMute
-        -TEST
-
 */
 
 function getMuteHistoryStr(totalMutes) {
