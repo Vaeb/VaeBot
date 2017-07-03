@@ -322,7 +322,7 @@ function resolveUser(guild, userResolvable, isMod) {
     let system = false;
 
     if (typeof userResolvable === 'string') {
-        if (Util.getMemberById(userResolvable, guild)) { // ID
+        if (Util.isId(userResolvable)) { // ID
             userType = 1; // ID
         } else {
             userType = 2; // Name or System
@@ -341,7 +341,7 @@ function resolveUser(guild, userResolvable, isMod) {
             resolvedData.member = guild.members.get(selfId);
             resolvedData.id = selfId;
         } else {
-            resolvedData.member = Util.getMemberByName(userResolvable, guild);
+            resolvedData.member = Util.getMemberByMixed(userResolvable, guild);
             if (!resolvedData.member) return 'User not found';
             resolvedData.id = resolvedData.member.id;
             resolvedData.mention = resolvedData.member.toString();
