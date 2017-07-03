@@ -25,7 +25,7 @@ module.exports = Cmds.addCommand({
             const nowMute = activeMutes[i];
             const targetId = nowMute.user_id;
             const endTime = nowMute.end_tick;
-            const reason = nowMute.reason;
+            const reason = nowMute.mute_reason;
 
             const remaining = endTime - nowDate;
             const timeStr = Util.formatTime(remaining);
