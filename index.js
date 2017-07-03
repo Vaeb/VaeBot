@@ -314,26 +314,21 @@ exports.secure = async function () {
     const veilGuildsNum = Object.keys(veilGuilds).length;
 
     await Promise.all(client.guilds.map(async (guild) => {
-        guild.fetchMembers()
-        .then((newGuild) => {
-            if (newGuild == null) {
-                console.log(newGuild);
-                console.log('Found null guild');
-                return;
-            }
+        const newGuild = await guild.fetchMembers();
+        if (newGuild == null) {
+            console.log(newGuild);
+            console.log('Found null guild');
+            return;
+        }
 
-            if (has.call(veilGuilds, newGuild.id)) {
-                securityNum++;
-                if (securityNum === veilGuildsNum) setupSecurityVeil();
-            }
+        if (has.call(veilGuilds, newGuild.id)) {
+            securityNum++;
+            if (securityNum === veilGuildsNum) setupSecurityVeil();
+        }
 
-            setupSecurity(newGuild);
+        setupSecurity(newGuild);
 
-            Trello.setupCache(newGuild);
-        })
-        .catch((error) => {
-            console.log(`E_READY_FETCH_MEMBERS: ${error}`);
-        });
+        Trello.setupCache(newGuild);
     }));
 
     console.log('\n> Security setup complete\n');
