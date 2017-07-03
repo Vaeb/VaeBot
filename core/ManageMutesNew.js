@@ -337,7 +337,7 @@ function resolveUser(guild, userResolvable, isMod) {
         }
     }
 
-    console.log(`User type: ${userType}`);
+    console.log(`User type: ${userType} (isMod ${isMod})`);
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
