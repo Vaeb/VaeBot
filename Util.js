@@ -892,8 +892,8 @@ exports.getMention = obj => obj.toString();
 
 exports.getAvatar = function (userResolvable, outStr) {
     if (userResolvable != null && exports.isObject(userResolvable)) {
-        if (userResolvable.user) return userResolvable.user.displayAvatarURL({ format: 'png' });
-        return userResolvable.displayAvatarURL({ format: 'png' });
+        if (userResolvable.user) return userResolvable.user.avatarURL({ format: 'png' });
+        return userResolvable.avatarURL({ format: 'png' });
     }
     return (outStr === true ? 'null' : null);
 };
