@@ -308,7 +308,7 @@ const veilGuilds = {
 };
 
 exports.secure = async function () {
-    console.log('\nSecuring guilds...\n');
+    console.log('\n> Securing guilds...\n');
 
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
@@ -346,7 +346,7 @@ Cmds.initCommands();
 // Index_Ready -> Data_SQL -> Mutes_Initialize -> Index_Secure
 
 client.on('ready', async () => {
-    console.log(`\nConnected as ${client.user.username}!\n`);
+    console.log(`\n> Connected as ${client.user.username}!\n`);
 
     if (madeBriefing === false) {
         madeBriefing = true;
@@ -363,7 +363,7 @@ client.on('ready', async () => {
         }
     }));
 
-    console.log('Fetched all Guild members!\n');
+    console.log('> Cached all guild members!\n');
     Data.connectInitial(dbGuilds)
     .catch(err => console.log(`[E_DataConnect] ${err}`));
 });

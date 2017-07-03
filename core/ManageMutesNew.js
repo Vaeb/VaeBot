@@ -313,10 +313,10 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
 }
 
 function higherRank(moderator, member, canBeEqual) { // Check if member can be muted
-    if (!member || typeof member === 'string' || member.id === selfId) return true;
+    if (!member || typeof member === 'string' || typeof moderator === 'string' || member.id === selfId) return true;
 
     const memberPos = Util.getPosition(member);
-    const moderatorPos = typeof moderator === 'string' ? Infinity : Util.getPosition(moderator);
+    const moderatorPos = Util.getPosition(moderator);
 
     const comparison = canBeEqual ? moderatorPos >= memberPos : moderatorPos > memberPos;
 
@@ -731,7 +731,7 @@ exports.checkMuted = function (guild, userId) {
 
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
     // const nowTick = +new Date();
-    console.log('Initializing mute data\n');
+    console.log('> Initializing mute data\n');
 
     await Promise.all(client.guilds.map(async (guild) => {
         // const results = await Data.getRecords(guild, 'mutes', { end_tick: { value: nowTick, operator: '>' } });
