@@ -70,7 +70,6 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
 
         if (muteReason.new !== muteReason.old) fieldsChanged.push('Mute Reason');
         if (muteLengthStr.new !== muteLengthStr.old) fieldsChanged.push('Mute Length');
-        if (endStr.new !== endStr.old) fieldsChanged.push('Mute Expiration');
 
         fieldsChanged = fieldsChanged.join(', ');
 
