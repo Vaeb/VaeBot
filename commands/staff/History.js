@@ -43,7 +43,7 @@ module.exports = Cmds.addCommand({
         for (let i = 0; i < muteHistoryKeys.length; i++) {
             const key = muteHistoryKeys[i];
             const keyMutes = muteHistory[key];
-            sendEmbedFields.push({ name: `${keyMutes} Mutes`, value: keyMutes.join('\n'), inline: false });
+            sendEmbedFields.push({ name: `${key} Mutes`, value: keyMutes.join('\n'), inline: false });
         }
 
         Util.sendEmbed(channel, 'Mute History', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
