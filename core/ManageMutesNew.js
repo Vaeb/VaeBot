@@ -748,7 +748,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
         }
     }));
 
-    console.log('\nCompleted mute initialization');
+    console.log('\n> Completed mute initialization');
 
     index.secure();
 };

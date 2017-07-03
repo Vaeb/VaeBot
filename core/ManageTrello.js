@@ -334,7 +334,7 @@ exports.setupCache = function (guild) {
             return;
         }
 
-        console.log(`\nCached trello data for ${guild.name}\n`);
+        console.log(`Cached trello data for ${guild.name}`);
 
         cache[guildId] = {};
 

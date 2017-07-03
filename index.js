@@ -336,7 +336,7 @@ exports.secure = async function () {
         });
     }));
 
-    console.log('\nSecurity setup complete\n');
+    console.log('\n> Security setup complete\n');
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
