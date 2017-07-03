@@ -1,55 +1,57 @@
 module.exports = Cmds.addCommand({
-    cmds: [";change "],
+    cmds: [';changeperms '],
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
-    desc: "Change an existing something",
+    desc: 'Change an existing something',
 
-    args: "([channelId]) ([memberOrRoleId]) ([permEnable1]) ([permEnable2]) ([permEnable3])",
+    args: '([channelId]) ([memberOrRoleId]) ([permEnable1]) ([permEnable2]) ([permEnable3])',
 
-    example: "123456789 987654321 SEND_MESSAGES READ_MESSAGES",
+    example: '123456789 987654321 SEND_MESSAGES READ_MESSAGES',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var data = Util.getDataFromString(args, [
-            function(str, results) {
+        const data = Util.getDataFromString(args, [
+            function (str) {
                 return Util.findChannel(str, guild);
             },
-            function(str, results) {
+            function (str) {
                 return Util.getMemberOrRoleByMixed(str, guild);
             },
-            function(str, results) {
+            function (str) {
                 return str;
-            }
+            },
         ], false);
-        if (!data) return Util.commandFailed(channel, speaker, "Invalid parameters");
+        if (!data) return Util.commandFailed(channel, speaker, 'Invalid parameters');
 
-        var newChannel = data[0];
-        var userOrRole = data[1];
-        var permStr = data[2];
+        const newChannel = data[0];
+        const userOrRole = data[1];
+        const permStr = data[2];
 
-        var permSplit = permStr.split(" ");
-        var permObj = {};
+        const permSplit = permStr.split(' ');
+        const permObj = {};
 
-        for (var i = 0; i < permSplit.length; i++) {
-            var keySplit = permSplit[i].split(":");
+        for (let i = 0; i < permSplit.length; i++) {
+            const keySplit = permSplit[i].split(':');
             if (keySplit.length == 2) {
-                var keyUpper = keySplit[0].toUpperCase();
-                var valLower = keySplit[1].toLowerCase();
-                if (valLower == "true") {
-                    console.log("Changing " + keyUpper + " to " + valLower);
+                const keyUpper = keySplit[0].toUpperCase();
+                const valLower = keySplit[1].toLowerCase();
+                if (valLower == 'true') {
+                    console.log(`Changing ${keyUpper} to ${valLower}`);
                     permObj[keyUpper] = true;
-                } else if (valLower == "false") {
-                    console.log("Changing " + keyUpper + " to " + valLower);
+                } else if (valLower == 'false') {
+                    console.log(`Changing ${keyUpper} to ${valLower}`);
                     permObj[keyUpper] = false;
                 }
             }
         }
 
         Util.setChannelPerms(newChannel, userOrRole, permObj);
-    }
+
+        return true;
+    },
 });
