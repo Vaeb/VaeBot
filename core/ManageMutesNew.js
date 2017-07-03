@@ -47,6 +47,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             outStr.push(`Mute reason: ${muteReason}`);
             outStr.push(`Mute length: ${muteLengthStr}`);
             outStr.push(`Mute expires: ${endStr}`);
+            outStr.push(`Mute history: ${muteHistoryStr}`);
             outStr.push('```');
             Util.print(userMember, outStr.join('\n'));
         } else if (messageType === 'Log') {
@@ -57,34 +58,8 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Username', value: memberMention }, // Can resolve from user id
                 { name: 'Moderator', value: moderatorMention },
                 { name: 'Mute Reason', value: muteReason },
-                { name: 'Mute Expires', value: endStr },
                 { name: 'Mute Length', value: muteLengthStr },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-
-            Util.sendLog(sendLogData, colAction);
-        }
-    } else if (actionType === 'UnMute') {
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
-
-            const outStr = ['**You have been unmuted**\n```'];
-            outStr.push(`Guild: ${guild.name}`);
-            outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'User Unmuted',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention }, // Can resolve from user id
-                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
+                { name: 'Mute Expires', value: endStr },
                 { name: 'Mute History', value: muteHistoryStr },
             ];
 
@@ -107,8 +82,6 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'New Mute Reason', value: muteReason.new },
                 { name: 'Old Mute Length', value: muteLengthStr.old },
                 { name: 'New Mute Length', value: muteLengthStr.new },
-                { name: 'Old Mute Expires', value: endStr.old },
-                { name: 'New Mute Expires', value: endStr.new },
             ];
             Util.sendEmbed(channel, 'Mute Changed', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
         } else if (messageType === 'DM') {
@@ -139,10 +112,37 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Moderator', value: moderatorMention },
                 { name: 'Old Mute Reason', value: muteReason.old },
                 { name: 'New Mute Reason', value: muteReason.new },
-                { name: 'Old Mute Expires', value: endStr.old },
-                { name: 'New Mute Expires', value: endStr.new },
                 { name: 'Old Mute Length', value: muteLengthStr.old },
                 { name: 'New Mute Length', value: muteLengthStr.new },
+                { name: 'Old Mute Expires', value: endStr.old },
+                { name: 'New Mute Expires', value: endStr.new },
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+
+            Util.sendLog(sendLogData, colAction);
+        }
+    } else if (actionType === 'UnMute') {
+        if (messageType === 'Channel') {
+            const sendEmbedFields = [
+                { name: 'Username', value: memberMention },
+                { name: 'Mute History', value: muteHistoryStr },
+            ];
+            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+        } else if (messageType === 'DM') {
+            if (!hasMember) return;
+
+            const outStr = ['**You have been unmuted**\n```'];
+            outStr.push(`Guild: ${guild.name}`);
+            outStr.push(`Mute history: ${muteHistoryStr}`);
+            outStr.push('```');
+            Util.print(userMember, outStr.join('\n'));
+        } else if (messageType === 'Log') {
+            const sendLogData = [
+                'User Unmuted',
+                guild,
+                userMember || userId,
+                { name: 'Username', value: memberMention }, // Can resolve from user id
+                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
                 { name: 'Mute History', value: muteHistoryStr },
             ];
 
@@ -160,6 +160,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
 
             const outStr = ['**Your last mute has been reverted**\n```'];
             outStr.push(`Guild: ${guild.name}`);
+            outStr.push(`Mute history: ${muteHistoryStr}`);
             outStr.push('```');
             Util.print(userMember, outStr.join('\n'));
         } else if (messageType === 'Log') {
@@ -186,6 +187,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
 
             const outStr = ['**Your mute history has been cleared**\n```'];
             outStr.push(`Guild: ${guild.name}`);
+            outStr.push(`Mute history: ${muteHistoryStr}`);
             outStr.push('```');
             Util.print(userMember, outStr.join('\n'));
         } else if (messageType === 'Log') {
