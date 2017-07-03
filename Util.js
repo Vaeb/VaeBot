@@ -368,7 +368,7 @@ function getURLChecker() {
             // Add appropriate protocol to naked links.
             if (!SCHEME_RE.test(href)) {
                 const origHref = href;
-                if (href.indexOf('@') !== -1) {
+                if (href.indexOf('@') != -1) {
                     if (!href.indexOf(MAILTO)) {
                         href = '';
                     } else {
@@ -708,16 +708,16 @@ exports.formatTime = function (time) {
         timeStr = numSeconds.toFixed(0);
         formatStr = `${timeStr} second`;
     } else if (numMinutes < 60) {
-        timeStr = numMinutes % 1 === 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
+        timeStr = numMinutes % 1 == 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
         formatStr = `${timeStr} minute`;
     } else if (numHours < 60) {
-        timeStr = numHours % 1 === 0 ? numHours.toFixed(0) : numHours.toFixed(1);
+        timeStr = numHours % 1 == 0 ? numHours.toFixed(0) : numHours.toFixed(1);
         formatStr = `${timeStr} hour`;
     } else if (numDays < 365) {
-        timeStr = numDays % 1 === 0 ? numDays.toFixed(0) : numDays.toFixed(1);
+        timeStr = numDays % 1 == 0 ? numDays.toFixed(0) : numDays.toFixed(1);
         formatStr = `${timeStr} day`;
     } else {
-        timeStr = numYears % 1 === 0 ? numYears.toFixed(0) : numYears.toFixed(1);
+        timeStr = numYears % 1 == 0 ? numYears.toFixed(0) : numYears.toFixed(1);
         formatStr = `${timeStr} year`;
     }
 
@@ -761,15 +761,15 @@ exports.fixMessageLengthNew = function (msgParam) {
         let passOver = ''; // String to pass over as the start of the next chunk
         let msg = argsFixed[i];
         const numBlock = (msg.match(/```/g) || []).length; // Number of user created code blocks in this chunk
-        if (totalBlocks % 2 === 1) msg = `\`\`\`\n${msg}`; // If code block is currently open then this chunk needs to be formatted
+        if (totalBlocks % 2 == 1) msg = `\`\`\`\n${msg}`; // If code block is currently open then this chunk needs to be formatted
         totalBlocks += numBlock; // The user created code blocks may close/open new code block (don't need to include added ones because they just account for seperate messages)
-        let lastIsOpener = totalBlocks % 2 === 1; // Checks whether the last code block is an opener or a closer
+        let lastIsOpener = totalBlocks % 2 == 1; // Checks whether the last code block is an opener or a closer
         if (lastIsOpener && msg.length > 1996) { // If the chunk ends with the code block still open then it needs to be auto-closed so the chunk needs to be shortened so it can fit
             passOver = msg.substring(1996);
             msg = msg.substr(0, 1996);
             const numPass = (passOver.match(/```/g) || []).length; // If we end up passing over code blocks whilst trying to shorten the string, we need to account for the new amount
             totalBlocks -= numPass;
-            if (numPass % 2 === 1) lastIsOpener = false;
+            if (numPass % 2 == 1) lastIsOpener = false;
         }
         const nextMsg = passOver + (argsFixed[i + 1] != null ? argsFixed[i + 1] : ''); // Message for next chunk (or empty string if none)
         if (nextMsg !== '' && nextMsg[0] !== '\n' && msg.includes('\n')) { // If start of next chunk is a newline then can just leave the split as it is now (same goes for this chunk having no newlines)
@@ -915,13 +915,13 @@ exports.makeEmbedFooter = function (user, dateParam) {
 exports.getSuffix = function (n) {
     const j = n % 10;
     const k = n % 100;
-    if (j === 1 && k !== 11) {
+    if (j == 1 && k != 11) {
         return `${n}st`;
     }
-    if (j === 2 && k !== 12) {
+    if (j == 2 && k != 12) {
         return `${n}nd`;
     }
-    if (j === 3 && k !== 13) {
+    if (j == 3 && k != 13) {
         return `${n}rd`;
     }
     return `${n}th`;
@@ -1177,7 +1177,7 @@ exports.searchUserPartial = function (col, nameParam) {
 };
 
 exports.round = function (num, inc) {
-    const result = (inc === 0 ? num : Math.floor((num / inc) + 0.5) * inc);
+    const result = (inc == 0 ? num : Math.floor((num / inc) + 0.5) * inc);
     return result;
 };
 
@@ -1197,7 +1197,7 @@ exports.getHistory = function (id, guild) {
 
 exports.historyToStringOld = function (num) {
     let timeHours = exports.round(num / 3600000, 0.1);
-    timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
+    timeHours = (timeHours >= 1 || timeHours == 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
     console.log(`[RANDOM] timeHours: ${timeHours}`);
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
@@ -1271,7 +1271,7 @@ exports.getMatchStrength = function (fullStr, subStr) { // [v2.0]
         value += 2 ** (1 + caps);
 
         const totalPosition = fullStr.length - subStr.length;
-        const perc = 1 - (totalPosition * nameMatch === 0 ? 0.001 : nameMatch / totalPosition);
+        const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
         value += 2 ** perc;
     }
 
@@ -1301,7 +1301,7 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
     name = name.replace(/[^\x00-\x7F]/g, '');
     name = name.trim();
 
-    if (name.length === 0) {
+    if (name.length == 0) {
         name = origName;
         removeUnicode = false;
     }
@@ -1350,7 +1350,7 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
             value += 2 ** (1 + caps);
 
             const totalPosition = realName.length - name.length;
-            const perc = 1 - (totalPosition * nameMatch === 0 ? 0.001 : nameMatch / totalPosition);
+            const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
             // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
             value += 2 ** perc;
 
@@ -1732,7 +1732,7 @@ exports.deleteMessages = function (messages) {
         console.log(`Deleting ${numMessages} messages`);
     }
 
-    if (numMessages === 1) {
+    if (numMessages == 1) {
         firstMessage.delete()
         .catch((err) => {
             console.log(`[E_DeleteMessages1] ${err}`);
@@ -1754,7 +1754,7 @@ async function fetchMessagesInner(channel, remaining, foundMessages, lastMessage
 
     const messages = await channel.fetchMessages({ limit: Math.min(remaining, 99), before: lastMessage });
 
-    if (!messages || messages.size === 0) return foundMessages;
+    if (!messages || messages.size == 0) return foundMessages;
 
     const messagesArr = messages.array();
 
