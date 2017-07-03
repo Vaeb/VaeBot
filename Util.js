@@ -1214,7 +1214,11 @@ exports.isId = (id) => {
 
     if (id == null) return undefined;
 
-    return id[0];
+    id = id[0];
+
+    if (id.length < 16 || id.length > 19) return undefined;
+
+    return id;
 };
 
 exports.getMemberById = (id, guild) => {
