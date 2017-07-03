@@ -892,7 +892,7 @@ exports.getMention = obj => obj.toString();
 
 exports.getAvatar = function (user, outStr) {
     if (user != null && exports.isObject(user)) {
-        return (user.displayAvatarURL || (user.user ? user.user.displayAvatarURL : null));
+        return (user.displayAvatarURL && user.displayAvatarURL({ format: 'png' }) || (user.user ? user.user.displayAvatarURL({ format: 'png' }) : null));
     }
     return (outStr === true ? 'null' : null);
 };
