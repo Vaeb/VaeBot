@@ -415,7 +415,7 @@ function getURLChecker() {
 
 exports.checkURLs = getURLChecker();
 
-exports.initRoles = (sendRole, guild) => {
+exports.initRoles = function (sendRole, guild) {
     const members = guild.members;
 
     members.forEach((member) => {
@@ -427,7 +427,7 @@ exports.initRoles = (sendRole, guild) => {
     });
 };
 
-exports.arrayToObj = (arr) => {
+exports.arrayToObj = function (arr) {
     const obj = {};
     for (let i = 0; i < arr.length; i++) {
         const val = arr[i];
@@ -436,13 +436,13 @@ exports.arrayToObj = (arr) => {
     return obj;
 };
 
-exports.capitalize = (strParam) => {
+exports.capitalize = function (strParam) {
     let str = strParam;
     str = String(str);
     return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-exports.runLua = (args, channel) => {
+exports.runLua = function (args, channel) {
     // args = "os=nil;io=nil;debug=nil;package=nil;require=nil;loadfile=nil;dofile=nil;collectgarbage=nil;" + args;
     const tagNum = Math.floor((new Date()).getTime());
     const fileDir = `/tmp/script_${tagNum}.lua`;
@@ -499,34 +499,34 @@ exports.runLua = (args, channel) => {
     });
 };
 
-exports.doXOR = (a, b) => {
+exports.doXOR = function (a, b) {
     const result = ((a === 1 || b === 1) && !(a === 1 && b === 1)) ? 1 : 0;
     return result;
 };
 
-exports.capitalize2 = (strParam, repUnder) => {
+exports.capitalize2 = function (strParam, repUnder) {
     let str = String(strParam);
     if (repUnder) str = exports.replaceAll(str, '_', ' ');
     str = str.replace(/[0-9a-z]+/ig, (txt) => { console.log(txt); return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
     return str;
 };
 
-exports.boolToAns = (bool) => {
+exports.boolToAns = function (bool) {
     const result = bool ? 'Yes' : 'No';
     return result;
 };
 
-exports.safe = (str) => {
+exports.safe = function (str) {
     if (typeof (str) === 'string') return str.replace(/`/g, '\\`').replace(/@/g, '@­');
     return undefined;
 };
 
-exports.safe2 = (str) => {
+exports.safe2 = function (str) {
     if (typeof (str) === 'string') return str.replace(/`/g, '\\`');
     return undefined;
 };
 
-exports.safeEveryone = (str) => {
+exports.safeEveryone = function (str) {
     if (typeof (str) === 'string') {
         const newStr = str.replace(/@everyone/g, '@​everyone');
         return newStr.replace(/@here/g, '@​here');
@@ -538,7 +538,7 @@ exports.fix = str => (`\`${exports.safe(str)}\``);
 
 exports.toFixedCut = (num, decimals) => Number(num.toFixed(decimals)).toString();
 
-exports.grabFiles = (filePath, filter = () => true) => {
+exports.grabFiles = function (filePath, filter = () => true) {
     const dirFiles = FileSys.readdirSync(filePath);
     let fullFiles = [];
     dirFiles.forEach((file) => {
@@ -553,7 +553,7 @@ exports.grabFiles = (filePath, filter = () => true) => {
     return fullFiles;
 };
 
-exports.bulkRequire = (filePath) => {
+exports.bulkRequire = function (filePath) {
     const bulkFiles = exports.grabFiles(filePath, file => file.endsWith('.js'));
 
     for (const data of Object.values(bulkFiles)) {
@@ -561,7 +561,7 @@ exports.bulkRequire = (filePath) => {
     }
 };
 
-exports.pathRequire = (filePath) => {
+exports.pathRequire = function (filePath) {
     const file = Path.resolve(filePath);
     delete require.cache[require.resolve(file)];
 
@@ -583,7 +583,7 @@ exports.pathRequire = (filePath) => {
     }
 };
 
-exports.checkStaff = (guild, member) => {
+exports.checkStaff = function (guild, member) {
     if (member.id === vaebId || member.id === selfId || member.id === guild.ownerID) return true;
     const speakerRoles = member.roles;
     if (!speakerRoles) return false;
@@ -592,7 +592,7 @@ exports.checkStaff = (guild, member) => {
         || role.name === 'Moderator' || role.name === 'Head Mod');
 };
 
-exports.commandFailed = (channel, speaker, message) => {
+exports.commandFailed = function (channel, speaker, message) {
     if (channel != null) {
         exports.sendEmbed(channel, 'Command Failed', message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
     } else {
@@ -601,7 +601,7 @@ exports.commandFailed = (channel, speaker, message) => {
     return false;
 };
 
-exports.getRandomInt = (minParam, maxParam) => { // inclusive, exclusive
+exports.getRandomInt = function (minParam, maxParam) { // inclusive, exclusive
     maxParam++; // inclusive, inclusive
     const min = Math.ceil(minParam);
     const max = Math.floor(maxParam);
@@ -657,12 +657,12 @@ exports.getRandomInt = (minParam, maxParam) => { // inclusive, exclusive
 
 */
 
-exports.isObject = (val) => { // Or array
+exports.isObject = function (val) { // Or array
     if (val == null) return false;
     return (typeof (val) === 'object');
 };
 
-exports.cloneObj = (obj) => {
+exports.cloneObj = function (obj) {
     let copy;
 
     if (obj == null || typeof (obj) !== 'object') return obj;
@@ -694,7 +694,7 @@ exports.cloneObj = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 };
 
-exports.formatTime = (time) => {
+exports.formatTime = function (time) {
     let timeStr;
     let formatStr;
 
@@ -726,14 +726,14 @@ exports.formatTime = (time) => {
     return formatStr;
 };
 
-exports.chunkString = (str, maxChars) => {
+exports.chunkString = function (str, maxChars) {
     const iterations = Math.ceil(str.length / maxChars);
     const chunks = new Array(iterations);
     for (let i = 0, j = 0; i < iterations; ++i, j += maxChars) chunks[i] = str.substr(j, maxChars);
     return chunks;
 };
 
-exports.cutStringSafe = (msg, postMsg, lastIsOpener) => { // Tries to cut the string along a newline
+exports.cutStringSafe = function (msg, postMsg, lastIsOpener) { // Tries to cut the string along a newline
     let lastIndex = msg.lastIndexOf('\n');
     if (lastIndex < 0) return [msg, postMsg];
     let preCut = msg.substring(0, lastIndex);
@@ -753,7 +753,7 @@ exports.cutStringSafe = (msg, postMsg, lastIsOpener) => { // Tries to cut the st
     return [preCut, postCut + postMsg];
 };
 
-exports.fixMessageLengthNew = (msgParam) => {
+exports.fixMessageLengthNew = function (msgParam) {
     const argsFixed = exports.chunkString(msgParam, 2000); // Group string into sets of 2k chars
     // argsFixed.forEach(o => console.log("---\n" + o));
     let totalBlocks = 0; // Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
@@ -829,14 +829,14 @@ exports.fixMessageLengthNew = (msgParam) => {
     return argsFixed;
 }*/
 
-exports.splitMessages = (messages) => {
+exports.splitMessages = function (messages) {
     const fixed = exports.fixMessageLengthNew(messages.join(' '));
     return fixed;
 };
 
 const ePrint = error => console.log(`\n[E_Print] ${error}`);
 
-exports.print = (channel, ...args) => {
+exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
     for (let i = 0; i < messages.length; i++) {
         channel.send(messages[i])
@@ -844,11 +844,11 @@ exports.print = (channel, ...args) => {
     }
 };
 
-exports.sortPerms = (permsArr) => {
+exports.sortPerms = function (permsArr) {
     permsArr.sort((a, b) => exports.permissionsOrder[b] - exports.permissionsOrder[a]);
 };
 
-exports.getGuildRoles = (guild) => {
+exports.getGuildRoles = function (guild) {
     const roles = [];
     const guildRoles = guild.roles;
 
@@ -868,43 +868,43 @@ exports.getGuildRoles = (guild) => {
     return roles;
 };
 
-exports.getName = (member) => {
+exports.getName = function (member) {
     const result = member.username || (member.user ? member.user.username : null);
     return result;
 };
 
-exports.getDisplayName = (member) => {
+exports.getDisplayName = function (member) {
     const result = member.displayName || member.username;
     return result;
 };
 
-exports.getMostName = (user) => {
+exports.getMostName = function (user) {
     const result = `${exports.getName(user)}#${user.getProp('discriminator')}`;
     return result;
 };
 
-exports.getFullName = (user) => {
+exports.getFullName = function (user) {
     const result = user != null ? (`${exports.getMostName(user)} (${user.id})`) : 'null';
     return result;
 };
 
 exports.getMention = obj => obj.toString();
 
-exports.getAvatar = (user, outStr) => {
+exports.getAvatar = function (user, outStr) {
     if (user != null && exports.isObject(user)) {
         return (user.displayAvatarURL || (user.user ? user.user.displayAvatarURL : null));
     }
     return (outStr === true ? 'null' : null);
 };
 
-exports.getDateString = (d) => {
+exports.getDateString = function (d) {
     const result = `${DateFormat(d, 'ddd, mmm dS yyyy @ h:MM TT')} GMT`;
     return result;
 };
 
 exports.hasRole = (member, role) => member.roles.has(role.id);
 
-exports.makeEmbedFooter = (user, dateParam) => {
+exports.makeEmbedFooter = function (user, dateParam) {
     const memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
     let date = dateParam;
     if (date == null) date = new Date();
@@ -912,7 +912,7 @@ exports.makeEmbedFooter = (user, dateParam) => {
     return { text: `${memberName} | ${dateStr}`, icon_url: exports.getAvatar(user) };
 };
 
-exports.getSuffix = (n) => {
+exports.getSuffix = function (n) {
     const j = n % 10;
     const k = n % 100;
     if (j === 1 && k !== 11) {
@@ -939,7 +939,7 @@ exports.getSuffix = (n) => {
 
 */
 
-exports.setFieldValue = (embFields, nowFieldNum, nowString) => {
+exports.setFieldValue = function (embFields, nowFieldNum, nowString) {
     const nowField = embFields[nowFieldNum];
     if (nowString.length <= 512) {
         nowField.value = nowString;
@@ -978,7 +978,7 @@ Field Value: 512 (maybe 1024?)
 
 */
 
-exports.sendEmbed = (embChannel, embTitle, embDesc, embFooterParam, embImage, embColor, embFieldsParam, isContinued) => {
+exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, embImage, embColor, embFieldsParam, isContinued) {
     if (embChannel == null) return;
 
     let embFooter = embFooterParam;
@@ -1061,7 +1061,7 @@ exports.sendEmbed = (embChannel, embTitle, embDesc, embFooterParam, embImage, em
     }
 };
 
-exports.sendDescEmbed = (embChannel, embTitle, embDesc, embFooter, embImage, embColorParam) => {
+exports.sendDescEmbed = function (embChannel, embTitle, embDesc, embFooter, embImage, embColorParam) {
     if (embChannel == null) return;
 
     let embColor = embColorParam;
@@ -1091,7 +1091,7 @@ exports.sendDescEmbed = (embChannel, embTitle, embDesc, embFooter, embImage, emb
     }
 };
 
-exports.sendLog = (embData, embColor) => {
+exports.sendLog = function (embData, embColor) {
     const embTitle = embData[0];
     const embGuild = embData[1];
     const embAuthor = embData[2];
@@ -1113,30 +1113,30 @@ exports.sendLog = (embData, embColor) => {
       embFields);
 };
 
-exports.getHourStr = (d) => {
+exports.getHourStr = function (d) {
     let valStr = (d.getHours()).toString();
     if (valStr.length < 2) valStr = `0${valStr}`;
     return valStr;
 };
 
-exports.getMinStr = (d) => {
+exports.getMinStr = function (d) {
     let valStr = (d.getMinutes()).toString();
     if (valStr.length < 2) valStr = `0${valStr}`;
     return valStr;
 };
 
-exports.getYearStr = (d) => {
+exports.getYearStr = function (d) {
     const valStr = (d.getFullYear()).toString();
     return valStr;
 };
 
-exports.getMonthStr = (d) => {
+exports.getMonthStr = function (d) {
     let valStr = (d.getMonth() + 1).toString();
     if (valStr.length < 2) valStr = `0${valStr}`;
     return valStr;
 };
 
-exports.getDayStr = (d) => {
+exports.getDayStr = function (d) {
     let valStr = (d.getDate()).toString();
     if (valStr.length < 2) valStr = `0${valStr}`;
     return valStr;
@@ -1163,7 +1163,7 @@ exports.getDayStr = (d) => {
     return user;
 }*/
 
-exports.searchUserPartial = (col, nameParam) => {
+exports.searchUserPartial = function (col, nameParam) {
     let name = nameParam;
 
     name = name.toLowerCase();
@@ -1176,51 +1176,51 @@ exports.searchUserPartial = (col, nameParam) => {
     });
 };
 
-exports.round = (num, inc) => {
+exports.round = function (num, inc) {
     const result = (inc === 0 ? num : Math.floor((num / inc) + 0.5) * inc);
     return result;
 };
 
-exports.write = (content, name) => {
+exports.write = function (content, name) {
     FileSys.writeFile(name, content);
 };
 
-exports.remove = (name) => {
+exports.remove = function (name) {
     FileSys.unlink(name);
 };
 
-exports.getHistory = (id, guild) => {
+exports.getHistory = function (id, guild) {
     const userHistory = Data.guildGet(guild, Data.history, id);
     if (userHistory) return userHistory[0];
     return 0;
 };
 
-exports.historyToStringOld = (num) => {
+exports.historyToStringOld = function (num) {
     let timeHours = exports.round(num / 3600000, 0.1);
     timeHours = (timeHours >= 1 || timeHours === 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
     console.log(`[RANDOM] timeHours: ${timeHours}`);
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
-exports.historyToStringOld2 = (num) => {
+exports.historyToStringOld2 = function (num) {
     let timeHours = num / 3600000;
     console.log(`[RANDOM] timeHours: ${timeHours}`);
     timeHours += (timeHours == 1 ? ' hour' : ' hours');
     return timeHours;
 };
 
-exports.historyToString = (num) => {
+exports.historyToString = function (num) {
     const timeStr = exports.formatTime(num);
     return timeStr;
 };
 
-exports.matchWholeNumber = (str) => {
+exports.matchWholeNumber = function (str) {
     let result = str.match(/^\d+(?:\.\d+)?$/);
     result = result ? result[0] : undefined;
     return result;
 };
 
-exports.getSafeId = (id) => {
+exports.getSafeId = function (id) {
     id = id.match(/\d+/);
 
     if (id == null) return undefined;
@@ -1228,7 +1228,7 @@ exports.getSafeId = (id) => {
     return id[0];
 };
 
-exports.isId = (id) => {
+exports.isId = function (id) {
     id = id.match(/^\d+$/);
 
     if (id == null) return undefined;
@@ -1240,7 +1240,7 @@ exports.isId = (id) => {
     return id;
 };
 
-exports.getMemberById = (id, guild) => {
+exports.getMemberById = function (id, guild) {
     if (id == null || guild == null) return null;
 
     if (id.substr(0, 1) === '<' && id.substr(id.length - 1, 1) === '>') id = exports.getSafeId(id);
@@ -1250,7 +1250,7 @@ exports.getMemberById = (id, guild) => {
     return guild.members.get(id);
 };
 
-exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
+exports.getMatchStrength = function (fullStr, subStr) { // [v2.0]
     let value = 0;
 
     const fullStrLower = fullStr.toLowerCase();
@@ -1278,14 +1278,14 @@ exports.getMatchStrength = (fullStr, subStr) => { // [v2.0]
     return value;
 };
 
-exports.getDiscriminatorFromName = (name) => {
+exports.getDiscriminatorFromName = function (name) {
     const discrimPattern = /#(\d\d\d\d)$/gm;
     let discrim = discrimPattern.exec(name);
     discrim = discrim ? discrim[1] : null;
     return discrim;
 };
 
-exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real name match, length match, caps match, position match //
+exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match, real name match, length match, caps match, position match //
     if (guild == null) return undefined;
 
     const nameDiscrim = exports.getDiscriminatorFromName(name);
@@ -1367,7 +1367,7 @@ exports.getMemberByName = (name, guild) => { // [v2.0] Visible name match, real 
     return strongest[1];
 };
 
-exports.getDataFromString = (str, funcs, returnExtra) => {
+exports.getDataFromString = function (str, funcs, returnExtra) {
     const mix = str.split(' ');
     const baseStart = mix.length - 1;
     let start = baseStart;
@@ -1430,7 +1430,7 @@ exports.getDataFromString = (str, funcs, returnExtra) => {
     return undefined;
 };
 
-exports.clamp = (num, minParam, maxParam) => {
+exports.clamp = function (num, minParam, maxParam) {
     let min = minParam;
     let max = maxParam;
     if (min == null) min = num;
@@ -1438,18 +1438,18 @@ exports.clamp = (num, minParam, maxParam) => {
     return Math.min(Math.max(num, min), max);
 };
 
-exports.toBoolean = (str) => {
+exports.toBoolean = function (str) {
     const result = (typeof (str) === 'boolean' ? str : (str === 'true' || (str === 'false' ? false : undefined)));
     return result;
 };
 
-exports.getNum = (str, min, max) => {
+exports.getNum = function (str, min, max) {
     const num = Number(str);
     if (isNaN(num)) return undefined;
     return exports.clamp(num, min, max);
 };
 
-exports.getInt = (str, min, max) => {
+exports.getInt = function (str, min, max) {
     const num = parseInt(str, 10); // Number() is better generally
     if (isNaN(num)) return undefined;
     return exports.clamp(num, min, max);
@@ -1463,7 +1463,7 @@ exports.getTextChannels = guild => guild.channels.filter(exports.isTextChannel);
 
 exports.getVoiceChannels = guild => guild.channels.filter(exports.isVoiceChannel);
 
-exports.findChannel = (nameParam, guild) => {
+exports.findChannel = function (nameParam, guild) {
     if (guild == null) return undefined;
 
     let name = nameParam;
@@ -1473,7 +1473,7 @@ exports.findChannel = (nameParam, guild) => {
     return channels.find(nowChannel => nowChannel.id === name || nowChannel.name.toLowerCase() === name);
 };
 
-exports.findVoiceChannel = (nameParam, guild) => {
+exports.findVoiceChannel = function (nameParam, guild) {
     if (guild == null) return undefined;
 
     let name = nameParam;
@@ -1483,7 +1483,7 @@ exports.findVoiceChannel = (nameParam, guild) => {
     return channels.find(nowChannel => nowChannel.id === name || nowChannel.name.toLowerCase() === name);
 };
 
-exports.getRole = (nameParam, obj) => {
+exports.getRole = function (nameParam, obj) {
     if (obj == null) return undefined;
 
     let name = nameParam;
@@ -1496,7 +1496,7 @@ exports.getRole = (nameParam, obj) => {
 
 exports.getHighestRole = member => member.highestRole;
 
-exports.getPosition = (speaker) => {
+exports.getPosition = function (speaker) {
     if (speaker == null || !exports.isObject(speaker) || speaker.guild == null) return undefined;
 
     if (speaker.id === speaker.guild.ownerID) return 999999999;
@@ -1508,20 +1508,20 @@ exports.getUserById = id => client.users.get(id);
 
 exports.getUserByName = name => exports.searchUserPartial(client.users, name);
 
-exports.getUserByMixed = (name) => {
+exports.getUserByMixed = function (name) {
     let user = exports.getUserById(name);
     if (user == null) user = exports.getUserByName(name);
     return user;
 };
 
-exports.getMemberByMixed = (name, guild) => {
+exports.getMemberByMixed = function (name, guild) {
     if (guild == null) return undefined;
     let targetMember = exports.getMemberById(name, guild);
     if (targetMember == null) targetMember = exports.getMemberByName(name, guild);
     return targetMember;
 };
 
-exports.getMemberOrRoleByMixed = (name, guild) => {
+exports.getMemberOrRoleByMixed = function (name, guild) {
     if (guild == null) return undefined;
     let targetObj = exports.getRole(name, guild);
     if (targetObj == null) targetObj = exports.getMemberById(name, guild);
@@ -1529,13 +1529,13 @@ exports.getMemberOrRoleByMixed = (name, guild) => {
     return targetObj;
 };
 
-exports.getEitherByMixed = (name, guild) => {
+exports.getEitherByMixed = function (name, guild) {
     let user = exports.getMemberByMixed(name, guild);
     if (user == null) user = exports.getUserByMixed(name);
     return user;
 };
 
-exports.permEnabled = (iPerms, permName) => {
+exports.permEnabled = function (iPerms, permName) {
     const allowGeneral = iPerms.General;
     const allowText = iPerms.Text;
     const allowVoice = iPerms.Voice;
@@ -1547,7 +1547,7 @@ exports.permEnabled = (iPerms, permName) => {
     return undefined;
 };
 
-exports.getPermRating = (guild, userOrRole) => {
+exports.getPermRating = function (guild, userOrRole) {
     if (userOrRole.hasPermission == null) return 0;
 
     const tempPermRating = exports.cloneObj(exports.permRating);
@@ -1601,7 +1601,7 @@ exports.getPermRating = (guild, userOrRole) => {
     return total;
 };
 
-exports.getMemberPowers = (guild) => {
+exports.getMemberPowers = function (guild) {
     const sorted = [];
     const members = guild.members;
     for (let i = 0; i < members.size; i++) {
@@ -1616,7 +1616,7 @@ exports.getMemberPowers = (guild) => {
     return sorted;
 };
 
-exports.strToPerm = (strParam) => {
+exports.strToPerm = function (strParam) {
     let str = strParam;
 
     str = exports.replaceAll(str.toUpperCase(), ' ', '_');
@@ -1636,13 +1636,13 @@ exports.strToPerm = (strParam) => {
     return matchPerm;
 };
 
-exports.setChannelPerms = (channel, userOrRole, newPerms) => {
+exports.setChannelPerms = function (channel, userOrRole, newPerms) {
     channel.overwritePermissions(userOrRole, newPerms)
     .catch(error => console.log(`\n[E_SetChannelPerms] ${error}`));
 };
 
 // fetch more messages just like Discord client does
-exports.fetchMessagesEx = (channel, left, store, lastParam) => {
+exports.fetchMessagesEx = function (channel, left, store, lastParam) {
     // message cache is sorted on insertion
     // channel.messages[0] will get oldest message
     let last = lastParam;
@@ -1652,7 +1652,7 @@ exports.fetchMessagesEx = (channel, left, store, lastParam) => {
         .then(messages => exports.onFetch(messages, channel, left, store));
 };
 
-exports.onFetch = (messagesParam, channel, leftParam, store) => {
+exports.onFetch = function (messagesParam, channel, leftParam, store) {
     let messages = messagesParam;
     let left = leftParam;
 
@@ -1673,7 +1673,7 @@ exports.onFetch = (messagesParam, channel, leftParam, store) => {
     return exports.fetchMessagesEx(channel, left, store, messages[messages.length - 1]);
 };
 
-exports.updateMessageCache = (channel, speaker) => {
+exports.updateMessageCache = function (channel, speaker) {
     exports.fetchMessagesEx(channel, 100, [], channel.messages[0]).then(() => {
         if (speaker) {
             exports.sendDescEmbed(channel, 'Message Cache', 'Refreshed', exports.makeEmbedFooter(speaker), null, 0x00E676);
@@ -1778,7 +1778,7 @@ exports.fetchMessages = async function (channel, numScan, checkFunc) {
     return foundMessages;
 };
 
-exports.banMember = (member, moderator, reason) => {
+exports.banMember = function (member, moderator, reason) {
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
 
@@ -1797,7 +1797,7 @@ exports.banMember = (member, moderator, reason) => {
     });
 };
 
-exports.kickMember = (member, moderator, reason) => {
+exports.kickMember = function (member, moderator, reason) {
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
 

@@ -28,7 +28,7 @@ module.exports = Cmds.addCommand({
                 encBits += Util.doXOR(bit[b], keyBit);
             }
         }
-        Util.print(channel, 'Encryption:', encBits);
-        Util.print(channel, 'Key:', keyBits);
+        Util.print(channel, `Encryption: ${encBits}`);
+        Util.print(channel, `Key: ${keyBits}`);
     },
 });
