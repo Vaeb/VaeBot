@@ -1201,11 +1201,16 @@ exports.historyToStringOld = (num) => {
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
-exports.historyToString = (num) => {
+exports.historyToStringOld2 = (num) => {
     let timeHours = num / 3600000;
     console.log(`[RANDOM] timeHours: ${timeHours}`);
     timeHours += (timeHours == 1 ? ' hour' : ' hours');
     return timeHours;
+};
+
+exports.historyToString = (num) => {
+    const timeStr = exports.formatTime(num);
+    return timeStr;
 };
 
 exports.matchWholeNumber = (str) => {
