@@ -304,11 +304,10 @@ exports.connectInitial = async function (dbGuilds) {
 
     try {
         await exports.connect();
-        console.log(`[MySQL] Connected as id ${connection.threadId}`);
+        console.log(`[MySQL] Connected as id ${connection.threadId}\n`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
             const guild = dbGuilds[i];
-            console.log(`[MySQL] Setting up database for ${guild.name}`);
 
             const sqlCmd = [];
             const sanValues = [];
@@ -321,15 +320,12 @@ exports.connectInitial = async function (dbGuilds) {
             const sqlCmdStr = sqlCmd.join('\n');
 
             exports.query(sqlCmdStr, sanValues)
-            .then(() => {
-                console.log(`[MySQL] Finished: ${guild.name}`);
-            })
-            .catch(console.error);
+            .catch((err) => {
+                console.log(`[MySQL] Queries Failed: ${guild.name} ${err}`);
+            });
         }
 
         Mutes.initialize();
-
-        console.log('Finished initialising SQL data');
 
         // connection.end();
 

@@ -307,13 +307,13 @@ const veilGuilds = {
     '309785618932563968': true,
 };
 
-exports.secure = function () {
-    console.log('Starting security setup');
+exports.secure = async function () {
+    console.log('\nSecuring guilds...\n');
 
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
 
-    client.guilds.forEach((guild) => {
+    await Promise.all(client.guilds.map(async (guild) => {
         guild.fetchMembers()
         .then((newGuild) => {
             if (newGuild == null) {
@@ -334,7 +334,9 @@ exports.secure = function () {
         .catch((error) => {
             console.log(`E_READY_FETCH_MEMBERS: ${error}`);
         });
-    });
+    }));
+
+    console.log('\nSecurity setup complete\n');
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +363,7 @@ client.on('ready', async () => {
         }
     }));
 
-    console.log('\nFetched all Guild members!\n');
+    console.log('Fetched all Guild members!\n');
     Data.connectInitial(dbGuilds)
     .catch(err => console.log(`[E_DataConnect] ${err}`));
 });

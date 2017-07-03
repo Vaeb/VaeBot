@@ -731,7 +731,7 @@ exports.checkMuted = function (guild, userId) {
 
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
     // const nowTick = +new Date();
-    console.log('initializing mutes');
+    console.log('Initializing mute data\n');
 
     await Promise.all(client.guilds.map(async (guild) => {
         // const results = await Data.getRecords(guild, 'mutes', { end_tick: { value: nowTick, operator: '>' } });
@@ -748,7 +748,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
         }
     }));
 
-    console.log('Finished initializing mutes');
+    console.log('\nCompleted mute initialization');
 
     index.secure();
 };
