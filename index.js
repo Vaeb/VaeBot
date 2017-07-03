@@ -847,7 +847,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     }
 
     if (triggered == trigger.length) {
-        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Asking stupid questions' });
+        Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Auto-Mute] Asking stupid questions' });
     }
 });
 
