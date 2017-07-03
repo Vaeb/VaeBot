@@ -890,9 +890,10 @@ exports.getFullName = function (user) {
 
 exports.getMention = obj => obj.toString();
 
-exports.getAvatar = function (user, outStr) {
-    if (user != null && exports.isObject(user)) {
-        return (user.displayAvatarURL && user.displayAvatarURL({ format: 'png' }) || (user.user ? user.user.displayAvatarURL({ format: 'png' }) : null));
+exports.getAvatar = function (userResolvable, outStr) {
+    if (userResolvable != null && exports.isObject(userResolvable)) {
+        if (userResolvable.user) return userResolvable.user.displayAvatarURL({ format: 'png' });
+        return userResolvable.displayAvatarURL({ format: 'png' });
     }
     return (outStr === true ? 'null' : null);
 };
