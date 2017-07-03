@@ -500,7 +500,7 @@ exports.runLua = function (args, channel) {
 };
 
 exports.doXOR = function (a, b) {
-    const result = ((a === 1 || b === 1) && !(a === 1 && b === 1)) ? 1 : 0;
+    const result = ((a == 1 || b == 1) && !(a == 1 && b == 1)) ? 1 : 0;
     return result;
 };
 
