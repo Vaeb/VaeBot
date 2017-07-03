@@ -602,6 +602,7 @@ exports.commandFailed = (channel, speaker, message) => {
 };
 
 exports.getRandomInt = (minParam, maxParam) => { // inclusive, exclusive
+    maxParam++; // inclusive, inclusive
     const min = Math.ceil(minParam);
     const max = Math.floor(maxParam);
     return Math.floor(Math.random() * (max - min)) + min;
