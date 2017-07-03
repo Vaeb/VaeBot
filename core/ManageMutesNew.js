@@ -262,7 +262,14 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
     const nowTick = +new Date();
     const remaining = endTick - nowTick;
 
-    const member = await guild.fetchMember(userId);
+    let member;
+
+    try {
+        member = await guild.fetchMember(userId);
+    } catch (err) {
+        return;
+    }
+
     if (!member) { // Member no longer in the server
         // todo
         return;
@@ -329,6 +336,8 @@ function resolveUser(guild, userResolvable, isMod) {
             system = isMod && userResolvable.match(/[a-z]/i); // When resolving moderator the only use of text should be when the moderator is the system.
         }
     }
+
+    console.log(`User type: ${userType}`);
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
