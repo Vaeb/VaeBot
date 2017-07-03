@@ -200,23 +200,29 @@ exports.getRecords = function (guild, tableName, identity) {
     let conditionStr = [];
     const valueArr = [];
 
-    for (const [column, valueData] of Object.entries(identity)) {
-        let value = valueData;
-        let operator = '=';
+    if (identity) {
+        for (const [column, valueData] of Object.entries(identity)) {
+            let value = valueData;
+            let operator = '=';
 
-        if (Util.isObject(valueData)) {
-            value = valueData.value;
-            operator = valueData.operator || '=';
+            if (Util.isObject(valueData)) {
+                value = valueData.value;
+                operator = valueData.operator || '=';
+            }
+
+            conditionStr.push(`${column}${operator}?`);
+            // valueArr.push(dataToString(value));
+            valueArr.push(value);
         }
-
-        conditionStr.push(`${column}${operator}?`);
-        // valueArr.push(dataToString(value));
-        valueArr.push(value);
     }
 
-    conditionStr = conditionStr.join(' AND ');
+    if (conditionStr.length > 0) {
+        conditionStr = ` WHERE ${conditionStr.join(' AND ')}`;
+    } else {
+        conditionStr = '';
+    }
 
-    const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
+    const queryStr = `SELECT * FROM ${tableName}${conditionStr};`;
     // console.log(queryStr);
 
     return exports.query(queryStr, valueArr);
@@ -263,16 +269,23 @@ exports.updateRecords = function (guild, tableName, identity, data) {
         valueArr.push(value);
     }
 
-    for (const [column, value] of Object.entries(identity)) {
-        conditionStr.push(`${column}=?`);
-        // valueArr.push(dataToString(value));
-        valueArr.push(value);
+    if (identity) {
+        for (const [column, value] of Object.entries(identity)) {
+            conditionStr.push(`${column}=?`);
+            // valueArr.push(dataToString(value));
+            valueArr.push(value);
+        }
     }
 
     updateStr = updateStr.join(',');
-    conditionStr = conditionStr.join(' AND ');
 
-    const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
+    if (conditionStr.length > 0) {
+        conditionStr = ` WHERE ${conditionStr.join(' AND ')}`;
+    } else {
+        conditionStr = '';
+    }
+
+    const queryStr = `UPDATE ${tableName} SET ${updateStr}${conditionStr};`;
 
     return exports.query(queryStr, valueArr);
 };
