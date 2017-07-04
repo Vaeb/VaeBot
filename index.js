@@ -354,9 +354,7 @@ client.on('ready', async () => {
     await Promise.all(client.guilds.map(async (guild) => {
         const newGuild = await guild.fetchMembers();
 
-        if (newGuild.id === '284746138995785729') {
-            dbGuilds.push(newGuild);
-        }
+        dbGuilds.push(newGuild);
     }));
 
     console.log('> Cached all guild members!\n');

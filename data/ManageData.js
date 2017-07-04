@@ -66,6 +66,19 @@ exports.getBaseGuild = function (guild) {
     return guild;
 };
 
+exports.getBaseGuildId = function (guildId) {
+    if (guildId == null) return null;
+
+    for (let i = 0; i < linkGuilds.length; i++) {
+        const linkData = linkGuilds[i];
+        if (linkData.includes(guildId)) {
+            return linkData[0];
+        }
+    }
+
+    return guildId;
+};
+
 exports.guildSaveData = function (obj/* , retry */) {
     if (!exports.loadedData[obj]) return;
     const objName = obj.__name;
@@ -205,10 +218,10 @@ exports.fromBuffer = function (buffer) {
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
 exports.getRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return exports.emptyPromise(); // Until multi-guild integration
+    const guildId = exports.getBaseGuildId(guild.id);
 
-    let conditionStr = [];
-    const valueArr = [];
+    let conditionStr = ['guild_id=?'];
+    const valueArr = [guildId];
 
     if (identity) {
         for (const [column, valueData] of Object.entries(identity)) {
@@ -221,28 +234,23 @@ exports.getRecords = function (guild, tableName, identity) {
             }
 
             conditionStr.push(`${column}${operator}?`);
-            // valueArr.push(dataToString(value));
             valueArr.push(value);
         }
     }
 
-    if (conditionStr.length > 0) {
-        conditionStr = ` WHERE ${conditionStr.join(' AND ')}`;
-    } else {
-        conditionStr = '';
-    }
+    conditionStr = conditionStr.join(' AND ');
 
-    const queryStr = `SELECT * FROM ${tableName}${conditionStr};`;
+    const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
     // console.log(queryStr);
 
     return exports.query(queryStr, valueArr);
 };
 
 exports.deleteRecords = function (guild, tableName, identity) {
-    if (guild.id !== '284746138995785729') return exports.emptyPromise(); // Until multi-guild integration
+    const guildId = exports.getBaseGuildId(guild.id);
 
-    let conditionStr = [];
-    const valueArr = [];
+    let conditionStr = ['guild_id=?'];
+    const valueArr = [guildId];
 
     for (const [column, valueData] of Object.entries(identity)) {
         let value = valueData;
@@ -254,7 +262,6 @@ exports.deleteRecords = function (guild, tableName, identity) {
         }
 
         conditionStr.push(`${column}${operator}?`);
-        // valueArr.push(dataToString(value));
         valueArr.push(value);
     }
 
@@ -267,50 +274,50 @@ exports.deleteRecords = function (guild, tableName, identity) {
 };
 
 exports.updateRecords = function (guild, tableName, identity, data) {
-    if (guild.id !== '284746138995785729') return exports.emptyPromise();
+    const guildId = exports.getBaseGuildId(guild.id);
 
     let updateStr = [];
-    let conditionStr = [];
-    const valueArr = [];
+    let conditionStr = ['guild_id=?'];
+    const valueArr = [guildId];
 
     for (const [column, value] of Object.entries(data)) {
         updateStr.push(`${column}=?`);
-        // valueArr.push(dataToString(value));
         valueArr.push(value);
     }
 
     if (identity) {
-        for (const [column, value] of Object.entries(identity)) {
-            conditionStr.push(`${column}=?`);
-            // valueArr.push(dataToString(value));
+        for (const [column, valueData] of Object.entries(identity)) {
+            let value = valueData;
+            let operator = '=';
+
+            if (Util.isObject(valueData)) {
+                value = valueData.value;
+                operator = valueData.operator || '=';
+            }
+
+            conditionStr.push(`${column}${operator}?`);
             valueArr.push(value);
         }
     }
 
     updateStr = updateStr.join(',');
+    conditionStr = conditionStr.join(' AND ');
 
-    if (conditionStr.length > 0) {
-        conditionStr = ` WHERE ${conditionStr.join(' AND ')}`;
-    } else {
-        conditionStr = '';
-    }
-
-    const queryStr = `UPDATE ${tableName} SET ${updateStr}${conditionStr};`;
+    const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
 
     return exports.query(queryStr, valueArr);
 };
 
 exports.addRecord = function (guild, tableName, data) {
-    if (guild.id !== '284746138995785729') return exports.emptyPromise();
+    const guildId = exports.getBaseGuildId(guild.id);
 
-    let columnStr = [];
-    let valueStr = [];
-    const valueArr = [];
+    let columnStr = ['guild_id'];
+    let valueStr = ['?'];
+    const valueArr = [guildId];
 
     for (const [column, value] of Object.entries(data)) {
         columnStr.push(column);
         valueStr.push('?');
-        // valueArr.push(dataToString(value));
         valueArr.push(value);
     }
 
