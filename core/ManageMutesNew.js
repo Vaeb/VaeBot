@@ -248,9 +248,11 @@ function addSendMessages(member) { // Add SendMessages role
 }
 
 function remTimeout(guild, userId) { // Remove mute timeout
+    const guildId = Data.getBaseGuildId(guild.id);
+
     for (let i = muteTimeouts.length - 1; i >= 0; i--) {
         const timeoutData = muteTimeouts[i];
-        if (timeoutData.guildId === guild.id && timeoutData.userId === userId) {
+        if (timeoutData.guildId === guildId && timeoutData.userId === userId) {
             clearTimeout(timeoutData.timeout);
             console.log(`Removed mute timeout for ${userId} @ ${guild.name}`);
             muteTimeouts.splice(i, 1);
@@ -259,21 +261,10 @@ function remTimeout(guild, userId) { // Remove mute timeout
 }
 
 async function addTimeout(guild, userId, endTick) { // Add mute timeout
+    const guildId = Data.getBaseGuildId(guild.id);
+
     const nowTick = +new Date();
     const remaining = endTick - nowTick;
-
-    let member;
-
-    try {
-        member = await guild.fetchMember(userId);
-    } catch (err) {
-        return;
-    }
-
-    if (!member) { // Member no longer in the server
-        // todo
-        return;
-    }
 
     remTimeout(guild, userId);
 
@@ -284,7 +275,7 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
 
     muteTimeouts.push({
         'timeoutId': nowTimeoutId,
-        'guildId': guild.id,
+        'guildId': guildId,
         'userId': userId,
         'timeout': (setTimeout(() => {
             for (let i = 0; i < muteTimeouts.length; i++) {
@@ -365,6 +356,7 @@ function resolveUser(guild, userResolvable, isMod) {
 
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
     console.log(`\nStarted AddMute on ${userResolvable}`);
+    const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
 
@@ -429,7 +421,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     })
     .catch(console.error);
 
-    muteCache[guild.id][resolvedUser.id] = true;
+    muteCache[guildId][resolvedUser.id] = true;
 
     // Add mute timeout (and automatically remove any active timeouts)
 
@@ -540,6 +532,10 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         mute_id: muteId,
     }, newDataSQL);
 
+    // Change mute timeout (and automatically remove any active timeouts)
+
+    addTimeout(guild, resolvedUser.id, endTickNew);
+
     // Get changed data and format it
 
     const muteLengthStrOld = Util.historyToString(muteLengthOld);
@@ -568,6 +564,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
 exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
     console.log(`\nStarted UnMute on ${userResolvable}`);
+    const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
 
@@ -620,7 +617,7 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
         active: 0,
     });
 
-    delete muteCache[guild.id][resolvedUser.id];
+    delete muteCache[guildId][resolvedUser.id];
 
     // Remove mute timeout (if stopped early)
 
@@ -745,8 +742,10 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
 };
 
 exports.checkMuted = function (guild, userId) {
-    if (!has.call(muteCache, guild.id)) return false;
-    return muteCache[guild.id][userId];
+    const guildId = Data.getBaseGuildId(guild.id);
+
+    if (!has.call(muteCache, guildId)) return false;
+    return muteCache[guildId][userId];
 };
 
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
@@ -754,8 +753,9 @@ exports.initialize = async function () { // Get mute data from db, start all ini
     console.log('> Initializing mute data\n');
 
     await Promise.all(client.guilds.map(async (guild) => {
-        // const results = await Data.getRecords(guild, 'mutes', { end_tick: { value: nowTick, operator: '>' } });
-        muteCache[guild.id] = {};
+        const guildId = Data.getBaseGuildId(guild.id);
+
+        if (!has.call(muteCache, guildId)) muteCache[guildId] = {};
         const results = await Data.getRecords(guild, 'mutes', { active: 1 });
 
         for (let i = 0; i < results.length; i++) {
@@ -763,7 +763,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
             const userId = muteStored.user_id;
             const endTick = muteStored.end_tick;
 
-            muteCache[guild.id][userId] = true;
+            muteCache[guildId][userId] = true;
             addTimeout(guild, userId, endTick);
         }
     }));
