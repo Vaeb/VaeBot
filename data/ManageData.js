@@ -278,12 +278,14 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 
     let updateStr = [];
     let conditionStr = ['guild_id=?'];
-    const valueArr = [guildId];
+    const valueArr = [];
 
     for (const [column, value] of Object.entries(data)) {
         updateStr.push(`${column}=?`);
         valueArr.push(value);
     }
+
+    valueArr.push(guildId);
 
     if (identity) {
         for (const [column, valueData] of Object.entries(identity)) {

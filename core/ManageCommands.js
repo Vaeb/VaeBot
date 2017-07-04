@@ -1,7 +1,6 @@
 exports.commands = [];
 
 const quietChannels = {
-    '284746138995785729': true,
     '289447389251502080': true,
     '285040042001432577': true,
     '284746888715042818': true,
