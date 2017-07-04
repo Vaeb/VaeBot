@@ -307,6 +307,9 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 
     const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
 
+    console.log(queryStr);
+    console.log(valueArr);
+
     return exports.query(queryStr, valueArr);
 };
 
