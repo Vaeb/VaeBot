@@ -754,6 +754,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
 
     await Promise.all(client.guilds.map(async (guild) => {
         const guildId = Data.getBaseGuildId(guild.id);
+        if (guildId != guild.id) return;
 
         if (!has.call(muteCache, guildId)) muteCache[guildId] = {};
         const results = await Data.getRecords(guild, 'mutes', { active: 1 });
