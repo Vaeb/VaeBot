@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';changemute ', ';change', ';setmute ', 'altermute '],
+    cmds: [';changemute ', ';change ', ';setmute ', 'altermute '],
 
     requires: {
         guild: true,
