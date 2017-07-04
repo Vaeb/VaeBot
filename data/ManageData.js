@@ -178,6 +178,16 @@ exports.connect = function () {
             if (err) return reject(err);
             return resolve();
         });
+
+        connection.on('error', (err) => {
+            if (err.fatal) {
+                console.log(`[MySQL] Fatal error: ${err.code}`);
+                console.log('[MySQL] Attempting to reconnect...');
+                exports.connect();
+            } else {
+                console.log(`Non-fatal error: ${err.code}`);
+            }
+        });
     });
 };
 
