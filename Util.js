@@ -592,12 +592,20 @@ exports.checkStaff = function (guild, member) {
         || role.name === 'Moderator' || role.name === 'Head Mod');
 };
 
-exports.commandFailed = function (channel, speaker, message) {
-    if (channel != null) {
-        exports.sendEmbed(channel, 'Command Failed', message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
-    } else {
-        console.log(`[Command_Failed] ${speaker.id}: ${message}`);
+exports.commandFailed = function (channel, speaker, tag, message) {
+    if (message == null) {
+        message = tag;
+        tag = null;
     }
+
+    const tagMessage = tag ? `[${tag}] ` : '';
+
+    if (channel != null) {
+        exports.sendEmbed(channel, `${tagMessage}Command Failed`, message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
+    } else {
+        console.log(`${tagMessage}[Command_Failed] ${speaker.id}: ${message}`);
+    }
+
     return false;
 };
 
