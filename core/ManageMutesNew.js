@@ -432,7 +432,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     .catch(console.error);
 
     for (let i = 0; i < muteCache[guildId].length; i++) {
-        const row = muteCache[guildId];
+        const row = muteCache[guildId][i];
         if (row.user_id == resolvedUser.id) row.active = 0;
     }
 
@@ -541,7 +541,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     }, newDataSQL);
 
     for (let i = 0; i < muteCache[guildId].length; i++) {
-        const row = muteCache[guildId];
+        const row = muteCache[guildId][i];
         if (row.mute_id == muteRecord.mute_id) {
             for (const [column, value] of Object.entries(newDataSQL)) {
                 row[column] = value;
@@ -626,7 +626,7 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
     });
 
     for (let i = 0; i < muteCache[guildId].length; i++) {
-        const row = muteCache[guildId];
+        const row = muteCache[guildId][i];
         if (row.user_id == resolvedUser.id) row.active = 0;
     }
 
@@ -698,7 +698,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
     Data.deleteRecords(guild, 'mutes', { mute_id: lastMute.mute_id });
 
     for (let i = muteCache[guildId].length - 1; i >= 0; i--) {
-        const row = muteCache[guildId];
+        const row = muteCache[guildId][i];
         if (row.mute_id == lastMute.mute_id) muteCache[guildId].splice(i, 1);
     }
 
@@ -755,7 +755,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
     Data.deleteRecords(guild, 'mutes', { user_id: resolvedUser.id });
 
     for (let i = muteCache[guildId].length - 1; i >= 0; i--) {
-        const row = muteCache[guildId];
+        const row = muteCache[guildId][i];
         if (row.user_id == resolvedUser.id) muteCache[guildId].splice(i, 1);
     }
 
