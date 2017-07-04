@@ -364,7 +364,7 @@ function resolveUser(guild, userResolvable, isMod) {
 }
 
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
-    console.log(`Started addMute on ${userResolvable}`);
+    console.log(`\nStarted AddMute on ${userResolvable}`);
 
     // Resolve parameter data
 
@@ -451,7 +451,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 };
 
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
-    console.log(`Started changeMute on ${userResolvable}`);
+    console.log(`\nStarted ChangeMute on ${userResolvable}`);
 
     // Resolve parameter data
 
@@ -567,7 +567,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 };
 
 exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
-    console.log(`Started unMute on ${userResolvable}`);
+    console.log(`\nStarted UnMute on ${userResolvable}`);
 
     // Resolve parameter data
 
@@ -642,13 +642,13 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 };
 
 exports.remMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    console.log(`Started remMute on ${userResolvable}, waiting for unMute to complete...`);
+    console.log(`\nStarted RemMute on ${userResolvable}, waiting for UnMute to complete...`);
 
     // Stop active mute
 
     await exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    console.log('unMute completed, continuing remMute');
+    console.log('\nUnMute completed, continuing RemMute');
 
     // Resolve parameter data
 
@@ -696,13 +696,13 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
 };
 
 exports.clearMutes = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    console.log(`Started clearMutes on ${userResolvable}, waiting for unMute to complete...`);
+    console.log(`\nStarted ClearMutes on ${userResolvable}, waiting for UnMute to complete...`);
 
     // Stop active mute
 
     await exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    console.log('unMute completed, continuing remMute');
+    console.log('\nUnMute completed, continuing ClearMutes');
 
     // Resolve parameter data
 
