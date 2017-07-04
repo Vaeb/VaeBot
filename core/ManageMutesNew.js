@@ -89,16 +89,13 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
             const outStr = ['**Your mute has been changed**\n```'];
             outStr.push(`Guild: ${guild.name}`);
             if (muteReason.new !== muteReason.old) {
-                outStr.push(`Old mute reason: ${muteReason.old}`);
-                outStr.push(`New mute reason: ${muteReason.new}`);
+                outStr.push(`Old mute reason: ${muteReason.old} | New mute reason: ${muteReason.new}`);
             }
             if (muteLengthStr.new !== muteLengthStr.old) {
-                outStr.push(`Old mute length: ${muteLengthStr.old}`);
-                outStr.push(`New mute length: ${muteLengthStr.new}`);
+                outStr.push(`Old mute length: ${muteLengthStr.old} | New mute length: ${muteLengthStr.new}`);
             }
             if (endStr.new !== endStr.old) {
-                outStr.push(`Old mute expiration: ${endStr.old}`);
-                outStr.push(`New mute expiration: ${endStr.new}`);
+                outStr.push(`Old mute expiration: ${endStr.old} | New mute expiration: ${endStr.new}`);
             }
             outStr.push('```');
             Util.print(userMember, outStr.join('\n'));
