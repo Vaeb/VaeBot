@@ -35,7 +35,7 @@ module.exports = Cmds.addCommand({
             const muteLength = row.end_tick - row.start_tick;
             const moderatorId = row.mod_id;
 
-            const reason = row.reason;
+            const reason = row.mute_reason;
             const muteDateStr = Util.getDateString(muteDate);
             const muteLengthStr = Util.formatTime(muteLength);
             const modMention = Util.resolveUserMention(guild, moderatorId);
