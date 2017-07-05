@@ -10,7 +10,7 @@ module.exports = Cmds.addCommand({
 
     args: '([@user] | [id] | [name]) (OPT: [mute_length]) (OPT: [mute_length_format]) (OPT: [reason])',
 
-    example: 'vae 2 being weird',
+    example: 'vae 2 minutes being weird',
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
