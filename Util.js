@@ -1447,6 +1447,7 @@ exports.getDataFromString = function (str, funcSets, returnExtra) {
     if (!mainData) return mainData;
 
     let lastExtra = mainData[funcSets[0].length];
+    mainData.splice(funcSets[0].length);
 
     for (let i = 1; i < funcSets.length; i++) {
         if (!lastExtra || lastExtra.length == 0) break;
