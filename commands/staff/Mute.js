@@ -57,7 +57,7 @@ module.exports = Cmds.addCommand({
 
         const member = data[0];
         const mult = data[2] || 1;
-        const time = data[1] * 1000 * 60 * 60 * mult;
+        const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
         Mutes.addMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
