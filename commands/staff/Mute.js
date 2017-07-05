@@ -34,7 +34,7 @@ module.exports = Cmds.addCommand({
                     function (str) {
                         let mult;
                         str = str.toLowerCase();
-                        if (str.substr(str.length - 1, 1) == 's') str = str.substr(0, str.length - 1);
+                        if (str.substr(str.length - 1, 1) == 's' && str != 'ms' && str != 's') str = str.substr(0, str.length - 1);
                         if (str == 'millisecond' || str == 'ms') mult = 1 / 60 / 60 / 1000;
                         if (str == 'second' || str == 's' || str == 'sec') mult = 1 / 60 / 60;
                         if (str == 'minute' || str == 'm' || str == 'min') mult = 1 / 60;
