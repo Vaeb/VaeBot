@@ -1010,7 +1010,8 @@ client.on('message', (msgObj) => {
             const intervalNum = exports.calmSpeed / 1000;
             // var timeUntilSend = (exports.chatNext[guild.id] - nowTime) / 1000;
             author.send(`Your message has been deleted. ${guild.name} is temporarily in slow mode, meaning everyone must wait ${intervalNum} seconds 
-            after the previous message before they can send one.`);
+            after the previous message before they can send one.`)
+            .catch(console.error);
         }
         // exports.chatQueue[guild.id].push(msgObj);
     }
