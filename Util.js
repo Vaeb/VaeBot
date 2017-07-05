@@ -710,7 +710,7 @@ exports.formatTime = function (time) {
     const numMinutes = exports.round(time / 60000, 0.1);
     const numHours = exports.round(time / 3600000, 0.1);
     const numDays = exports.round(time / 86400000, 0.1);
-    const numYears = exports.round(time / 31536000000, 0.1);
+    const numYears = exports.round(time / 31556926080, 0.1);
 
     if (numSeconds < 60) {
         timeStr = numSeconds.toFixed(0);
