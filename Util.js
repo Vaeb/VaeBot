@@ -1198,6 +1198,21 @@ exports.remove = function (name) {
     FileSys.unlink(name);
 };
 
+exports.resolveUserMention = function (guild, id) {
+    let resolvedUser;
+
+    if (id == null) {
+        id = guild;
+        resolvedUser = client.users.get(id);
+    } else {
+        resolvedUser = exports.getMemberById(id, guild);
+    }
+
+    if (resolvedUser) return resolvedUser.toString();
+
+    return `<@${id}>`;
+};
+
 exports.getHistory = function (id, guild) {
     const userHistory = Data.guildGet(guild, Data.history, id);
     if (userHistory) return userHistory[0];
@@ -1237,6 +1252,16 @@ exports.getSafeId = function (id) {
     return id[0];
 };
 
+exports.getMemberById = function (id, guild) {
+    if (id == null || guild == null) return null;
+
+    if (id.substr(0, 1) === '<' && id.substr(id.length - 1, 1) === '>') id = exports.getSafeId(id);
+
+    if (id == null || id.length < 1) return null;
+
+    return guild.members.get(id);
+};
+
 exports.isId = function (id) {
     id = id.match(/^\d+$/);
 
@@ -1247,16 +1272,6 @@ exports.isId = function (id) {
     if (id.length < 16 || id.length > 19) return undefined;
 
     return id;
-};
-
-exports.getMemberById = function (id, guild) {
-    if (id == null || guild == null) return null;
-
-    if (id.substr(0, 1) === '<' && id.substr(id.length - 1, 1) === '>') id = exports.getSafeId(id);
-
-    if (id == null || id.length < 1) return null;
-
-    return guild.members.get(id);
 };
 
 exports.getMatchStrength = function (fullStr, subStr) { // [v2.0]
