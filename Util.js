@@ -1224,7 +1224,7 @@ exports.historyToString = function (num) {
 };
 
 exports.matchWholeNumber = function (str) {
-    let result = str.match(/^\d+(?:\.\d+)?$/);
+    let result = str.match(/^\d*(?:\.\d+)?$/);
     result = result ? result[0] : undefined;
     return result;
 };
