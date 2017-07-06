@@ -1006,7 +1006,8 @@ client.on('message', (msgObj) => {
         if (nowTime > exports.chatNext[guild.id]) {
             exports.chatNext[guild.id] = nowTime + exports.calmSpeed;
         } else {
-            msgObj.delete();
+            msgObj.delete()
+            .catch(console.error);
             const intervalNum = exports.calmSpeed / 1000;
             // var timeUntilSend = (exports.chatNext[guild.id] - nowTime) / 1000;
             author.send(`Your message has been deleted. ${guild.name} is temporarily in slow mode, meaning everyone must wait ${intervalNum} seconds 
