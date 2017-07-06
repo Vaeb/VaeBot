@@ -1454,6 +1454,61 @@ function getDataFromStringInner(str, funcs, returnExtra) {
     return undefined;
 }
 
+exports.getDataFromStringNew = function (str, funcSets, returnExtra) {
+    
+};
+
+/*
+
+    If optional parameters:
+        -Fixed order
+        -Only one function per optional parameter (so no need for putting each function in its own array)
+        -Some optional parameters might only be an option if a previous optional parameter exists
+        -Some optional parameters might not have a space before them
+        -Don't know which parameters are being used
+
+    ;cmd optionalParam1 name optionalParam2DependsOnOP1 optionalParam2 time
+
+    const data = Util.getDataFromString(args,
+        [
+            {
+                func: function (str) {
+                    return Util.getMemberByMixed(str, guild) || Util.isId(str);
+                },
+            },
+            {
+                func: function (str) {
+                    const timeHours = Util.matchWholeNumber(str);
+                    return timeHours;
+                },
+                optional: true,
+            },
+            {
+                func: function (str) {
+                    let mult;
+                    str = str.toLowerCase();
+                    if (str.substr(str.length - 1, 1) == 's' && str.length > 2) str = str.substr(0, str.length - 1);
+                    if (str == 'millisecond' || str == 'ms') mult = 1 / 60 / 60 / 1000;
+                    if (str == 'second' || str == 's' || str == 'sec') mult = 1 / 60 / 60;
+                    if (str == 'minute' || str == 'm' || str == 'min') mult = 1 / 60;
+                    if (str == 'hour' || str == 'h') mult = 1;
+                    if (str == 'day' || str == 'd') mult = 24;
+                    if (str == 'week' || str == 'w') mult = 24 * 7;
+                    if (str == 'month' || str == 'mo') mult = 24 * 30.42;
+                    if (str == 'year' || str == 'y') mult = 24 * 365.2422;
+                    return mult;
+                },
+                optional: true,
+                requires: 1,
+                prefix: / ?/,
+            },
+        ]
+    , true);
+
+    - Get all possible variations that match the prefixes
+
+*/
+
 exports.getDataFromString = function (str, funcSets, returnExtra) {
     if (typeof funcSets[0] == 'function') return getDataFromStringInner(str, funcSets, returnExtra);
 
