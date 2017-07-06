@@ -44,5 +44,7 @@ module.exports = Cmds.addCommand({
         }
 
         Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+
+        return true;
     },
 });
