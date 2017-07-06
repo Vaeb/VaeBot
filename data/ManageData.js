@@ -371,6 +371,8 @@ exports.connectInitial = async function (dbGuilds) {
     }
 };
 
+// Deprecated soon
+
 FileSys.readFile(autoRoleDir, 'utf-8', (err, data) => {
     if (err) throw err;
 
