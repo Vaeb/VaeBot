@@ -1454,10 +1454,6 @@ function getDataFromStringInner(str, funcs, returnExtra) {
     return undefined;
 }
 
-exports.getDataFromStringNew = function (str, funcSets, returnExtra) {
-    
-};
-
 /*
 
     If optional parameters:
@@ -1533,6 +1529,71 @@ exports.getDataFromString = function (str, funcSets, returnExtra) {
     mainData.push(lastExtra);
 
     return mainData;
+};
+
+function matchSet(str, funcSets, setIndex, data) {
+    if (setIndex >= funcSets.length) {
+        data.extra = str;
+        return true;
+    }
+    data.fail = Math.max(data.fail, setIndex);
+    console.log(`Loop ${setIndex}`);
+    const set = funcSets[setIndex++];
+    if (set.requires && data[set.requires] === undefined) {
+        console.log('Missing requires');
+        if (!set.optional) return false;
+        data.push(undefined);
+        if (matchSet(str, funcSets, setIndex, data)) return true;
+        data.pop();
+    } else if (str.length === 0) {
+        for (let i = setIndex - 1, s; s = funcSets[i]; i++) {
+            if (!s.optional) return false;
+        }
+        return true;
+    }
+    const pMatch = str.match(set.prefix || (setIndex === 1 ? /\s*/ : /\s+/));
+    console.log('\t', pMatch, setIndex, set.prefix || (setIndex === 1 ? /\s*/ : /\s+/));
+    if (!pMatch) return false;
+    if (pMatch.index !== 0) return false;
+    str = str.substr(pMatch[0].length);
+    for (let i = str.length; i >= 0; i--) {
+        const part = str.substr(0, i);
+        // console.log(`\tchecking part ${part}`);
+        let good = true;
+        if (set.match) {
+            const mMatch = part.match(set.match);
+            good = mMatch[0] == part;
+        }
+        const res = good && set.func(part);
+        if (!res || !good) continue;
+        // console.log("Got", res, "for", data.length, "with length", i);
+        data.push(res);
+        const left = str.substr(i);
+        if (matchSet(left, funcSets, setIndex, data)) {
+            // console.log("Reached the end, yeuy!");
+            return true;
+        }
+        data.pop();
+        if (set.longest) return false;
+    }
+    if (!set.optional) return false;
+    return matchSet(str, funcSets, setIndex, data);
+}
+
+exports.getDataFromString2 = function (str, funcSets, returnExtra) {
+    const data = [];
+    data.fail = 0;
+    const done = [];
+    const success = matchSet(str, funcSets, 0, data, done);
+    data.success = success;
+    if (success) {
+        if (!returnExtra) data.extra = undefined;
+        for (let i = data.length; i < funcSets.length; i++) {
+            data.push(undefined);
+        }
+        delete data.fail;
+    }
+    return data;
 };
 
 exports.clamp = function (num, minParam, maxParam) {
