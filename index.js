@@ -690,42 +690,25 @@ client.on('messageDelete', (msgObj) => {
     // const isStaff = author.id == vaebId;
     // const msgId = msgObj.id;
 
-    if (author.id === vaebId) return;
+    // if (author.id === vaebId) return;
 
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     if (guild != null) {
-        setTimeout(() => {
-            guild.fetchAuditLogs({
-                // user: member,
-                // limit: 1,
-                type: 'MESSAGE_DELETE',
-            })
-            .then((/* logs */) => {
-                // console.log('[MD] Got audit log data');
-                // const entry = logs.entries.first();
+        const attachmentLinks = [];
+        msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
 
-                // console.log(entry);
-
-                // console.log(entry.executor.toString());
-                // console.log(entry.target.toString());
-
-                const sendLogData = [
-                    'Message Deleted',
-                    guild,
-                    author,
-                    { name: 'Username', value: author.toString() },
-                    // { name: 'Moderator', value: entry.executor.toString() },
-                    { name: 'Channel Name', value: channel.toString() },
-                    { name: 'Message', value: content },
-                ];
-                Util.sendLog(sendLogData, colMessage);
-            })
-            .catch((error) => {
-                console.log(error);
-                console.log('[MD] Failed to get audit log data');
-            });
-        }, 2000);
+        const sendLogData = [
+            'Message Deleted',
+            guild,
+            author,
+            { name: 'Username', value: author.toString() },
+            // { name: 'Moderator', value: entry.executor.toString() },
+            { name: 'Channel Name', value: channel.toString() },
+            { name: 'Message', value: content },
+            { name: 'Attachments', value: attachmentLinks.join('\n') },
+        ];
+        Util.sendLog(sendLogData, colMessage);
 
         /* setTimeout(() => {
             guild.fetchAuditLogs({
