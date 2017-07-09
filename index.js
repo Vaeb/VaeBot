@@ -818,14 +818,13 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     contentLower = contentLower.replace(/finest/g, 'best');
     contentLower = contentLower.replace(/perfect/g, 'best');
     contentLower = contentLower.replace(/top/g, 'best');
-    contentLower = contentLower.replace(/bst/g, 'best');
     contentLower = contentLower.replace(/hack/g, 'exploit');
     contentLower = contentLower.replace(/hax/g, 'exploit');
     contentLower = contentLower.replace(/le?v.?l(?:\d|s|f)/g, 'exploit');
 
     let triggered = 0;
 
-    const trigger = [/what/g, /best/g, /exploit/g];
+    const trigger = [/wh?[au]t/g, /b\S?st/g, /explo\S?t/g];
     for (let i = 0; i < trigger.length; i++) {
         if (trigger[i].test(contentLower)) triggered++;
     }
