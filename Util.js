@@ -1269,7 +1269,7 @@ exports.isId = function (id) {
 
     id = id[0];
 
-    if (id.length < 16 || id.length > 19) return undefined;
+    if (id.length < 17 || id.length > 19) return undefined;
 
     return id;
 };

@@ -211,11 +211,12 @@ function setBriefing() {
 exports.globalBan = {
     '201740276472086528': true,
     '75736018761818112': true,
-    '123146298504380416': true,
+    '123146298504380416': true, // Oseday
     '263372398059847681': true,
-    '238981466606927873': true,
+    '238981466606927873': true, // Lindah
     '189687397951209472': true, // xCraySECx / Nico Nico
     '154255141317378050': true, // HighDefinition
+    '157749388964265985': true, // Zetroxer
 };
 
 function securityFunc(guild, member, sendRoleParam) {
@@ -817,9 +818,10 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     contentLower = contentLower.replace(/finest/g, 'best');
     contentLower = contentLower.replace(/perfect/g, 'best');
     contentLower = contentLower.replace(/top/g, 'best');
+    contentLower = contentLower.replace(/bst/g, 'best');
     contentLower = contentLower.replace(/hack/g, 'exploit');
     contentLower = contentLower.replace(/hax/g, 'exploit');
-    contentLower = contentLower.replace(/le?v.?l\d/g, 'exploit');
+    contentLower = contentLower.replace(/le?v.?l(?:\d|s|f)/g, 'exploit');
 
     let triggered = 0;
 
