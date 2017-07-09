@@ -22,16 +22,20 @@ module.exports = Cmds.addCommand({
         const sendEmbedFields = [];
 
         for (let i = 0; i < activeMutes.length; i++) {
-            const nowMute = activeMutes[i];
-            const targetId = nowMute.user_id;
-            const endTime = nowMute.end_tick;
-            const reason = nowMute.mute_reason;
+            const muteRecord = activeMutes[i];
+            const targetId = muteRecord.user_id;
+            const startTime = muteRecord.start_tick;
+            const endTime = muteRecord.end_tick;
+            const reason = muteRecord.mute_reason;
 
             const remaining = endTime - nowDate;
             const timeStr = Util.formatTime(remaining);
-            const targUser = Util.getUserById(targetId);
-            const targName = targUser == null ? targetId : Util.getMostName(targUser);
-            sendEmbedFields.push({ name: targName, value: `​\nUser: <@${targetId}>\n\nReason: ${reason}\n\nRemaining: ${timeStr}\n​`, inline: false });
+            // const targUser = Util.getUserById(targetId);
+            // const targName = targUser == null ? targetId : Util.getMostName(targUser);
+            const muteDate = new Date(startTime);
+            const muteDateStr = Util.getDateString(muteDate);
+
+            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​User: <@${targetId}>\nReason: ${reason}\nRemaining: ${timeStr}​`, inline: false });
         }
 
         Util.sendEmbed(channel, 'Active Mutes', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
