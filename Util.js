@@ -1333,6 +1333,96 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
     const str2Lower = name.toLowerCase();
 
     const members = guild.members;
+
+    let strongest = null;
+
+    members.forEach((member) => {
+        let realName = member.nickname != null ? member.nickname : exports.getName(member);
+        if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
+        realName = realName.trim();
+        let realstr2Lower = realName.toLowerCase();
+        let nameMatch = realstr2Lower.indexOf(str2Lower);
+
+        const strength = { 'member': member };
+        let layer = 0;
+
+        if (nameMatch >= 0) {
+            strength[layer++] = 2;
+        } else {
+            realName = exports.getName(member);
+            if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
+            realName = realName.trim();
+            realstr2Lower = realName.toLowerCase();
+            nameMatch = realstr2Lower.indexOf(str2Lower);
+            if (nameMatch >= 0) {
+                strength[layer++] = 1;
+            }
+        }
+
+        if (nameMatch >= 0) {
+            // console.log("\n(" + i + ") " + realName + ": " + value);
+            const filled = Math.min(name.length / realName.length, 0.999);
+            // console.log("filled: " + filled);
+            strength[layer++] = filled;
+
+            const maxCaps = Math.min(name.length, realName.length);
+            let numCaps = 0;
+            for (let j = 0; j < maxCaps; j++) {
+                if (name[j] === realName[nameMatch + j]) numCaps++;
+            }
+            const caps = Math.min(numCaps / maxCaps, 0.999);
+            // const capsExp = (filledExp * 0.5 - 1 + caps);
+            // console.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
+            strength[layer++] = caps;
+
+            const totalPosition = realName.length - name.length;
+            const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
+            // const percExp = (capsExp - 2 + perc);
+            // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
+            strength[layer++] = perc;
+
+            if (strongest == null) {
+                strongest = strength;
+            } else {
+                for (let i = 0; i < layer; i++) {
+                    if (strength[i] > strongest[i]) {
+                        strongest = strength;
+                        break;
+                    } else if (strength[i] < strongest[i]) {
+                        break;
+                    }
+                }
+            }
+        }
+    });
+
+    return strongest != null ? strongest.member : null;
+};
+
+exports.getMemberByNameOld = function (name, guild) { // [v2.0] Visible name match, real name match, length match, caps match, position match //
+    if (guild == null) return undefined;
+
+    const nameDiscrim = exports.getDiscriminatorFromName(name);
+    if (nameDiscrim) {
+        const namePre = name.substr(0, name.length - 5);
+        const member = guild.members.find(m => m.user.username === namePre && m.user.discriminator === nameDiscrim);
+        if (member) return member;
+    }
+
+    let removeUnicode = true;
+    const origName = name.trim();
+
+    name = name.replace(/[^\x00-\x7F]/g, '');
+    name = name.trim();
+
+    if (name.length == 0) {
+        name = origName;
+        removeUnicode = false;
+    }
+
+    const str2Lower = name.toLowerCase();
+
+    const members = guild.members;
     const matchStrength = [];
     let strongest = [0, undefined];
 
@@ -1346,7 +1436,7 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
         let nameMatch = realstr2Lower.indexOf(str2Lower);
 
         if (nameMatch >= 0) {
-            value += 2 ** 4;
+            value += 2 ** 5;
         } else {
             realName = exports.getName(member);
             if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
@@ -1354,15 +1444,16 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
             realstr2Lower = realName.toLowerCase();
             nameMatch = realstr2Lower.indexOf(str2Lower);
             if (nameMatch >= 0) {
-                value += 2 ** (3);
+                value += 2 ** 4;
             }
         }
 
         if (nameMatch >= 0) {
             // console.log("\n(" + i + ") " + realName + ": " + value);
             const filled = Math.min(name.length / realName.length, 0.999);
+            const filledExp = (2 + filled);
             // console.log("filled: " + filled);
-            value += 2 ** (2 + filled);
+            value += 2 ** filledExp;
 
             const maxCaps = Math.min(name.length, realName.length);
             let numCaps = 0;
@@ -1370,13 +1461,17 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
                 if (name[j] === realName[nameMatch + j]) numCaps++;
             }
             const caps = Math.min(numCaps / maxCaps, 0.999);
+            // const capsExp = (filledExp * 0.5 - 1 + caps);
+            const capsExp = (1 + caps);
             // console.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
-            value += 2 ** (1 + caps);
+            value += 2 ** capsExp;
 
             const totalPosition = realName.length - name.length;
             const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
+            // const percExp = (capsExp - 2 + perc);
+            const percExp = (0 + perc);
             // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
-            value += 2 ** perc;
+            value += 2 ** percExp;
 
             // console.log(value);
             matchStrength.push([value, member]);
