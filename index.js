@@ -87,6 +87,7 @@ exports.blockedUsers = {};
 exports.blockedWords = [];
 
 exports.runFuncs = [];
+exports.warnedImage = {};
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -838,8 +839,8 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     contentLower = contentLower.replace(/perfect/g, 'best');
     contentLower = contentLower.replace(/top/g, 'best');
     contentLower = contentLower.replace(/hack/g, 'exploit');
-    contentLower = contentLower.replace(/hax/g, 'exploit');
-    contentLower = contentLower.replace(/le?v.?l(?:\d|s|f)/g, 'exploit');
+    contentLower = contentLower.replace(/h\Sx/g, 'exploit');
+    contentLower = contentLower.replace(/le?v\S?l(?:\d|s|f)/g, 'exploit');
 
     let triggered = 0;
 
