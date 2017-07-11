@@ -546,6 +546,25 @@ client.on('guildMemberUpdate', (oldMember, member) => {
     }
 });
 
+/*client.on('userUpdate', (oldUser, user) => {
+    const oldUsername = oldUser.username;
+    const newUsername = user.username;
+
+    if (oldUsername !== newUsername) {
+        Events.emit(guild, 'UserNicknameUpdate', member, previousNick, nowNick);
+
+        const sendLogData = [
+            'Username Updated',
+            guild,
+            member,
+            { name: 'Username', value: member.toString() },
+            { name: 'Old Nickname', value: previousNick },
+            { name: 'New Nickname', value: nowNick },
+        ];
+        Util.sendLog(sendLogData, colUser);
+    }
+});*/
+
 client.on('messageUpdate', (oldMsgObj, newMsgObj) => {
     if (newMsgObj == null) return;
     const channel = newMsgObj.channel;
