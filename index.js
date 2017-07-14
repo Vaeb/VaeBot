@@ -590,7 +590,7 @@ client.on('messageUpdate', (oldMsgObj, newMsgObj) => {
 
     if (exports.runFuncs.length > 0) {
         for (let i = 0; i < exports.runFuncs.length; i++) {
-            exports.runFuncs[i](newMsgObj, member, channel, guild);
+            exports.runFuncs[i](newMsgObj, member, channel, guild, true);
         }
     }
 
@@ -855,35 +855,47 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
-exports.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
+exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
+    if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true) return;
 
-    let contentLower = msgObj.content.toLowerCase();
+    let contentLower = msgObj.content.toLowerCase().trim();
 
     if (contentLower == '!buy') return;
 
-    contentLower = contentLower.replace(/\s/g, '');
+    // contentLower = contentLower.replace(/\s/g, '');
     contentLower = contentLower.replace(/it/g, 'veil');
     contentLower = contentLower.replace(/this/g, 'veil');
     contentLower = contentLower.replace(/veli/g, 'veil');
     contentLower = contentLower.replace(/v[ie][ie]l/g, 'veil');
     contentLower = contentLower.replace(/hack/g, 'veil');
     contentLower = contentLower.replace(/h\Sx/g, 'veil');
-    contentLower = contentLower.replace(/le?v\S?l(?:\d|s|f)/g, 'veil');
-    contentLower = contentLower.replace(/exploit/g, 'veil');
-    contentLower = contentLower.replace(/pay/g, 'buy');
+    contentLower = contentLower.replace(/le?v\S?l.?(?:\d|s|f)/g, 'veil');
+    contentLower = contentLower.replace(/explo\S?t/g, 'veil');
+    contentLower = contentLower.replace(/pay\b/g, 'buy');
     // contentLower = contentLower.replace(/get/g, 'buy');
-    contentLower = contentLower.replace(/getveil/g, 'buy');
+    contentLower = contentLower.replace(/get veil/g, 'buy');
     contentLower = contentLower.replace(/purchas.?/g, 'buy');
 
-    let triggered = 0;
+    let triggered = false;
 
-    const trigger = [/buy/g/* , /veil/g */];
-    for (let i = 0; i < trigger.length; i++) {
-        if (trigger[i].test(contentLower)) triggered++;
+    if (contentLower.substr(contentLower.length - 3, 3) == 'buy') {
+        triggered = true;
     }
 
-    if (triggered == trigger.length) {
+    if (!triggered) {
+        let triggeredNum = 0;
+
+        const trigger = [/buy\b/g, /veil/g];
+        for (let i = 0; i < trigger.length; i++) {
+            if (trigger[i].test(contentLower)) triggeredNum++;
+        }
+
+        if (triggeredNum == trigger.length) {
+            triggered = true;
+        }
+    }
+
+    if (triggered) {
         Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, 0x00E676);
     }
 });
@@ -931,7 +943,7 @@ client.on('message', (msgObj) => {
 
     if (exports.runFuncs.length > 0) {
         for (let i = 0; i < exports.runFuncs.length; i++) {
-            exports.runFuncs[i](msgObj, speaker, channel, guild);
+            exports.runFuncs[i](msgObj, speaker, channel, guild, false);
         }
     }
 
