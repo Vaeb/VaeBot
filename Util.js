@@ -903,7 +903,7 @@ function chunkMessage(msg) {
             let pivotStart = chunk.lastIndexOf(splitChars); // exclusive
             let pivotEnd = pivotStart; // inclusive
 
-            if (!pivotStart) continue;
+            if (pivotStart == -1) continue;
 
             if (splitType == 1) { // Split End
                 pivotStart += splitChars.length;
@@ -921,7 +921,7 @@ function chunkMessage(msg) {
                 if (numSets % 2 == 1) continue;
             }
 
-            console.log(`Split on ${splitChars}`);
+            console.log(`Split on ${splitChars} @ ${pivotStart} @ ${pivotEnd}`);
 
             chunk = chunkTemp;
             leftOver = content.substr(pivotEnd);
