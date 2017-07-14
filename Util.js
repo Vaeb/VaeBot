@@ -914,7 +914,7 @@ function chunkMessage(msg) {
 
             const chunkTemp = chunk.substring(0, pivotStart);
 
-            if (chunkTemp.length <= baseChunkSize) continue;
+            if (chunkTemp.length <= leaveExtra) continue;
 
             if (splitChars == '```') { // Has to be closing a block
                 const numSets = (chunkTemp.match(new RegExp(exports.escapeRegExp(splitChars), 'g')) || []).length;
