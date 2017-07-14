@@ -893,6 +893,8 @@ function chunkMessage(msg) {
             chunk = appendBeginning[j] + chunk;
         }
 
+        const addedChars = chunk.length - baseChunkSize;
+
         appendBeginning = [];
 
         for (let j = 0; j < splitSets.length; j++) {
@@ -924,7 +926,13 @@ function chunkMessage(msg) {
             console.log(`Split on ${splitChars} @ ${pivotStart} @ ${pivotEnd}`);
 
             chunk = chunkTemp;
-            leftOver = content.substr(pivotEnd);
+            leftOver = content.substr(addedChars + pivotEnd);
+
+            if (i == 1) {
+                console.log(chunkTemp);
+                console.log('---');
+                console.log(leftOver);
+            }
 
             break;
         }
