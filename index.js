@@ -866,6 +866,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     contentLower = contentLower.replace(/\bthe /g, '');
     contentLower = contentLower.replace(/\bit\b/g, 'veil');
     contentLower = contentLower.replace(/\bthis\b/g, 'veil');
+    contentLower = contentLower.replace(/\bvel\b/g, 'veil');
     contentLower = contentLower.replace(/\bveli/g, 'veil');
     contentLower = contentLower.replace(/\bv[ie][ie]l/g, 'veil');
     contentLower = contentLower.replace(/hack\b/g, 'veil');
