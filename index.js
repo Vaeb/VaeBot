@@ -863,6 +863,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     if (contentLower == '!buy') return;
 
     // contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/\bthe /g, '');
     contentLower = contentLower.replace(/\bit\b/g, 'veil');
     contentLower = contentLower.replace(/\bthis\b/g, 'veil');
     contentLower = contentLower.replace(/\bveli/g, 'veil');
