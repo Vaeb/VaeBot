@@ -861,6 +861,7 @@ exports.escapeRegExp = function (str) {
             Newline
             Space
             Any
+        -Make it so that if last chunk continued string onto next chunk, next chunk cuts at end of that string
 */
 
 const formatSets = [
@@ -912,14 +913,21 @@ function chunkMessage(msg) {
                 pivotEnd += splitChars.length;
             }
 
-            const chunkTemp = chunk.substring(0, pivotStart);
-
-            if (chunkTemp.length <= leaveExtra) continue;
+            let chunkTemp = chunk.substring(0, pivotStart);
 
             if (splitChars == '```') { // Has to be closing a block
                 const numSets = (chunkTemp.match(new RegExp(exports.escapeRegExp(splitChars), 'g')) || []).length;
-                if (numSets % 2 == 1) continue;
+                if (numSets % 2 == 1) {
+                    if (numSets == 1) continue;
+                    pivotStart = chunk.substring(0, pivotStart - splitChars.length).lastIndexOf(splitChars);
+                    if (pivotStart == -1) continue;
+                    pivotStart += splitChars.length;
+                    pivotEnd = pivotStart;
+                    chunkTemp = chunk.substring(0, pivotStart);
+                }
             }
+
+            if (chunkTemp.length <= leaveExtra) continue;
 
             console.log(`Split on ${splitChars} @ ${pivotStart} @ ${pivotEnd}`);
 
