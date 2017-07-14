@@ -840,9 +840,112 @@ exports.fixMessageLengthNew = function (msgParam) {
     return argsFixed;
 }*/
 
-exports.splitMessages = function (messages) {
+exports.splitMessagesOld = function (messages) {
     const fixed = exports.fixMessageLengthNew(messages.join(' '));
     return fixed;
+};
+
+/*
+
+    chunkMessage
+        -Split messages into chunks <= exports.charLimit characters
+        -Chunks retain format (`, ``, ```, *, **, ***, _, __, ___) and thus account for fitting in format characters
+        -Message splitting focuses on retaining format over reducing number of chunks:
+            End ```
+            Newline + Newline
+            Newline + Format character(s)
+            Newline
+            Space
+            Any
+*/
+
+const formatSets = [
+    ['___', '__', '_'],
+    ['***', '**', '*'],
+    ['```', '``', '`'],
+];
+
+const splitSets = [ // pivot: -1 = Split Start, 0 = Remove, 1 = Split End
+    { chars: '```', pivot: 1 }, // Only applies to end ```
+    { chars: '\n\n', pivot: 0 },
+    { chars: '\n', pivot: 0 },
+    { chars: ' ', pivot: 0 },
+];
+
+const leaveExtra = 3 * formatSets.length * 2;
+
+function chunkMessage(msg) {
+    const origChunks = [msg];
+    let content = msg;
+    let appendBeginning = [];
+
+    const baseChunkSize = exports.charLimit - leaveExtra;
+
+    for (let i = 0; content; ++i, content = origChunks[i]) {
+        let chunk = content.substr(0, baseChunkSize);
+        let leftOver;
+
+        for (let j = 0; j < appendBeginning.length; j++) {
+            chunk = appendBeginning[j] + chunk;
+        }
+
+        appendBeginning = [];
+
+        for (let j = 0; j < splitSets.length; j++) {
+            const splitSet = splitSets[j];
+            const splitChars = splitSet.chars;
+            const splitType = splitSet.pivot;
+
+            let pivotStart = chunk.lastIndexOf(splitChars); // exclusive
+            let pivotEnd = pivotStart; // inclusive
+
+            if (!pivotStart) continue;
+
+            if (splitType == 1) { // Split End
+                pivotStart += splitChars.length;
+                pivotEnd = pivotStart;
+            } else if (splitType == 0) { // Remove
+                pivotEnd += splitChars.length;
+            }
+
+            const chunkTemp = chunk.substring(0, pivotStart);
+
+            if (chunkTemp.length <= baseChunkSize) continue;
+
+            if (splitChars == '```') { // Has to be closing a block
+                const numSets = (chunkTemp.match(new RegExp(splitChars, 'g')) || []).length;
+                if (numSets % 2 == 1) continue;
+            }
+
+            chunk = chunkTemp;
+            leftOver = content.substr(pivotEnd);
+        }
+
+        if (leftOver == null) leftOver = content.substr(baseChunkSize);
+
+        for (let j = 0; j < formatSets.length; j++) {
+            const formatSet = formatSets[j];
+
+            for (let k = 0; k < formatSet.length; k++) {
+                const formatChars = formatSet[k];
+                const numSets = (chunk.match(new RegExp(formatChars, 'g')) || []).length;
+
+                if (numSets % 2 == 1) {
+                    chunk += formatChars;
+                    appendBeginning.push(formatChars);
+                    break;
+                }
+            }
+        }
+
+        origChunks[i] = chunk;
+
+        if (leftOver && leftOver.length > 0) origChunks.push(leftOver);
+    }
+}
+
+exports.splitMessages = function (messages) {
+    return chunkMessage(messages.join(' '));
 };
 
 const ePrint = error => console.log(`\n[E_Print] ${error}`);
