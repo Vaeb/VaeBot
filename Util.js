@@ -864,7 +864,7 @@ exports.escapeRegExp = function (str) {
 */
 
 const formatSets = [
-    ['___', '__', '_'],
+    ['___', '__'],
     ['***', '**', '*'],
     ['```', '``', '`'],
 ];
@@ -876,7 +876,7 @@ const splitSets = [ // pivot: -1 = Split Start, 0 = Remove, 1 = Split End
     { chars: ' ', pivot: 0 },
 ];
 
-const leaveExtra = 3 * formatSets.length * 2;
+const leaveExtra = formatSets.reduce((a, b) => a.concat(b)).length * 2;
 
 function chunkMessage(msg) {
     const origChunks = [msg];
@@ -932,7 +932,7 @@ function chunkMessage(msg) {
 
             for (let k = 0; k < formatSet.length; k++) {
                 const formatChars = formatSet[k];
-                const numSets = (chunk.match(new RegExp(exports.escapeRegExp(formatChars), 'g')) || []).length;
+                const numSets = (chunk.match(new RegExp(exports.escapeRegExp(formatChars), 'g')) || []).length; // Should really only be counting matches not inside code blocks
 
                 if (numSets % 2 == 1) {
                     chunk += formatChars;
