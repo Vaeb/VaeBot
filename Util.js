@@ -925,6 +925,8 @@ function chunkMessage(msg) {
 
             chunk = chunkTemp;
             leftOver = content.substr(pivotEnd);
+
+            break;
         }
 
         if (leftOver == null) {
