@@ -845,6 +845,10 @@ exports.splitMessagesOld = function (messages) {
     return fixed;
 };
 
+exports.escapeRegExp = function (str) {
+    return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 /*
 
     chunkMessage
@@ -913,7 +917,7 @@ function chunkMessage(msg) {
             if (chunkTemp.length <= baseChunkSize) continue;
 
             if (splitChars == '```') { // Has to be closing a block
-                const numSets = (chunkTemp.match(new RegExp(splitChars, 'g')) || []).length;
+                const numSets = (chunkTemp.match(new RegExp(exports.escapeRegExp(splitChars), 'g')) || []).length;
                 if (numSets % 2 == 1) continue;
             }
 
@@ -928,7 +932,7 @@ function chunkMessage(msg) {
 
             for (let k = 0; k < formatSet.length; k++) {
                 const formatChars = formatSet[k];
-                const numSets = (chunk.match(new RegExp(formatChars, 'g')) || []).length;
+                const numSets = (chunk.match(new RegExp(exports.escapeRegExp(formatChars), 'g')) || []).length;
 
                 if (numSets % 2 == 1) {
                     chunk += formatChars;
