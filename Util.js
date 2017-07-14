@@ -28,6 +28,8 @@ const DateFormat = index.DateFormat;
 const Exec = index.Exec;
 const Path = index.Path;
 
+exports.charLimit = 1999;
+
 exports.regexURLPerfect = new RegExp(
     '^' +
         // protocol identifier
@@ -762,7 +764,8 @@ exports.cutStringSafe = function (msg, postMsg, lastIsOpener) { // Tries to cut 
 };
 
 exports.fixMessageLengthNew = function (msgParam) {
-    const argsFixed = exports.chunkString(msgParam, 2000); // Group string into sets of 2k chars
+    const argsFixed = exports.chunkString(msgParam, exports.charLimit); // Group string into sets of 2k chars
+    const minusLimit = exports.charLimit - 4;
     // argsFixed.forEach(o => console.log("---\n" + o));
     let totalBlocks = 0; // Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
     for (let i = 0; i < argsFixed.length; i++) {
@@ -772,9 +775,9 @@ exports.fixMessageLengthNew = function (msgParam) {
         if (totalBlocks % 2 == 1) msg = `\`\`\`\n${msg}`; // If code block is currently open then this chunk needs to be formatted
         totalBlocks += numBlock; // The user created code blocks may close/open new code block (don't need to include added ones because they just account for seperate messages)
         let lastIsOpener = totalBlocks % 2 == 1; // Checks whether the last code block is an opener or a closer
-        if (lastIsOpener && msg.length > 1996) { // If the chunk ends with the code block still open then it needs to be auto-closed so the chunk needs to be shortened so it can fit
-            passOver = msg.substring(1996);
-            msg = msg.substr(0, 1996);
+        if (lastIsOpener && msg.length > minusLimit) { // If the chunk ends with the code block still open then it needs to be auto-closed so the chunk needs to be shortened so it can fit
+            passOver = msg.substring(minusLimit);
+            msg = msg.substr(0, minusLimit);
             const numPass = (passOver.match(/```/g) || []).length; // If we end up passing over code blocks whilst trying to shorten the string, we need to account for the new amount
             totalBlocks -= numPass;
             if (numPass % 2 == 1) lastIsOpener = false;
@@ -847,7 +850,9 @@ const ePrint = error => console.log(`\n[E_Print] ${error}`);
 exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
     for (let i = 0; i < messages.length; i++) {
-        channel.send(messages[i])
+        const msg = messages[i];
+        console.log(`${channel.name}: ${msg.length}`);
+        channel.send(msg)
         .catch(ePrint);
     }
 };
