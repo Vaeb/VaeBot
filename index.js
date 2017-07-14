@@ -829,7 +829,7 @@ console.log(contentLower); */
     }
 }); */
 
-exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
 
     let contentLower = msgObj.content.toLowerCase();
@@ -852,6 +852,39 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
 
     if (triggered == trigger.length) {
         Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Auto-Mute] Asking stupid questions' });
+    }
+});
+
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
+
+    let contentLower = msgObj.content.toLowerCase();
+
+    if (contentLower == '!buy') return;
+
+    contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/it/g, 'veil');
+    contentLower = contentLower.replace(/this/g, 'veil');
+    contentLower = contentLower.replace(/veli/g, 'veil');
+    contentLower = contentLower.replace(/v[ie][ie]l/g, 'veil');
+    contentLower = contentLower.replace(/hack/g, 'veil');
+    contentLower = contentLower.replace(/h\Sx/g, 'veil');
+    contentLower = contentLower.replace(/le?v\S?l(?:\d|s|f)/g, 'veil');
+    contentLower = contentLower.replace(/exploit/g, 'veil');
+    contentLower = contentLower.replace(/pay/g, 'buy');
+    // contentLower = contentLower.replace(/get/g, 'buy');
+    contentLower = contentLower.replace(/getveil/g, 'buy');
+    contentLower = contentLower.replace(/purchas.?/g, 'buy');
+
+    let triggered = 0;
+
+    const trigger = [/buy/g/* , /veil/g */];
+    for (let i = 0; i < trigger.length; i++) {
+        if (trigger[i].test(contentLower)) triggered++;
+    }
+
+    if (triggered == trigger.length) {
+        Util.sendDescEmbed(channel, 'Buying Veil', 'To buy veil send a message saying !buy', 'System', null, 0x00E676);
     }
 });
 
