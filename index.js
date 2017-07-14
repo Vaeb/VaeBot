@@ -863,15 +863,15 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     if (contentLower == '!buy') return;
 
     // contentLower = contentLower.replace(/\s/g, '');
-    contentLower = contentLower.replace(/it/g, 'veil');
-    contentLower = contentLower.replace(/this/g, 'veil');
-    contentLower = contentLower.replace(/veli/g, 'veil');
-    contentLower = contentLower.replace(/v[ie][ie]l/g, 'veil');
-    contentLower = contentLower.replace(/hack/g, 'veil');
-    contentLower = contentLower.replace(/h\Sx/g, 'veil');
+    contentLower = contentLower.replace(/\bit\b/g, 'veil');
+    contentLower = contentLower.replace(/\bthis\b/g, 'veil');
+    contentLower = contentLower.replace(/\bveli/g, 'veil');
+    contentLower = contentLower.replace(/\bv[ie][ie]l/g, 'veil');
+    contentLower = contentLower.replace(/hack\b/g, 'veil');
+    contentLower = contentLower.replace(/\bh\Sx\b/g, 'veil');
     contentLower = contentLower.replace(/le?v\S?l.?(?:\d|s|f)/g, 'veil');
-    contentLower = contentLower.replace(/explo\S?t/g, 'veil');
-    contentLower = contentLower.replace(/pay\b/g, 'buy');
+    contentLower = contentLower.replace(/explo\S?t\b/g, 'veil');
+    contentLower = contentLower.replace(/\bpay\b/g, 'buy');
     // contentLower = contentLower.replace(/get/g, 'buy');
     contentLower = contentLower.replace(/get veil/g, 'buy');
     contentLower = contentLower.replace(/purchas.?/g, 'buy');
