@@ -946,6 +946,8 @@ function chunkMessage(msg) {
 
         if (leftOver && leftOver.length > 0) origChunks.push(leftOver);
     }
+
+    return origChunks;
 }
 
 exports.splitMessages = function (messages) {
