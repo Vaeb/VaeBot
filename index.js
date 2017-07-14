@@ -884,7 +884,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered == trigger.length) {
-        Util.sendDescEmbed(channel, 'Buying Veil', 'To buy veil send a message saying !buy', 'System', null, 0x00E676);
+        Util.sendDescEmbed(channel, 'Buying Veil', 'To buy veil send a message saying !buy', null, null, 0x00E676);
     }
 });
 
