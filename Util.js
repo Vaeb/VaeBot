@@ -1814,6 +1814,21 @@ exports.permEnabled = function (iPerms, permName) {
     return undefined;
 };
 
+exports.getRolePermissions = function (role, channel) {
+    const outPerms = [];
+
+    if (!channel) {
+        for (let i = 0; i < exports.rolePermissions.length; i++) {
+            const permName = exports.rolePermissions[i];
+            if (role.hasPermission(permName)) {
+                outPerms.push(permName);
+            }
+        }
+    }
+
+    return outPerms;
+};
+
 exports.getPermRating = function (guild, userOrRole) {
     if (userOrRole.hasPermission == null) return 0;
 

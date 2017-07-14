@@ -16,37 +16,36 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         const outStr = ['**Guild info:**\n```'];
-        outStr.push(`ID: ${guild.id}`);
         outStr.push(`Name: ${guild.name}`);
+        outStr.push(`ID: ${guild.id}`);
         outStr.push(`Owner: ${Util.getName(guild.owner)} (${guild.ownerID})`);
         outStr.push(`Icon: ${guild.iconURL('png')}`);
-        outStr.push(`Splash: ${guild.splashURL}`);
-        outStr.push(`Emojis: ${guild.emojis.length > 0 ? JSON.stringify(guild.emojis) : 'null'}`);
+        outStr.push(`Emojis: ${guild.emojis.size > 0 ? JSON.stringify(guild.emojis) : 'null'}`);
         outStr.push(`AFK timeout: ${guild.afkTimeout} seconds`);
         outStr.push(`Region: ${guild.region}`);
         outStr.push(`Member count: ${guild.memberCount}`);
         outStr.push(`Created: ${guild.createdAt}`);
-        outStr.push(`Main channel: ${guild.defaultChannel.name} (${guild.defaultChannel.id})`);
+        outStr.push(`Main channel: #${guild.defaultChannel.name}`);
         outStr.push('```');
         outStr.push('**Guild text channels:**\n```');
-        Util.getTextChannels(guild).forEach((value, index, self) => {
+        Util.getTextChannels(guild).forEach((value) => {
             outStr.push(`Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${value.createdAt}`);
         });
         outStr.push('```');
         outStr.push('**Guild voice channels:**\n```');
-        Util.getVoiceChannels(guild).forEach((value, index, self) => {
+        Util.getVoiceChannels(guild).forEach((value) => {
             outStr.push(`Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${value.createdAt} | Bitrate: ${value.bitrate}`);
         });
         outStr.push('```');
         outStr.push('**Guild roles:**\n```');
-        guild.roles.forEach((value, index, self) => {
+        guild.roles.forEach((value) => {
             outStr.push(`Role: ${value.name} (${value.id}) | Position: ${value.position} | Mentionable: ${value.mentionable} | Color: ${value.color}`);
         });
         outStr.push('```');
         outStr.push('**Guild permissions:**\n```');
-        guild.roles.forEach((value, index, self) => {
+        guild.roles.forEach((value) => {
             outStr.push(`Role: ${value.name} (${value.id})`);
-            outStr.push(JSON.stringify(value.permissions));
+            outStr.push(JSON.stringify(Util.getRolePermissions(value)));
             outStr.push('');
         });
         outStr.push('```');
