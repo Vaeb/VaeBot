@@ -921,11 +921,16 @@ function chunkMessage(msg) {
                 if (numSets % 2 == 1) continue;
             }
 
+            console.log(`Split on ${splitChars}`);
+
             chunk = chunkTemp;
             leftOver = content.substr(pivotEnd);
         }
 
-        if (leftOver == null) leftOver = content.substr(baseChunkSize);
+        if (leftOver == null) {
+            console.log('Split on last');
+            leftOver = content.substr(baseChunkSize);
+        }
 
         for (let j = 0; j < formatSets.length; j++) {
             const formatSet = formatSets[j];
