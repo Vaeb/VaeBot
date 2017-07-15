@@ -849,6 +849,46 @@ exports.escapeRegExp = function (str) {
     return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
 
+function getMatchesWithBlock(str, matchChars, blockChars, useInside) { // Gets all matches of a substring that are in/out of a code block
+    const pattern = new RegExp(exports.escapeRegExp(blockChars), 'g');
+    let result;
+
+    let numMatches = 0;
+    let strPointer = 0;
+    let newStr = '';
+
+    while (result = pattern.exec(str)) {
+        numMatches++;
+        if (useInside) {
+            if (numMatches % 2 == 1) { // Open block
+                newStr += '.'.repeat(result.index - strPointer);
+                strPointer = result.index;
+            } else { // Close block (Store data)
+                newStr += '.'.repeat(blockChars.length) + str.substring(strPointer + blockChars.length, result.index);
+                strPointer = result.index;
+            }
+        } else {
+            if (numMatches % 2 == 1) { // Open block (Store data)
+                newStr += str.substring(strPointer, result.index);
+                strPointer = result.index;
+            } else { // Close block
+                newStr += '.'.repeat(result.index - strPointer + blockChars.length);
+                strPointer = result.index + blockChars.length;
+            }
+        }
+    }
+
+    if (useInside) {
+        newStr += '.'.repeat(str.length - strPointer);
+    } else {
+        newStr += str.substring(strPointer);
+    }
+
+    if (newStr.length != str.length) throw new Error('[E_GetMatchesWithBlock] Failed because the output string didn\'t match input string length');
+
+    return (newStr.match(new RegExp(exports.escapeRegExp(matchChars), 'g')) || []);
+}
+
 /*
 
     chunkMessage
@@ -958,7 +998,7 @@ function chunkMessage(msg) {
 
             for (let k = 0; k < formatSet.length; k++) {
                 const formatChars = formatSet[k];
-                const numSets = (chunk.match(new RegExp(exports.escapeRegExp(formatChars), 'g')) || []).length; // Should really only be counting matches not inside code blocks
+                const numSets = getMatchesWithBlock(chunk, formatChars, '```', false).length; // Should really only be counting matches not inside code blocks
 
                 if (numSets % 2 == 1) {
                     chunk += formatChars;
