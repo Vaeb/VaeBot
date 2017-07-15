@@ -968,6 +968,8 @@ function chunkMessage(msg) {
             }
         }
 
+        if (chunk.substr(chunk.length - 3, 3) == '```') appendBeginning.push('​\n');
+
         origChunks[i] = chunk;
 
         if (leftOver && leftOver.length > 0) origChunks.push(leftOver);
