@@ -891,6 +891,11 @@ function chunkMessage(msg) {
             content = appendBeginning[j] + content;
         }
 
+        if (content.length < exports.charLimit) {
+            origChunks[i] = content;
+            break;
+        }
+
         let chunk = content.substr(0, baseChunkSize);
         let leftOver;
 
