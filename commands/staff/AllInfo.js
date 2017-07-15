@@ -48,6 +48,8 @@ module.exports = Cmds.addCommand({
             outStr.push(JSON.stringify(Util.getRolePermissions(value)));
             outStr.push('');
         });
+        outStr.push('');
+        outStr.push('-END-');
         outStr.push('```');
         Util.print(channel, outStr.join('\n'));
     },
