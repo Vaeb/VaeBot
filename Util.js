@@ -939,11 +939,11 @@ function chunkMessage(msg) {
             chunk = chunkTemp;
             leftOver = content.substr(pivotEnd);
 
-            if (i == 1) {
+            /* if (i == 1) {
                 console.log(chunkTemp);
                 console.log('---');
                 console.log(leftOver);
-            }
+            } */
 
             break;
         }
