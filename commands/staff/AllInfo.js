@@ -20,12 +20,12 @@ module.exports = Cmds.addCommand({
         outStr.push(`ID: ${guild.id}`);
         outStr.push(`Owner: ${Util.getName(guild.owner)} (${guild.ownerID})`);
         outStr.push(`Icon: ${guild.iconURL('png')}`);
-        outStr.push(`Emojis: ${guild.emojis.size > 0 ? JSON.stringify(guild.emojis.array()) : 'null'}`);
         outStr.push(`AFK timeout: ${guild.afkTimeout} seconds`);
         outStr.push(`Region: ${guild.region}`);
         outStr.push(`Member count: ${guild.memberCount}`);
         outStr.push(`Created: ${guild.createdAt}`);
         outStr.push(`Main channel: #${guild.defaultChannel.name}`);
+        outStr.push(`Emojis: ${guild.emojis.size > 0 ? JSON.stringify(guild.emojis.array()) : 'null'}`);
         outStr.push('```');
         outStr.push('**Guild Text Channels**\n```');
         Util.getTextChannels(guild).forEach((value) => {
