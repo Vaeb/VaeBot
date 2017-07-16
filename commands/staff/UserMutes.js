@@ -34,13 +34,15 @@ module.exports = Cmds.addCommand({
             const muteDate = new Date(row.start_tick);
             const muteLength = row.end_tick - row.start_tick;
             const moderatorId = row.mod_id;
+            const active = row.active;
 
             const reason = row.mute_reason;
             const muteDateStr = Util.getDateString(muteDate);
             const muteLengthStr = Util.formatTime(muteLength);
             const modMention = Util.resolveUserMention(guild, moderatorId);
+            const activeStr = active ? 'Yes' : 'No';
 
-            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}`, inline: false });
+            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive:${activeStr}`, inline: false });
         }
 
         Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
