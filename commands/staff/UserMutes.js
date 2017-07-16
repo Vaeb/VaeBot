@@ -42,7 +42,7 @@ module.exports = Cmds.addCommand({
             const modMention = Util.resolveUserMention(guild, moderatorId);
             const activeStr = active ? 'Yes' : 'No';
 
-            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive:${activeStr}`, inline: false });
+            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive: ${activeStr}`, inline: false });
         }
 
         Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
