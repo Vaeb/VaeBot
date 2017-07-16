@@ -34,7 +34,7 @@ module.exports = Cmds.addCommand({
             const muteDate = new Date(row.start_tick);
             const muteLength = row.end_tick - row.start_tick;
             const moderatorId = row.mod_id;
-            const active = row.active;
+            const active = Data.fromBuffer(row.active) == 1;
 
             const reason = row.mute_reason;
             const muteDateStr = Util.getDateString(muteDate);
