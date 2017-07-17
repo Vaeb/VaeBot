@@ -2300,9 +2300,11 @@ exports.getLines2 = function (str) {
 
 function simplifyStr(str) {
     for (let i = 1; i < str.length; i++) {
-        if (str == str.substr(0, i).repeat(str.length / i)) return str.substr(0, i);
+        const num = str.length / i;
+        const sub = str.substr(0, i);
+        if (str == sub.repeat(num)) return [sub, num];
     }
-    return str;
+    return [str, 1];
 }
 
 exports.isSpam = function (content) {
@@ -2311,16 +2313,20 @@ exports.isSpam = function (content) {
     const pattern = /\S+/g;
     const matches = content.match(pattern);
 
-    for (let i = 0; i < Math.floor(matches.length / 2); i++) {
+    for (let i = 0; i < matches.length; i++) {
+        // console.log(`---${i + 1}---`);
         for (let j = 0; j < matches.length; j++) {
-            let sub = matches[j];
+            let long = matches[j];
             for (let k = 1; k <= i; k++) {
                 if (j + k >= matches.length) break;
-                sub += matches[j + k];
+                long += matches[j + k];
             }
-            const simp = simplifyStr(sub);
-            if (sub != simp) {
-                console.log('Returning spam for', sub, simp, 'in', content);
+            // console.log(long);
+            const simpData = simplifyStr(long);
+            const sub = simpData[0];
+            const num = simpData[1];
+            if (num > 2 && sub.length > 2) {
+                console.log(long, ':', sub, ':', num);
                 return true;
             }
         }
