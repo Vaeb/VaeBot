@@ -2308,7 +2308,7 @@ function simplifyStr(str) {
 }
 
 exports.isSpam = function (content) {
-    if (exports.getLines2(content).length >= 10) return true;
+    if (exports.getLines2(content).length >= 500) return true;
 
     const pattern = /\S+/g;
     const matches = content.match(pattern);
