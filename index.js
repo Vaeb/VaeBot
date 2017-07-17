@@ -958,6 +958,7 @@ client.on('message', (msgObj) => {
         if (Util.isSpam(content)) {
             if (userStatus[authorId] == 0) {
                 console.log(`[3] ${Util.getName(speaker)} warned`);
+                Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                 lastWarn[authorId] = stamp;
                 userStatus[authorId] = 2;
             } else {
