@@ -2289,3 +2289,42 @@ exports.kickMember = function (member, moderator, reason) {
         'Reason': reason,
     });
 };
+
+exports.getLines = function (str) {
+    return str.split(/\r\n|\r|\n/);
+};
+
+exports.getLines2 = function (str) {
+    return exports.chunkString(str, 153);
+};
+
+function simplifyStr(str) {
+    for (let i = 1; i < str.length; i++) {
+        if (str == str.substr(0, i).repeat(str.length / i)) return str.substr(0, i);
+    }
+    return str;
+}
+
+exports.isSpam = function (content) {
+    if (exports.getLines2(content).length >= 3) return true;
+
+    const pattern = /\S+/g;
+    const matches = content.match(pattern);
+
+    for (let i = 0; i < Math.floor(matches.length / 2); i++) {
+        for (let j = 0; j < matches.length; j++) {
+            let sub = matches[j];
+            for (let k = 1; k <= i; k++) {
+                if (j + k >= matches.length) break;
+                sub += matches[j + k];
+            }
+            const simp = simplifyStr(sub);
+            if (sub != simp) {
+                console.log('Returning spam for', sub, simp, 'in', content);
+                return true;
+            }
+        }
+    }
+
+    return false;
+};

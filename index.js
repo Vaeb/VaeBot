@@ -949,14 +949,24 @@ client.on('message', (msgObj) => {
         }
     }
 
-    const isMuted = guild && Mutes.checkMuted(guild, author.id);
-    if (guild != null && author.bot === false && content.length > 0 && author.id !== vaebId && author.id !== guild.owner.id && !isMuted) {
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Mutes.checkMuted(guild, author.id)) {
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
         const nowStamps = messageStamps[authorId];
         const stamp = (+new Date());
         nowStamps.unshift({ stamp, message: contentLower });
-        if (userStatus[authorId] !== 1) {
+        if (Util.isSpam(content)) {
+            if (userStatus[authorId] == 0) {
+                console.log(`[3] ${Util.getName(speaker)} warned`);
+                lastWarn[authorId] = stamp;
+                userStatus[authorId] = 2;
+            } else {
+                console.log(`[3] ${Util.getName(speaker)} muted`);
+                Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
+                userStatus[authorId] = 0;
+            }
+        }
+        if (!Mutes.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
             if (nowStamps.length > checkMessages) {
                 nowStamps.splice(checkMessages, nowStamps.length - checkMessages);
             }
@@ -981,6 +991,11 @@ client.on('message', (msgObj) => {
                         setTimeout(() => {
                             const lastStamp = nowStamps[0].stamp;
                             setTimeout(() => {
+                                if (Mutes.checkMuted(guild, author.id)) {
+                                    console.log(`[2] ${Util.getName(speaker)} is already muted`);
+                                    userStatus[authorId] = 0;
+                                    return;
+                                }
                                 let numNew = 0;
                                 let checkGrad2 = sameGrad;
                                 const newStamp = (+new Date());
