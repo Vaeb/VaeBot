@@ -2323,7 +2323,20 @@ exports.isSpam = function (content) {
             const simpData = simplifyStr(long);
             const sub = simpData[0];
             const num = simpData[1];
-            if (num > 2 && sub.length > 2) {
+            const subLength = sub.length;
+            let triggered = false;
+            if (num >= 3 && subLength >= 2) {
+                if (subLength == 2) { // 2 characters, 20+ repetitions
+                    if (num >= 20) triggered = true;
+                } else if (subLength == 3) { // 3 characters, 7+ repetitions
+                    if (num >= 7) triggered = true;
+                } else if (subLength <= 5) { // 4-5 characters, 4+ repetitions
+                    if (num >= 4) triggered = true;
+                } else { // 6+ characters, 3+ repetitions
+                    triggered = true;
+                }
+            }
+            if (triggered) {
                 console.log(long, ':', sub, ':', num);
                 return true;
             }
