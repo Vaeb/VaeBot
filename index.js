@@ -957,12 +957,12 @@ client.on('message', (msgObj) => {
         nowStamps.unshift({ stamp, message: contentLower });
         if (Util.isSpam(content)) {
             if (userStatus[authorId] == 0) {
-                console.log(`[3] ${Util.getName(speaker)} warned`);
+                console.log(`[4] ${Util.getName(speaker)} warned`);
                 Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                 lastWarn[authorId] = stamp;
                 userStatus[authorId] = 2;
             } else {
-                console.log(`[3] ${Util.getName(speaker)} muted`);
+                console.log(`[4] ${Util.getName(speaker)} muted`);
                 Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                 userStatus[authorId] = 0;
             }

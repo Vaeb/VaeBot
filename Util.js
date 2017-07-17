@@ -2308,7 +2308,7 @@ function simplifyStr(str) {
 }
 
 exports.isSpam = function (content) {
-    if (exports.getLines2(content).length >= 3) return true;
+    if (exports.getLines2(content).length >= 10) return true;
 
     const pattern = /\S+/g;
     const matches = content.match(pattern);
@@ -2317,10 +2317,8 @@ exports.isSpam = function (content) {
         // console.log(`---${i + 1}---`);
         for (let j = 0; j < matches.length; j++) {
             let long = matches[j];
-            for (let k = 1; k <= i; k++) {
-                if (j + k >= matches.length) break;
-                long += matches[j + k];
-            }
+            if (j + i >= matches.length) continue;
+            for (let k = 1; k <= i; k++) long += matches[j + k];
             // console.log(long);
             const simpData = simplifyStr(long);
             const sub = simpData[0];
