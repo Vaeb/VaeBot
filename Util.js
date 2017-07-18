@@ -27,6 +27,7 @@ const FileSys = index.FileSys;
 const DateFormat = index.DateFormat;
 const Exec = index.Exec;
 const Path = index.Path;
+const NodeUtil = index.NodeUtil;
 
 exports.charLimit = 1999;
 
@@ -2358,7 +2359,13 @@ let lastWasEmpty = true;
 exports.log = function (...args) {
     if (!lastWasEmpty) console.log('');
     console.log(...args);
-    lastWasEmpty = /[\n\r]\s*$/.test(args.join(' '));
+    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
+    lastTag = null;
+};
+
+exports.logm = function (...args) {
+    console.log(...args);
+    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = null;
 };
 
@@ -2367,6 +2374,6 @@ exports.logc = function (...args) {
     const isNew = lastTag != nowTag;
     if (isNew && !lastWasEmpty) console.log('');
     console.log(...args);
-    lastWasEmpty = /[\n\r]\s*$/.test(args.join(' '));
+    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = nowTag;
 };
