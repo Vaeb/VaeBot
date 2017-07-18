@@ -321,7 +321,7 @@ exports.setupCache = function (guild) {
 
     const boardId = boards[guildId];
 
-    Util.log(`Fetching trello data for ${guild.name}\n`);
+    Util.log(`Fetching trello data for ${guild.name}`);
 
     TrelloHandler.get(`/1/boards/${boardId}`, {
         'lists': 'open',

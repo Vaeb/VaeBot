@@ -109,7 +109,7 @@ function setBriefing() {
         const channel = client.channels.get('168744024931434498');
         // const guild = channel.guild;
 
-        Util.log(`Set daily briefing for ${t3 * msToHours} hours\n`);
+        Util.log(`Set daily briefing for ${t3 * msToHours} hours`);
 
         setTimeout(() => {
             // const upField = { name: '​', value: '​', inline: false };
@@ -314,7 +314,7 @@ const veilGuilds = {
 };
 
 exports.secure = async function () {
-    Util.log('> Securing guilds...\n');
+    Util.log('> Securing guilds...');
 
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
@@ -337,7 +337,7 @@ exports.secure = async function () {
         Trello.setupCache(newGuild);
     }));
 
-    Util.log('> Security setup complete\n');
+    Util.log('> Security setup complete');
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,7 +347,7 @@ Cmds.initCommands();
 // Index_Ready -> Data_SQL -> Mutes_Initialize -> Index_Secure
 
 client.on('ready', async () => {
-    Util.log(`> Connected as ${client.user.username}!\n`);
+    Util.log(`> Connected as ${client.user.username}!`);
 
     if (madeBriefing === false) {
         madeBriefing = true;
@@ -1055,7 +1055,7 @@ client.on('message', (msgObj) => {
                     }
                     Util.log('');
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
-                    Util.log(`${Util.getName(speaker)} ended their alert\n`);
+                    Util.log(`${Util.getName(speaker)} ended their alert`);
                     userStatus[authorId] = 0;
                 }
             }
