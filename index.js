@@ -902,7 +902,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 });
 
 function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, original) {
-    if (guild == null || guild.id != '284746138995785729' || msgObj == null || speaker.user.bot === true) return;
+    if (guild == null || msgObj == null || speaker.user.bot === true) return false;
 
     if (original) {
         contentLower = contentLower.replace(/[\n\r]/g, ' ');
@@ -916,12 +916,14 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         contentLower = contentLower.replace(/[^a-z .]+/g, '');
         contentLower = contentLower.replace(/(.){2,}/g, '$1');
 
-        antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false);
+        if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
     }
 
     contentLower = contentLower.replace(/dot/g, '.');
 
-    if (original) antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false);
+    if (original) {
+        if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
+    }
 
     let triggered = false;
 
@@ -936,7 +938,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     ];
 
     for (let i = 0; i < trigger.length; i++) {
-        let matches = trigger[i].regex.test(contentLower);
+        let matches = contentLower.match(trigger[i].regex);
         if (!matches) continue;
         for (let j = 0; j < matches.length; j++) {
             if (original && matches[j] == trigger[i].allow[j]) {
@@ -949,9 +951,12 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         break;
     }
 
-    if (triggered && (!Mutes.checkMuted(guild, speaker.id) || speaker.id == vaebId)) {
+    if (triggered) {
         Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Anti-Scam] Posting a suspicious link' });
+        return true;
     }
+
+    return false;
 }
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
