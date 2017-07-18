@@ -50,6 +50,6 @@ module.exports = Cmds.addCommand({
         }
 
         newRole.setPermissions(setPerms)
-        .catch(error => Util.log("\n[E_DisabR] " + error));
+        .catch(error => Util.log("[E_DisabR] " + error));
     }
 });

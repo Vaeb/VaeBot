@@ -19,7 +19,7 @@ module.exports = Cmds.addCommand({
         if (vChannel) {
             vChannel.join()
             .then(connection => Util.print(channel, "Joined", vChannel.name))
-            .catch(error => Util.log("\n[E_JoinCmd] addRole: " + error));
+            .catch(error => Util.log("[E_JoinCmd] addRole: " + error));
         } else {
             Util.print(channel, "Voice channel not found");
         }

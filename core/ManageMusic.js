@@ -60,14 +60,14 @@ exports.playRealSong = function (newSong, guild, channel, doPrintParam) {
 };
 
 exports.playNextQueue = function (guild, channel, doPrintParam) {
-    Util.log('\nCalled Playing Next Queue');
+    Util.log('Called Playing Next Queue');
     let doPrint = doPrintParam;
     if (doPrintParam == null) doPrint = true;
     const guildQueue = exports.guildQueue[guild.id];
     const autoPlaylist = Data.guildGet(guild, Data.playlist);
     Util.log('guildQueue');
     Util.log(guildQueue.length);
-    Util.log('-------Playing Next Queue---------\n');
+    Util.log('-------Playing Next Queue---------');
     if (guildQueue.length > 0) {
         const newSong = guildQueue[0];
         exports.playRealSong(newSong, guild, channel, doPrint);
@@ -222,7 +222,7 @@ exports.joinMusic = function (guild, channel, func) {
             .then((connection2) => {
                 func(connection2);
             })
-            .catch(error => Util.log(`\n[E_JoinMusic] ${error}`));
+            .catch(error => Util.log(`[E_JoinMusic] ${error}`));
         } else {
             Util.print(channel, 'Not connected to a voice channel');
         }

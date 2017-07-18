@@ -120,7 +120,7 @@ function removeSend(member) {
                 .then(() => {
                     Util.log(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.log(`\n[E_LinkRoleRem1] ${error}`));
+                .catch(error => Util.log(`[E_LinkRoleRem1] ${error}`));
             }
         }
     }
@@ -142,7 +142,7 @@ function addSend(member) {
                 .then(() => {
                     Util.log(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.log(`\n[E_LinkRoleAdd1] ${error}`));
+                .catch(error => Util.log(`[E_LinkRoleAdd1] ${error}`));
             }
         }
     }

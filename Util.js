@@ -424,7 +424,7 @@ exports.initRoles = function (sendRole, guild) {
         if (!exports.hasRole(member, sendRole)) {
             member.addRole(sendRole)
             .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
-            .catch(error => Util.log(`\n[E_InitRoles] addRole: ${error}`));
+            .catch(error => Util.log(`[E_InitRoles] addRole: ${error}`));
         }
     });
 };
@@ -1022,7 +1022,7 @@ exports.splitMessages = function (messages) {
     return chunkMessage(messages.join(' '));
 };
 
-const ePrint = error => Util.log(`\n[E_Print] ${error}`);
+const ePrint = error => Util.log(`[E_Print] ${error}`);
 
 exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
@@ -1242,7 +1242,7 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
 
     embChannel.send(undefined, { embed: embObj })
     .catch((error) => {
-        Util.log(`\n[E_SendEmbed] ${error} ${embChannel}`);
+        Util.log(`[E_SendEmbed] ${error} ${embChannel}`);
         Util.log(embObj);
         Util.log(JSON.stringify(embFields));
     });
@@ -1542,7 +1542,7 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
         }
 
         if (nameMatch >= 0) {
-            // Util.log("\n(" + i + ") " + realName + ": " + value);
+            // Util.log("(" + i + ") " + realName + ": " + value);
             const filled = Math.min(name.length / realName.length, 0.999);
             // Util.log("filled: " + filled);
             strength[layer++] = filled;
@@ -1631,7 +1631,7 @@ exports.getMemberByNameOld = function (name, guild) { // [v2.0] Visible name mat
         }
 
         if (nameMatch >= 0) {
-            // Util.log("\n(" + i + ") " + realName + ": " + value);
+            // Util.log("(" + i + ") " + realName + ": " + value);
             const filled = Math.min(name.length / realName.length, 0.999);
             const filledExp = (2 + filled);
             // Util.log("filled: " + filled);
@@ -2102,7 +2102,7 @@ exports.strToPerm = function (strParam) {
 
 exports.setChannelPerms = function (channel, userOrRole, newPerms) {
     channel.overwritePermissions(userOrRole, newPerms)
-    .catch(error => Util.log(`\n[E_SetChannelPerms] ${error}`));
+    .catch(error => Util.log(`[E_SetChannelPerms] ${error}`));
 };
 
 // fetch more messages just like Discord client does

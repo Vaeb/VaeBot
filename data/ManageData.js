@@ -339,7 +339,7 @@ exports.connectInitial = async function (dbGuilds) {
 
     try {
         await exports.connect();
-        Util.log(`[MySQL] Connected as id ${connection.threadId}\n`);
+        Util.log(`[MySQL] Connected as id ${connection.threadId}`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
             const guild = dbGuilds[i];

@@ -30,7 +30,7 @@ module.exports = Cmds.addCommand({
             .then(role => { 
                 Util.initRoles(role, guild);
             })
-            .catch(error => Util.log("\n[E_InitRolesCreate] " + error));
+            .catch(error => Util.log("[E_InitRolesCreate] " + error));
         }
     }
 });
