@@ -58,27 +58,27 @@ module.exports = Cmds.addCommand({
 
         if (name) {
             role.setName(name)
-            .catch(error => console.log(`\n[E_RoleComm1] ${error}`));
+            .catch(error => Util.log(`[E_RoleComm1] ${error}`));
         }
 
         if (color) {
             role.setColor(color)
-            .catch(error => console.log(`\n[E_RoleComm2] ${error}`));
+            .catch(error => Util.log(`[E_RoleComm2] ${error}`));
         }
 
         if (hoist) {
             role.setHoist(hoist)
-            .catch(error => console.log(`\n[E_RoleComm3] ${error}`));
+            .catch(error => Util.log(`[E_RoleComm3] ${error}`));
         }
 
         if (mentionable) {
             role.setMentionable(mentionable)
-            .catch(error => console.log(`\n[E_RoleComm4] ${error}`));
+            .catch(error => Util.log(`[E_RoleComm4] ${error}`));
         }
 
         if (pos) {
             role.setPosition(pos)
-            .catch(error => console.log(`\n[E_RoleComm5] ${error}`));
+            .catch(error => Util.log(`[E_RoleComm5] ${error}`));
         }
 
         return undefined;
