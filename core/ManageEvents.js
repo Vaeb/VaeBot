@@ -74,7 +74,7 @@ exports.addEvent = function (guild, eventName, actionName, actionFunc, actionArg
         actionDataGuild[eventName] = actionDataEvent;
     }
 
-    console.log(`Added event linking ${eventName} to ${actionName}`);
+    Util.logc(`Added event linking ${eventName} to ${actionName}`);
 
     actionDataEvent.push([actionName, actionFunc, actionArgs]);
 };
@@ -85,14 +85,14 @@ exports.remEvent = function (guild, eventName, actionName) {
     const actionDataEvent = allEvents[guild.id][eventName];
 
     if (!actionDataEvent || actionDataEvent.length === 0) {
-        return console.log(`Event ${eventName} not found`);
+        return Util.logc(`Event ${eventName} not found`);
     }
 
     for (let i = actionDataEvent.length - 1; i >= 0; i--) {
         const nowData = actionDataEvent[i];
 
         if (actionName == null || nowData[0] === actionName) {
-            console.log(`Removed event linking ${eventName} to ${actionName}`);
+            Util.logc(`Removed event linking ${eventName} to ${actionName}`);
 
             actionDataEvent.splice(i, 1);
         }
@@ -121,7 +121,7 @@ exports.emit = function (guild, eventName, ...eventArgs) {
         const actionFunc = nowData[1];
         const actionArgs = nowData[2];
 
-        console.log(`Calling action "${actionName}" linked to ${eventName}`);
+        Util.logc(`Calling action "${actionName}" linked to ${eventName}`);
 
         actionFunc(guild, eventName, actionArgs, eventArgs);
     }
@@ -135,7 +135,7 @@ exports.Actions.AddRole = (guild, eventName, actionArgs, eventArgs) => {
         const roleObj = Util.getRole(roleName, guild);
 
         if (!roleObj) {
-            console.log(`[A_AddRole] ${roleName} not found`);
+            Util.logc(`[A_AddRole] ${roleName} not found`);
         } else {
             member.addRole(roleObj)
             .catch(console.error);
@@ -151,7 +151,7 @@ exports.Actions.RemRole = (guild, eventName, actionArgs, eventArgs) => {
         const roleObj = Util.getRole(roleName, guild);
 
         if (!roleObj) {
-            console.log(`[A_RemRole] ${roleName} not found`);
+            Util.logc(`[A_RemRole] ${roleName} not found`);
         } else {
             member.removeRole(roleObj)
             .catch(console.error);

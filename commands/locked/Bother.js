@@ -47,7 +47,7 @@ module.exports = Cmds.addCommand({
             try {
                 Util.print(target, sendStr);
             } catch (err) {
-                console.log(`BOTHER ERROR: ${err}`);
+                Util.logc(`BOTHER ERROR: ${err}`);
             }
             n += 1;
         }, 50);

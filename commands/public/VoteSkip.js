@@ -47,7 +47,7 @@ module.exports = Cmds.addCommand({
             var numVotes = voteSkips.length;
             var voteStr = numVotes == 1 ? "vote" : "votes";
             Util.print(channel, "Vote skip:", numVotes, voteStr);
-            console.log("Vote skip: " + numVotes/numMembers);
+            Util.logc("Vote skip: " + numVotes/numMembers);
             if (numVotes/numMembers >= 0.5) {
                 var guildQueue = Music.guildQueue[guild.id];
                 var autoPlaylist = Data.guildGet(guild, Data.playlist);

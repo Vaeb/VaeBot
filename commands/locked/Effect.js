@@ -41,8 +41,8 @@ function setRoleColor(role, i, maxExclusive) {
     role.setColor(newColor)
     .then(() => setRoleColor(role, nowIter, maxExclusive))
     .catch((err) => {
-        console.log(err);
-        console.log('^ This is from setRoleColor');
+        Util.logc(err);
+        Util.logc('^ This is from setRoleColor');
     });
 }
 

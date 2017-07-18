@@ -47,11 +47,11 @@ module.exports = Cmds.addCommand({
             let permName = matchData[0];
             if (Util.rolePermissionsObj[permName] && !newRole.hasPermission(permName)) {
                 setPerms.push(permName);
-                console.log("Enabled " + permName + " permission for " + newRole.name + " role");
+                Util.logc("Enabled " + permName + " permission for " + newRole.name + " role");
             }
         }
 
-        console.log(setPerms);
+        Util.logc(setPerms);
 
         newRole.setPermissions(setPerms)
         .catch(console.error);

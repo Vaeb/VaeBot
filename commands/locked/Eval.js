@@ -19,15 +19,15 @@ module.exports = Cmds.addCommand({
         const outStr = ['**Output:**'];
         eval(args)
         .then((result) => {
-            console.log(`Eval result: ${result}`);
+            Util.logc(`Eval result: ${result}`);
             outStr.push('```');
             outStr.push(result);
             outStr.push('```');
             if (result !== undefined) Util.print(channel, outStr.join('\n'));
         })
         .catch((err) => {
-            console.log('Eval Error:');
-            console.log(err);
+            Util.logc('Eval Error:');
+            Util.logc(err);
         });
     },
 });

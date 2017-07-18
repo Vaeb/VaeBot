@@ -109,7 +109,7 @@ function setBriefing() {
         const channel = client.channels.get('168744024931434498');
         // const guild = channel.guild;
 
-        console.log(`\nSet daily briefing for ${t3 * msToHours} hours\n`);
+        Util.logc(`\nSet daily briefing for ${t3 * msToHours} hours\n`);
 
         setTimeout(() => {
             // const upField = { name: '​', value: '​', inline: false };
@@ -197,7 +197,7 @@ function setBriefing() {
                 || exports.dailyKicks.length > 0
                 || exports.dailyBans.length > 0) {
                 channel.send(undefined, { embed: embObj })
-                .catch(error => console.log(`\n[E_SendBriefing] ${error}`));
+                .catch(error => Util.logc(`\n[E_SendBriefing] ${error}`));
             }
 
             exports.dailyMutes = []; // Reset
@@ -235,7 +235,7 @@ function securityFunc(guild, member, sendRoleParam) {
     if (has.call(exports.globalBan, memberId)) {
         member.kick()
         .catch(console.error);
-        console.log(`Globally banned user ${memberName} had already joined ${guildName}`);
+        Util.logc(`Globally banned user ${memberName} had already joined ${guildName}`);
         return;
     }
 
@@ -245,12 +245,12 @@ function securityFunc(guild, member, sendRoleParam) {
             if (Util.hasRole(member, sendRole)) {
                 member.removeRole(sendRole)
                 .catch(console.error);
-                console.log(`Muted user ${memberName} had already joined ${guildName}`);
+                Util.logc(`Muted user ${memberName} had already joined ${guildName}`);
             }
         } else if (!Util.hasRole(member, sendRole)) {
             member.addRole(sendRole)
             .catch(console.error);
-            console.log(`Assigned SendMessages to old member ${memberName}`);
+            Util.logc(`Assigned SendMessages to old member ${memberName}`);
         }
     }
 }
@@ -258,7 +258,7 @@ function securityFunc(guild, member, sendRoleParam) {
 function setupSecurity(guild) {
     const sendRole = Util.getRole('SendMessages', guild);
 
-    console.log(`Setting up security for ${guild.name} (${guild.members.size} members)`);
+    Util.logc(`Setting up security for ${guild.name} (${guild.members.size} members)`);
 
     guild.members.forEach((member) => {
         securityFunc(guild, member, sendRole);
@@ -267,17 +267,17 @@ function setupSecurity(guild) {
 
 function setupSecurityVeil() {
     const veilGuild = client.guilds.get('284746138995785729');
-    if (!veilGuild) return console.log('[ERROR_VP] Veil guild not found!');
+    if (!veilGuild) return Util.logc('[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
-    if (!guild) return console.log('[ERROR_VP] New Veil guild not found!');
+    if (!guild) return Util.logc('[ERROR_VP] New Veil guild not found!');
     const veilBuyer = veilGuild.roles.find('name', 'Buyer');
-    if (!veilBuyer) return console.log('[ERROR_VP] Veil Buyer role not found!');
+    if (!veilBuyer) return Util.logc('[ERROR_VP] Veil Buyer role not found!');
     const newBuyer = guild.roles.find('name', 'Buyer');
-    if (!newBuyer) return console.log('[ERROR_VP] New Buyer role not found!');
+    if (!newBuyer) return Util.logc('[ERROR_VP] New Buyer role not found!');
     // const guildId = guild.id;
     // const guildName = guild.name;
 
-    console.log(`Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
+    Util.logc(`Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
 
     guild.members.forEach((member) => {
         const memberId = member.id;
@@ -287,21 +287,21 @@ function setupSecurityVeil() {
         const memberName = Util.getFullName(member);
         const veilMember = Util.getMemberById(memberId, veilGuild);
         if (!veilMember) {
-            console.log(`[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
+            Util.logc(`[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
             member.kick()
-            .catch(error => console.log(`\n[E_AutoOldKick1] ${memberName} | ${error}`));
+            .catch(error => Util.logc(`\n[E_AutoOldKick1] ${memberName} | ${error}`));
             return;
         }
         if (!veilMember.roles.has(veilBuyer.id)) {
-            console.log(`[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
+            Util.logc(`[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
             member.kick()
-            .catch(error => console.log(`\n[E_AutoOldKick2] ${memberName} | ${error}`));
+            .catch(error => Util.logc(`\n[E_AutoOldKick2] ${memberName} | ${error}`));
             return;
         }
         if (!member.roles.has(newBuyer.id)) {
             member.addRole(newBuyer)
-            .catch(error => console.log(`\n[E_AutoOldAddRole1] ${memberName} | ${error}`));
-            console.log(`Updated old member with Buyer role: ${memberName}`);
+            .catch(error => Util.logc(`\n[E_AutoOldAddRole1] ${memberName} | ${error}`));
+            Util.logc(`Updated old member with Buyer role: ${memberName}`);
         }
     });
 
@@ -314,7 +314,7 @@ const veilGuilds = {
 };
 
 exports.secure = async function () {
-    console.log('\n> Securing guilds...\n');
+    Util.logc('\n> Securing guilds...\n');
 
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
@@ -322,8 +322,8 @@ exports.secure = async function () {
     await Promise.all(client.guilds.map(async (guild) => {
         const newGuild = await guild.fetchMembers();
         if (newGuild == null) {
-            console.log(newGuild);
-            console.log('Found null guild');
+            Util.logc(newGuild);
+            Util.logc('Found null guild');
             return;
         }
 
@@ -337,7 +337,7 @@ exports.secure = async function () {
         Trello.setupCache(newGuild);
     }));
 
-    console.log('\n> Security setup complete\n');
+    Util.logc('\n> Security setup complete\n');
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,7 +347,7 @@ Cmds.initCommands();
 // Index_Ready -> Data_SQL -> Mutes_Initialize -> Index_Secure
 
 client.on('ready', async () => {
-    console.log(`\n> Connected as ${client.user.username}!\n`);
+    Util.logc(`\n> Connected as ${client.user.username}!\n`);
 
     if (madeBriefing === false) {
         madeBriefing = true;
@@ -362,17 +362,17 @@ client.on('ready', async () => {
         dbGuilds.push(newGuild);
     }));
 
-    console.log('> Cached all guild members!\n');
+    Util.logc('> Cached all guild members!\n');
     Data.connectInitial(dbGuilds)
-    .catch(err => console.log(`[E_DataConnect] ${err}`));
+    .catch(err => Util.logc(`[E_DataConnect] ${err}`));
 });
 
 client.on('disconnect', (closeEvent) => {
-    console.log('DISCONNECTED');
-    console.log(closeEvent);
-    console.log(`Code: ${closeEvent.code}`);
-    console.log(`Reason: ${closeEvent.reason}`);
-    console.log(`Clean: ${closeEvent.wasClean}`);
+    Util.logc('DISCONNECTED');
+    Util.logc(closeEvent);
+    Util.logc(`Code: ${closeEvent.code}`);
+    Util.logc(`Reason: ${closeEvent.reason}`);
+    Util.logc(`Clean: ${closeEvent.wasClean}`);
 });
 
 client.on('guildMemberRemove', (member) => {
@@ -399,7 +399,7 @@ client.on('guildMemberAdd', (member) => {
     const memberId = member.id;
     const memberName = Util.getFullName(member);
 
-    console.log(`User joined: ${memberName} (${memberId}) @ ${guildName}`);
+    Util.logc(`User joined: ${memberName} (${memberId}) @ ${guildName}`);
 
     // test
 
@@ -408,48 +408,48 @@ client.on('guildMemberAdd', (member) => {
         const veilBuyer = veilGuild.roles.find('name', 'Buyer');
         const newBuyer = guild.roles.find('name', 'Buyer');
         if (!veilGuild) {
-            console.log('[ERROR_VP] Veil guild not found!');
+            Util.logc('[ERROR_VP] Veil guild not found!');
         } else if (!veilBuyer) {
-            console.log('[ERROR_VP] Veil Buyer role not found!');
+            Util.logc('[ERROR_VP] Veil Buyer role not found!');
         } else if (!newBuyer) {
-            console.log('[ERROR_VP] New Buyer role not found!');
+            Util.logc('[ERROR_VP] New Buyer role not found!');
         } else {
             const veilMember = Util.getMemberById(memberId, veilGuild);
             if (!veilMember) {
-                console.log(`[Auto-Kick 1] User not in Veil: ${memberName}`);
+                Util.logc(`[Auto-Kick 1] User not in Veil: ${memberName}`);
                 member.kick()
-                .catch(error => console.log(`\n[E_AutoKick1] ${error}`));
+                .catch(error => Util.logc(`\n[E_AutoKick1] ${error}`));
                 return;
             }
             if (!veilMember.roles.has(veilBuyer.id)) {
-                console.log(`[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
+                Util.logc(`[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
                 member.kick()
-                .catch(error => console.log(`\n[E_AutoKick2] ${error}`));
+                .catch(error => Util.logc(`\n[E_AutoKick2] ${error}`));
                 return;
             }
             member.addRole(newBuyer)
-            .catch(error => console.log(`\n[E_AutoAddRole1] ${error}`));
-            console.log('Awarded new member with Buyer role');
+            .catch(error => Util.logc(`\n[E_AutoAddRole1] ${error}`));
+            Util.logc('Awarded new member with Buyer role');
         }
     }
 
     if (has.call(exports.globalBan, memberId)) {
         member.kick()
         .catch(console.error);
-        console.log(`Globally banned user ${memberName} joined ${guildName}`);
+        Util.logc(`Globally banned user ${memberName} joined ${guildName}`);
         return;
     }
 
     const isMuted = Mutes.checkMuted(guild, memberId);
     if (isMuted) {
-        console.log(`Muted user ${memberName} joined ${guildName}`);
+        Util.logc(`Muted user ${memberName} joined ${guildName}`);
     } else {
         const sendRole = Util.getRole('SendMessages', guild);
 
         if (sendRole) {
             member.addRole(sendRole)
             .catch(console.error);
-            console.log(`Assigned SendMessages to new member ${memberName}`);
+            Util.logc(`Assigned SendMessages to new member ${memberName}`);
         }
     }
 
@@ -495,7 +495,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             const isMuted = Mutes.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && isMuted) {
                 member.removeRole(nowRole);
-                console.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
+                Util.logc(`Force re-muted ${Util.getName(member)} (${member.id})`);
             } else {
                 const sendLogData = [
                     'Role Added',
@@ -517,7 +517,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             if (nowRole.name === 'SendMessages' && !isMuted) {
                 member.addRole(nowRole)
                 .catch(console.error);
-                console.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
+                Util.logc(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
             } else {
                 const sendLogData = [
                     'Role Removed',
@@ -631,11 +631,11 @@ client.on('voiceStateUpdate', (oldMember, member) => {
     if (member.id === selfId) {
         if (member.serverMute) {
             member.setMute(false);
-            console.log('Force removed server-mute from bot');
+            Util.logc('Force removed server-mute from bot');
         }
 
         if (exports.lockChannel != null && oldChannelId === exports.lockChannel && newChannelId !== exports.lockChannel) {
-            console.log('Force re-joined locked channel');
+            Util.logc('Force re-joined locked channel');
             oldChannel.join();
         }
     }
@@ -678,8 +678,8 @@ const Actions = {
 
 /* function chooseRelevantEntry(entries, options) {
     if (options.action == null || options.time == null) {
-        console.log(options);
-        console.log('Options did not contain necessary properties');
+        Util.logc(options);
+        Util.logc('Options did not contain necessary properties');
         return undefined;
     }
 
@@ -739,7 +739,7 @@ client.on('messageDelete', (msgObj) => {
                 type: 72,
             })
             .then((logs) => {
-                console.log('[MD] Got audit log data');
+                Util.logc('[MD] Got audit log data');
                 const entries = logs.entries;
 
                 const entry = chooseRelevantEntry(entries, {
@@ -748,10 +748,10 @@ client.on('messageDelete', (msgObj) => {
                     action: 'MESSAGE_DELETE',
                 });
 
-                console.log(entry);
+                Util.logc(entry);
 
-                console.log(entry.executor.toString());
-                console.log(entry.target.toString());
+                Util.logc(entry.executor.toString());
+                Util.logc(entry.target.toString());
 
                 const sendLogData = [
                     'Message Deleted',
@@ -765,8 +765,8 @@ client.on('messageDelete', (msgObj) => {
                 Util.sendLog(sendLogData, colMessage);
             })
             .catch((error) => {
-                console.log(error);
-                console.log('[MD] Failed to get audit log data');
+                Util.logc(error);
+                Util.logc('[MD] Failed to get audit log data');
             });
         }, 5000); */
     }
@@ -788,7 +788,7 @@ const endAlert = 40;
 let contentLower = 'lol <qe23> tege <> <e321z> dz';
 contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
-console.log(contentLower); */
+Util.logc(contentLower); */
 
 /* exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
@@ -957,18 +957,18 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date());
         nowStamps.unshift({ stamp, message: contentLower });
         if (Util.isSpam(content)) {
-            console.log('');
+            Util.logc('');
             if (userStatus[authorId] == 0) {
-                console.log(`[4] ${Util.getName(speaker)} warned`);
+                Util.logc(`[4] ${Util.getName(speaker)} warned`);
                 Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                 lastWarn[authorId] = stamp;
                 userStatus[authorId] = 2;
             } else {
-                console.log(`[4] ${Util.getName(speaker)} muted`);
+                Util.logc(`[4] ${Util.getName(speaker)} muted`);
                 Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                 userStatus[authorId] = 0;
             }
-            console.log('');
+            Util.logc('');
         }
         if (!Mutes.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
             if (nowStamps.length > checkMessages) {
@@ -986,18 +986,18 @@ client.on('message', (msgObj) => {
                         break;
                     }
                 }
-                // console.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
+                // Util.logc("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
                 if (grad1 >= checkGrad1) {
-                    console.log('');
+                    Util.logc('');
                     if (userStatus[authorId] === 0) {
-                        console.log(`${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
+                        Util.logc(`${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
                         userStatus[authorId] = 1;
                         Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                         setTimeout(() => {
                             const lastStamp = nowStamps[0].stamp;
                             setTimeout(() => {
                                 if (Mutes.checkMuted(guild, author.id)) {
-                                    console.log(`[2] ${Util.getName(speaker)} is already muted`);
+                                    Util.logc(`[2] ${Util.getName(speaker)} is already muted`);
                                     userStatus[authorId] = 0;
                                     return;
                                 }
@@ -1016,7 +1016,7 @@ client.on('message', (msgObj) => {
                                     if (isFinal) break;
                                 }
                                 if (numNew <= 1) {
-                                    console.log(`[2_] ${Util.getName(speaker)} was put on alert`);
+                                    Util.logc(`[2_] ${Util.getName(speaker)} was put on alert`);
                                     lastWarn[authorId] = newStamp;
                                     userStatus[authorId] = 2;
                                     return;
@@ -1036,26 +1036,26 @@ client.on('message', (msgObj) => {
                                         numNew2 = i + 1;
                                     }
                                 }
-                                console.log(`[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
+                                Util.logc(`[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
                                 if (grad2 >= checkGrad2) {
-                                    console.log(`[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
+                                    Util.logc(`[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
                                     Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                                     userStatus[authorId] = 0;
                                 } else {
-                                    console.log(`[2] ${Util.getName(speaker)} was put on alert`);
+                                    Util.logc(`[2] ${Util.getName(speaker)} was put on alert`);
                                     lastWarn[authorId] = newStamp;
                                     userStatus[authorId] = 2;
                                 }
                             }, waitTime * 1000);
                         }, 350);
                     } else if (userStatus[authorId] === 2) {
-                        console.log(`[3] ${Util.getName(speaker)} muted, repeated warns`);
+                        Util.logc(`[3] ${Util.getName(speaker)} muted, repeated warns`);
                         Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                         userStatus[authorId] = 0;
                     }
-                    console.log('');
+                    Util.logc('');
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
-                    console.log(`\n${Util.getName(speaker)} ended their alert\n`);
+                    Util.logc(`\n${Util.getName(speaker)} ended their alert\n`);
                     userStatus[authorId] = 0;
                 }
             }
@@ -1104,7 +1104,7 @@ client.on('message', (msgObj) => {
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
-console.log('-CONNECTING-\n');
+Util.logc('-CONNECTING-\n');
 
 client.login(Auth.discordToken);
 

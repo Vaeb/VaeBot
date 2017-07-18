@@ -124,7 +124,7 @@ exports.findCard = function (guild, listName, targetId, callback) {
     listName = listName.toLowerCase();
 
     if (!has.call(lists, listName)) {
-        console.log(`List ${listName} does not exist`);
+        Util.logc(`List ${listName} does not exist`);
         return false;
     }
 
@@ -135,7 +135,7 @@ exports.findCard = function (guild, listName, targetId, callback) {
 
     for (let i = 0; i < cacheCards.length; i++) {
         if (cacheCards[i].targetId === targetId) {
-            console.log(`>> FOUND CARD FOR ${targetId} FROM CACHE <<`);
+            Util.logc(`>> FOUND CARD FOR ${targetId} FROM CACHE <<`);
             callback(true, cacheCards[i]);
             return undefined;
         }
@@ -147,11 +147,11 @@ exports.findCard = function (guild, listName, targetId, callback) {
         card_fields: 'desc',
         cards_limit: 1,
     }, (err, data) => {
-        console.log('--[FindCard] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
-        console.log('--[FindCard] TRELLO FEEDBACK END--');
+        Util.logc('--[FindCard] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
+        Util.logc('--[FindCard] TRELLO FEEDBACK END--');
 
         const ok = err == null && data.cards.length > 0;
 
@@ -165,7 +165,7 @@ exports.findCard = function (guild, listName, targetId, callback) {
                 if (cacheCards[i].id === cardId) {
                     cacheCard = cacheCards[i];
                     cacheCard.targetId = targetId;
-                    console.log(`>> UPDATED EXISTING TARGETID FOR ${targetId} <<`);
+                    Util.logc(`>> UPDATED EXISTING TARGETID FOR ${targetId} <<`);
                     break;
                 }
             }
@@ -192,11 +192,11 @@ exports.dueComplete = function (guild, cardId, callback) {
     TrelloHandler.put(`/1/cards/${cardId}/dueComplete`, {
         value: true,
     }, (err, data) => {
-        console.log('--[DueComplete] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
-        console.log('--[DueComplete] TRELLO FEEDBACK END--');
+        Util.logc('--[DueComplete] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
+        Util.logc('--[DueComplete] TRELLO FEEDBACK END--');
 
         if (callback) callback();
     });
@@ -212,11 +212,11 @@ exports.setDesc = function (guild, cardId, cardDesc) {
     TrelloHandler.put(`/1/cards/${cardId}/desc`, {
         value: cardDesc,
     }, (err, data) => {
-        console.log('--[SetDesc] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
-        console.log('--[SetDesc] TRELLO FEEDBACK END--');
+        Util.logc('--[SetDesc] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
+        Util.logc('--[SetDesc] TRELLO FEEDBACK END--');
     });
 
     return true;
@@ -228,11 +228,11 @@ exports.setDue = function (guild, cardId, dueDate) {
     TrelloHandler.put(`/1/cards/${cardId}/due`, {
         value: dueDate,
     }, (err, data) => {
-        console.log('--[SetDue] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
-        console.log('--[SetDue] TRELLO FEEDBACK END--');
+        Util.logc('--[SetDue] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
+        Util.logc('--[SetDue] TRELLO FEEDBACK END--');
     });
 
     return true;
@@ -244,7 +244,7 @@ exports.addLabel = function (guild, cardId, labelName) {
     labelName = labelName.toLowerCase();
 
     if (!has.call(labels, labelName)) {
-        console.log(`Label ${labelName} does not exist`);
+        Util.logc(`Label ${labelName} does not exist`);
         return false;
     }
 
@@ -253,11 +253,11 @@ exports.addLabel = function (guild, cardId, labelName) {
     TrelloHandler.post(`/1/cards/${cardId}/idLabels`, {
         value: labelId,
     }, (err, data) => {
-        console.log('--[AddLabel] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
-        console.log('--[AddLabel] TRELLO FEEDBACK END--');
+        Util.logc('--[AddLabel] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
+        Util.logc('--[AddLabel] TRELLO FEEDBACK END--');
     });
 
     return true;
@@ -269,7 +269,7 @@ exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
     listName = listName.toLowerCase();
 
     if (!has.call(lists, listName)) {
-        console.log(`List ${listName} does not exist`);
+        Util.logc(`List ${listName} does not exist`);
         return false;
     }
 
@@ -292,12 +292,12 @@ exports.addCard = function (guild, listName, cardName, cardDesc, dueDate) {
         pos: 'top',
         due: dueDate,
     }, (err, data) => {
-        console.log('--[AddCard] TRELLO FEEDBACK START--');
-        console.log(err);
-        console.log('--<>--');
-        console.log(data);
+        Util.logc('--[AddCard] TRELLO FEEDBACK START--');
+        Util.logc(err);
+        Util.logc('--<>--');
+        Util.logc(data);
 
-        console.log('--[AddCard] TRELLO FEEDBACK END--');
+        Util.logc('--[AddCard] TRELLO FEEDBACK END--');
 
         if (!err && data) {
             const cacheCards = cache[guildId][listId].cards;
@@ -315,26 +315,26 @@ exports.setupCache = function (guild) {
     const guildId = guild.id;
 
     if (!has.call(boards, guildId)) {
-        // console.log(`Board ${guildId} does not exist`);
+        // Util.logc(`Board ${guildId} does not exist`);
         return false;
     }
 
     const boardId = boards[guildId];
 
-    console.log(`\nFetching trello data for ${guild.name}\n`);
+    Util.logc(`\nFetching trello data for ${guild.name}\n`);
 
     TrelloHandler.get(`/1/boards/${boardId}`, {
         'lists': 'open',
         'cards': 'open',
     }, (err, data) => {
         if (err) {
-            console.log(err);
-            console.log('--<>--');
-            console.log(data);
+            Util.logc(err);
+            Util.logc('--<>--');
+            Util.logc(data);
             return;
         }
 
-        console.log(`Cached trello data for ${guild.name}`);
+        Util.logc(`Cached trello data for ${guild.name}`);
 
         cache[guildId] = {};
 
@@ -365,7 +365,7 @@ exports.setupCache = function (guild) {
             const cacheList = cache[guildId][cacheListId];
             const cacheCards = cacheList.cards;
             cacheCards.sort(sortCards);
-            // console.log(cacheCards);
+            // Util.logc(cacheCards);
         }
     });
 

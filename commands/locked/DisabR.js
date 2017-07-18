@@ -37,7 +37,7 @@ module.exports = Cmds.addCommand({
         while (matchData = pattern.exec(newPerms)) {
             let permName = matchData[0];
             if (Util.rolePermissionsObj[permName]) {
-                console.log("Disabled " + permName + " permission for " + newRole.name + " role");
+                Util.logc("Disabled " + permName + " permission for " + newRole.name + " role");
                 allMatches[permName] = true;
             }
         }
@@ -50,6 +50,6 @@ module.exports = Cmds.addCommand({
         }
 
         newRole.setPermissions(setPerms)
-        .catch(error => console.log("\n[E_DisabR] " + error));
+        .catch(error => Util.logc("\n[E_DisabR] " + error));
     }
 });

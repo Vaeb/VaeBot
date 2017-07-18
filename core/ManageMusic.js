@@ -41,7 +41,7 @@ exports.chooseRandomSong = function (guild, autoPlaylist, lastId) {
 };
 
 exports.playRealSong = function (newSong, guild, channel, doPrintParam) {
-    console.log('Playing Real Song');
+    Util.logc('Playing Real Song');
     let doPrint = doPrintParam;
     if (doPrintParam == null) doPrint = true;
     const songData = newSong[0];
@@ -60,19 +60,19 @@ exports.playRealSong = function (newSong, guild, channel, doPrintParam) {
 };
 
 exports.playNextQueue = function (guild, channel, doPrintParam) {
-    console.log('\nCalled Playing Next Queue');
+    Util.logc('\nCalled Playing Next Queue');
     let doPrint = doPrintParam;
     if (doPrintParam == null) doPrint = true;
     const guildQueue = exports.guildQueue[guild.id];
     const autoPlaylist = Data.guildGet(guild, Data.playlist);
-    console.log('guildQueue');
-    console.log(guildQueue.length);
-    console.log('-------Playing Next Queue---------\n');
+    Util.logc('guildQueue');
+    Util.logc(guildQueue.length);
+    Util.logc('-------Playing Next Queue---------\n');
     if (guildQueue.length > 0) {
         const newSong = guildQueue[0];
         exports.playRealSong(newSong, guild, channel, doPrint);
     } else if (autoPlaylist.songs && autoPlaylist.songs.length > 0) {
-        console.log('Playing Next Queue, Playing Next Auto');
+        Util.logc('Playing Next Queue, Playing Next Auto');
         exports.playNextAuto(guild, channel, true);
     } else {
         exports.stopMusic(guild);
@@ -95,7 +95,7 @@ exports.playNextAuto = function (guild, channel, doPrint) {
     if (newSongNum >= autoSongs.length) newSongNum = 0;
     autoPlaylist.songNum = newSongNum;
     Data.guildSaveData(Data.playlist);*/
-    console.log('Playing Next Auto');
+    Util.logc('Playing Next Auto');
     guildMusicInfo.activeSong = songData;
     guildMusicInfo.activeAuthor = author;
     guildMusicInfo.voteSkips = [];
@@ -113,7 +113,7 @@ exports.streamAudio = function (songData, guild, channel) {
     if (oldPlayer) {
         const oldDispatcher = oldPlayer.dispatcher;
         if (oldDispatcher) {
-            console.log('Ended previous!');
+            Util.logc('Ended previous!');
             oldDispatcher.end('NewStreamAudio');
         }
     }
@@ -127,7 +127,7 @@ exports.streamAudio = function (songData, guild, channel) {
 
         const voiceChannel = connection.channel;
 
-        console.log(`Streaming Audio: ${songId}`);
+        Util.logc(`Streaming Audio: ${songId}`);
 
         const streamOptions = { seek: 0, volume: 0.2 };
         let dispatcher;
@@ -142,14 +142,14 @@ exports.streamAudio = function (songData, guild, channel) {
         exports.isPlaying[guild.id] = true;
 
         dispatcher.on('error', (error) => {
-            console.log(`StreamError: ${error}`);
+            Util.logc(`StreamError: ${error}`);
         });
 
         dispatcher.on('end', (reason) => {
-            console.log(`Track Ended: ${reason}`);
+            Util.logc(`Track Ended: ${reason}`);
             if (reason === 'Stream is not generating quickly enough.' || reason === 'stream') {
                 if (exports.isPlaying[guild.id]) {
-                    console.log(`Track Ended, Starting Next: ${reason}`);
+                    Util.logc(`Track Ended, Starting Next: ${reason}`);
                     const guildMusicInfo = exports.guildMusicInfo[guild.id];
                     const guildQueue = exports.guildQueue[guild.id];
 
@@ -162,7 +162,7 @@ exports.streamAudio = function (songData, guild, channel) {
                     if (voiceChannel.members.size > 1) {
                         // const autoPlaylist = Data.guildGet(guild, Data.playlist);
                         if (guildQueue.length === 0 && guildMusicInfo.isAuto === true) {
-                            console.log('Track Ended, Playing Next Auto');
+                            Util.logc('Track Ended, Playing Next Auto');
                             exports.playNextAuto(guild, channel);
                         } else {
                             exports.playNextQueue(guild, channel, true);
@@ -190,12 +190,12 @@ exports.playFile = function (name, guild, channel) {
     if (oldPlayer) {
         const oldDispatcher = oldPlayer.dispatcher;
         if (oldDispatcher) {
-            console.log('Ended previous!');
+            Util.logc('Ended previous!');
             oldDispatcher.end('NewStreamAudio');
         }
     }
 
-    console.log(`Playing File: ${name}`);
+    Util.logc(`Playing File: ${name}`);
     // const streamOptions = { seek: 0, volume: 0.2 };
 
     const dispatcher = connection.playFile(`/var/files/VaeBot/resources/music/${name}.mp3`);
@@ -203,11 +203,11 @@ exports.playFile = function (name, guild, channel) {
     exports.isPlaying[guild.id] = true;
 
     dispatcher.on('error', (error) => {
-        console.log(error);
+        Util.logc(error);
     });
 
     dispatcher.on('end', (reason) => {
-        console.log(reason);
+        Util.logc(reason);
     });
 
     return undefined;
@@ -222,7 +222,7 @@ exports.joinMusic = function (guild, channel, func) {
             .then((connection2) => {
                 func(connection2);
             })
-            .catch(error => console.log(`\n[E_JoinMusic] ${error}`));
+            .catch(error => Util.logc(`\n[E_JoinMusic] ${error}`));
         } else {
             Util.print(channel, 'Not connected to a voice channel');
         }

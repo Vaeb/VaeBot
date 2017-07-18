@@ -29,7 +29,7 @@ module.exports = Cmds.addCommand({
         //msgObj.delete();
         var newChannel = data[0];
         var msg = data[1];
-        console.log("echo'd " + msg);
+        Util.logc("echo'd " + msg);
         Util.print(newChannel, msg);
     }
 });
