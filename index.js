@@ -258,7 +258,7 @@ function securityFunc(guild, member, sendRoleParam) {
 function setupSecurity(guild) {
     const sendRole = Util.getRole('SendMessages', guild);
 
-    Util.log(`Setting up security for ${guild.name} (${guild.members.size} members)`);
+    Util.logc('Security1', `Setting up security for ${guild.name} (${guild.members.size} members)`);
 
     guild.members.forEach((member) => {
         securityFunc(guild, member, sendRole);
@@ -277,7 +277,7 @@ function setupSecurityVeil() {
     // const guildId = guild.id;
     // const guildName = guild.name;
 
-    Util.log(`Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
+    Util.logc('AutoKick1', `Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
 
     guild.members.forEach((member) => {
         const memberId = member.id;

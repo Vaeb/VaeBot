@@ -301,7 +301,7 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
         }, timeoutLength)),
     });
 
-    Util.log(`Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
+    Util.logc('AddTimeout1', `Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
 function higherRank(moderator, member, canBeEqual) { // Check if member can be muted
