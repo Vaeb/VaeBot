@@ -944,8 +944,9 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         let matches = trigger[i].regex.exec(contentLower);
         if (guild.id == '166601083584643072') console.log(matches);
         if (!matches) continue;
-        for (let j = 0; j < matches.length; j++) {
-            if (original && trigger[i].allow[j].test(matches[j + 1])) {
+        const triggerAllow = trigger[i].allow;
+        for (let j = 0; j < triggerAllow.length; j++) {
+            if (original && triggerAllow[j].test(matches[j + 1])) {
                 matches = null;
                 break;
             }
