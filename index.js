@@ -985,7 +985,7 @@ client.on('message', (msgObj) => {
                     }
                 }
                 // Util.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
-                if (grad1 >= checkGrad1) {
+                if (grad1 >= checkGrad1) { // Is spamming
                     if (userStatus[authorId] === 0) {
                         Util.logc('AntiSpam1', `[1] ${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
                         userStatus[authorId] = 1;
