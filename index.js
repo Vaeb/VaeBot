@@ -957,18 +957,16 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date());
         nowStamps.unshift({ stamp, message: contentLower });
         if (Util.isSpam(content)) {
-            Util.log('');
             if (userStatus[authorId] == 0) {
-                Util.log(`[4] ${Util.getName(speaker)} warned`);
+                Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} warned`);
                 Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                 lastWarn[authorId] = stamp;
                 userStatus[authorId] = 2;
             } else {
-                Util.log(`[4] ${Util.getName(speaker)} muted`);
+                Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} muted`);
                 Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                 userStatus[authorId] = 0;
             }
-            Util.log('');
         }
         if (!Mutes.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
             if (nowStamps.length > checkMessages) {
@@ -988,16 +986,15 @@ client.on('message', (msgObj) => {
                 }
                 // Util.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
                 if (grad1 >= checkGrad1) {
-                    Util.log('');
                     if (userStatus[authorId] === 0) {
-                        Util.log(`${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
+                        Util.logc('AntiSpam1', `${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
                         userStatus[authorId] = 1;
                         Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
                         setTimeout(() => {
                             const lastStamp = nowStamps[0].stamp;
                             setTimeout(() => {
                                 if (Mutes.checkMuted(guild, author.id)) {
-                                    Util.log(`[2] ${Util.getName(speaker)} is already muted`);
+                                    Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} is already muted`);
                                     userStatus[authorId] = 0;
                                     return;
                                 }
@@ -1016,7 +1013,7 @@ client.on('message', (msgObj) => {
                                     if (isFinal) break;
                                 }
                                 if (numNew <= 1) {
-                                    Util.log(`[2_] ${Util.getName(speaker)} was put on alert`);
+                                    Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} was put on alert`);
                                     lastWarn[authorId] = newStamp;
                                     userStatus[authorId] = 2;
                                     return;
@@ -1036,26 +1033,25 @@ client.on('message', (msgObj) => {
                                         numNew2 = i + 1;
                                     }
                                 }
-                                Util.log(`[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
+                                Util.logc('AntiSpam1', `[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
                                 if (grad2 >= checkGrad2) {
-                                    Util.log(`[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
+                                    Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
                                     Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                                     userStatus[authorId] = 0;
                                 } else {
-                                    Util.log(`[2] ${Util.getName(speaker)} was put on alert`);
+                                    Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} was put on alert`);
                                     lastWarn[authorId] = newStamp;
                                     userStatus[authorId] = 2;
                                 }
                             }, waitTime * 1000);
                         }, 350);
                     } else if (userStatus[authorId] === 2) {
-                        Util.log(`[3] ${Util.getName(speaker)} muted, repeated warns`);
+                        Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} muted, repeated warns`);
                         Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                         userStatus[authorId] = 0;
                     }
-                    Util.log('');
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
-                    Util.log(`${Util.getName(speaker)} ended their alert`);
+                    Util.logc('AntiSpam1', `${Util.getName(speaker)} ended their alert`);
                     userStatus[authorId] = 0;
                 }
             }
