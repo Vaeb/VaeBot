@@ -920,7 +920,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     contentLower = contentLower.replace(/https?/g, '');
     contentLower = contentLower.replace(/[^a-z .]+/g, '');
     contentLower = contentLower.replace(/dot/g, '.');
-    contentLower = contentLower.replace(/(.)\1+/g, '$1');
+    // contentLower = contentLower.replace(/(.)\1+/g, '$1');
 
     if (original) {
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
@@ -930,7 +930,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
     let triggered = false;
 
-    const trigger = [ // Change: consecutive characters, non letter/dot characters
+    const trigger = [ // Change: non letter/dot characters
         {
             regex: /[^\s.]*steam([^\s.]+)\.com/g,
             allow: [/^powered$/g],
