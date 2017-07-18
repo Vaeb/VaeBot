@@ -288,7 +288,7 @@ function getURLChecker() {
         txt = exports.replaceAll(txt, '*', '');
         txt = exports.replaceAll(txt, '_', '');
 
-        if (txt.includes('roblox')) console.log(txt);
+        if (txt.includes('roblox')) Util.log(txt);
 
         const options = optionsParam || {};
 
@@ -423,8 +423,8 @@ exports.initRoles = function (sendRole, guild) {
     members.forEach((member) => {
         if (!exports.hasRole(member, sendRole)) {
             member.addRole(sendRole)
-            .then(() => console.log(`Assigned role to ${exports.getName(member)}`))
-            .catch(error => console.log(`\n[E_InitRoles] addRole: ${error}`));
+            .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
+            .catch(error => Util.log(`[E_InitRoles] addRole: ${error}`));
         }
     });
 };
@@ -450,7 +450,7 @@ exports.runLua = function (args, channel) {
     const fileDir = `/tmp/script_${tagNum}.lua`;
     FileSys.writeFile(fileDir, args, (err) => {
         if (err) {
-            console.log(`Script creation error: ${err}`);
+            Util.log(`Script creation error: ${err}`);
             Util.print(channel, `Script creation error: ${err}`);
         }
         Exec(`lua ${fileDir}`, (error, stdoutParam, stderr) => {
@@ -462,7 +462,7 @@ exports.runLua = function (args, channel) {
             if (error) {
                 outStr.push('**Execution error:**');
                 outStr.push('```');
-                console.log(`Execution Error: ${stderr}`);
+                Util.log(`Execution Error: ${stderr}`);
                 outStr.push(error);
                 outStr.push('```');
             } else {
@@ -490,7 +490,7 @@ exports.runLua = function (args, channel) {
                 if (stderr) {
                     outStr.push('**Lua Error:**');
                     outStr.push('```');
-                    console.log(`Lua Error: ${stderr}`);
+                    Util.log(`Lua Error: ${stderr}`);
                     outStr.push(stderr);
                     outStr.push('```');
                 }
@@ -509,7 +509,7 @@ exports.doXOR = function (a, b) {
 exports.capitalize2 = function (strParam, repUnder) {
     let str = String(strParam);
     if (repUnder) str = exports.replaceAll(str, '_', ' ');
-    str = str.replace(/[0-9a-z]+/ig, (txt) => { console.log(txt); return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+    str = str.replace(/[0-9a-z]+/ig, (txt) => { Util.log(txt); return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
     return str;
 };
 
@@ -605,7 +605,7 @@ exports.commandFailed = function (channel, speaker, tag, message) {
     if (channel != null) {
         exports.sendEmbed(channel, `${tagMessage}Command Failed`, message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
     } else {
-        console.log(`${tagMessage}[Command_Failed] ${speaker.id}: ${message}`);
+        Util.log(`${tagMessage}[Command_Failed] ${speaker.id}: ${message}`);
     }
 
     return false;
@@ -766,7 +766,7 @@ exports.cutStringSafe = function (msg, postMsg, lastIsOpener) { // Tries to cut 
 exports.fixMessageLengthNew = function (msgParam) {
     const argsFixed = exports.chunkString(msgParam, exports.charLimit); // Group string into sets of 2k chars
     const minusLimit = exports.charLimit - 4;
-    // argsFixed.forEach(o => console.log("---\n" + o));
+    // argsFixed.forEach(o => Util.log("---\n" + o));
     let totalBlocks = 0; // Total number of *user created* code blocks come across so far (therefore if the number is odd then code block is currently open)
     for (let i = 0; i < argsFixed.length; i++) {
         let passOver = ''; // String to pass over as the start of the next chunk
@@ -804,20 +804,20 @@ exports.fixMessageLengthNew = function (msgParam) {
     for (var i = 0; i < argsFixed.length; i++) {
         var passOver = "";
         var msg = argsFixed[i];
-        //console.log("Original message length: " + msg.length);
+        //Util.log("Original message length: " + msg.length);
         if (msg.length > 1996) {
             passOver = msg.substring(1996);
             msg = msg.substring(0, 1996);
-            //console.log("passStart orig: " + passOver.length);
+            //Util.log("passStart orig: " + passOver.length);
             var lastLine = msg.lastIndexOf("\n");
             if (lastLine >= 5) {
                 var msgEnd = lastLine;
                 var passStart = msgEnd+1;
                 passOver = msg.substring(passStart) + passOver;
                 msg = msg.substring(0, msgEnd);
-                //console.log("passOver: " + passOver.length);
-                //console.log("msg: " + msg.length);
-                //console.log("lastLine: " + lastLine);
+                //Util.log("passOver: " + passOver.length);
+                //Util.log("msg: " + msg.length);
+                //Util.log("lastLine: " + lastLine);
             }
         }
         var numBlock = (msg.match(/```/g) || []).length;
@@ -826,11 +826,11 @@ exports.fixMessageLengthNew = function (msgParam) {
             msg = msg + "\n```";
         }
         argsFixed[i] = msg;
-        //console.log("Message length: " + msg.length);
-        //console.log("Pass Over: " + passOver.length);
+        //Util.log("Message length: " + msg.length);
+        //Util.log("Pass Over: " + passOver.length);
         if (passOver != "" && (argsFixed[i+1] != null || passOver != "```\n")) {
             if (argsFixed[i+1] == null) {
-                //console.log("Created new print block extender")
+                //Util.log("Created new print block extender")
                 argsFixed[i+1] = "";
             }
             argsFixed[i+1] = passOver + argsFixed[i+1];
@@ -974,22 +974,22 @@ function chunkMessage(msg) {
 
             if (chunkTemp.length <= leaveExtra) continue;
 
-            console.log(`Split on ${splitChars} @ ${pivotStart} @ ${pivotEnd}`);
+            Util.log(`Split on ${splitChars} @ ${pivotStart} @ ${pivotEnd}`);
 
             chunk = chunkTemp;
             leftOver = content.substr(pivotEnd);
 
             /* if (i == 1) {
-                console.log(chunkTemp);
-                console.log('---');
-                console.log(leftOver);
+                Util.log(chunkTemp);
+                Util.log('---');
+                Util.log(leftOver);
             } */
 
             break;
         }
 
         if (leftOver == null) {
-            console.log('Split on last');
+            Util.log('Split on last');
             leftOver = content.substr(baseChunkSize);
         }
 
@@ -1022,13 +1022,13 @@ exports.splitMessages = function (messages) {
     return chunkMessage(messages.join(' '));
 };
 
-const ePrint = error => console.log(`\n[E_Print] ${error}`);
+const ePrint = error => Util.log(`[E_Print] ${error}`);
 
 exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
     for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
-        console.log(`${channel.name}: ${msg.length}`);
+        // Util.log(`${channel.name}: ${msg.length}`);
         channel.send(msg)
         .catch(ePrint);
     }
@@ -1242,9 +1242,9 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
 
     embChannel.send(undefined, { embed: embObj })
     .catch((error) => {
-        console.log(`\n[E_SendEmbed] ${error} ${embChannel}`);
-        console.log(embObj);
-        console.log(JSON.stringify(embFields));
+        Util.log(`[E_SendEmbed] ${error} ${embChannel}`);
+        Util.log(embObj);
+        Util.log(JSON.stringify(embFields));
     });
 
     if (manyFields) {
@@ -1404,13 +1404,13 @@ exports.getHistory = function (id, guild) {
 exports.historyToStringOld = function (num) {
     let timeHours = exports.round(num / 3600000, 0.1);
     timeHours = (timeHours >= 1 || timeHours == 0) ? timeHours.toFixed(0) : timeHours.toFixed(1);
-    console.log(`[RANDOM] timeHours: ${timeHours}`);
+    Util.log(`[RANDOM] timeHours: ${timeHours}`);
     return timeHours + (timeHours == 1 ? ' hour' : ' hours');
 };
 
 exports.historyToStringOld2 = function (num) {
     let timeHours = num / 3600000;
-    console.log(`[RANDOM] timeHours: ${timeHours}`);
+    Util.log(`[RANDOM] timeHours: ${timeHours}`);
     timeHours += (timeHours == 1 ? ' hour' : ' hours');
     return timeHours;
 };
@@ -1542,9 +1542,9 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
         }
 
         if (nameMatch >= 0) {
-            // console.log("\n(" + i + ") " + realName + ": " + value);
+            // Util.log("(" + i + ") " + realName + ": " + value);
             const filled = Math.min(name.length / realName.length, 0.999);
-            // console.log("filled: " + filled);
+            // Util.log("filled: " + filled);
             strength[layer++] = filled;
 
             const maxCaps = Math.min(name.length, realName.length);
@@ -1554,13 +1554,13 @@ exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match,
             }
             const caps = Math.min(numCaps / maxCaps, 0.999);
             // const capsExp = (filledExp * 0.5 - 1 + caps);
-            // console.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
+            // Util.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
             strength[layer++] = caps;
 
             const totalPosition = realName.length - name.length;
             const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
             // const percExp = (capsExp - 2 + perc);
-            // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
+            // Util.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
             strength[layer++] = perc;
 
             if (strongest == null) {
@@ -1631,10 +1631,10 @@ exports.getMemberByNameOld = function (name, guild) { // [v2.0] Visible name mat
         }
 
         if (nameMatch >= 0) {
-            // console.log("\n(" + i + ") " + realName + ": " + value);
+            // Util.log("(" + i + ") " + realName + ": " + value);
             const filled = Math.min(name.length / realName.length, 0.999);
             const filledExp = (2 + filled);
-            // console.log("filled: " + filled);
+            // Util.log("filled: " + filled);
             value += 2 ** filledExp;
 
             const maxCaps = Math.min(name.length, realName.length);
@@ -1645,17 +1645,17 @@ exports.getMemberByNameOld = function (name, guild) { // [v2.0] Visible name mat
             const caps = Math.min(numCaps / maxCaps, 0.999);
             // const capsExp = (filledExp * 0.5 - 1 + caps);
             const capsExp = (1 + caps);
-            // console.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
+            // Util.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
             value += 2 ** capsExp;
 
             const totalPosition = realName.length - name.length;
             const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
             // const percExp = (capsExp - 2 + perc);
             const percExp = (0 + perc);
-            // console.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
+            // Util.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
             value += 2 ** percExp;
 
-            // console.log(value);
+            // Util.log(value);
             matchStrength.push([value, member]);
         }
     });
@@ -1692,13 +1692,13 @@ function getDataFromStringInner(str, funcs, returnExtra) {
             const result = funcs[index](combine.join(' '), results);
             if (result != null) {
                 /* if (index == 1) {
-                    console.log("[Z] " + combine.join(" "));
-                    console.log("[Z] " + remainingFuncs);
-                    console.log("[Z] " + remainingTerms);
-                    console.log("[Z] " + pos);
-                    console.log("[Z] " + start);
-                    console.log("[Z] " + end);
-                    console.log("[Z] " + result);
+                    Util.log("[Z] " + combine.join(" "));
+                    Util.log("[Z] " + remainingFuncs);
+                    Util.log("[Z] " + remainingTerms);
+                    Util.log("[Z] " + pos);
+                    Util.log("[Z] " + start);
+                    Util.log("[Z] " + end);
+                    Util.log("[Z] " + result);
                 }*/
                 results.push(result);
                 index++;
@@ -1813,10 +1813,10 @@ function matchSet(str, funcSets, setIndex, data) {
         return true;
     }
     data.fail = Math.max(data.fail, setIndex);
-    console.log(`Loop ${setIndex}`);
+    Util.log(`Loop ${setIndex}`);
     const set = funcSets[setIndex++];
     if (set.requires && data[set.requires] === undefined) {
-        console.log('Missing requires');
+        Util.log('Missing requires');
         if (!set.optional) return false;
         data.push(undefined);
         if (matchSet(str, funcSets, setIndex, data)) return true;
@@ -1828,13 +1828,13 @@ function matchSet(str, funcSets, setIndex, data) {
         return true;
     }
     const pMatch = str.match(set.prefix || (setIndex === 1 ? /\s*/ : /\s+/));
-    console.log('\t', pMatch, setIndex, set.prefix || (setIndex === 1 ? /\s*/ : /\s+/));
+    Util.log('\t', pMatch, setIndex, set.prefix || (setIndex === 1 ? /\s*/ : /\s+/));
     if (!pMatch) return false;
     if (pMatch.index !== 0) return false;
     str = str.substr(pMatch[0].length);
     for (let i = str.length; i >= 0; i--) {
         const part = str.substr(0, i);
-        // console.log(`\tchecking part ${part}`);
+        // Util.log(`\tchecking part ${part}`);
         let good = true;
         if (set.match) {
             const mMatch = part.match(set.match);
@@ -1842,11 +1842,11 @@ function matchSet(str, funcSets, setIndex, data) {
         }
         const res = good && set.func(part);
         if (!res || !good) continue;
-        // console.log("Got", res, "for", data.length, "with length", i);
+        // Util.log("Got", res, "for", data.length, "with length", i);
         data.push(res);
         const left = str.substr(i);
         if (matchSet(left, funcSets, setIndex, data)) {
-            // console.log("Reached the end, yeuy!");
+            // Util.log("Reached the end, yeuy!");
             return true;
         }
         data.pop();
@@ -2030,7 +2030,7 @@ exports.getPermRating = function (guild, userOrRole) {
                 let pointer1 = i + 1;
                 let newVal = 5;
 
-                // console.log("found", permData[0]);
+                // Util.log("found", permData[0]);
 
                 for (let i2 = i + 1; i2 < tempPermRating.length; i2++) {
                     const nowVal = tempPermRating[i2][1];
@@ -2054,7 +2054,7 @@ exports.getPermRating = function (guild, userOrRole) {
                     tempPermRating[n][1] = newVal;
                 }
 
-                // console.log(tempPermRating);
+                // Util.log(tempPermRating);
             }
             total += permData[1];
         }
@@ -2102,7 +2102,7 @@ exports.strToPerm = function (strParam) {
 
 exports.setChannelPerms = function (channel, userOrRole, newPerms) {
     channel.overwritePermissions(userOrRole, newPerms)
-    .catch(error => console.log(`\n[E_SetChannelPerms] ${error}`));
+    .catch(error => Util.log(`[E_SetChannelPerms] ${error}`));
 };
 
 // fetch more messages just like Discord client does
@@ -2130,7 +2130,7 @@ exports.onFetch = function (messagesParam, channel, leftParam, store) {
 
     left -= messages.length;
 
-    console.log(`Received ${messages.length}, left: ${left}`);
+    Util.log(`Received ${messages.length}, left: ${left}`);
 
     if (left <= 0) return Promise.resolve();
 
@@ -2201,15 +2201,15 @@ exports.deleteMessages = function (messages) {
     }
 
     if (numMessages < 1) {
-        console.log('You must have at least 1 message to delete');
+        Util.log('You must have at least 1 message to delete');
     } else {
-        console.log(`Deleting ${numMessages} messages`);
+        Util.log(`Deleting ${numMessages} messages`);
     }
 
     if (numMessages == 1) {
         firstMessage.delete()
         .catch((err) => {
-            console.log(`[E_DeleteMessages1] ${err}`);
+            Util.log(`[E_DeleteMessages1] ${err}`);
         });
     } else {
         const chunks = exports.chunkObj(messages, 99);
@@ -2217,7 +2217,7 @@ exports.deleteMessages = function (messages) {
             const chunk = chunks[i];
             firstMessage.channel.bulkDelete(chunk)
             .catch((err) => {
-                console.log(`[E_DeleteMessages2] ${err}`);
+                Util.log(`[E_DeleteMessages2] ${err}`);
             });
         }
     }
@@ -2248,7 +2248,7 @@ exports.fetchMessages = async function (channel, numScan, checkFunc) {
 
     const scanMessages = await fetchMessagesInner(channel, numScan, [], null);
     const foundMessages = scanMessages.filter(checkFunc);
-    console.log(`Num Messages Found: ${foundMessages.length}`);
+    Util.log(`Num Messages Found: ${foundMessages.length}`);
     return foundMessages;
 };
 
@@ -2314,19 +2314,21 @@ exports.isSpam = function (content) {
     const matches = content.match(pattern);
 
     for (let i = 0; i < matches.length; i++) {
-        // console.log(`---${i + 1}---`);
+        // Util.log(`---${i + 1}---`);
         for (let j = 0; j < matches.length; j++) {
             let long = matches[j];
             if (j + i >= matches.length) continue;
             for (let k = 1; k <= i; k++) long += matches[j + k];
-            // console.log(long);
+            // Util.log(long);
             const simpData = simplifyStr(long);
             const sub = simpData[0];
             const num = simpData[1];
             const subLength = sub.length;
             let triggered = false;
-            if (num >= 3 && subLength >= 2) {
-                if (subLength == 2) { // 2 characters, 20+ repetitions
+            if (num >= 3) {
+                if (subLength == 1) { // 1 character, 100+ repetitions
+                    if (num >= 100) triggered = true;
+                } else if (subLength == 2) { // 2 characters, 20+ repetitions
                     if (num >= 20) triggered = true;
                 } else if (subLength == 3) { // 3 characters, 7+ repetitions
                     if (num >= 7) triggered = true;
@@ -2337,7 +2339,7 @@ exports.isSpam = function (content) {
                 }
             }
             if (triggered) {
-                console.log(long, ':', sub, ':', num);
+                Util.log(long, ':', sub, ':', num);
                 return true;
             }
         }
@@ -2348,4 +2350,23 @@ exports.isSpam = function (content) {
 
 exports.reverse = function (str) {
     return str.split('').reverse().join('');
+};
+
+let lastTag = null;
+let lastWasEmpty = true;
+
+exports.log = function (...args) {
+    if (!lastWasEmpty) console.log('');
+    console.log(...args);
+    lastWasEmpty = /[\n\r]\s*$/.test(args.join(' '));
+    lastTag = null;
+};
+
+exports.logc = function (...args) {
+    const nowTag = String(args.splice(0, 1)).toLowerCase();
+    const isNew = lastTag != nowTag;
+    if (isNew && !lastWasEmpty) console.log('');
+    console.log(...args);
+    lastWasEmpty = /[\n\r]\s*$/.test(args.join(' '));
+    lastTag = nowTag;
 };
