@@ -1028,7 +1028,7 @@ exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
     for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
-        Util.log(`${channel.name}: ${msg.length}`);
+        // Util.log(`${channel.name}: ${msg.length}`);
         channel.send(msg)
         .catch(ePrint);
     }
