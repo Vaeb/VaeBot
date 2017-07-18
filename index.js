@@ -914,12 +914,13 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         contentLower = contentLower.replace(/8/g, 'b');
         contentLower = contentLower.replace(/@/g, 'a');
         contentLower = contentLower.replace(/[^a-z .]+/g, '');
-        contentLower = contentLower.replace(/(.)\1+/g, '$1');
 
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
     }
 
+    contentLower = contentLower.replace(/https?/g, '');
     contentLower = contentLower.replace(/dot/g, '.');
+    contentLower = contentLower.replace(/(.)\1+/g, '$1');
 
     if (original) {
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
@@ -932,7 +933,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     const trigger = [ // Change: consecutive characters, non letter/dot characters
         {
             regex: /[^\s.]*steam([^\s.]+)\.com/g,
-            allow: ['powered'],
+            allow: [/^powered$/],
         }, {
             regex: /[^\s.]+steam[^\s.]*\.com/g,
             allow: [],
@@ -944,7 +945,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         if (guild.id == '166601083584643072') console.log(matches);
         if (!matches) continue;
         for (let j = 0; j < matches.length; j++) {
-            if (original && matches[j] == trigger[i].allow[j]) {
+            if (original && trigger[i].allow[j].test(matches[j])) {
                 matches = null;
                 break;
             }
