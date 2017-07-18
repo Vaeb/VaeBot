@@ -914,7 +914,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         contentLower = contentLower.replace(/8/g, 'b');
         contentLower = contentLower.replace(/@/g, 'a');
         contentLower = contentLower.replace(/[^a-z .]+/g, '');
-        contentLower = contentLower.replace(/(.){2,}/g, '$1');
+        contentLower = contentLower.replace(/(.)\1+/g, '$1');
 
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
     }
