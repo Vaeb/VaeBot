@@ -16,6 +16,7 @@ exports.Exec = require('child_process').exec;
 const YtInfoObj = require('youtube-node');
 exports.Translate = require('google-translate-api');
 exports.MySQL = require('mysql');
+exports.NodeUtil = require('util');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
