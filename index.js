@@ -957,6 +957,7 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date());
         nowStamps.unshift({ stamp, message: contentLower });
         if (Util.isSpam(content)) {
+            console.log('');
             if (userStatus[authorId] == 0) {
                 console.log(`[4] ${Util.getName(speaker)} warned`);
                 Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
@@ -967,6 +968,7 @@ client.on('message', (msgObj) => {
                 Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                 userStatus[authorId] = 0;
             }
+            console.log('');
         }
         if (!Mutes.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
             if (nowStamps.length > checkMessages) {
@@ -986,6 +988,7 @@ client.on('message', (msgObj) => {
                 }
                 // console.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
                 if (grad1 >= checkGrad1) {
+                    console.log('');
                     if (userStatus[authorId] === 0) {
                         console.log(`${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
                         userStatus[authorId] = 1;
@@ -1050,8 +1053,9 @@ client.on('message', (msgObj) => {
                         Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                         userStatus[authorId] = 0;
                     }
+                    console.log('');
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
-                    console.log(`${Util.getName(speaker)} ended their alert`);
+                    console.log(`\n${Util.getName(speaker)} ended their alert\n`);
                     userStatus[authorId] = 0;
                 }
             }

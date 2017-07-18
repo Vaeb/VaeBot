@@ -220,7 +220,7 @@ function remSendMessages(member) { // Remove SendMessages role
             if (role != null) {
                 linkedMember.removeRole(role)
                 .then(() => {
-                    console.log(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    console.log(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}\n`);
                 })
                 .catch(error => console.log(`\n[E_LinkRoleRem1] ${error}`));
             }
@@ -242,7 +242,7 @@ function addSendMessages(member) { // Add SendMessages role
             if (role != null) {
                 linkedMember.addRole(role)
                 .then(() => {
-                    console.log(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    console.log(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}\n`);
                 })
                 .catch(error => console.log(`\n[E_LinkRoleAdd1] ${error}`));
             }
@@ -458,7 +458,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'DM', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
     sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Log', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
 
-    console.log('Completed AddMute');
+    console.log('Completed AddMute\n');
 
     return true;
 };
@@ -579,7 +579,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
     sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
 
-    console.log('Completed ChangeMute');
+    console.log('Completed ChangeMute\n');
 
     return true;
 };
@@ -651,7 +651,7 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
     sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    console.log('Completed UnMute');
+    console.log('Completed UnMute\n');
 
     return true;
 };
@@ -713,7 +713,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
     sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    console.log('Completed RemMute');
+    console.log('Completed RemMute\n');
 
     return true;
 };
@@ -770,7 +770,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
     sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    console.log('Completed ClearMutes');
+    console.log('Completed ClearMutes\n');
 
     return true;
 };
