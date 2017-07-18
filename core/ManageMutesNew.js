@@ -203,7 +203,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
         }
     }
 
-    Util.log(`Sent a ${messageType} alert for the ${actionType} event`);
+    Util.logc('Mutes1', `Sent a ${messageType} alert for the ${actionType} event`);
 }
 
 function remSendMessages(member) { // Remove SendMessages role
@@ -220,9 +220,9 @@ function remSendMessages(member) { // Remove SendMessages role
             if (role != null) {
                 linkedMember.removeRole(role)
                 .then(() => {
-                    Util.log(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    Util.logc('RemMainRole1', `Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.log(`[E_LinkRoleRem1] ${error}`));
+                .catch(error => Util.logc('RemMainRole1', `[E_LinkRoleRem1] ${error}`));
             }
         }
     }
@@ -242,9 +242,9 @@ function addSendMessages(member) { // Add SendMessages role
             if (role != null) {
                 linkedMember.addRole(role)
                 .then(() => {
-                    Util.log(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    Util.logc('AddMainRole1', `Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.log(`[E_LinkRoleAdd1] ${error}`));
+                .catch(error => Util.logc('AddMainRole1', `[E_LinkRoleAdd1] ${error}`));
             }
         }
     }
@@ -257,7 +257,7 @@ function remTimeout(guild, userId) { // Remove mute timeout
         const timeoutData = muteTimeouts[i];
         if (timeoutData.guildId === guildId && timeoutData.userId === userId) {
             clearTimeout(timeoutData.timeout);
-            Util.log(`Removed mute timeout for ${userId} @ ${guild.name}`);
+            Util.logc('Mutes1', `Removed mute timeout for ${userId} @ ${guild.name}`);
             muteTimeouts.splice(i, 1);
         }
     }
@@ -290,18 +290,18 @@ async function addTimeout(guild, userId, endTick) { // Add mute timeout
             }
 
             if (timeoutRemaining > 0) {
-                Util.log(`Mute shard timeout for ${userId} @ ${guild.name} ended; Starting next shard...`);
+                Util.logc('AddTimeout1', `Mute shard timeout for ${userId} @ ${guild.name} ended; Starting next shard...`);
                 addTimeout(guild, userId, endTick);
                 return;
             }
 
-            Util.log(`Mute timeout for ${userId} @ ${guild.name} ended; Unmuting...`);
+            Util.logc('AddTimeout1', `Mute timeout for ${userId} @ ${guild.name} ended; Unmuting...`);
 
             exports.unMute(guild, null, userId, 'System');
         }, timeoutLength)),
     });
 
-    Util.logc('AddTimeout1', `Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
+    Util.logc('Mutes1', `Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
 function higherRank(moderator, member, canBeEqual) { // Check if member can be muted
@@ -334,7 +334,7 @@ function resolveUser(guild, userResolvable, isMod) {
         }
     }
 
-    Util.log(`User type: ${userType} (isMod ${isMod || false})`);
+    Util.logc('Mutes1', `User type: ${userType} (isMod ${isMod || false})`);
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
@@ -358,7 +358,7 @@ function resolveUser(guild, userResolvable, isMod) {
 }
 
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
-    Util.log(`Started AddMute on ${userResolvable}`);
+    Util.logc('Mutes1', `\nStarted AddMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -375,7 +375,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', `${resolvedUser}`);
     }
 
-    Util.log(`Resolved user as ${resolvedUser.id}`);
+    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
 
     // Get past mute data
 
@@ -458,13 +458,13 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'DM', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
     sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Log', resolvedUser.member, moderatorResolvable, resolvedUser.mention, totalMutes, muteLengthStr, muteReason, endStr);
 
-    Util.log('Completed AddMute');
+    Util.logc('Mutes1', 'Completed AddMute');
 
     return true;
 };
 
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
-    Util.log(`Started ChangeMute on ${userResolvable}`);
+    Util.logc('Mutes1', `\nStarted ChangeMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -476,7 +476,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', `${resolvedUser}`);
     }
 
-    Util.log(`Resolved user as ${resolvedUser.id}`);
+    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
 
     // Get mute data
 
@@ -579,13 +579,13 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
     sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
 
-    Util.log('Completed ChangeMute');
+    Util.logc('Mutes1', 'Completed ChangeMute');
 
     return true;
 };
 
 exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
-    Util.log(`Started UnMute on ${userResolvable}`);
+    Util.logc('Mutes1', `\nStarted UnMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -597,7 +597,7 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', `${resolvedUser}`);
     }
 
-    Util.log(`Resolved user as ${resolvedUser.id}`);
+    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
 
     // Get mute data
 
@@ -651,20 +651,20 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
     sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    Util.log('Completed UnMute');
+    Util.logc('Mutes1', 'Completed UnMute');
 
     return true;
 };
 
 exports.remMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    Util.log(`Started RemMute on ${userResolvable}, waiting for UnMute to complete...`);
+    Util.logc('Mutes1', `\nStarted RemMute on ${userResolvable}, waiting for UnMute to complete...`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Stop active mute
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.log('UnMute completed, continuing RemMute');
+    Util.logc('Mutes1', 'UnMute completed, continuing RemMute');
 
     // Resolve parameter data
 
@@ -675,7 +675,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', `${resolvedUser}`);
     }
 
-    Util.log(`Resolved user as ${resolvedUser.id}`);
+    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
 
     const pastMutes = muteCache[guildId].filter(r => r.user_id == resolvedUser.id);
     const totalMutes = pastMutes.length - 1;
@@ -713,20 +713,20 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
     sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    Util.log('Completed RemMute');
+    Util.logc('Mutes1', 'Completed RemMute');
 
     return true;
 };
 
 exports.clearMutes = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    Util.log(`Started ClearMutes on ${userResolvable}, waiting for UnMute to complete...`);
+    Util.logc('Mutes1', `\nStarted ClearMutes on ${userResolvable}, waiting for UnMute to complete...`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Stop active mute
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.log('UnMute completed, continuing ClearMutes');
+    Util.logc('Mutes1', 'UnMute completed, continuing ClearMutes');
 
     // Resolve parameter data
 
@@ -737,7 +737,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
         return Util.commandFailed(channel, moderatorResolvable, 'ClearMutes', `${resolvedUser}`);
     }
 
-    Util.log(`Resolved user as ${resolvedUser.id}`);
+    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
 
     const pastMutes = muteCache[guildId].filter(r => r.user_id == resolvedUser.id);
     const totalMutes = 0;
@@ -770,7 +770,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
     sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
     sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
 
-    Util.log('Completed ClearMutes');
+    Util.logc('Mutes1', 'Completed ClearMutes');
 
     return true;
 };
@@ -784,7 +784,7 @@ exports.checkMuted = function (guild, userId) {
 
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
     // const nowTick = +new Date();
-    Util.log('> Initializing mute data');
+    Util.logc('MutesInit', '> Initializing mute data');
 
     nextMuteId = (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE()', ['mutes']))[0].AUTO_INCREMENT;
 
@@ -809,7 +809,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
         }
     }));
 
-    Util.log('> Completed mute initialization');
+    Util.logc('MutesInit', '> Completed mute initialization');
 
     index.secure();
 };
