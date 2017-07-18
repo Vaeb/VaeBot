@@ -212,7 +212,7 @@ function setBriefing() {
 exports.globalBan = {
     '201740276472086528': true,
     '75736018761818112': true,
-    '123146298504380416': true, // Oseday
+    '123146298504380416': true,
     '263372398059847681': true,
     '238981466606927873': true, // Lindah
     '189687397951209472': true, // xCraySECx / Nico Nico
@@ -881,7 +881,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 
     let triggered = false;
 
-    if (contentLower.substr(contentLower.length - 3, 3) == 'buy') {
+    if (contentLower != 'buy' && contentLower.substr(contentLower.length - 3, 3) == 'buy') {
         triggered = true;
     }
 
