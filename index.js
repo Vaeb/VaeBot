@@ -881,7 +881,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 
     let triggered = false;
 
-    if (contentLower != 'buy' && contentLower.substr(contentLower.length - 3, 3) == 'buy') {
+    if ((/\s/g).test(contentLower) && contentLower.substr(contentLower.length - 3, 3) == 'buy') {
         triggered = true;
     }
 
