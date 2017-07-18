@@ -109,7 +109,7 @@ function setBriefing() {
         const channel = client.channels.get('168744024931434498');
         // const guild = channel.guild;
 
-        Util.log(`\nSet daily briefing for ${t3 * msToHours} hours\n`);
+        Util.log(`Set daily briefing for ${t3 * msToHours} hours\n`);
 
         setTimeout(() => {
             // const upField = { name: '​', value: '​', inline: false };
@@ -197,7 +197,7 @@ function setBriefing() {
                 || exports.dailyKicks.length > 0
                 || exports.dailyBans.length > 0) {
                 channel.send(undefined, { embed: embObj })
-                .catch(error => Util.log(`\n[E_SendBriefing] ${error}`));
+                .catch(error => Util.log(`[E_SendBriefing] ${error}`));
             }
 
             exports.dailyMutes = []; // Reset
@@ -289,18 +289,18 @@ function setupSecurityVeil() {
         if (!veilMember) {
             Util.log(`[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
             member.kick()
-            .catch(error => Util.log(`\n[E_AutoOldKick1] ${memberName} | ${error}`));
+            .catch(error => Util.log(`[E_AutoOldKick1] ${memberName} | ${error}`));
             return;
         }
         if (!veilMember.roles.has(veilBuyer.id)) {
             Util.log(`[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
             member.kick()
-            .catch(error => Util.log(`\n[E_AutoOldKick2] ${memberName} | ${error}`));
+            .catch(error => Util.log(`[E_AutoOldKick2] ${memberName} | ${error}`));
             return;
         }
         if (!member.roles.has(newBuyer.id)) {
             member.addRole(newBuyer)
-            .catch(error => Util.log(`\n[E_AutoOldAddRole1] ${memberName} | ${error}`));
+            .catch(error => Util.log(`[E_AutoOldAddRole1] ${memberName} | ${error}`));
             Util.log(`Updated old member with Buyer role: ${memberName}`);
         }
     });
@@ -314,7 +314,7 @@ const veilGuilds = {
 };
 
 exports.secure = async function () {
-    Util.log('\n> Securing guilds...\n');
+    Util.log('> Securing guilds...\n');
 
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
@@ -337,7 +337,7 @@ exports.secure = async function () {
         Trello.setupCache(newGuild);
     }));
 
-    Util.log('\n> Security setup complete\n');
+    Util.log('> Security setup complete\n');
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,7 +347,7 @@ Cmds.initCommands();
 // Index_Ready -> Data_SQL -> Mutes_Initialize -> Index_Secure
 
 client.on('ready', async () => {
-    Util.log(`\n> Connected as ${client.user.username}!\n`);
+    Util.log(`> Connected as ${client.user.username}!\n`);
 
     if (madeBriefing === false) {
         madeBriefing = true;
@@ -362,7 +362,7 @@ client.on('ready', async () => {
         dbGuilds.push(newGuild);
     }));
 
-    Util.log('> Cached all guild members!\n');
+    Util.log('> Cached all guild members!');
     Data.connectInitial(dbGuilds)
     .catch(err => Util.log(`[E_DataConnect] ${err}`));
 });
@@ -418,17 +418,17 @@ client.on('guildMemberAdd', (member) => {
             if (!veilMember) {
                 Util.log(`[Auto-Kick 1] User not in Veil: ${memberName}`);
                 member.kick()
-                .catch(error => Util.log(`\n[E_AutoKick1] ${error}`));
+                .catch(error => Util.log(`[E_AutoKick1] ${error}`));
                 return;
             }
             if (!veilMember.roles.has(veilBuyer.id)) {
                 Util.log(`[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
                 member.kick()
-                .catch(error => Util.log(`\n[E_AutoKick2] ${error}`));
+                .catch(error => Util.log(`[E_AutoKick2] ${error}`));
                 return;
             }
             member.addRole(newBuyer)
-            .catch(error => Util.log(`\n[E_AutoAddRole1] ${error}`));
+            .catch(error => Util.log(`[E_AutoAddRole1] ${error}`));
             Util.log('Awarded new member with Buyer role');
         }
     }
@@ -1055,7 +1055,7 @@ client.on('message', (msgObj) => {
                     }
                     Util.log('');
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
-                    Util.log(`\n${Util.getName(speaker)} ended their alert\n`);
+                    Util.log(`${Util.getName(speaker)} ended their alert\n`);
                     userStatus[authorId] = 0;
                 }
             }
@@ -1104,7 +1104,7 @@ client.on('message', (msgObj) => {
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
-Util.log('-CONNECTING-\n');
+Util.log('-CONNECTING-');
 
 client.login(Auth.discordToken);
 

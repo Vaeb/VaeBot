@@ -50,6 +50,6 @@ module.exports = Cmds.addCommand({
             role.setPosition(pos)
             .catch(console.error);
         })
-        .catch(error => Util.log("\n[E_CreateRole2] " + error));
+        .catch(error => Util.log("[E_CreateRole2] " + error));
     }
 });

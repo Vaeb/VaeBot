@@ -16,7 +16,7 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         var guildQueue = Music.guildQueue[guild.id];
-        Util.log("\npop");
+        Util.log("pop");
         // Util.log(guildQueue);
         Util.log("-------POP---------");
         if (guildQueue.length > 0) {
