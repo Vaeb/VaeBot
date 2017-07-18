@@ -902,7 +902,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 });
 
 function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, original) {
-    if (guild == null || msgObj == null || speaker.user.bot === true) return false;
+    if (speaker == null || msgObj == null || speaker.user.bot === true) return false;
 
     if (original) {
         contentLower = contentLower.replace(/[\n\r]/g, ' ');
@@ -925,6 +925,8 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
     }
 
+    if (guild.id == '166601083584643072') console.log(contentLower);
+
     let triggered = false;
 
     const trigger = [ // Change: consecutive characters, non letter/dot characters
@@ -939,6 +941,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
     for (let i = 0; i < trigger.length; i++) {
         let matches = contentLower.match(trigger[i].regex);
+        if (guild.id == '166601083584643072') console.log(matches);
         if (!matches) continue;
         for (let j = 0; j < matches.length; j++) {
             if (original && matches[j] == trigger[i].allow[j]) {
