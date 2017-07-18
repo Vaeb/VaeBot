@@ -38,7 +38,7 @@ module.exports = Cmds.addCommand({
 
         guild.members.forEach((member) => {
             if (!Util.hasRole(member, role) || member.id === selfId) return;
-            Util.logc(`Sent DM to ${Util.getFullName(member)}`);
+            Util.log(`Sent DM to ${Util.getFullName(member)}`);
             Util.sendDescEmbed(member, title, message, footer, null, 0x00BCD4);
         });
 

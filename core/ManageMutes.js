@@ -30,7 +30,7 @@ function checkMutedInner(targetId, guild) {
 function checkAllowed(targetMember, authPosition, channel, speaker, targetId, speakerValid, speakerId, speakerName) {
     if (authPosition <= Util.getPosition(targetMember)) {
         if (channel != null) {
-            Util.logc(`${speakerName}_User has equal or higher rank`);
+            Util.log(`${speakerName}_User has equal or higher rank`);
             Util.commandFailed(channel, speaker, 'User has equal or higher rank');
         }
         return false;
@@ -118,9 +118,9 @@ function removeSend(member) {
             if (role != null) {
                 linkedMember.removeRole(role)
                 .then(() => {
-                    Util.logc(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    Util.log(`Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.logc(`\n[E_LinkRoleRem1] ${error}`));
+                .catch(error => Util.log(`\n[E_LinkRoleRem1] ${error}`));
             }
         }
     }
@@ -140,9 +140,9 @@ function addSend(member) {
             if (role != null) {
                 linkedMember.addRole(role)
                 .then(() => {
-                    Util.logc(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    Util.log(`Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
                 })
-                .catch(error => Util.logc(`\n[E_LinkRoleAdd1] ${error}`));
+                .catch(error => Util.log(`\n[E_LinkRoleAdd1] ${error}`));
             }
         }
     }
@@ -154,7 +154,7 @@ function stopUnMuteTimeout(targetId, guild) {
         const oldTimeout = muteEvents[i];
         if (oldTimeout[0] === targetId && oldTimeout[1] === baseGuild.id) {
             clearTimeout(oldTimeout[2]);
-            Util.logc(`Removed timeout ${targetId}`);
+            Util.log(`Removed timeout ${targetId}`);
             muteEvents.splice(i, 1);
         }
     }
@@ -168,24 +168,24 @@ function addUnMuteEvent(targetId, guild, timeParam, name) {
     stopUnMuteTimeout(targetId, guild);
 
     const timeoutFunc = function () {
-        Util.logc(`Unmute timeout for ${name} (${targetId}) has finished @ ${guild.name}`);
+        Util.log(`Unmute timeout for ${name} (${targetId}) has finished @ ${guild.name}`);
         exports.unMuteName(targetId, true, guild, Infinity, null, 'System');
     };
 
     guild.fetchMember(targetId)
     .then(() => {
-        Util.logc(`Started unmute timeout for ${name} (${targetId}) ${guild.name} - ${time}`);
+        Util.log(`Started unmute timeout for ${name} (${targetId}) ${guild.name} - ${time}`);
         muteEvents.push([targetId, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
     })
     .catch(() => {
-        Util.logc(`Started unmute timeout [User has left] for ${name} (${targetId}) ${guild.name} - ${time}`);
+        Util.log(`Started unmute timeout [User has left] for ${name} (${targetId}) ${guild.name} - ${time}`);
         muteEvents.push([targetId, baseGuild.id, setTimeout(timeoutFunc, Math.min(time, 2147483646))]);
     });
 }
 
 exports.checkMuted = function (targetId, guild) {
     if (guild == null) {
-        Util.logc('[CheckMuted] No guild argument');
+        Util.log('[CheckMuted] No guild argument');
         return false;
     }
 
@@ -231,7 +231,7 @@ exports.doWarn = function (targetMember, reason, guild, authPosition, channel, s
 
     if (isMuted) {
         if (channel != null) {
-            Util.logc(`${speakerName}_User is already muted`);
+            Util.log(`${speakerName}_User is already muted`);
             Util.commandFailed(channel, speaker, 'User is already muted');
         }
         return false;
@@ -433,7 +433,7 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
 
     if (speakerId !== vaebId && authPosition <= Util.getPosition(targetMember)) {
         if (channel != null) {
-            Util.logc(`${speakerName}_User has equal or higher rank`);
+            Util.log(`${speakerName}_User has equal or higher rank`);
             Util.commandFailed(channel, speaker, 'User has equal or higher rank');
         }
         return false;
@@ -441,7 +441,7 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
 
     if (speakerValid && speakerId !== vaebId && speakerId !== selfId && (origModId === vaebId || authPosition < origModPos)) {
         if (channel != null) {
-            Util.logc(`${speakerName}_Moderator who muted has higher privilege`);
+            Util.log(`${speakerName}_Moderator who muted has higher privilege`);
             Util.commandFailed(channel, speaker, 'Moderator who muted has higher privilege');
         }
         return false;
@@ -462,7 +462,7 @@ exports.unMute = function (targetMember, guild, authPosition, channel, speaker) 
      // Output mute information in channel
 
     if (authPosition === Infinity) {
-        Util.logc(`Unmuted ${muteName}`);
+        Util.log(`Unmuted ${muteName}`);
     } else if (channel != null) {
         const sendEmbedFields = [
             { name: 'Username', value: Util.getMention(targetMember) },
@@ -555,7 +555,7 @@ exports.doMuteName = function (name, guild, authPosition, channel, speaker, isWa
         if (channel) {
             Util.sendEmbed(channel, 'Mute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
         } else {
-            Util.logc('Mute failed: Unable to find user');
+            Util.log('Mute failed: Unable to find user');
         }
         return;
     }
@@ -580,14 +580,14 @@ exports.unMuteName = function (nameParam, isDefinite, guild, authPosition, chann
 
     let backupTarget;
 
-    Util.logc(`Unmute Name: ${name}`);
+    Util.log(`Unmute Name: ${name}`);
 
     for (const [targetId] of Object.entries(mutedGuild)) {
         const targetMember = Util.getMemberById(targetId, guild);
         if (targetMember) {
             const targetName = Util.getName(targetMember);
             const targetNick = targetMember.nickname;
-            // Util.logc(targetName);
+            // Util.log(targetName);
             if ((safeId && safeId === targetId) || (targetNick != null && (targetNick.toLowerCase().includes(name)))) {
                 return exports.unMute(targetMember, guild, authPosition, channel, speaker);
             } else if (targetName.toLowerCase().includes(name)) {
@@ -596,11 +596,11 @@ exports.unMuteName = function (nameParam, isDefinite, guild, authPosition, chann
         }
     }
 
-    // Util.logc(name);
-    // Util.logc(backupTarget);
+    // Util.log(name);
+    // Util.log(backupTarget);
 
     if (isDefinite) {
-        Util.logc(`Muted user has left so unmute method changed: ${name}`);
+        Util.log(`Muted user has left so unmute method changed: ${name}`);
 
         Data.guildDelete(guild, Data.muted, safeId);
 
@@ -623,10 +623,10 @@ exports.unMuteName = function (nameParam, isDefinite, guild, authPosition, chann
     } else if (backupTarget != null) {
         return exports.unMute(backupTarget, guild, authPosition, channel, speaker);
     } else if (channel != null) {
-        Util.logc(`(Channel included) Unmute failed: Unable to find muted user (${name}) from ${speakerName}`);
+        Util.log(`(Channel included) Unmute failed: Unable to find muted user (${name}) from ${speakerName}`);
         Util.sendEmbed(channel, 'Unmute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
     } else {
-        Util.logc(`(Channel not included) Unmute failed: Unable to find muted user (${name}) from ${speakerName}`);
+        Util.log(`(Channel not included) Unmute failed: Unable to find muted user (${name}) from ${speakerName}`);
     }
 
     return true;
@@ -638,7 +638,7 @@ exports.restartTimeouts = function () {
     const hasChecked = {};
     for (const [guildId] of Object.entries(Data.muted)) {
         const baseGuild = Data.getBaseGuild(guilds.get(guildId));
-        if (baseGuild == null) Util.logc(`Null baseGuild ${guildId} ${guilds.get(guildId) == null}`);
+        if (baseGuild == null) Util.log(`Null baseGuild ${guildId} ${guilds.get(guildId) == null}`);
         const baseId = baseGuild.id;
         if (!hasChecked[baseId]) {
             hasChecked[baseId] = true;

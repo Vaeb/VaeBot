@@ -31,7 +31,7 @@ exports.getLinkedGuilds = function (guild) {
                     if (linkedGuild) {
                         linkedGuilds.push(linkedGuild);
                     } else {
-                        Util.logc(`[CRIT_ERROR_2] Can't resolve linked guild: ${linkedGuildId}`);
+                        Util.log(`[CRIT_ERROR_2] Can't resolve linked guild: ${linkedGuildId}`);
                     }
                 }
             }
@@ -56,7 +56,7 @@ exports.getBaseGuild = function (guild) {
                 if (linkedGuild) {
                     return linkedGuild;
                 }
-                Util.logc(`[CRIT_ERROR] Can't resolve linked guild: ${linkedGuildId}`);
+                Util.log(`[CRIT_ERROR] Can't resolve linked guild: ${linkedGuildId}`);
                 return null;
             }
             return guild;
@@ -84,19 +84,19 @@ exports.guildSaveData = function (obj/* , retry */) {
     const objName = obj.__name;
     const objPath = obj.__path;
     const objStr = JSON.stringify(obj);
-    // if (objName === 'muted') Util.logc(`SavedMutedDebug: ${objStr}`);
+    // if (objName === 'muted') Util.log(`SavedMutedDebug: ${objStr}`);
     const stream = FileSys.createWriteStream(objPath);
     stream.once('open', () => {
         stream.write(objStr);
         stream.end();
-        Util.logc(`Saved: ${objName}`);
+        Util.log(`Saved: ${objName}`);
     });
     /* FileSys.writeFile(objPath, objStr, (err) => {
         if (err) {
-            Util.logc(`Error saving ${objName}: ${err}`);
+            Util.log(`Error saving ${objName}: ${err}`);
             if (!retry) exports.guildSaveData(obj, true);
         } else {
-            Util.logc(`Saved: ${objName}`);
+            Util.log(`Saved: ${objName}`);
         }
     }); */
 };
@@ -186,7 +186,7 @@ exports.connect = function () {
     exports.connection = connection;
 
     return new Promise((resolve, reject) => {
-        Util.logc('[MySQL] Connecting...');
+        Util.log('[MySQL] Connecting...');
         connection.connect((err) => {
             if (err) return reject(err);
             return resolve();
@@ -194,11 +194,11 @@ exports.connect = function () {
 
         connection.on('error', (err) => {
             if (err.fatal) {
-                Util.logc(`[MySQL] Fatal error: ${err.code}`);
-                Util.logc('[MySQL] Attempting to reconnect...');
+                Util.log(`[MySQL] Fatal error: ${err.code}`);
+                Util.log('[MySQL] Attempting to reconnect...');
                 exports.connect();
             } else {
-                Util.logc(`Non-fatal error: ${err.code}`);
+                Util.log(`Non-fatal error: ${err.code}`);
             }
         });
     });
@@ -241,7 +241,7 @@ exports.getRecords = function (guild, tableName, identity) {
     conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `SELECT * FROM ${tableName} WHERE ${conditionStr};`;
-    // Util.logc(queryStr);
+    // Util.log(queryStr);
 
     return exports.query(queryStr, valueArr);
 };
@@ -268,7 +268,7 @@ exports.deleteRecords = function (guild, tableName, identity) {
     conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `DELETE FROM ${tableName} WHERE ${conditionStr};`;
-    Util.logc(queryStr);
+    Util.log(queryStr);
 
     return exports.query(queryStr, valueArr);
 };
@@ -307,8 +307,8 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 
     const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
 
-    Util.logc(queryStr);
-    Util.logc(valueArr);
+    Util.log(queryStr);
+    Util.log(valueArr);
 
     return exports.query(queryStr, valueArr);
 };
@@ -335,11 +335,11 @@ exports.addRecord = function (guild, tableName, data) {
 };
 
 exports.connectInitial = async function (dbGuilds) {
-    Util.logc('[MySQL] Initialising connection to database');
+    Util.log('[MySQL] Initialising connection to database');
 
     try {
         await exports.connect();
-        Util.logc(`[MySQL] Connected as id ${connection.threadId}\n`);
+        Util.log(`[MySQL] Connected as id ${connection.threadId}\n`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
             const guild = dbGuilds[i];
@@ -356,7 +356,7 @@ exports.connectInitial = async function (dbGuilds) {
 
             exports.query(sqlCmdStr, sanValues)
             .catch((err) => {
-                Util.logc(`[MySQL] Queries Failed: ${guild.name} ${err}`);
+                Util.log(`[MySQL] Queries Failed: ${guild.name} ${err}`);
             });
         }
 
@@ -465,5 +465,5 @@ FileSys.readFile(mutesDir, 'utf-8', (err, data) => {
     });
     exports.loadedData[exports.muted] = true;
 
-    Util.logc('> Loaded persistent data!');
+    Util.log('> Loaded persistent data!');
 });

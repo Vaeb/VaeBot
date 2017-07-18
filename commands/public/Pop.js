@@ -16,13 +16,13 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         var guildQueue = Music.guildQueue[guild.id];
-        Util.logc("\npop");
-        // Util.logc(guildQueue);
-        Util.logc("-------POP---------");
+        Util.log("\npop");
+        // Util.log(guildQueue);
+        Util.log("-------POP---------");
         if (guildQueue.length > 0) {
             for (var i = guildQueue.length-1; i >= 0; i--) {
                 var lastSong = guildQueue[i];
-                Util.logc("Checking " + i + "_" + typeof(lastSong));
+                Util.log("Checking " + i + "_" + typeof(lastSong));
                 if (lastSong[1].id == speaker.id) {
                     var title = lastSong[0].title;
                     Util.print(channel, "Removed", title, "from the queue");

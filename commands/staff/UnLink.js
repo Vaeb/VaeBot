@@ -51,8 +51,8 @@ module.exports = Cmds.addCommand({
             return Util.commandFailed(channel, speaker, 'Invalid parameters: Event not provided');
         }
 
-        Util.logc(event);
-        Util.logc(actions);
+        Util.log(event);
+        Util.log(actions);
 
         for (let i = 0; i < event.length; i++) {
             const eventName = event[i];

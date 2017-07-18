@@ -88,7 +88,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                         const guildData = guild != null ? `${guild.name} (${guild.id})` : 'NoGuild';
                         let outLog = `\n> ${Util.getName(speaker)} (${speaker.id}) | ${channel.name} (${channel.id}) | ${guildData}\n    Command Executed: ${cmd.trim()}`;
                         if (hasParameters) outLog += ` | Arguments: ${argStr}`;
-                        Util.logc(outLog);
+                        Util.log(outLog);
 
                         if (cmdRequires.staff && guild != null) {
                             const sendLogData = [
@@ -112,7 +112,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                         try {
                             cmdFunc(cmd, args, msgObj, speaker, channel, guild, isStaff);
                         } catch (err) {
-                            Util.logc(`COMMAND ERROR: ${err.stack}`);
+                            Util.log(`COMMAND ERROR: ${err.stack}`);
                         }
                     }
 

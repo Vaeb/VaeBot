@@ -41,10 +41,10 @@ module.exports = Cmds.addCommand({
                 const keyUpper = keySplit[0].toUpperCase();
                 const valLower = keySplit[1].toLowerCase();
                 if (valLower == 'true') {
-                    Util.logc(`Changing ${keyUpper} to ${valLower}`);
+                    Util.log(`Changing ${keyUpper} to ${valLower}`);
                     permObj[keyUpper] = true;
                 } else if (valLower == 'false') {
-                    Util.logc(`Changing ${keyUpper} to ${valLower}`);
+                    Util.log(`Changing ${keyUpper} to ${valLower}`);
                     permObj[keyUpper] = false;
                 }
             }

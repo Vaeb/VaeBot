@@ -25,7 +25,7 @@ module.exports = Cmds.addCommand({
         var newRolePermsObj = Util.arrayToObj(newRolePerms);
 
         sendRole.setPermissions(newRolePerms)
-        .catch(error => Util.logc("\n[E_FixRoles1] " + error));
+        .catch(error => Util.log("\n[E_FixRoles1] " + error));
 
         guildRoles.forEach(role => {
             if (role.id == sendRole.id) return;
@@ -38,7 +38,7 @@ module.exports = Cmds.addCommand({
                 }
             }
             role.setPermissions(newPerms)
-            .catch(error => Util.logc("\n[E_FixRoles2] " + error));
+            .catch(error => Util.log("\n[E_FixRoles2] " + error));
         });
 
         /*var textChannels = Util.getTextChannels(guild);

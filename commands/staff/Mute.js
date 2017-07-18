@@ -52,7 +52,7 @@ module.exports = Cmds.addCommand({
             ]
         , true);
 
-        Util.logc(`Mute Arg Data: ${data}`);
+        Util.log(`Mute Arg Data: ${data}`);
 
         if (!data.success) {
             return Util.sendEmbed(channel, 'Mute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
@@ -98,7 +98,7 @@ module.exports = Cmds.addCommand({
             return Util.sendEmbed(channel, 'Mute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
         }
 
-        Util.logc(`Change Arg Data: ${data}`);
+        Util.log(`Change Arg Data: ${data}`);
 
         const member = data[0];
         const mult = data[2] || 1;

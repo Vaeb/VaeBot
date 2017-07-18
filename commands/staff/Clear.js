@@ -143,7 +143,7 @@ module.exports = Cmds.addCommand({
         }
 
         Util.fetchMessagesEx(channel, numSearch, msgStore, last).then(() => {
-            Util.logc(`Messages checked: ${msgStore.length}`);
+            Util.log(`Messages checked: ${msgStore.length}`);
 
             const msgStoreUser = [];
             for (let i = 0; i < msgStore.length; i++) {
@@ -155,18 +155,18 @@ module.exports = Cmds.addCommand({
 
             const storeLength = msgStoreUser.length;
             const chunkLength = 99;
-            Util.logc(`Matches found: ${msgStoreUser.length}`);
+            Util.log(`Matches found: ${msgStoreUser.length}`);
 
             for (let i = 0; i < storeLength; i += chunkLength) {
                 const chunk = msgStoreUser.slice(i, i + chunkLength);
 
                 if (chunk.length > 1) {
                     channel.bulkDelete(chunk)
-                    .then(() => Util.logc(`Cleared ${chunk.length} messages`))
+                    .then(() => Util.log(`Cleared ${chunk.length} messages`))
                     .catch(console.error);
                 } else {
                     chunk[0].delete();
-                    Util.logc('Cleared 1 message');
+                    Util.log('Cleared 1 message');
                 }
             }
         });

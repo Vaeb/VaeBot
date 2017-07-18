@@ -23,7 +23,7 @@ module.exports = Cmds.addCommand({
 
         var evalStr = "Events.Actions." + actionName + " = " + actionFuncStr;
 
-        Util.logc(evalStr);
+        Util.log(evalStr);
 
         eval(evalStr);
 

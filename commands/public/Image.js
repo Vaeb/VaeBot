@@ -18,12 +18,12 @@ module.exports = Cmds.addCommand({
 
         index.Request(searchURL, (error, response, body) => {
             if (error) {
-                Util.logc(`[HTTP] ${error}`);
+                Util.log(`[HTTP] ${error}`);
             } else {
                 const bodyData = JSON.parse(body);
                 if (has.call(bodyData, 'items')) {
                     const imgURL = bodyData.items[0].link;
-                    // Util.logc(imgURL);
+                    // Util.log(imgURL);
                     Util.print(channel, imgURL);
                     if (channel.name.toLowerCase().includes('nsfw') && !index.warnedImage[speaker.id]) {
                         index.warnedImage[speaker.id] = true;

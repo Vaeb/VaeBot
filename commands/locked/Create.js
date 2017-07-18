@@ -36,7 +36,7 @@ module.exports = Cmds.addCommand({
         var pos = data[2];
         var name = data[3];
 
-        Util.logc(pos);
+        Util.log(pos);
 
         guild.createRole({
             name: name,
@@ -50,6 +50,6 @@ module.exports = Cmds.addCommand({
             role.setPosition(pos)
             .catch(console.error);
         })
-        .catch(error => Util.logc("\n[E_CreateRole2] " + error));
+        .catch(error => Util.log("\n[E_CreateRole2] " + error));
     }
 });

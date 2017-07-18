@@ -18,7 +18,7 @@ module.exports = Cmds.addCommand({
         Music.joinMusic(guild, channel, connection => {
             var autoPlaylist = Data.guildGet(guild, Data.playlist);
             if (autoPlaylist.hasOwnProperty("songs") && autoPlaylist.songs.length > 0) {
-                Util.logc("Cmd, Playing Next Auto");
+                Util.log("Cmd, Playing Next Auto");
                 Music.playNextAuto(guild, channel, true);
             } else {
                 Util.print(channel, "No songs in the auto-playlist");
