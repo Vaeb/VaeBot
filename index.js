@@ -918,6 +918,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     }
 
     contentLower = contentLower.replace(/https?/g, '');
+    contentLower = contentLower.replace(/www\./g, '');
     contentLower = contentLower.replace(/[^a-z .]+/g, '');
     contentLower = contentLower.replace(/dot/g, '.');
     // contentLower = contentLower.replace(/(.)\1+/g, '$1');
