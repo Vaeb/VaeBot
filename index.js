@@ -933,7 +933,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     const trigger = [ // Change: consecutive characters, non letter/dot characters
         {
             regex: /[^\s.]*steam([^\s.]+)\.com/g,
-            allow: [/^powered$/],
+            allow: [/^powered$/g],
         }, {
             regex: /[^\s.]+steam[^\s.]*\.com/g,
             allow: [],
@@ -941,11 +941,11 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     ];
 
     for (let i = 0; i < trigger.length; i++) {
-        let matches = contentLower.match(trigger[i].regex);
+        let matches = trigger[i].regex.exec(contentLower);
         if (guild.id == '166601083584643072') console.log(matches);
         if (!matches) continue;
         for (let j = 0; j < matches.length; j++) {
-            if (original && trigger[i].allow[j].test(matches[j])) {
+            if (original && trigger[i].allow[j].test(matches[j + 1])) {
                 matches = null;
                 break;
             }
