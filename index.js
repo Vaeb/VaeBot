@@ -1013,7 +1013,7 @@ client.on('message', (msgObj) => {
                                     if (isFinal) break;
                                 }
                                 if (numNew <= 1) {
-                                    Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} was put on alert`);
+                                    Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} stopped spamming and was put on alert`);
                                     lastWarn[authorId] = newStamp;
                                     userStatus[authorId] = 2;
                                     return;
