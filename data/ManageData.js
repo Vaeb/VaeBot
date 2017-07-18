@@ -186,7 +186,7 @@ exports.connect = function () {
     exports.connection = connection;
 
     return new Promise((resolve, reject) => {
-        Util.log('[MySQL] Connecting...');
+        Util.logc('MySQL', '[MySQL] Connecting...');
         connection.connect((err) => {
             if (err) return reject(err);
             return resolve();
@@ -194,8 +194,8 @@ exports.connect = function () {
 
         connection.on('error', (err) => {
             if (err.fatal) {
-                Util.log(`[MySQL] Fatal error: ${err.code}`);
-                Util.log('[MySQL] Attempting to reconnect...');
+                Util.logc('MySQL', `[MySQL] Fatal error: ${err.code}`);
+                Util.logc('MySQL', '[MySQL] Attempting to reconnect...');
                 exports.connect();
             } else {
                 Util.log(`Non-fatal error: ${err.code}`);
@@ -335,11 +335,11 @@ exports.addRecord = function (guild, tableName, data) {
 };
 
 exports.connectInitial = async function (dbGuilds) {
-    Util.log('[MySQL] Initialising connection to database');
+    Util.logc('MySQL', '[MySQL] Initialising connection to database');
 
     try {
         await exports.connect();
-        Util.log(`[MySQL] Connected as id ${connection.threadId}`);
+        Util.logc('MySQL', `[MySQL] Connected as id ${connection.threadId}`);
 
         for (let i = 0; i < dbGuilds.length; i++) {
             const guild = dbGuilds[i];
@@ -356,7 +356,7 @@ exports.connectInitial = async function (dbGuilds) {
 
             exports.query(sqlCmdStr, sanValues)
             .catch((err) => {
-                Util.log(`[MySQL] Queries Failed: ${guild.name} ${err}`);
+                Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
             });
         }
 
