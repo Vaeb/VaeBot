@@ -2345,3 +2345,7 @@ exports.isSpam = function (content) {
 
     return false;
 };
+
+exports.reverse = function (str) {
+    return str.split('').reverse().join('');
+};

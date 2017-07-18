@@ -893,14 +893,69 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
             if (trigger[i].test(contentLower)) triggeredNum++;
         }
 
-        if (triggeredNum == trigger.length) {
-            triggered = true;
-        }
+        if (triggeredNum == trigger.length) triggered = true;
     }
 
     if (triggered) {
         Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, 0x00E676);
     }
+});
+
+function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, original) {
+    if (guild == null || guild.id != '284746138995785729' || msgObj == null || speaker.user.bot === true) return;
+
+    if (original) {
+        contentLower = contentLower.replace(/[\n\r]/g, ' ');
+        contentLower = contentLower.replace(/0/g, 'o');
+        contentLower = contentLower.replace(/1/g, 'i');
+        contentLower = contentLower.replace(/3/g, 'e');
+        contentLower = contentLower.replace(/4/g, 'a');
+        contentLower = contentLower.replace(/5/g, 's');
+        contentLower = contentLower.replace(/8/g, 'b');
+        contentLower = contentLower.replace(/@/g, 'a');
+        contentLower = contentLower.replace(/[^a-z .]+/g, '');
+        contentLower = contentLower.replace(/(.){2,}/g, '$1');
+
+        antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false);
+    }
+
+    contentLower = contentLower.replace(/dot/g, '.');
+
+    if (original) antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false);
+
+    let triggered = false;
+
+    const trigger = [ // Change: consecutive characters, non letter/dot characters
+        {
+            regex: /[^\s.]*steam([^\s.]+)\.com/g,
+            allow: ['powered'],
+        }, {
+            regex: /[^\s.]+steam[^\s.]*\.com/g,
+            allow: [],
+        },
+    ];
+
+    for (let i = 0; i < trigger.length; i++) {
+        let matches = trigger[i].regex.test(contentLower);
+        if (!matches) continue;
+        for (let j = 0; j < matches.length; j++) {
+            if (original && matches[j] == trigger[i].allow[j]) {
+                matches = null;
+                break;
+            }
+        }
+        if (!matches) continue;
+        triggered = true;
+        break;
+    }
+
+    if (triggered && (!Mutes.checkMuted(guild, speaker.id) || speaker.id == vaebId)) {
+        Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Anti-Scam] Posting a suspicious link' });
+    }
+}
+
+exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
+    antiScam(msgObj, msgObj.content.toLowerCase().trim(), speaker, channel, guild, isEdit, true);
 });
 
 client.on('message', (msgObj) => {
