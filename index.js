@@ -219,6 +219,7 @@ exports.globalBan = {
     '154255141317378050': true, // HighDefinition
     '157749388964265985': true, // Zetroxer
     '280419231181307906': true, // Solarical
+    '169261309353918464': true, // Slappy826
 };
 
 function securityFunc(guild, member, sendRoleParam) {
@@ -548,7 +549,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
     }
 });
 
-/*client.on('userUpdate', (oldUser, user) => {
+/* client.on('userUpdate', (oldUser, user) => {
     const oldUsername = oldUser.username;
     const newUsername = user.username;
 
