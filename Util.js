@@ -2325,8 +2325,10 @@ exports.isSpam = function (content) {
             const num = simpData[1];
             const subLength = sub.length;
             let triggered = false;
-            if (num >= 3 && subLength >= 2) {
-                if (subLength == 2) { // 2 characters, 20+ repetitions
+            if (num >= 3) {
+                if (subLength == 1) { // 1 character, 100+ repetitions
+                    if (num >= 100) triggered = true;
+                } else if (subLength == 2) { // 2 characters, 20+ repetitions
                     if (num >= 20) triggered = true;
                 } else if (subLength == 3) { // 3 characters, 7+ repetitions
                     if (num >= 7) triggered = true;
