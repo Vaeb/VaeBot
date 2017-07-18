@@ -932,10 +932,10 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
     const trigger = [ // Change: non letter/dot characters
         {
-            regex: /[^\s.]*steam([^\s.]+)\.com/g,
+            regex: /[^\s.]*steam([^\s.]+)\.com/,
             allow: [/^powered$/g],
         }, {
-            regex: /[^\s.]+steam[^\s.]*\.com/g,
+            regex: /[^\s.]+steam[^\s.]*\.com/,
             allow: [],
         },
     ];
