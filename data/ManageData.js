@@ -268,7 +268,7 @@ exports.deleteRecords = function (guild, tableName, identity) {
     conditionStr = conditionStr.join(' AND ');
 
     const queryStr = `DELETE FROM ${tableName} WHERE ${conditionStr};`;
-    Util.log(queryStr);
+    // Util.log(queryStr);
 
     return exports.query(queryStr, valueArr);
 };
@@ -307,8 +307,8 @@ exports.updateRecords = function (guild, tableName, identity, data) {
 
     const queryStr = `UPDATE ${tableName} SET ${updateStr} WHERE ${conditionStr};`;
 
-    Util.log(queryStr);
-    Util.log(valueArr);
+    // Util.log(queryStr);
+    // Util.log(valueArr);
 
     return exports.query(queryStr, valueArr);
 };

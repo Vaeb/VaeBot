@@ -2363,7 +2363,7 @@ exports.log = function (...args) {
     lastTag = null;
 };
 
-exports.logm = function (...args) {
+exports.logn = function (...args) {
     console.log(...args);
     lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = null;

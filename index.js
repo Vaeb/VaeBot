@@ -236,7 +236,7 @@ function securityFunc(guild, member, sendRoleParam) {
     if (has.call(exports.globalBan, memberId)) {
         member.kick()
         .catch(console.error);
-        Util.log(`Globally banned user ${memberName} had already joined ${guildName}`);
+        Util.logc('BanOld1', `Globally banned user ${memberName} had already joined ${guildName}`);
         return;
     }
 
@@ -246,12 +246,12 @@ function securityFunc(guild, member, sendRoleParam) {
             if (Util.hasRole(member, sendRole)) {
                 member.removeRole(sendRole)
                 .catch(console.error);
-                Util.log(`Muted user ${memberName} had already joined ${guildName}`);
+                Util.logc('MuteOld1', `Muted user ${memberName} had already joined ${guildName}`);
             }
         } else if (!Util.hasRole(member, sendRole)) {
             member.addRole(sendRole)
             .catch(console.error);
-            Util.log(`Assigned SendMessages to old member ${memberName}`);
+            Util.logc('AssignOld1', `Assigned SendMessages to old member ${memberName}`);
         }
     }
 }
@@ -268,17 +268,17 @@ function setupSecurity(guild) {
 
 function setupSecurityVeil() {
     const veilGuild = client.guilds.get('284746138995785729');
-    if (!veilGuild) return Util.log('[ERROR_VP] Veil guild not found!');
+    if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
-    if (!guild) return Util.log('[ERROR_VP] New Veil guild not found!');
+    if (!guild) return Util.logc('SecureVeil1', '[ERROR_VP] New Veil guild not found!');
     const veilBuyer = veilGuild.roles.find('name', 'Buyer');
-    if (!veilBuyer) return Util.log('[ERROR_VP] Veil Buyer role not found!');
+    if (!veilBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] Veil Buyer role not found!');
     const newBuyer = guild.roles.find('name', 'Buyer');
-    if (!newBuyer) return Util.log('[ERROR_VP] New Buyer role not found!');
+    if (!newBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] New Buyer role not found!');
     // const guildId = guild.id;
     // const guildName = guild.name;
 
-    Util.logc('AutoKick1', `Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
+    Util.logc('SecureVeil1', `Setting up auto-kick for ${guild.name} (${guild.members.size} members)`);
 
     guild.members.forEach((member) => {
         const memberId = member.id;
@@ -288,21 +288,21 @@ function setupSecurityVeil() {
         const memberName = Util.getFullName(member);
         const veilMember = Util.getMemberById(memberId, veilGuild);
         if (!veilMember) {
-            Util.log(`[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
+            Util.logc('SecureVeil1', `[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
             member.kick()
-            .catch(error => Util.log(`[E_AutoOldKick1] ${memberName} | ${error}`));
+            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick1] ${memberName} | ${error}`));
             return;
         }
         if (!veilMember.roles.has(veilBuyer.id)) {
-            Util.log(`[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
+            Util.logc('SecureVeil1', `[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
             member.kick()
-            .catch(error => Util.log(`[E_AutoOldKick2] ${memberName} | ${error}`));
+            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick2] ${memberName} | ${error}`));
             return;
         }
         if (!member.roles.has(newBuyer.id)) {
             member.addRole(newBuyer)
-            .catch(error => Util.log(`[E_AutoOldAddRole1] ${memberName} | ${error}`));
-            Util.log(`Updated old member with Buyer role: ${memberName}`);
+            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldAddRole1] ${memberName} | ${error}`));
+            Util.logc('SecureVeil1', `Updated old member with Buyer role: ${memberName}`);
         }
     });
 
@@ -400,7 +400,7 @@ client.on('guildMemberAdd', (member) => {
     const memberId = member.id;
     const memberName = Util.getFullName(member);
 
-    Util.log(`User joined: ${memberName} (${memberId}) @ ${guildName}`);
+    Util.logc(memberId, `User joined: ${memberName} (${memberId}) @ ${guildName}`);
 
     // test
 
@@ -409,48 +409,48 @@ client.on('guildMemberAdd', (member) => {
         const veilBuyer = veilGuild.roles.find('name', 'Buyer');
         const newBuyer = guild.roles.find('name', 'Buyer');
         if (!veilGuild) {
-            Util.log('[ERROR_VP] Veil guild not found!');
+            Util.logc(memberId, '[ERROR_VP] Veil guild not found!');
         } else if (!veilBuyer) {
-            Util.log('[ERROR_VP] Veil Buyer role not found!');
+            Util.logc(memberId, '[ERROR_VP] Veil Buyer role not found!');
         } else if (!newBuyer) {
-            Util.log('[ERROR_VP] New Buyer role not found!');
+            Util.logc(memberId, '[ERROR_VP] New Buyer role not found!');
         } else {
             const veilMember = Util.getMemberById(memberId, veilGuild);
             if (!veilMember) {
-                Util.log(`[Auto-Kick 1] User not in Veil: ${memberName}`);
+                Util.logc(memberId, `[Auto-Kick 1] User not in Veil: ${memberName}`);
                 member.kick()
-                .catch(error => Util.log(`[E_AutoKick1] ${error}`));
+                .catch(error => Util.logc(memberId, `[E_AutoKick1] ${error}`));
                 return;
             }
             if (!veilMember.roles.has(veilBuyer.id)) {
-                Util.log(`[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
+                Util.logc(memberId, `[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
                 member.kick()
-                .catch(error => Util.log(`[E_AutoKick2] ${error}`));
+                .catch(error => Util.logc(memberId, `[E_AutoKick2] ${error}`));
                 return;
             }
             member.addRole(newBuyer)
-            .catch(error => Util.log(`[E_AutoAddRole1] ${error}`));
-            Util.log('Awarded new member with Buyer role');
+            .catch(error => Util.logc(memberId, `[E_AutoAddRole1] ${error}`));
+            Util.logc(memberId, 'Awarded new member with Buyer role');
         }
     }
 
     if (has.call(exports.globalBan, memberId)) {
         member.kick()
         .catch(console.error);
-        Util.log(`Globally banned user ${memberName} joined ${guildName}`);
+        Util.logc(memberId, `Globally banned user ${memberName} joined ${guildName}`);
         return;
     }
 
     const isMuted = Mutes.checkMuted(guild, memberId);
     if (isMuted) {
-        Util.log(`Muted user ${memberName} joined ${guildName}`);
+        Util.logc(memberId, `Muted user ${memberName} joined ${guildName}`);
     } else {
         const sendRole = Util.getRole('SendMessages', guild);
 
         if (sendRole) {
             member.addRole(sendRole)
             .catch(console.error);
-            Util.log(`Assigned SendMessages to new member ${memberName}`);
+            Util.logc(memberId, `Assigned SendMessages to new member ${memberName}`);
         }
     }
 
@@ -928,7 +928,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
     }
 
-    if (guild.id == '166601083584643072') console.log(contentLower);
+    if (guild.id == '166601083584643072') Util.logc('blockLink1', contentLower);
 
     let triggered = false;
 
@@ -953,7 +953,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
     for (let i = 0; i < trigger.length; i++) {
         let matches = trigger[i].regex.exec(contentLower);
-        if (guild.id == '166601083584643072') console.log(matches);
+        if (guild.id == '166601083584643072') Util.logc('blockLink1', matches);
         if (!matches) continue;
         const triggerAllow = trigger[i].allow;
         for (let j = 0; j < triggerAllow.length; j++) {
