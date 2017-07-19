@@ -2356,39 +2356,36 @@ exports.reverse = function (str) {
 let lastTag = null;
 let lastWasEmpty = true;
 
-exports.log = function (...args) {
+function postOutString(args, startNewline) {
     const nowDate = new Date();
     nowDate.setHours(nowDate.getHours() + 1);
 
-    if (!lastWasEmpty) console.log('');
+    let out = (startNewline && !lastWasEmpty) ? '\n' : '';
+    out += NodeUtil.format(...args);
 
-    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
+    let outIndex = out.search(/[^\n\r]/g);
+    if (outIndex === -1) outIndex = 0;
 
-    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
+    out = out.slice(0, outIndex) + DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |') + out.slice(outIndex);
+
+    console.log(out);
+
+    lastWasEmpty = /[\n\r]\s*$/.test(out);
+}
+
+exports.log = function (...args) {
+    postOutString(args, true);
     lastTag = null;
 };
 
 exports.logn = function (...args) {
-    const nowDate = new Date();
-    nowDate.setHours(nowDate.getHours() + 1);
-
-    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
-
-    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
+    postOutString(args, false);
     lastTag = null;
 };
 
 exports.logc = function (...args) {
-    const nowDate = new Date();
-    nowDate.setHours(nowDate.getHours() + 1);
-
     const nowTag = String(args.splice(0, 1)).toLowerCase();
     const isNew = lastTag != nowTag;
-
-    if (isNew && !lastWasEmpty) console.log('');
-
-    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
-
-    lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
+    postOutString(args, isNew);
     lastTag = nowTag;
 };
