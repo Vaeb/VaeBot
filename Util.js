@@ -2357,23 +2357,38 @@ let lastTag = null;
 let lastWasEmpty = true;
 
 exports.log = function (...args) {
+    const nowDate = new Date();
+    nowDate.setHours(nowDate.getHours() + 1);
+
     if (!lastWasEmpty) console.log('');
-    console.log(...args);
+
+    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
+
     lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = null;
 };
 
 exports.logn = function (...args) {
-    console.log(...args);
+    const nowDate = new Date();
+    nowDate.setHours(nowDate.getHours() + 1);
+
+    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
+
     lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = null;
 };
 
 exports.logc = function (...args) {
+    const nowDate = new Date();
+    nowDate.setHours(nowDate.getHours() + 1);
+
     const nowTag = String(args.splice(0, 1)).toLowerCase();
     const isNew = lastTag != nowTag;
+
     if (isNew && !lastWasEmpty) console.log('');
-    console.log(...args);
+
+    console.log(DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |'), ...args);
+
     lastWasEmpty = /[\n\r]\s*$/.test(NodeUtil.format(...args));
     lastTag = nowTag;
 };
