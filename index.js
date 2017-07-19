@@ -939,6 +939,15 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         }, {
             regex: /[^\s.]+steam[^\s.]*\.com/,
             allow: [],
+        }, {
+            regex: /bit\.ly/,
+            allow: [],
+        }, {
+            regex: /goo\.gl/,
+            allow: [],
+        }, {
+            regex: /tinyurl\.com/,
+            allow: [],
         },
     ];
 
