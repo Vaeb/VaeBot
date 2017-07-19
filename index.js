@@ -923,6 +923,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     contentLower = contentLower.replace(/[^a-z .]+/g, '');
     contentLower = contentLower.replace(/dot/g, '.');
     // contentLower = contentLower.replace(/(.)\1+/g, '$1');
+    contentLower = contentLower.replace(/ +/g, '');
 
     if (original) {
         if (antiScam(msgObj, Util.reverse(contentLower), speaker, channel, guild, isEdit, false)) return true;
@@ -932,21 +933,21 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
     let triggered = false;
 
-    const trigger = [ // Change: non letter/space/dot characters
+    const trigger = [ // Change: non letter/dot characters
         {
-            regex: /[^\s.]*steam([^\s.]+)\.com/,
+            regex: /steam([^.]+)\.com/, // steamscam.com
             allow: [/^(?:powered|community)$/g],
         }, {
-            regex: /[^\s.]+steam[^\s.]*\.com/,
+            regex: /[^.]+steam[^.]*\.com/, // scamsteam.com
             allow: [],
         }, {
-            regex: /bit\.ly/,
+            regex: /bit\.ly/, // bit.ly
             allow: [],
         }, {
-            regex: /goo\.gl/,
+            regex: /goo\.gl/, // goo.gl
             allow: [],
         }, {
-            regex: /tinyurl\.com/,
+            regex: /tinyurl\.com/, // tinyurl.com
             allow: [],
         },
     ];
