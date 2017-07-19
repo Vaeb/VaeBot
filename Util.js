@@ -2366,7 +2366,7 @@ function postOutString(args, startNewline) {
     let outIndex = out.search(/[^\n\r]/g);
     if (outIndex === -1) outIndex = 0;
 
-    out = out.slice(0, outIndex) + DateFormat(nowDate, '| dd/mm/yyyy | HH:MM |') + out.slice(outIndex);
+    out = out.slice(0, outIndex) + DateFormat(nowDate, '| dd/mm/yyyy | HH:MM | ') + out.slice(outIndex);
 
     console.log(out);
 
