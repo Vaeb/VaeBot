@@ -858,7 +858,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
-    if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true) return;
+    if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
     let contentLower = msgObj.content.toLowerCase().trim();
 
