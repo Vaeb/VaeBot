@@ -592,7 +592,7 @@ exports.checkStaff = function (guild, member) {
     if (!speakerRoles) return false;
     if (exports.getPermRating(guild, member) >= 30) return true;
     return speakerRoles.some(role => role.name === 'Staff' || role.name === 'Owner/Seller' || role.name === 'Bot Admin'
-        || role.name === 'Moderator' || role.name === 'Head Mod');
+        || role.name === 'Moderator' || role.name === 'Head Mod' || role.name === 'Trial Moderator');
 };
 
 exports.commandFailed = function (channel, speaker, tag, message) {
