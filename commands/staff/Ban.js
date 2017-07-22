@@ -15,6 +15,7 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
+        if (speaker.id == '138274235435974656') return Util.commandFailed(channel, speaker, 'Temporarily disabled ban permissions for this moderator as a precaution due to complaints');
         const data = Util.getDataFromString(args, [
             function (str) {
                 return Util.getMemberByMixed(str, guild);
