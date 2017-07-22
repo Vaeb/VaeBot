@@ -163,6 +163,10 @@ exports.emptyPromise = function () {
     });
 };
 
+exports.fromBuffer = function (buffer) {
+    return buffer.readUIntBE(0, 1);
+};
+
 let connection;
 
 exports.query = function (statement, inputs) {
@@ -202,10 +206,6 @@ exports.connect = function () {
             }
         });
     });
-};
-
-exports.fromBuffer = function (buffer) {
-    return buffer.readUIntBE(0, 1);
 };
 
 /* function dataToString(value) {
