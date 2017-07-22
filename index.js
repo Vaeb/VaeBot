@@ -221,6 +221,7 @@ exports.globalBan = {
     '157749388964265985': true, // Zetroxer
     '280419231181307906': true, // Solarical
     '169261309353918464': true, // Slappy826
+    '331958080164200453': true, // derickbuum
 };
 
 function securityFunc(guild, member, sendRoleParam) {
