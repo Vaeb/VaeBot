@@ -409,7 +409,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', 'User has equal or higher rank');
     }
 
-    if (activeMute && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTick) {
+    if (activeMute && activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTick) {
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', 'The user is already muted: You can\'t override a user\'s mute with an earlier end time unless you have higher privilege than the original moderator');
     }
 
@@ -529,7 +529,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', 'User has equal or higher rank');
     }
 
-    if (higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTickNew) {
+    if (activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTickNew) {
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', 'You can\'t lower a mute\'s end time unless you have higher privilege than the original moderator');
     }
 
@@ -626,7 +626,7 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', 'User has equal or higher rank');
     }
 
-    if (higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true)) {
+    if (activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true)) {
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', 'Moderator who muted has equal or higher privilege');
     }
 
@@ -696,7 +696,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', 'User has equal or higher rank');
     }
 
-    if (hasBeenMuted && higherRank(Util.getMemberById(lastMute.mod_id, guild), moderatorResolvable, true)) {
+    if (hasBeenMuted && lastMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(lastMute.mod_id, guild), moderatorResolvable, true)) {
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', 'Moderator who muted has equal or higher privilege');
     }
 
