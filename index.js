@@ -493,6 +493,10 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendDescEmbed(member, title, message, footer, null, 0x00BCD4);
             }
 
+            if (nowRole.name.includes('Mod') && (member.id == '202660584330625024')) {
+                member.removeRole(nowRole);
+            }
+
             const isMuted = Mutes.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && isMuted) {
                 member.removeRole(nowRole);
