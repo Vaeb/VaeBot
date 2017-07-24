@@ -318,6 +318,10 @@ function higherRank(moderator, member, canBeEqual) { // Check if member can be m
     return (comparison && member.id !== vaebId) || (Util.isObject(moderator) && moderator.id === vaebId);
 }
 
+function notHigherRank(moderator, member, notEqual) {
+    return !higherRank(moderator, member, notEqual);
+}
+
 function resolveUser(guild, userResolvable, isMod) {
     const resolvedData = {
         member: userResolvable,
@@ -405,11 +409,11 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Verify they can be muted
 
-    if (higherRank(resolvedUser.member, moderatorResolvable, true)) {
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', 'User has equal or higher rank');
     }
 
-    if (activeMute && activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTick) {
+    if (activeMute && activeMute.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeMute.mod_id, guild)) && activeMute.end_tick > endTick) {
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', 'The user is already muted: You can\'t override a user\'s mute with an earlier end time unless you have higher privilege than the original moderator');
     }
 
@@ -525,11 +529,11 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Verify mute can be changed
 
-    if (higherRank(resolvedUser.member, moderatorResolvable, true)) {
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', 'User has equal or higher rank');
     }
 
-    if (activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true) && activeMute.end_tick > endTickNew) {
+    if (activeMute.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeMute.mod_id, guild)) && activeMute.end_tick > endTickNew) {
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', 'You can\'t lower a mute\'s end time unless you have higher privilege than the original moderator');
     }
 
@@ -622,11 +626,11 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
 
     // Verify mute can be changed
 
-    if (higherRank(resolvedUser.member, moderatorResolvable, true)) {
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', 'User has equal or higher rank');
     }
 
-    if (activeMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(activeMute.mod_id, guild), moderatorResolvable, true)) {
+    if (activeMute.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeMute.mod_id, guild))) {
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', 'Moderator who muted has equal or higher privilege');
     }
 
@@ -692,11 +696,11 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Verify mute can be removed
 
-    if (higherRank(resolvedUser.member, moderatorResolvable, true)) {
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', 'User has equal or higher rank');
     }
 
-    if (hasBeenMuted && lastMute.mod_id != resolvedModerator.id && higherRank(Util.getMemberById(lastMute.mod_id, guild), moderatorResolvable, true)) {
+    if (hasBeenMuted && lastMute.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(lastMute.mod_id, guild))) {
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', 'Moderator who muted has equal or higher privilege');
     }
 
@@ -753,7 +757,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
 
     // Verify mutes can be removed
 
-    if (higherRank(resolvedUser.member, moderatorResolvable, true)) {
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
         return Util.commandFailed(channel, moderatorResolvable, 'ClearMutes', 'User has equal or higher rank');
     }
 
