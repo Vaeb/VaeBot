@@ -221,6 +221,7 @@ exports.globalBan = {
     '280419231181307906': true, // Solarical
     '169261309353918464': true, // Slappy826
     '331958080164200453': true, // derickbuum
+    '246382261660811265': true, // S_ntinel
 };
 
 function securityFunc(guild, member, sendRoleParam) {
