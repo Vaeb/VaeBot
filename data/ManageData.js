@@ -1,9 +1,9 @@
 const FileSys = index.FileSys;
 
-const mutesDir = './data/mutes.json';
-const histDir = './data/history.json';
-const autoRoleDir = './data/autoroles.json';
-const playlistDir = './data/playlist.json';
+const mutesDir = '/home/flipflop8421/files/discordExp/VaeBot/data/mutes.json';
+const histDir = '/home/flipflop8421/files/discordExp/VaeBot/data/history.json';
+const autoRoleDir = '/home/flipflop8421/files/discordExp/VaeBot/data/autoroles.json';
+const playlistDir = '/home/flipflop8421/files/discordExp/VaeBot/data/playlist.json';
 
 const linkGuilds = index.linkGuilds;
 
