@@ -185,6 +185,7 @@ exports.connect = function () {
         password: index.dbPass,
         database: 'veil',
         multipleStatements: true,
+        charset: 'utf8mb4',
     });
 
     exports.connection = connection;
@@ -313,7 +314,7 @@ exports.updateRecords = function (guild, tableName, identity, data) {
     return exports.query(queryStr, valueArr);
 };
 
-exports.addRecord = function (guild, tableName, data) {
+/* exports.addRecord = function (guild, tableName, data) {
     const guildId = exports.getBaseGuildId(guild.id);
 
     let columnStr = ['guild_id'];
@@ -330,6 +331,33 @@ exports.addRecord = function (guild, tableName, data) {
     valueStr = valueStr.join(',');
 
     const queryStr = `INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr});`;
+
+    return exports.query(queryStr, valueArr);
+}; */
+
+exports.addRecord = function (guild, tableName, data) {
+    const guildId = exports.getBaseGuildId(guild.id);
+
+    let columnStr = ['guild_id'];
+    let valueStr = ['?'];
+    let setStr = ['guild_id=?'];
+    const valueArr = [guildId];
+
+    for (const [column, value] of Object.entries(data)) {
+        columnStr.push(column);
+        valueStr.push('?');
+        valueArr.push(value);
+        setStr.push(`${column}=?`);
+    }
+
+    const numValues = valueArr.length;
+    for (let i = 0; i < numValues; i++) valueArr.push(valueArr[i]);
+
+    columnStr = columnStr.join(',');
+    valueStr = valueStr.join(',');
+    setStr = setStr.join(',');
+
+    const queryStr = `INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr}) ON DUPLICATE KEY UPDATE ${setStr};`;
 
     return exports.query(queryStr, valueArr);
 };
