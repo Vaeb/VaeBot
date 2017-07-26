@@ -1889,7 +1889,7 @@ exports.clamp = function (num, minParam, maxParam) {
 };
 
 exports.noBlock = function (str) {
-    return `\`\`\`\n${str}\n\`\`\``;
+    return ` \`\`\`\n${str}\n\`\`\` `;
 };
 
 exports.toBoolean = function (str) {
