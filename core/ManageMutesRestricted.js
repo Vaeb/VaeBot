@@ -566,15 +566,19 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         // changedReason = false;
     }
 
-    Data.updateRecords(guild, 'mutes', {
-        mute_id: activeMute.mute_id,
-    }, newDataSQL);
+    const numChanged = Object.keys(newDataSQL).length;
 
-    for (let i = 0; i < muteCache[guildId].length; i++) {
-        const row = muteCache[guildId][i];
-        if (row.mute_id == activeMute.mute_id) {
-            for (const [column, value] of Object.entries(newDataSQL)) {
-                row[column] = value;
+    if (numChanged > 0) {
+        Data.updateRecords(guild, 'mutes', {
+            mute_id: activeMute.mute_id,
+        }, newDataSQL);
+
+        for (let i = 0; i < muteCache[guildId].length; i++) {
+            const row = muteCache[guildId][i];
+            if (row.mute_id == activeMute.mute_id) {
+                for (const [column, value] of Object.entries(newDataSQL)) {
+                    row[column] = value;
+                }
             }
         }
     }

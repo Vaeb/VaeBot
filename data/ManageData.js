@@ -376,7 +376,7 @@ exports.connectInitial = async function (dbGuilds) {
             const sanValues = [];
 
             guild.members.forEach((member) => {
-                sqlCmd.push('INSERT IGNORE INTO members VALUES(?,NULL);');
+                sqlCmd.push('INSERT IGNORE INTO members (user_id) VALUES(?);');
                 sanValues.push(member.id);
             });
 
