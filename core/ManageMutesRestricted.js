@@ -402,9 +402,9 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     const startTick = +new Date();
 
     let maxMuteLength = exports.defaultMuteLength * (2 ** pastMutes);
-    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReason) || [])[1]) || null;
+    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReason) || [])[1]);
 
-    if (maxMuteLengthIndex && maxMuteLengthIndex < exports.badOffenses.length) {
+    if (!isNaN(maxMuteLengthIndex) && maxMuteLengthIndex < exports.badOffenses.length) {
         maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
     }
 
@@ -523,9 +523,9 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     const maxMuteLengthBase = exports.defaultMuteLength * (2 ** pastMutes);
     let maxMuteLength = maxMuteLengthBase;
-    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReasonNew) || [])[1]) || null;
+    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReasonNew) || [])[1]);
 
-    if (maxMuteLengthIndex && maxMuteLengthIndex < exports.badOffenses.length) {
+    if (!isNaN(maxMuteLengthIndex) && maxMuteLengthIndex < exports.badOffenses.length) {
         maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
     }
 
