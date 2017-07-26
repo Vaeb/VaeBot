@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';ban ', ';permaban '],
+    cmds: [';ban ', ';banhammer ', ';permaban '],
 
     requires: {
         guild: true,
