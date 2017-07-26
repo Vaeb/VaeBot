@@ -709,13 +709,13 @@ exports.formatTime = function (time) {
     let timeStr;
     let formatStr;
 
-    const numSeconds = exports.round(time / 1000, 1);
-    const numMinutes = exports.round(time / 1000 * 60, 0.1);
-    const numHours = exports.round(time / 1000 * 60 * 60, 0.1);
-    const numDays = exports.round(time / 1000 * 60 * 60 * 24, 0.1);
-    const numWeeks = exports.round(time / 1000 * 60 * 60 * 24 * 7, 0.1);
-    const numMonths = exports.round(time / 1000 * 60 * 60 * 24 * 30.42, 0.1);
-    const numYears = exports.round(time / 1000 * 60 * 60 * 24 * 365.2422, 0.1);
+    const numSeconds = exports.round(time / (1000, 0.1));
+    const numMinutes = exports.round(time / (1000 * 60, 0.1));
+    const numHours = exports.round(time / (1000 * 60 * 60, 0.1));
+    const numDays = exports.round(time / (1000 * 60 * 60 * 24, 0.1));
+    const numWeeks = exports.round(time / (1000 * 60 * 60 * 24 * 7, 0.1));
+    const numMonths = exports.round(time / (1000 * 60 * 60 * 24 * 30.42, 0.1));
+    const numYears = exports.round(time / (1000 * 60 * 60 * 24 * 365.2422, 0.1));
 
     if (numSeconds < 1) {
         timeStr = exports.toFixedCut(time, 0);
