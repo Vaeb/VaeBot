@@ -210,10 +210,10 @@ function setBriefing() {
 }
 
 exports.globalBan = {
-    '201740276472086528': true,
-    '75736018761818112': true,
-    '123146298504380416': true,
-    '263372398059847681': true,
+    '201740276472086528': true, // No idea
+    '75736018761818112': true,  // No idea
+    '123146298504380416': true, // No idea
+    '263372398059847681': true, // No idea
     '238981466606927873': true, // Lindah
     '189687397951209472': true, // xCraySECx / Nico Nico
     '154255141317378050': true, // HighDefinition
@@ -221,7 +221,7 @@ exports.globalBan = {
     '280419231181307906': true, // Solarical
     '169261309353918464': true, // Slappy826
     '331958080164200453': true, // derickbuum
-    '246382261660811265': true, // S_ntinel
+    '284410389469593611': true, // Papi
 };
 
 function securityFunc(guild, member, sendRoleParam) {

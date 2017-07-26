@@ -710,25 +710,36 @@ exports.formatTime = function (time) {
     let formatStr;
 
     const numSeconds = exports.round(time / 1000, 1);
-    const numMinutes = exports.round(time / 60000, 0.1);
-    const numHours = exports.round(time / 3600000, 0.1);
-    const numDays = exports.round(time / 86400000, 0.1);
-    const numYears = exports.round(time / 31556926080, 0.1);
+    const numMinutes = exports.round(time / 1000 * 60, 0.1);
+    const numHours = exports.round(time / 1000 * 60 * 60, 0.1);
+    const numDays = exports.round(time / 1000 * 60 * 60 * 24, 0.1);
+    const numWeeks = exports.round(time / 1000 * 60 * 60 * 24 * 7, 0.1);
+    const numMonths = exports.round(time / 1000 * 60 * 60 * 24 * 30.42, 0.1);
+    const numYears = exports.round(time / 1000 * 60 * 60 * 24 * 365.2422, 0.1);
 
-    if (numSeconds < 60) {
-        timeStr = numSeconds.toFixed(0);
+    if (numSeconds < 1) {
+        timeStr = exports.toFixedCut(time, 0);
+        formatStr = `${timeStr} millisecond`;
+    } else if (numMinutes < 1) {
+        timeStr = exports.toFixedCut(numSeconds, 1);
         formatStr = `${timeStr} second`;
-    } else if (numMinutes < 60) {
-        timeStr = numMinutes % 1 == 0 ? numMinutes.toFixed(0) : numMinutes.toFixed(1);
+    } else if (numHours < 1) {
+        timeStr = exports.toFixedCut(numMinutes, 1);
         formatStr = `${timeStr} minute`;
-    } else if (numHours < 60) {
-        timeStr = numHours % 1 == 0 ? numHours.toFixed(0) : numHours.toFixed(1);
+    } else if (numDays < 1) {
+        timeStr = exports.toFixedCut(numHours, 1);
         formatStr = `${timeStr} hour`;
-    } else if (numDays < 365) {
-        timeStr = numDays % 1 == 0 ? numDays.toFixed(0) : numDays.toFixed(1);
+    } else if (numWeeks < 1) {
+        timeStr = exports.toFixedCut(numDays, 1);
         formatStr = `${timeStr} day`;
+    } else if (numMonths < 1) {
+        timeStr = exports.toFixedCut(numWeeks, 1);
+        formatStr = `${timeStr} week`;
+    } else if (numYears < 1) {
+        timeStr = exports.toFixedCut(numMonths, 1);
+        formatStr = `${timeStr} month`;
     } else {
-        timeStr = numYears % 1 == 0 ? numYears.toFixed(0) : numYears.toFixed(1);
+        timeStr = exports.toFixedCut(numYears, 1);
         formatStr = `${timeStr} year`;
     }
 
@@ -1369,8 +1380,7 @@ exports.searchUserPartial = function (col, nameParam) {
 };
 
 exports.round = function (num, inc) {
-    const result = (inc == 0 ? num : Math.floor((num / inc) + 0.5) * inc);
-    return result;
+    return inc == 0 ? num : Math.floor((num / inc) + 0.5) * inc;
 };
 
 exports.write = function (content, name) {
@@ -1889,7 +1899,7 @@ exports.clamp = function (num, minParam, maxParam) {
 };
 
 exports.noBlock = function (str) {
-    return ` \`\`\`\n${str}\n\`\`\` `;
+    return ` \`\`\`\n${str}\n\`\`\`\n `;
 };
 
 exports.toBoolean = function (str) {
