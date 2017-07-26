@@ -23,9 +23,9 @@ module.exports = Cmds.addCommand({
             const offenseStr = offenseData.offense;
             const timeStr = Util.formatTime(offenseData.time);
 
-            sendEmbedFields.push({ name: `[${i}]`, value: `Offense: ${offenseStr}\nDefined Time: ${timeStr}​`, inline: false });
+            sendEmbedFields.push({ name: `Tag: [${i}]`, value: `Offense: ${offenseStr}\nDefined Time: ${timeStr}​`, inline: false });
         }
 
-        Util.sendEmbed(channel, 'Bad Offenses', 'If a user commits an offense listed here, their maximum mute time is whichever is larger: The defined time for the offense or their next default mute time', Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, 'Bad Offenses', 'If a user commits an offense listed here, their maximum mute time is whichever is larger: The defined time for the offense or their next default mute time.', Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
     },
 });
