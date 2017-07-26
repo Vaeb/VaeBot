@@ -10,12 +10,6 @@ let nextMuteId;
 
 exports.defaultMuteLength = 1800000;
 
-exports.badOffenses = [
-    { offense: 'Posting nsfw images', time: 1000 * 60 * 60 * 24 * 1 },
-    { offense: 'Posting nsfw images with VaeBot', time: 1000 * 60 * 60 * 24 * 2 },
-    { offense: 'Genuine scamming', time: 1000 * 60 * 60 * 24 * 7 },
-];
-
 /*
 
     -Mutes have an optional set_mute_time parameter

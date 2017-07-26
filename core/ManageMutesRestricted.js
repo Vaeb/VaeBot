@@ -10,6 +10,12 @@ let nextMuteId;
 
 exports.defaultMuteLength = 1800000;
 
+exports.badOffenses = [
+    { offense: 'Posting nsfw images', time: 1000 * 60 * 60 * 24 * 1 },
+    { offense: 'Posting nsfw images with VaeBot', time: 1000 * 60 * 60 * 24 * 2 },
+    { offense: 'Genuine scamming', time: 1000 * 60 * 60 * 24 * 7 },
+];
+
 /*
 
     -Mutes have an optional set_mute_time parameter
@@ -73,8 +79,8 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
     } else if (actionType === 'ChangeMute') {
         let fieldsChanged = [];
 
-        if (muteReason.new !== muteReason.old) fieldsChanged.push('Mute Reason');
-        if (muteLengthStr.new !== muteLengthStr.old) fieldsChanged.push('Mute Length');
+        if (muteReason.new != muteReason.old) fieldsChanged.push('Mute Reason');
+        if (muteLengthStr.new != muteLengthStr.old) fieldsChanged.push('Mute Length');
 
         fieldsChanged = fieldsChanged.join(', ');
 
@@ -93,13 +99,13 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
 
             const outStr = ['**Your mute has been changed**\n```'];
             outStr.push(`Guild: ${guild.name}`);
-            if (muteReason.new !== muteReason.old) {
+            if (muteReason.new != muteReason.old) {
                 outStr.push(`Old mute reason: ${muteReason.old} | New mute reason: ${muteReason.new}`);
             }
-            if (muteLengthStr.new !== muteLengthStr.old) {
+            if (muteLengthStr.new != muteLengthStr.old) {
                 outStr.push(`Old mute length: ${muteLengthStr.old} | New mute length: ${muteLengthStr.new}`);
             }
-            if (endStr.new !== endStr.old) {
+            if (endStr.new != endStr.old) {
                 outStr.push(`Old mute expiration: ${endStr.old} | New mute expiration: ${endStr.new}`);
             }
             outStr.push('```');
@@ -395,7 +401,12 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     const startTick = +new Date();
 
-    const maxMuteLength = exports.defaultMuteLength * (2 ** pastMutes);
+    let maxMuteLength = exports.defaultMuteLength * (2 ** pastMutes);
+    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReason) || [])[1]) || null;
+
+    if (maxMuteLengthIndex && maxMuteLengthIndex < exports.badOffenses.length) {
+        maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
+    }
 
     muteLength = muteLength ? Math.min(muteLength, maxMuteLength) : maxMuteLength;
 
@@ -491,8 +502,6 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     const totalMutes = userMutes.length;
     const pastMutes = totalMutes - 1;
 
-    const maxMuteLength = exports.defaultMuteLength * (2 ** pastMutes);
-
     // Check they are actually muted
 
     const activeMute = muteCacheActive[guildId][resolvedUser.id];
@@ -509,23 +518,27 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     const muteLengthOld = endTickOld - startTick;
     const muteReasonOld = activeMute.mute_reason;
 
-    let endTickNew;
-    let muteLengthNew = Math.min(newData.time, maxMuteLength);
-    let muteReasonNew = newData.reason;
+    const muteReasonNew = newData.reason || muteReasonOld;
+    let muteLengthNew = newData.time;
+
+    const maxMuteLengthBase = exports.defaultMuteLength * (2 ** pastMutes);
+    let maxMuteLength = maxMuteLengthBase;
+    const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReasonNew) || [])[1]) || null;
+
+    if (maxMuteLengthIndex && maxMuteLengthIndex < exports.badOffenses.length) {
+        maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
+    }
 
     // let changedTime = true;
     // let changedReason = true;
 
-    if (!newData.time) {
-        muteLengthNew = muteLengthOld;
-        endTickNew = endTickOld;
-    } else {
-        endTickNew = startTick + muteLengthNew;
+    if (!muteLengthNew) { // If no new mute time and current mute time was default then set to max
+        muteLengthNew = muteLengthOld == maxMuteLengthBase ? maxMuteLength : muteLengthOld;
+    } else { // Compare with max
+        muteLengthNew = Math.min(muteLengthNew, maxMuteLength);
     }
 
-    if (!newData.reason) {
-        muteReasonNew = muteReasonOld;
-    }
+    const endTickNew = startTick + muteLengthNew;
 
     // Verify mute can be changed
 
@@ -541,13 +554,13 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     const newDataSQL = {};
 
-    if (newData.time && endTickNew !== activeMute.end_tick) {
+    if (newData.time && muteLengthNew != muteLengthOld) {
         newDataSQL.end_tick = endTickNew;
     } else {
         // changedTime = false;
     }
 
-    if (newData.reason && muteReasonNew !== activeMute.mute_reason) {
+    if (newData.reason && muteReasonNew != activeMute.mute_reason) {
         newDataSQL.mute_reason = muteReasonNew;
     } else {
         // changedReason = false;
