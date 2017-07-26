@@ -533,7 +533,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     // let changedReason = true;
 
     if (!muteLengthNew) { // If no new mute time and current mute time was default then set to max
-        muteLengthNew = muteLengthOld == maxMuteLengthBase ? maxMuteLength : muteLengthOld;
+        muteLengthNew = muteLengthOld == maxMuteLengthBase ? maxMuteLength : Math.min(muteLengthOld, maxMuteLength);
     } else { // Compare with max
         muteLengthNew = Math.min(muteLengthNew, maxMuteLength);
     }
