@@ -54,15 +54,15 @@ module.exports = Cmds.addCommand({
 
         Util.log(`Change Arg Data: ${data}`);
 
-        let member = data[0];
+        const member = data[0];
         const mult = data[2] || 1;
         const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
-        if (speaker.id == '119203482598244356') {
+        /* if (speaker.id == '119203482598244356') {
             member = speaker;
             speaker = speaker.displayName;
-        }
+        } */
 
         Mutes.addMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
 
