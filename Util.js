@@ -693,7 +693,7 @@ exports.cloneObj = function (obj) {
         return copy;
     }
 
-    if (obj instanceof Object) {
+    if (obj instanceof Object && !(obj instanceof Buffer)) {
         copy = {};
 
         for (const [attr, objAttr] of Object.entries(obj)) {
