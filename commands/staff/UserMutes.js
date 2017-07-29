@@ -29,14 +29,14 @@ module.exports = Cmds.addCommand({
         const sendEmbedFields = [];
 
         for (let i = 0; i < pastMutes.length; i++) {
-            const row = pastMutes[i];
+            const record = pastMutes[i];
 
-            const muteDate = new Date(row.start_tick);
-            const muteLength = row.end_tick - row.start_tick;
-            const moderatorId = row.mod_id;
-            const active = Data.fromBuffer(row.active) == 1;
+            const muteDate = new Date(record.start_tick);
+            const muteLength = record.end_tick - record.start_tick;
+            const moderatorId = record.mod_id;
+            const active = record.active == 1;
 
-            const reason = row.mute_reason;
+            const reason = record.mute_reason;
             const muteDateStr = Util.getDateString(muteDate);
             const muteLengthStr = Util.formatTime(muteLength);
             const modMention = Util.resolveUserMention(guild, moderatorId);

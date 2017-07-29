@@ -310,7 +310,7 @@ exports.updateCache = async function (updateTableName) {
             const record = tableRecords[i];
             const guildId = record.guild_id;
             if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
-            exports.cache[tableName][guildId][record[primaryColumn]] = Util.cloneObj(record);
+            exports.cache[tableName][guildId][record[primaryColumn]] = Util.cloneObj(record, true);
         }
     }));
 };
@@ -517,10 +517,10 @@ exports.addRecord = async function (guild, tableName, data) { // DBFunc
     if (updateData) {
         const nowCacheRecord = nowCache[data[primaryColumn]];
         for (const [column, value] of Object.entries(data)) {
-            nowCacheRecord[column] = Util.cloneObj(value);
+            nowCacheRecord[column] = Util.cloneObj(value, true);
         }
     } else {
-        nowCache[data[primaryColumn]] = Util.cloneObj(data);
+        nowCache[data[primaryColumn]] = Util.cloneObj(data, true);
     }
 
     const numValues = valueArr.length;

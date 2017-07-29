@@ -673,7 +673,7 @@ exports.isObject = function (val) { // Or array
     return (typeof (val) === 'object');
 };
 
-exports.cloneObj = function (obj) {
+exports.cloneObj = function (obj, fixBuffer) {
     let copy;
 
     if (obj == null || typeof (obj) !== 'object') return obj;
@@ -691,6 +691,10 @@ exports.cloneObj = function (obj) {
             copy[i] = exports.cloneObj(obj[i]);
         }
         return copy;
+    }
+
+    if (fixBuffer && obj instanceof Buffer) {
+        return obj.readUIntBE(0, 1);
     }
 
     if (obj instanceof Object && !(obj instanceof Buffer)) {

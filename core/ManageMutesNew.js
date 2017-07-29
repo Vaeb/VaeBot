@@ -798,7 +798,6 @@ exports.initialize = async function () { // Get mute data from db, start all ini
 
         for (let i = 0; i < results.length; i++) {
             const muteStored = results[i];
-            muteStored.active = Data.fromBuffer(muteStored.active);
 
             muteCache[guildId].push(muteStored);
 
