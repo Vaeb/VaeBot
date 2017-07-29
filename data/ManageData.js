@@ -233,7 +233,6 @@ exports.connect = function () {
 
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
-
 function getRecordsFromCache(nowCache, identity) {
     const results = [];
 
@@ -279,9 +278,7 @@ function getRecordsFromCache(nowCache, identity) {
             if (!idMatch) break;
         }
 
-        if (!idMatch) break;
-
-        results.push(nowRecord);
+        if (idMatch) results.push(nowRecord);
     }
 
     return results;
