@@ -688,7 +688,7 @@ exports.cloneObj = function (obj, fixBuffer) {
         copy = [];
         const len = obj.length;
         for (let i = 0; i < len; i++) {
-            copy[i] = exports.cloneObj(obj[i]);
+            copy[i] = exports.cloneObj(obj[i], fixBuffer);
         }
         return copy;
     }
@@ -701,7 +701,7 @@ exports.cloneObj = function (obj, fixBuffer) {
         copy = {};
 
         for (const [attr, objAttr] of Object.entries(obj)) {
-            copy[attr] = exports.cloneObj(objAttr);
+            copy[attr] = exports.cloneObj(objAttr, fixBuffer);
         }
         return copy;
     }
