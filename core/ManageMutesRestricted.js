@@ -811,6 +811,8 @@ exports.initialize = async function () { // Get mute data from db, start all ini
             console.log(muteStored);
             console.log(muteStored.active);
             muteStored.active = Data.fromBuffer(muteStored.active);
+            console.log(muteStored.active);
+            console.log('--');
 
             if (muteStored.active == 1) {
                 muteCacheActive[guildId][muteStored.user_id] = muteStored;
