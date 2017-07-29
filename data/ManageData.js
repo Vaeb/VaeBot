@@ -567,6 +567,7 @@ exports.connectInitial = async function (dbGuilds) {
         exports.query(sqlCmdStr, sanValues)
             .catch((err) => {
                 Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
+                process.exit(1);
             });
     }
 

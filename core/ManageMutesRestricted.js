@@ -808,6 +808,8 @@ exports.initialize = async function () { // Get mute data from db, start all ini
 
         for (let i = 0; i < results.length; i++) {
             const muteStored = results[i];
+            console.log(muteStored);
+            console.log(muteStored.active);
             muteStored.active = Data.fromBuffer(muteStored.active);
 
             if (muteStored.active == 1) {
