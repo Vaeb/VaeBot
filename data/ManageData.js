@@ -296,7 +296,7 @@ exports.fetchPrimaryKey = async function (tableName) {
 };
 
 exports.fetchAutoIncKey = async function (tableName) {
-    return (await Data.query(`SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=${tableName} AND table_schema=DATABASE()`))[0].AUTO_INCREMENT;
+    return (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE();', [tableName]))[0].AUTO_INCREMENT;
 };
 
 exports.updateCache = async function (updateTableName) {

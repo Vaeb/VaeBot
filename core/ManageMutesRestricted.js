@@ -797,7 +797,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
     // const nowTick = +new Date();
     Util.logc('MutesInit', '> Initializing mute data');
 
-    nextMuteId = (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE()', ['mutes']))[0].AUTO_INCREMENT;
+    nextMuteId = (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE();', ['mutes']))[0].AUTO_INCREMENT;
 
     await Promise.all(client.guilds.map(async (guild) => {
         const guildId = Data.getBaseGuildId(guild.id);
