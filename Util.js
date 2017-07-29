@@ -709,6 +709,26 @@ exports.cloneObj = function (obj, fixBuffer) {
     return obj;
 };
 
+const elapseTimeTags = {};
+
+exports.elapsedTime = function (tag, last) {
+    let elapsed;
+
+    if (has.call(elapseTimeTags, tag)) {
+        const startTimeData = elapseTimeTags[tag];
+        const elapsedTimeData = process.hrtime(startTimeData); // Seconds, Nanoseconds (Seconds * 1e9)
+        elapsed = (elapsedTimeData[0] * 1e3) + (elapsedTimeData[1] / 1e6);
+    }
+
+    if (last) {
+        delete elapseTimeTags[tag]; // Remove unnecessary time storage
+    } else {
+        elapseTimeTags[tag] = process.hrtime(); // Mark the start time
+    }
+
+    return elapsed;
+};
+
 exports.formatTime = function (time) {
     let timeStr;
     let formatStr;
