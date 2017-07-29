@@ -61,7 +61,7 @@ exports.initCommands = function () {
 };
 
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
-    if ((channel.id !== '168743219788644352' || authorId === vaebId)/* && (guild.id != "257235915498323969" || channel.id == "257244216772526092")*/) { // script-builders
+    if ((channel.id !== '168743219788644352' || authorId === vaebId)/* && (guild.id != "257235915498323969" || channel.id == "257244216772526092") */) { // script-builders
         for (let i = 0; i < exports.commands.length; i++) {
             const cmdData = exports.commands[i];
             const cmdNames = cmdData[0];
@@ -81,7 +81,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                         Util.sendEmbed(channel, 'Restricted', 'This command can only be used in Guilds', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
                     } else if (cmdRequires.loud && isQuiet(channel, speaker)) {
                         Util.sendEmbed(channel, 'Quiet Channel', 'This command cannot be used in this Channel (use #bot-commands)',
-                          Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+                            Util.makeEmbedFooter(speaker), null, 0x00E676, null);
                     } else {
                         const args = content.substring(cmdLength);
                         const argStr = args.length < 1 ? 'None' : args;

@@ -197,7 +197,7 @@ function setBriefing() {
                 || exports.dailyKicks.length > 0
                 || exports.dailyBans.length > 0) {
                 channel.send(undefined, { embed: embObj })
-                .catch(error => Util.log(`[E_SendBriefing] ${error}`));
+                    .catch(error => Util.log(`[E_SendBriefing] ${error}`));
             }
 
             exports.dailyMutes = []; // Reset
@@ -236,7 +236,7 @@ function securityFunc(guild, member, sendRoleParam) {
 
     if (has.call(exports.globalBan, memberId) && (memberId != '169261309353918464' || guild.id != '168742643021512705')) {
         member.kick()
-        .catch(console.error);
+            .catch(console.error);
         Util.logc('BanOld1', `Globally banned user ${memberName} had already joined ${guildName}`);
         return;
     }
@@ -246,12 +246,12 @@ function securityFunc(guild, member, sendRoleParam) {
         if (isMuted) {
             if (Util.hasRole(member, sendRole)) {
                 member.removeRole(sendRole)
-                .catch(console.error);
+                    .catch(console.error);
                 Util.logc('MuteOld1', `Muted user ${memberName} had already joined ${guildName}`);
             }
         } else if (!Util.hasRole(member, sendRole)) {
             member.addRole(sendRole)
-            .catch(console.error);
+                .catch(console.error);
             Util.logc('AssignOld1', `Assigned SendMessages to old member ${memberName}`);
         }
     }
@@ -291,18 +291,18 @@ function setupSecurityVeil() {
         if (!veilMember) {
             Util.logc('SecureVeil1', `[Auto-Old-Kick 1] User not in Veil: ${memberName}`);
             member.kick()
-            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick1] ${memberName} | ${error}`));
+                .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick1] ${memberName} | ${error}`));
             return;
         }
         if (!veilMember.roles.has(veilBuyer.id)) {
             Util.logc('SecureVeil1', `[Auto-Old-Kick 2] User does not have Buyer role: ${memberName}`);
             member.kick()
-            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick2] ${memberName} | ${error}`));
+                .catch(error => Util.logc('SecureVeil1', `[E_AutoOldKick2] ${memberName} | ${error}`));
             return;
         }
         if (!member.roles.has(newBuyer.id)) {
             member.addRole(newBuyer)
-            .catch(error => Util.logc('SecureVeil1', `[E_AutoOldAddRole1] ${memberName} | ${error}`));
+                .catch(error => Util.logc('SecureVeil1', `[E_AutoOldAddRole1] ${memberName} | ${error}`));
             Util.logc('SecureVeil1', `Updated old member with Buyer role: ${memberName}`);
         }
     });
@@ -366,7 +366,7 @@ client.on('ready', async () => {
 
     Util.log('> Cached all guild members!');
     Data.connectInitial(dbGuilds)
-    .catch(err => Util.log(`[E_DataConnect] ${err}`));
+        .catch(err => Util.log(`[E_DataConnect] ${err}`));
 });
 
 client.on('disconnect', (closeEvent) => {
@@ -420,24 +420,24 @@ client.on('guildMemberAdd', (member) => {
             if (!veilMember) {
                 Util.logc(memberId, `[Auto-Kick 1] User not in Veil: ${memberName}`);
                 member.kick()
-                .catch(error => Util.logc(memberId, `[E_AutoKick1] ${error}`));
+                    .catch(error => Util.logc(memberId, `[E_AutoKick1] ${error}`));
                 return;
             }
             if (!veilMember.roles.has(veilBuyer.id)) {
                 Util.logc(memberId, `[Auto-Kick 2] User does not have Buyer role: ${memberName}`);
                 member.kick()
-                .catch(error => Util.logc(memberId, `[E_AutoKick2] ${error}`));
+                    .catch(error => Util.logc(memberId, `[E_AutoKick2] ${error}`));
                 return;
             }
             member.addRole(newBuyer)
-            .catch(error => Util.logc(memberId, `[E_AutoAddRole1] ${error}`));
+                .catch(error => Util.logc(memberId, `[E_AutoAddRole1] ${error}`));
             Util.logc(memberId, 'Awarded new member with Buyer role');
         }
     }
 
     if (has.call(exports.globalBan, memberId) && (memberId != '169261309353918464' || guild.id != '168742643021512705')) {
         member.kick()
-        .catch(console.error);
+            .catch(console.error);
         Util.logc(memberId, `Globally banned user ${memberName} joined ${guildName}`);
         return;
     }
@@ -450,7 +450,7 @@ client.on('guildMemberAdd', (member) => {
 
         if (sendRole) {
             member.addRole(sendRole)
-            .catch(console.error);
+                .catch(console.error);
             Util.logc(memberId, `Assigned SendMessages to new member ${memberName}`);
         }
     }
@@ -522,7 +522,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             const isMuted = Mutes.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && !isMuted) {
                 member.addRole(nowRole)
-                .catch(console.error);
+                    .catch(console.error);
                 Util.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
             } else {
                 const sendLogData = [
@@ -572,7 +572,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
         ];
         Util.sendLog(sendLogData, colUser);
     }
-});*/
+}); */
 
 client.on('messageUpdate', (oldMsgObj, newMsgObj) => {
     if (newMsgObj == null) return;
@@ -1159,12 +1159,12 @@ client.on('message', (msgObj) => {
             exports.chatNext[guild.id] = nowTime + exports.calmSpeed;
         } else {
             msgObj.delete()
-            .catch(console.error);
+                .catch(console.error);
             const intervalNum = exports.calmSpeed / 1000;
             // var timeUntilSend = (exports.chatNext[guild.id] - nowTime) / 1000;
             author.send(`Your message has been deleted. ${guild.name} is temporarily in slow mode, meaning everyone must wait ${intervalNum} seconds 
             after the previous message before they can send one.`)
-            .catch(console.error);
+                .catch(console.error);
         }
         // exports.chatQueue[guild.id].push(msgObj);
     }

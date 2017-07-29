@@ -14,6 +14,13 @@ exports.playlist = {};
 exports.history = {};
 exports.muted = {};
 
+exports.cache = {};
+
+exports.autoInc = {
+    'mutes': 0,
+    'bans': 0,
+};
+
 exports.getLinkedGuilds = function (guild) {
     if (guild == null) return [];
 
@@ -209,6 +216,14 @@ exports.connect = function () {
     });
 };
 
+/*
+
+    Record/Row = { user_id: '123', mute_id: '456' }
+    Column = 'user_id'
+    Value = '123'
+
+*/
+
 /* function dataToString(value) {
     if (typeof value === 'string') {
         return `'${value}'`;
@@ -218,8 +233,123 @@ exports.connect = function () {
 
 // SELECT * FROM members WHERE user_id='107593015014486016';
 
-exports.getRecords = function (guild, tableName, identity) {
+
+function getRecordsFromCache(nowCache, identity) {
+    const results = [];
+
+    for (const nowRecord of Object.values(nowCache)) {
+        let idMatch = true;
+
+        for (const [idColumn, idValueData] of Object.entries(identity)) {
+            idMatch = false;
+
+            const nowValue = nowRecord[idColumn];
+
+            // if (!nowValue) break; // Uncomment when this definitely works
+
+            let idValue = idValueData;
+            let operator = '=';
+
+            if (Util.isObject(idValueData)) {
+                idValue = idValueData.value;
+                operator = idValueData.operator || '=';
+            }
+
+            switch (operator) {
+            case '=':
+                idMatch = nowValue == idValue;
+                break;
+            case '!=':
+                idMatch = nowValue != idValue;
+                break;
+            case '>':
+                idMatch = nowValue > idValue;
+                break;
+            case '>=':
+                idMatch = nowValue >= idValue;
+                break;
+            case '<':
+                idMatch = nowValue < idValue;
+                break;
+            case '<=':
+                idMatch = nowValue <= idValue;
+                break;
+            }
+
+            if (!idMatch) break;
+        }
+
+        if (!idMatch) break;
+
+        results.push(nowRecord);
+    }
+
+    return results;
+}
+
+exports.getTableNames = async function () {
+    return (await Data.query('SELECT table_name FROM information_schema.tables where table_schema=DATABASE();')).map(tableData => tableData.table_name);
+};
+
+exports.fetchPrimaryKey = async function (tableName) {
+    return (await Data.query('show index from ? where Key_name = \'PRIMARY\';', [tableName]))[0].Column_name;
+};
+
+exports.fetchAutoIncKey = async function (tableName) {
+    return (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE()', [tableName]))[0].AUTO_INCREMENT;
+};
+
+exports.updateCache = async function (updateTableName) {
+    const matchNames = updateTableName ? [updateTableName] : (await exports.getTableNames());
+    await Promise.all(matchNames.map(async (tableName) => {
+        const tableRecords = await exports.query(`SELECT * FROM ${tableName}`);
+        if (!tableRecords[0].guild_id) return;
+        if (!exports.cache[tableName]) {
+            exports.cache[tableName] = {};
+            exports.cache[tableName]._primaryKey = await exports.fetchPrimaryKey(tableName);
+        }
+        const primaryColumn = exports.cache[tableName]._primaryKey;
+        for (let i = 0; i < tableRecords.length; i++) {
+            const record = tableRecords[i];
+            const guildId = record.guild_id;
+            if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
+            exports.cache[tableName][guildId][record[primaryColumn]] = Util.cloneObj(record);
+        }
+    }));
+};
+
+exports.getCache = async function (guildId, tableName) {
+    if (!exports.cache[tableName]) await exports.updateCache(tableName);
+    if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
+    return [exports.cache[tableName][guildId], exports.cache[tableName]._primaryKey];
+};
+
+exports.initAutoInc = async function () {
+    const promises = [];
+
+    for (const tableName of Object.keys(exports.autoInc)) {
+        promises.push([tableName, exports.fetchAutoIncKey(tableName)]);
+    }
+
+    await Promise.all(promises.map(async (data) => {
+        exports.autoInc[data[0]] = await data[1];
+    }));
+};
+
+exports.nextInc = function (tableName) {
+    return ++exports.autoInc[tableName];
+};
+
+exports.getRecords = async function (guild, tableName, identity, fromSQL) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
+
+    if (!fromSQL) {
+        const [nowCache] = await exports.getCache(guildId, tableName);
+
+        const results = getRecordsFromCache(nowCache, identity);
+
+        return results;
+    }
 
     let conditionStr = ['guild_id=?'];
     const valueArr = [guildId];
@@ -247,8 +377,17 @@ exports.getRecords = function (guild, tableName, identity) {
     return exports.query(queryStr, valueArr);
 };
 
-exports.deleteRecords = function (guild, tableName, identity) {
+exports.deleteRecords = async function (guild, tableName, identity) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
+
+    const [nowCache, primaryColumn] = await exports.getCache(guildId, tableName);
+
+    const results = getRecordsFromCache(nowCache, identity);
+
+    for (let i = 0; i < results.length; i++) {
+        const nowPrimaryValue = results[i][primaryColumn];
+        delete nowCache[nowPrimaryValue];
+    }
 
     let conditionStr = ['guild_id=?'];
     const valueArr = [guildId];
@@ -274,8 +413,18 @@ exports.deleteRecords = function (guild, tableName, identity) {
     return exports.query(queryStr, valueArr);
 };
 
-exports.updateRecords = function (guild, tableName, identity, data) {
+exports.updateRecords = async function (guild, tableName, identity, data) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
+
+    const [nowCache] = await exports.getCache(guildId, tableName);
+
+    const results = getRecordsFromCache(nowCache, identity);
+
+    Object.entries(data).forEach(([column, value]) => {
+        for (let i = 0; i < results.length; i++) {
+            results[i][column] = value;
+        }
+    });
 
     let updateStr = [];
     let conditionStr = ['guild_id=?'];
@@ -335,19 +484,46 @@ exports.updateRecords = function (guild, tableName, identity, data) {
     return exports.query(queryStr, valueArr);
 }; */
 
-exports.addRecord = function (guild, tableName, data) {
+/*
+
+    nowCache: {
+        tableName: {
+            _primaryKey: ...
+            guildId: {
+                '123': { user_id: '123', ...: ... }
+                '456': { user_id: '456', ...: ... }
+            }
+        }
+    }
+
+*/
+
+exports.addRecord = async function (guild, tableName, data) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
+
+    const [nowCache, primaryColumn] = await exports.getCache(guildId, tableName);
 
     let columnStr = ['guild_id'];
     let valueStr = ['?'];
     let setStr = ['guild_id=?'];
     const valueArr = [guildId];
 
+    const updateData = has.call(data, primaryColumn) && has.call(nowCache, data[primaryColumn]);
+
     for (const [column, value] of Object.entries(data)) {
         columnStr.push(column);
         valueStr.push('?');
         valueArr.push(value);
         setStr.push(`${column}=?`);
+    }
+
+    if (updateData) {
+        const nowCacheRecord = nowCache[data[primaryColumn]];
+        for (const [column, value] of Object.entries(data)) {
+            nowCacheRecord[column] = Util.cloneObj(value);
+        }
+    } else {
+        nowCache[data[primaryColumn]] = Util.cloneObj(data);
     }
 
     const numValues = valueArr.length;
@@ -365,38 +541,44 @@ exports.addRecord = function (guild, tableName, data) {
 exports.connectInitial = async function (dbGuilds) {
     Util.logc('MySQL', '[MySQL] Initialising connection to database');
 
-    try {
-        await exports.connect();
-        Util.logc('MySQL', `[MySQL] Connected as id ${connection.threadId}`);
+    // try {
+    await exports.connect();
+    Util.logc('MySQL', `[MySQL] Connected as id ${connection.threadId}`);
 
-        for (let i = 0; i < dbGuilds.length; i++) {
-            const guild = dbGuilds[i];
+    await exports.updateCache();
+    Util.logc('MySQL', '[MySQL] Set up local cache');
 
-            const sqlCmd = [];
-            const sanValues = [];
+    await exports.initAutoInc();
+    Util.logc('MySQL', '[MySQL] Set up local auto-increment');
 
-            guild.members.forEach((member) => {
-                sqlCmd.push('INSERT IGNORE INTO members (user_id) VALUES(?);');
-                sanValues.push(member.id);
-            });
+    for (let i = 0; i < dbGuilds.length; i++) {
+        const guild = dbGuilds[i];
 
-            const sqlCmdStr = sqlCmd.join('\n');
+        const sqlCmd = [];
+        const sanValues = [];
 
-            exports.query(sqlCmdStr, sanValues)
+        guild.members.forEach((member) => {
+            sqlCmd.push('INSERT IGNORE INTO members (user_id, buyer, nickname) VALUES(?, ?, ?);');
+            sanValues.push(member.id, Util.hasRoleName(member, 'buyer'), member.nickname);
+        });
+
+        const sqlCmdStr = sqlCmd.join('\n');
+
+        exports.query(sqlCmdStr, sanValues)
             .catch((err) => {
                 Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
             });
-        }
+    }
 
-        Mutes.initialize();
+    Mutes.initialize();
 
-        // connection.end();
+    // connection.end();
 
-        return true;
-    } catch (err) {
+    return true;
+    /* } catch (err) {
         console.error(`[MySQL] Error connecting: ${err.stack}`);
         return false;
-    }
+    } */
 };
 
 // Deprecated soon

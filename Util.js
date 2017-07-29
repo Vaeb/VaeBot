@@ -299,19 +299,19 @@ function getURLChecker() {
         let link;
         let href;
 
-            // Output HTML.
+        // Output HTML.
         // const html = '';
 
-            // Store text / link parts, in order, for re-combination.
+        // Store text / link parts, in order, for re-combination.
         const parts = [];
 
-            // Used for keeping track of indices in the text.
+        // Used for keeping track of indices in the text.
         let idxPrev;
         let idxLast;
         let idx;
         let linkLast;
 
-            // Used for trimming trailing punctuation and quotes from links.
+        // Used for trimming trailing punctuation and quotes from links.
         let matchesBegin;
         let matchesEnd;
         let quoteBegin;
@@ -424,8 +424,8 @@ exports.initRoles = function (sendRole, guild) {
     members.forEach((member) => {
         if (!exports.hasRole(member, sendRole)) {
             member.addRole(sendRole)
-            .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
-            .catch(error => Util.log(`[E_InitRoles] addRole: ${error}`));
+                .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
+                .catch(error => Util.log(`[E_InitRoles] addRole: ${error}`));
         }
     });
 };
@@ -647,7 +647,7 @@ exports.getRandomInt = function (minParam, maxParam) { // inclusive, exclusive
     }
 
     return chunks;
-}*/
+} */
 
 /*
 
@@ -702,7 +702,7 @@ exports.cloneObj = function (obj) {
         return copy;
     }
 
-    throw new Error("Unable to copy obj! Its type isn't supported.");
+    return obj;
 };
 
 exports.formatTime = function (time) {
@@ -850,7 +850,7 @@ exports.fixMessageLengthNew = function (msgParam) {
     }
 
     return argsFixed;
-}*/
+} */
 
 exports.splitMessagesOld = function (messages) {
     const fixed = exports.fixMessageLengthNew(messages.join(' '));
@@ -1042,7 +1042,7 @@ exports.print = function (channel, ...args) {
         const msg = messages[i];
         // Util.log(`${channel.name}: ${msg.length}`);
         channel.send(msg)
-        .catch(ePrint);
+            .catch(ePrint);
     }
 };
 
@@ -1106,6 +1106,8 @@ exports.getDateString = function (d) {
 };
 
 exports.hasRole = (member, role) => member.roles.has(role.id);
+
+exports.hasRoleName = (member, name) => member.roles.some(role => role.name.toLowerCase().includes(name.toLowerCase()));
 
 exports.makeEmbedFooter = function (user, dateParam) {
     const memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
@@ -1253,11 +1255,11 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
     };
 
     embChannel.send(undefined, { embed: embObj })
-    .catch((error) => {
-        Util.log(`[E_SendEmbed] ${error} ${embChannel}`);
-        Util.log(embObj);
-        Util.log(JSON.stringify(embFields));
-    });
+        .catch((error) => {
+            Util.log(`[E_SendEmbed] ${error} ${embChannel}`);
+            Util.log(embObj);
+            Util.log(JSON.stringify(embFields));
+        });
 
     if (manyFields) {
         exports.sendEmbed(embChannel, embTitle, embDesc, embFooter, embImage, embColor, extraFields, true);
@@ -1307,13 +1309,14 @@ exports.sendLog = function (embData, embColor) {
     const embAvatar = exports.getAvatar(embAuthor);
 
     exports.sendEmbed(
-      embChannel,
-      embTitle,
-      null,
-      embFooter,
-      embAvatar,
-      embColor,
-      embFields);
+        embChannel,
+        embTitle,
+        null,
+        embFooter,
+        embAvatar,
+        embColor,
+        embFields,
+    );
 };
 
 exports.getHourStr = function (d) {
@@ -1364,7 +1367,7 @@ exports.getDayStr = function (d) {
         return false;
     })
     return user;
-}*/
+} */
 
 exports.searchUserPartial = function (col, nameParam) {
     let name = nameParam;
@@ -1710,7 +1713,7 @@ function getDataFromStringInner(str, funcs, returnExtra) {
                     Util.log("[Z] " + start);
                     Util.log("[Z] " + end);
                     Util.log("[Z] " + result);
-                }*/
+                } */
                 results.push(result);
                 index++;
                 if (index >= funcs.length) {
@@ -2117,7 +2120,7 @@ exports.strToPerm = function (strParam) {
 
 exports.setChannelPerms = function (channel, userOrRole, newPerms) {
     channel.overwritePermissions(userOrRole, newPerms)
-    .catch(error => Util.log(`[E_SetChannelPerms] ${error}`));
+        .catch(error => Util.log(`[E_SetChannelPerms] ${error}`));
 };
 
 // fetch more messages just like Discord client does
@@ -2223,17 +2226,17 @@ exports.deleteMessages = function (messages) {
 
     if (numMessages == 1) {
         firstMessage.delete()
-        .catch((err) => {
-            Util.log(`[E_DeleteMessages1] ${err}`);
-        });
+            .catch((err) => {
+                Util.log(`[E_DeleteMessages1] ${err}`);
+            });
     } else {
         const chunks = exports.chunkObj(messages, 99);
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
             firstMessage.channel.bulkDelete(chunk)
-            .catch((err) => {
-                Util.log(`[E_DeleteMessages2] ${err}`);
-            });
+                .catch((err) => {
+                    Util.log(`[E_DeleteMessages2] ${err}`);
+                });
         }
     }
 };
@@ -2277,13 +2280,15 @@ exports.banMember = function (member, moderator, reason) {
     if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
     member.ban()
-    .catch(console.error);
+        .catch(console.error);
 
     Trello.addCard(member.guild, 'Bans', memberMostName, {
         'User ID': memberId,
         'Moderator': modFullName,
         'Reason': reason,
     });
+
+    return true;
 };
 
 exports.kickMember = function (member, moderator, reason) {
@@ -2296,7 +2301,7 @@ exports.kickMember = function (member, moderator, reason) {
     if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
     member.kick()
-    .catch(console.error);
+        .catch(console.error);
 
     Trello.addCard(member.guild, 'Kicks', memberMostName, {
         'User ID': memberId,

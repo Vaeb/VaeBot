@@ -46,7 +46,7 @@ module.exports = Cmds.addCommand({
                     },
                 ],
             ]
-        , true);
+            , true);
 
         if (!data) {
             return Util.sendEmbed(channel, 'Mute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);

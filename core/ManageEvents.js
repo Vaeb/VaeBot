@@ -138,7 +138,7 @@ exports.Actions.AddRole = (guild, eventName, actionArgs, eventArgs) => {
             Util.log(`[A_AddRole] ${roleName} not found`);
         } else {
             member.addRole(roleObj)
-            .catch(console.error);
+                .catch(console.error);
         }
     }
 };
@@ -154,7 +154,7 @@ exports.Actions.RemRole = (guild, eventName, actionArgs, eventArgs) => {
             Util.log(`[A_RemRole] ${roleName} not found`);
         } else {
             member.removeRole(roleObj)
-            .catch(console.error);
+                .catch(console.error);
         }
     }
 };
