@@ -303,7 +303,7 @@ exports.updateCache = async function (updateTableName) {
     const matchNames = updateTableName ? [updateTableName] : (await exports.getTableNames());
     await Promise.all(matchNames.map(async (tableName) => {
         const tableRecords = await exports.query(`SELECT * FROM ${tableName}`);
-        if (!tableRecords[0].guild_id) return;
+        if (tableRecords.length > 0 && !tableRecords[0].guild_id) return;
         if (!exports.cache[tableName]) {
             exports.cache[tableName] = {};
             exports.cache[tableName]._primaryKey = await exports.fetchPrimaryKey(tableName);
