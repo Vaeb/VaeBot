@@ -247,7 +247,7 @@ function securityFunc(guild, member, sendRoleParam) {
             if (Util.hasRole(member, sendRole)) {
                 member.removeRole(sendRole)
                     .catch(console.error);
-                Util.logc('MuteOld1', `Muted user ${memberName} had already joined ${guildName}`);
+                Util.logc('MuteOld1', `Removed SendMessages from muted user ${memberName} who had already joined ${guildName}`);
             }
         } else if (!Util.hasRole(member, sendRole)) {
             member.addRole(sendRole)
