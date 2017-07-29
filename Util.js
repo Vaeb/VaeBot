@@ -1315,8 +1315,7 @@ exports.sendLog = function (embData, embColor) {
         embFooter,
         embAvatar,
         embColor,
-        embFields,
-    );
+        embFields);
 };
 
 exports.getHourStr = function (d) {
