@@ -292,7 +292,7 @@ exports.getTableNames = async function () {
 };
 
 exports.fetchPrimaryKey = async function (tableName) {
-    return (await Data.query('show index from ? where Key_name = \'PRIMARY\';', [tableName]))[0].Column_name;
+    return (await Data.query(`show index from ${tableName} where Key_name = 'PRIMARY';`))[0].Column_name;
 };
 
 exports.fetchAutoIncKey = async function (tableName) {
