@@ -365,8 +365,8 @@ client.on('ready', async () => {
     }));
 
     Util.log('> Cached all guild members!');
-    Data.connectInitial(dbGuilds)
-        .catch(err => Util.log(`[E_DataConnect] ${err}`));
+
+    await Data.connectInitial(dbGuilds);
 });
 
 client.on('disconnect', (closeEvent) => {
