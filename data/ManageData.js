@@ -237,6 +237,8 @@ exports.connect = function () {
 function getRecordsFromCache(nowCache, identity) {
     const results = [];
 
+    if (!identity) identity = {};
+
     for (const nowRecord of Object.values(nowCache)) {
         let idMatch = true;
 
@@ -244,8 +246,6 @@ function getRecordsFromCache(nowCache, identity) {
             idMatch = false;
 
             const nowValue = nowRecord[idColumn];
-
-            // if (!nowValue) break; // Uncomment when this definitely works
 
             let idValue = idValueData;
             let operator = '=';
