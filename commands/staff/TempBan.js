@@ -70,7 +70,6 @@ module.exports = Cmds.addCommand({
 
         // Store ban data in database
         const newRecord = {
-            'ban_id': Data.nextInc('bans'), // AUTO INCREMENT
             'user_id': member.id, // VARCHAR(24)
             'mod_id': speaker.id, // VARCHAR(24)
             'ban_reason': reason, // TEXT

@@ -5,8 +5,6 @@ let muteTimeoutId = 0;
 
 const muteCacheActive = {};
 
-let nextMuteId;
-
 exports.defaultMuteLength = 1800000;
 
 exports.badOffenses = [
@@ -449,7 +447,6 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     // Add their mute to the database and cache
 
     const newRow = {
-        'mute_id': nextMuteId, // AUTO INCREMENT
         'user_id': resolvedUser.id, // VARCHAR(24)
         'mod_id': resolvedModerator.id, // VARCHAR(24)
         'mute_reason': muteReason, // TEXT
@@ -457,8 +454,6 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         'end_tick': endTick, // BIGINT
         'active': 1, // BIT
     };
-
-    nextMuteId++;
 
     Data.updateRecords(guild, 'mutes', {
         user_id: resolvedUser.id,
@@ -796,8 +791,6 @@ exports.checkMuted = function (guild, userId) {
 exports.initialize = async function () { // Get mute data from db, start all initial mute timeouts
     // const nowTick = +new Date();
     Util.logc('MutesInit', '> Initializing mute data');
-
-    nextMuteId = (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE();', ['mutes']))[0].AUTO_INCREMENT;
 
     await Promise.all(client.guilds.map(async (guild) => {
         const guildId = Data.getBaseGuildId(guild.id);

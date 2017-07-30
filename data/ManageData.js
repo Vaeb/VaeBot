@@ -16,9 +16,9 @@ exports.muted = {};
 
 exports.cache = {};
 
-exports.autoInc = {
-    'mutes': 0,
-    'bans': 0,
+exports.nextAutoInc = {
+    'mutes': ['mute_id', 0],
+    'bans': ['ban_id', 0],
 };
 
 exports.getLinkedGuilds = function (guild) {
@@ -324,17 +324,17 @@ exports.getCache = async function (guildId, tableName) {
 exports.initAutoInc = async function () {
     const promises = [];
 
-    for (const tableName of Object.keys(exports.autoInc)) {
+    for (const tableName of Object.keys(exports.nextAutoInc)) {
         promises.push([tableName, exports.fetchAutoIncKey(tableName)]);
     }
 
     await Promise.all(promises.map(async (data) => {
-        exports.autoInc[data[0]] = await data[1];
+        exports.nextAutoInc[data[0]][1] = await data[1];
     }));
 };
 
 exports.nextInc = function (tableName) {
-    return ++exports.autoInc[tableName];
+    return exports.nextAutoInc[tableName][1]++;
 };
 
 exports.getRecords = async function (guild, tableName, identity, fromSQL) { // DBFunc
@@ -520,6 +520,7 @@ exports.addRecord = async function (guild, tableName, data) { // DBFunc
             nowCacheRecord[column] = Util.cloneObj(value, true);
         }
     } else {
+        if (has.call(exports.nextAutoInc, tableName)) data[exports.nextAutoInc[tableName][0]] = Data.nextInc(tableName);
         nowCache[data[primaryColumn]] = Util.cloneObj(data, true);
     }
 
