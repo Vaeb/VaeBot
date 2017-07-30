@@ -1,32 +1,34 @@
 module.exports = Cmds.addCommand({
-    cmds: [";addaction ", ";linkaction ", ";createaction ", ";action "],
+    cmds: [';addaction ', ';linkaction ', ';createaction ', ';action '],
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
-    desc: "Creates an action to be used in ;link",
+    desc: 'Creates an action to be used in ;link',
 
-    args: "",
+    args: '',
 
-    example: "EchoMessage (guild, eventName, actionArgs, eventArgs) => { Util.print(channel, ...eventArgs[3]) };",
+    example: 'EchoMessage (guild, eventName, actionArgs, eventArgs) => { Util.print(channel, ...eventArgs[3]) };',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var spaceIndex = args.indexOf(" ");
-        if (spaceIndex == -1) return Util.commandFailed(channel, speaker, "Invalid parameters");
+    func: (cmd, args, msgObj, speaker, channel) => {
+        const spaceIndex = args.indexOf(' ');
+        if (spaceIndex == -1) return Util.commandFailed(channel, speaker, 'Invalid parameters');
 
-        var actionName = args.substring(0, spaceIndex);
-        var actionFuncStr = args.substring(spaceIndex+1);
+        const actionName = args.substring(0, spaceIndex);
+        const actionFuncStr = args.substring(spaceIndex + 1);
 
-        var evalStr = "Events.Actions." + actionName + " = " + actionFuncStr;
+        const evalStr = `Events.Actions.${actionName} = ${actionFuncStr}`;
 
         Util.log(evalStr);
 
         eval(evalStr);
 
-        Util.sendDescEmbed(channel, "Added Action", "Added action " + actionName + " for linking", Util.makeEmbedFooter(speaker), null, 0x00E676);
-    }
+        Util.sendDescEmbed(channel, 'Added Action', `Added action ${actionName} for linking`, Util.makeEmbedFooter(speaker), null, 0x00E676);
+
+        return true;
+    },
 });
