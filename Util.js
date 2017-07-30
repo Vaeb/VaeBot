@@ -711,7 +711,7 @@ exports.cloneObj = function (obj, fixBuffer) {
 
 const elapseTimeTags = {};
 
-exports.elapsedTime = function (tag, last) {
+exports.getElapsed = function (tag, remove) {
     let elapsed;
 
     if (has.call(elapseTimeTags, tag)) {
@@ -720,8 +720,8 @@ exports.elapsedTime = function (tag, last) {
         elapsed = (elapsedTimeData[0] * 1e3) + (elapsedTimeData[1] / 1e6);
     }
 
-    if (last) {
-        delete elapseTimeTags[tag]; // Remove unnecessary time storage
+    if (remove) {
+        delete elapseTimeTags[tag]; // Remove time storage
     } else {
         elapseTimeTags[tag] = process.hrtime(); // Mark the start time
     }
