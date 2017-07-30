@@ -84,7 +84,7 @@ global.colMessage = 0xFFEB3B; // Log of message change
 global.colCommand = 0x2196F3; // Log of command being executed
 
 global.colGreen = 0x00E676;
-global.colBlue = colBlue;
+global.colBlue = 0x00BCD4;
 
 exports.blockedUsers = {};
 exports.blockedWords = [];
