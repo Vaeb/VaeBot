@@ -19,33 +19,39 @@ module.exports = Cmds.addCommand({
 
         const allMutes = await Data.getRecords(guild, 'mutes');
 
-        const maxMutes = {};
-        const muteHistory = {};
-        const muteHistoryKeys = [];
+        const numMutesKeys = {};
+        const numMutesArr = [];
+
+        const splitMutesKeys = {};
+        const splitMutesArr = [];
 
         for (let i = 0; i < allMutes.length; i++) {
-            const muteRecord = allMutes[i];
-            const userId = muteRecord.user_id;
-            if (!has.call(maxMutes, userId)) maxMutes[userId] = 0;
-            maxMutes[userId]++;
+            const record = allMutes[i];
+            const userId = record.user_id;
+            if (!has.call(numMutesKeys, userId)) numMutesKeys[userId] = numMutesArr.push([`<@${userId}>`, 0]);
+            ++numMutesArr[numMutesKeys[userId]][1];
         }
 
-        for (const [userId, numMutes] of Object.entries(maxMutes)) {
-            if (!has.call(muteHistory, numMutes)) {
-                muteHistory[numMutes] = [];
-                muteHistoryKeys.push(numMutes);
+        for (let i = 0; i < numMutesArr.length; i++) {
+            const userMention = numMutesArr[i][0];
+            const numMutes = numMutesArr[i][1];
+            if (!has.call(splitMutesKeys, numMutes)) {
+                const chunk = [];
+                chunk.numMutes = numMutes;
+                splitMutesKeys[numMutes] = splitMutesArr.push(chunk);
             }
-            muteHistory[numMutes].push(`<@${userId}>`);
+            splitMutesArr[splitMutesKeys[numMutes]].push(userMention);
         }
 
-        muteHistoryKeys.sort();
+        splitMutesArr.sort((a, b) => a.numMutes - b.numMutes);
 
-        for (let i = 0; i < muteHistoryKeys.length; i++) {
-            const key = muteHistoryKeys[i];
-            const keyMutes = muteHistory[key];
-            sendEmbedFields.push({ name: `${key} Mute${key == 1 ? '' : 's'}`, value: keyMutes.join('\n'), inline: false });
+        for (let i = 0; i < splitMutesArr.length; i++) {
+            const splitMutesChunk = splitMutesArr[i];
+            const numMutes = splitMutesChunk.numMutes;
+            sendEmbedFields.push({ name: `${numMutes} Mute${numMutes == 1 ? '' : 's'}`, value: splitMutesChunk.join('\n'), inline: false });
         }
 
         Util.sendEmbed(channel, 'Mute History', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
     },
 });
+
