@@ -34,6 +34,6 @@ module.exports = Cmds.addCommand({
 
         sendEmbedFields.sort((a, b) => (String(a.name) + String(a.value)).length - (String(b.name) + String(b.value)).length);
 
-        Util.sendEmbed(channel, 'Guild Info', null, Util.makeEmbedFooter(speaker), guild.iconURL, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, 'Guild Info', null, Util.makeEmbedFooter(speaker), guild.iconURL, colGreen, sendEmbedFields);
     },
 });

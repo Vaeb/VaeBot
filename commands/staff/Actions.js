@@ -23,6 +23,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: actionName, value: "​", inline: false});
         }
 
-        Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "Actions", "All actions which can be used in ;link\n​", Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

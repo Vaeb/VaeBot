@@ -50,7 +50,7 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: "Syntax", value: trimCmds[0] + " " + cmdSyntax, inline: false});
             sendEmbedFields.push({name: "Example", value: trimCmds[0] + " " + cmdExample, inline: false});
 
-            Util.sendEmbed(channel, "Command Syntax", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, "Command Syntax", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 
             hasFound = true;
 
@@ -58,7 +58,7 @@ module.exports = Cmds.addCommand({
         }
 
         if (!hasFound) {
-            Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), null, 0x00E676);
+            Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), null, colGreen);
         }
     }
 });

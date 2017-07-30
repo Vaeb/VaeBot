@@ -55,7 +55,7 @@ exports.playRealSong = function (newSong, guild, channel, doPrintParam) {
     if (doPrint) {
         Util.sendDescEmbed(channel, `Playing ${songData.title}`,
             `Added by ${Util.safeEveryone(author.toString())}`,
-            Util.makeEmbedFooter(author), null, 0x00E676);
+            Util.makeEmbedFooter(author), null, colGreen);
     }
 };
 
@@ -101,7 +101,7 @@ exports.playNextAuto = function (guild, channel, doPrint) {
     guildMusicInfo.voteSkips = [];
     guildMusicInfo.isAuto = true;
     exports.streamAudio(songData, guild, channel);
-    if (doPrint) Util.sendDescEmbed(channel, '[Auto-Playlist-Started]', `Playing ${songData.title}`, Util.makeEmbedFooter(null), null, 0x00E676);
+    if (doPrint) Util.sendDescEmbed(channel, '[Auto-Playlist-Started]', `Playing ${songData.title}`, Util.makeEmbedFooter(null), null, colGreen);
 };
 
 exports.streamAudio = function (songData, guild, channel) {
@@ -252,6 +252,6 @@ exports.addSong = function (speaker, guild, channel, songData) {
     if (guildQueue.length <= 1 || exports.guildMusicInfo[guild.id].isAuto === true) {
         exports.playNextQueue(guild, channel, true);
     } else {
-        Util.sendDescEmbed(channel, `[${guildQueue.length}] Audio Queue Appended`, songData.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+        Util.sendDescEmbed(channel, `[${guildQueue.length}] Audio Queue Appended`, songData.title, Util.makeEmbedFooter(speaker), null, colGreen);
     }
 };

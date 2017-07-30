@@ -604,7 +604,7 @@ exports.commandFailed = function (channel, speaker, tag, message) {
     const tagMessage = tag ? `[${tag}] ` : '';
 
     if (channel != null) {
-        exports.sendEmbed(channel, `${tagMessage}Command Failed`, message, exports.makeEmbedFooter(speaker), null, 0x00E676, null);
+        exports.sendEmbed(channel, `${tagMessage}Command Failed`, message, exports.makeEmbedFooter(speaker), null, colGreen, null);
     } else {
         Util.log(`${tagMessage}[Command_Failed] ${speaker.id}: ${message}`);
     }
@@ -1295,7 +1295,7 @@ exports.sendDescEmbed = function (embChannel, embTitle, embDesc, embFooter, embI
 
     let embColor = embColorParam;
 
-    if (embColor == null) embColor = 0x00BCD4;
+    if (embColor == null) embColor = colBlue;
 
     if (embDesc != null && embDesc.length > 2048) {
         let subFirst = embDesc.substr(0, 2048);
@@ -2181,7 +2181,7 @@ exports.onFetch = function (messagesParam, channel, leftParam, store) {
 exports.updateMessageCache = function (channel, speaker) {
     exports.fetchMessagesEx(channel, 100, [], channel.messages[0]).then(() => {
         if (speaker) {
-            exports.sendDescEmbed(channel, 'Message Cache', 'Refreshed', exports.makeEmbedFooter(speaker), null, 0x00E676);
+            exports.sendDescEmbed(channel, 'Message Cache', 'Refreshed', exports.makeEmbedFooter(speaker), null, colGreen);
         }
     });
 };

@@ -41,7 +41,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Mute Length', value: muteLengthStr },
                 { name: 'Mute Expires', value: endStr },
             ];
-            Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
         } else if (messageType === 'DM') {
             if (!hasMember) return;
 
@@ -85,7 +85,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Old Mute Length', value: muteLengthStr.old },
                 { name: 'New Mute Length', value: muteLengthStr.new },
             ];
-            Util.sendEmbed(channel, 'Mute Changed', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, 'Mute Changed', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
         } else if (messageType === 'DM') {
             if (!hasMember) return;
 
@@ -126,7 +126,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Username', value: memberMention },
                 { name: 'Mute History', value: muteHistoryStr },
             ];
-            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
         } else if (messageType === 'DM') {
             if (!hasMember) return;
 
@@ -153,7 +153,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Username', value: memberMention },
                 { name: 'Mute History', value: muteHistoryStr },
             ];
-            Util.sendEmbed(channel, 'Reverted Mute', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, 'Reverted Mute', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
         } else if (messageType === 'DM') {
             if (!hasMember) return;
 
@@ -180,7 +180,7 @@ function sendMuteMessage(guild, channel, userId, actionType, messageType, userMe
                 { name: 'Username', value: memberMention },
                 { name: 'Mute History', value: muteHistoryStr },
             ];
-            Util.sendEmbed(channel, 'Cleared Mute History', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, 'Cleared Mute History', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
         } else if (messageType === 'DM') {
             if (!hasMember) return;
 

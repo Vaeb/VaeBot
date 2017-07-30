@@ -78,7 +78,7 @@ module.exports = Cmds.addCommand({
                 sendEmbedFields.push({ name: 'Event', value: eventName, inline: false });
                 sendEmbedFields.push({ name: 'Action', value: actionName, inline: false });
 
-                Util.sendEmbed(channel, 'Created Link', null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+                Util.sendEmbed(channel, 'Created Link', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
             }
         }
     },

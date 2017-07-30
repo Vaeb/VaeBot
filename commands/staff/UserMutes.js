@@ -45,7 +45,7 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive: ${activeStr}`, inline: false });
         }
 
-        Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
 
         return true;
     },

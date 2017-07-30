@@ -49,6 +49,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({ name: 'Roles Removed', value: rolesRemoved.join('\n') });
         }
 
-        Util.sendEmbed(channel, 'User Roles Altered', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, 'User Roles Altered', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), colGreen, sendEmbedFields);
     },
 });

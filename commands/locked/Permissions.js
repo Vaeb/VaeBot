@@ -44,6 +44,6 @@ module.exports = Cmds.addCommand({
             { name: 'Channel Permissions', value: `​\n${channelValue.join('\n\n')}`, inline: false },
         ];
 
-        Util.sendEmbed(channel, Util.capitalize2(`${member.displayName}'s Permissions`), null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, Util.capitalize2(`${member.displayName}'s Permissions`), null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
     },
 });

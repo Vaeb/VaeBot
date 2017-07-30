@@ -28,7 +28,7 @@ module.exports = Cmds.addCommand({
         , true);
 
         if (!data) {
-            return Util.sendEmbed(channel, 'Warn Failed', 'User not found', Util.makeEmbedFooter(speaker), null, 0x00E676, null);
+            return Util.sendEmbed(channel, 'Warn Failed', 'User not found', Util.makeEmbedFooter(speaker), null, colGreen, null);
         }
 
         Util.log(`Change Arg Data: ${data}`);

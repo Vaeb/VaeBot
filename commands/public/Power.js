@@ -28,6 +28,6 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({name: "Rank", value: highestRole.name + " (" + highestRole.position + ")"});
         sendEmbedFields.push({name: "Power", value: powerRating});
 
-        Util.sendEmbed(channel, "User Power Ranking", null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "User Power Ranking", null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), colGreen, sendEmbedFields);
     }
 });

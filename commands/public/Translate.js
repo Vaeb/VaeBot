@@ -18,7 +18,7 @@ module.exports = Cmds.addCommand({
                 { name: `[${res.from.language.iso}] Original`, value: (res.from.text.value || args), inline: false },
                 { name: '[en] Translation', value: res.text, inline: false },
             ];
-            Util.sendEmbed(channel, 'Translated', null, Util.makeEmbedFooter(speaker), null, 0x00E676, embFields);
+            Util.sendEmbed(channel, 'Translated', null, Util.makeEmbedFooter(speaker), null, colGreen, embFields);
         })
         .catch(console.error);
 

@@ -27,7 +27,7 @@ module.exports = Cmds.addCommand({
 
         eval(evalStr);
 
-        Util.sendDescEmbed(channel, 'Added Action', `Added action ${actionName} for linking`, Util.makeEmbedFooter(speaker), null, 0x00E676);
+        Util.sendDescEmbed(channel, 'Added Action', `Added action ${actionName} for linking`, Util.makeEmbedFooter(speaker), null, colGreen);
 
         return true;
     },

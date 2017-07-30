@@ -24,6 +24,6 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({name: "Set", value: ";set channelId memberId permEnable1 permEnable2 permEnable3", inline: false});
         sendEmbedFields.push({name: "Change", value: ";change channelId memberId permEnable1 permEnable2 permEnable3", inline: false});
     
-    Util.sendEmbed(channel, "Reminder", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+    Util.sendEmbed(channel, "Reminder", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

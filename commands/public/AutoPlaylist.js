@@ -26,6 +26,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: "[" + (i+1) + "] " + songData.snippet.title, value: "​", inline: false});
         }
 
-        Util.sendEmbed(channel, "Auto-Playlist", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "Auto-Playlist", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

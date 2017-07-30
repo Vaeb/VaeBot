@@ -39,7 +39,7 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: "​", value: "​", inline: false});
             sendEmbedFields.push({name: "Example", value: example, inline: false});
             
-            Util.sendEmbed(channel, Util.capitalize(data.word), desc, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+            Util.sendEmbed(channel, Util.capitalize(data.word), desc, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
         });
     }
 });

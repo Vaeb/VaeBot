@@ -56,7 +56,7 @@ module.exports = Cmds.addCommand({
 
         // var newDesc = Util.getAvatar(target, true) // + "\n" + */("+").repeat(numSep);
 
-        Util.sendEmbed(channel, 'User Info', null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, 'User Info', null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), colGreen, sendEmbedFields);
 
         return undefined;
     },

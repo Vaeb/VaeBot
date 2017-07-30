@@ -25,6 +25,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: "[" + (i+1) + "] " + songData.title, value: "Added by " + Util.safeEveryone(author.toString()), inline: false});
         }
 
-        Util.sendEmbed(channel, "Audio Queue", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "Audio Queue", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

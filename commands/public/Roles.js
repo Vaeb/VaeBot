@@ -23,6 +23,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: nowRole.name, value: "Position: " + nowRole.position + " | Mentionable: " + nowRole.mentionable  + " | Color: " + nowRole.color, inline: false});
         }
 
-        Util.sendEmbed(channel, "Guild Roles", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "Guild Roles", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

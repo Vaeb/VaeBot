@@ -39,6 +39,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: "Channel", value: Util.boolToAns(hasPermChannel), inline: false});
         }
 
-        Util.sendEmbed(channel, Util.capitalize2("Does " + member.displayName + " Have [" + permName + "] ?"), null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, Util.capitalize2("Does " + member.displayName + " Have [" + permName + "] ?"), null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
     }
 });

@@ -83,6 +83,9 @@ global.colUser = 0x4CAF50; // Log of member change
 global.colMessage = 0xFFEB3B; // Log of message change
 global.colCommand = 0x2196F3; // Log of command being executed
 
+global.colGreen = 0x00E676;
+global.colBlue = colBlue;
+
 exports.blockedUsers = {};
 exports.blockedWords = [];
 
@@ -126,7 +129,7 @@ function setBriefing() {
                 fields: embFields,
                 footer: { text: '>> More info in #vaebot-log <<' },
                 thumbnail: { url: './resources/avatar.png' },
-                color: 0x00E676,
+                color: colGreen,
             };
 
             if (exports.dailyMutes.length > 0) {
@@ -491,7 +494,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
 
-                Util.sendDescEmbed(member, title, message, footer, null, 0x00BCD4);
+                Util.sendDescEmbed(member, title, message, footer, null, colBlue);
             }
 
             if (nowRole.name.includes('Mod') && (member.id == '202660584330625024')) {
@@ -903,7 +906,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     }
 
     if (triggered) {
-        Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, 0x00E676);
+        Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, colGreen);
     }
 });
 

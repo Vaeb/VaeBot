@@ -23,6 +23,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({name: name, value: "Role: " + guildAutoRoles[name], inline: false});
         }
 
-        Util.sendEmbed(channel, "AutoRoles", null, Util.makeEmbedFooter(speaker), null, 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "AutoRoles", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
     }
 });

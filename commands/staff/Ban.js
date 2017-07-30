@@ -44,7 +44,7 @@ module.exports = Cmds.addCommand({
             { name: 'Username', value: target.toString() },
             { name: 'Ban Reason', value: reason },
         ];
-        Util.sendEmbed(channel, 'User Banned', null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, 'User Banned', null, Util.makeEmbedFooter(speaker), Util.getAvatar(target), colGreen, sendEmbedFields);
 
         if (guild.id == '168742643021512705') index.dailyBans.push([targId, `${targName}#${target.discriminator}`, reason]);
 

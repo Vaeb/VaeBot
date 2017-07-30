@@ -39,6 +39,6 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​User: <@${targetId}>\nReason: ${reason}\nModerator: <@${modId}>\nRemaining: ${timeStr}​`, inline: false });
         }
 
-        Util.sendEmbed(channel, 'Active Mutes', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, 'Active Mutes', null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
     },
 });

@@ -51,7 +51,7 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({ name: `${numMutes} Mute${numMutes == 1 ? '' : 's'}`, value: splitMutesChunk.join('\n'), inline: false });
         }
 
-        Util.sendEmbed(channel, 'Mute History', null, Util.makeEmbedFooter(speaker), null, 0x00BCD4, sendEmbedFields);
+        Util.sendEmbed(channel, 'Mute History', null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
     },
 });
 

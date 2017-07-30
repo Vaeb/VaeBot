@@ -46,7 +46,7 @@ module.exports = Cmds.addCommand({
             {name: "New Nickname", value: nick}
         ];
 
-        Util.sendEmbed(channel, "Nickname Updated", null, Util.makeEmbedFooter(speaker), Util.getAvatar(member), 0x00E676, sendEmbedFields);
+        Util.sendEmbed(channel, "Nickname Updated", null, Util.makeEmbedFooter(speaker), Util.getAvatar(member), colGreen, sendEmbedFields);
 
         var sendLogData = [
             "Set Nickname",

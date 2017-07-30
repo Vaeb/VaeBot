@@ -30,7 +30,7 @@ module.exports = Cmds.addCommand({
                         }
                         autoPlaylist.push([songData, speaker]);
                         Data.guildSaveData(Data.playlist);
-                        Util.sendDescEmbed(channel, `[${autoPlaylist.length}] Auto-Playlist Appended`, songData.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+                        Util.sendDescEmbed(channel, `[${autoPlaylist.length}] Auto-Playlist Appended`, songData.snippet.title, Util.makeEmbedFooter(speaker), null, colGreen);
                     } else {
                         Util.print(channel, 'Audio not found');
                     }
@@ -57,7 +57,7 @@ module.exports = Cmds.addCommand({
                             }
                             autoPlaylist.push([songData, speaker]);
                             Data.guildSaveData(Data.playlist);
-                            Util.sendDescEmbed(channel, `[${autoPlaylist.length}] Auto-Playlist Appended`, songData.snippet.title, Util.makeEmbedFooter(speaker), null, 0x00E676);
+                            Util.sendDescEmbed(channel, `[${autoPlaylist.length}] Auto-Playlist Appended`, songData.snippet.title, Util.makeEmbedFooter(speaker), null, colGreen);
                             break;
                         }
                     }
