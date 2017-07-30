@@ -17,7 +17,8 @@ module.exports = Cmds.addCommand({
         if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
 
         const isMuted = Mutes.checkMuted(guild, target.id);
-        const historyStr = Util.historyToString(Util.getHistory(target.id, guild));
+        const numMutes = await Util.getNumMutes(target.id, guild);
+        const historyStr = `${numMutes} mute${numMutes == 1 ? '' : 's'}`;
 
         const createdAt = target.createdAt || target.user.createdAt;
         // const timeStr = `${Util.getYearStr(createdAt)}-${Util.getMonthStr(createdAt)}-${Util.getDayStr(createdAt)}`;

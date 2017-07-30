@@ -1432,10 +1432,9 @@ exports.resolveUserMention = function (guild, id) {
     return `<@${id}>`;
 };
 
-exports.getHistory = function (id, guild) {
-    const userHistory = Data.guildGet(guild, Data.history, id);
-    if (userHistory) return userHistory[0];
-    return 0;
+exports.getNumMutes = async function (id, guild) {
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: id });
+    return pastMutes.length;
 };
 
 exports.historyToStringOld = function (num) {
