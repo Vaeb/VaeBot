@@ -596,22 +596,17 @@ exports.connectInitial = async function (dbGuilds) {
     for (let i = 0; i < dbGuilds.length; i++) {
         const guild = dbGuilds[i];
 
-        const sqlCmd = [];
-        const sanValues = [];
+        const storedMembers = exports.getRecords(guild, 'members');
+        const newMembers = [];
 
         guild.members.forEach((member) => {
-            sqlCmd.push('INSERT IGNORE INTO members (user_id, buyer, nickname) VALUES(?, ?, ?);'); // TODO: This does basically nothing for buyers; buyers who aren't currently stored as buyers in the DB need to be updated efficiently
-            sanValues.push(member.id);
-            sanValues.push(Util.hasRoleName(member, 'Buyer') ? 1 : 0);
-            sanValues.push(member.nickname);
+            if (!storedMembers.find(m => m.user_id == member.id)) {
+                newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Buyer') ? 1 : 0, nickname: member.nickname });
+                Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
+            }
         });
 
-        const sqlCmdStr = sqlCmd.join('\n');
-
-        console.log(sqlCmdStr);
-        console.log(sanValues);
-
-        exports.query(sqlCmdStr, sanValues)
+        Data.addRecord(guild, 'members', newMembers)
             .then(async () => {
                 const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Buyer'));
                 const restoreBuyers = [];
