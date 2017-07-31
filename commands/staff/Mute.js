@@ -64,7 +64,7 @@ module.exports = Cmds.addCommand({
             speaker = speaker.displayName;
         } */
 
-        Mutes.addMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
+        Admin.addMute(guild, channel, member, speaker, { time, reason });
 
         return true;
     },

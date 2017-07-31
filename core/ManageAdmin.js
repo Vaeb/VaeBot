@@ -1,7 +1,11 @@
 const DateFormat = index.DateFormat;
 
-const muteTimeouts = [];
-let muteTimeoutId = 0;
+const timeouts = {
+    mute: [],
+    ban: [],
+};
+
+let timeoutId = 0;
 
 const muteCacheActive = {};
 
@@ -25,190 +29,127 @@ exports.badOffenses = [
 
 */
 
-function getMuteHistoryStr(totalMutes) {
-    let out = `${totalMutes} mute`;
+function getHistoryStr(action, totalMutes) {
+    let out = `${totalMutes} ${action}`;
     if (totalMutes !== 1) out += 's';
     return out;
 }
 
-function sendMuteMessage(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr) { // Send mute log, direct message, etc.
+function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra) {
+    const sendEmbedFields = [
+        { name: 'Username', value: resolvedUser.mention },
+        (!extra.end) ? { name: `${action} Reason`, value: extra.reason } : {},
+        (!extra.end) ? { name: `${action} Length`, value: extra.lengthStr } : {},
+        (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
+        (extra.end) ? { name: `${action} History`, value: extra.historyStr } : {},
+    ];
+    Util.sendEmbed(channel, `User ${extra.actionPast}`, null, Util.makeEmbedFooter(resolvedModerator.original), Util.getAvatar(resolvedUser.member), colGreen, sendEmbedFields);
+}
+
+function sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra) {
+    if (!resolvedUser.member) return;
+
+    const outStr = [`**You have been ${extra.actionPast.toLowerCase()}**\n\`\`\``];
+    outStr.push(`Guild: ${guild.name}`);
+    if (!extra.end) outStr.push(`${action} reason: ${extra.reason}`);
+    if (!extra.end) outStr.push(`${action} length: ${extra.lengthStr}`);
+    if (!extra.end) outStr.push(`${action} expires: ${extra.endStr}`);
+    outStr.push(`${action} history: ${extra.historyStr}`);
+    outStr.push('```');
+    Util.print(resolvedUser.member, outStr.join('\n'));
+}
+
+function sendAlertLog(action, guild, channel, resolvedUser, resolvedModerator, extra) {
+    const sendLogData = [
+        `User ${extra.actionPast}`,
+        guild,
+        resolvedUser.member || resolvedUser.id,
+        { name: 'Username', value: resolvedUser.mention }, // Can resolve from user id
+        { name: 'Moderator', value: resolvedModerator.mention },
+        (!extra.end) ? { name: `${action} Reason`, value: extra.reason } : {},
+        (!extra.end) ? { name: `${action} Length`, value: extra.lengthStr } : {},
+        (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
+        { name: `${action} History`, value: extra.historyStr },
+    ];
+
+    Util.sendLog(sendLogData, colAction);
+}
+
+// function sendAlert(guild, channel, userId, actionType, messageType, userMember, moderatorResolvable, moderatorMention, totalMutes, muteLengthStr, muteReason, endStr) { // Send mute log, direct message, etc.
+/* function sendAlert(guild, channel, resolvedUser.id, action, null, resolvedUser.member,
+    resolvedModerator.original, resolvedModerator.mention, extra.total, extra.lengthStr, extra.reason,
+    extra.endStr) */
+
+/*
+
+    extra: { actionPast, end, total, lengthStr, reason, endStr }
+
+*/
+
+function sendAlert(tag, guild, channel, resolvedUser, resolvedModerator, extra) { // Send mute log, direct message, etc.
     // Will keep DM as text (rather than embed) to save send time
 
-    const hasMember = userMember != null;
-    const memberMention = hasMember ? userMember.toString() : `<@${userId}>`;
-    const muteHistoryStr = getMuteHistoryStr(totalMutes);
+    extra.historyStr = getHistoryStr(tag, extra.total);
 
-    if (actionType === 'Mute') {
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Mute Reason', value: muteReason },
-                { name: 'Mute Length', value: muteLengthStr },
-                { name: 'Mute Expires', value: endStr },
-            ];
-            Util.sendEmbed(channel, 'User Muted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
+    const action = tag.match(/[A-Z][a-z]+$/)[0];
 
-            const outStr = ['**You have been muted**\n```'];
-            outStr.push(`Guild: ${guild.name}`);
-            outStr.push(`Mute reason: ${muteReason}`);
-            outStr.push(`Mute length: ${muteLengthStr}`);
-            outStr.push(`Mute expires: ${endStr}`);
-            outStr.push(`Mute history: ${muteHistoryStr}`);
-            outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'User Muted',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention }, // Can resolve from user id
-                { name: 'Moderator', value: moderatorMention },
-                { name: 'Mute Reason', value: muteReason },
-                { name: 'Mute Length', value: muteLengthStr },
-                { name: 'Mute Expires', value: endStr },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-
-            Util.sendLog(sendLogData, colAction);
-        }
-    } else if (actionType === 'ChangeMute') {
+    if (tag === 'ChangeMute') {
         let fieldsChanged = [];
 
-        if (muteReason.new != muteReason.old) fieldsChanged.push('Mute Reason');
-        if (muteLengthStr.new != muteLengthStr.old) fieldsChanged.push('Mute Length');
+        if (extra.reason.new != extra.reason.old) fieldsChanged.push(`${action} Reason`);
+        if (extra.lengthStr.new != extra.lengthStr.old) fieldsChanged.push(`${action} Length`);
 
         fieldsChanged = fieldsChanged.join(', ');
 
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Fields Changed', value: fieldsChanged },
-                { name: 'Old Mute Reason', value: muteReason.old },
-                { name: 'New Mute Reason', value: muteReason.new },
-                { name: 'Old Mute Length', value: muteLengthStr.old },
-                { name: 'New Mute Length', value: muteLengthStr.new },
-            ];
-            Util.sendEmbed(channel, 'Mute Changed', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
+        const sendEmbedFields = [
+            { name: 'Username', value: resolvedUser.mention },
+            { name: 'Fields Changed', value: fieldsChanged },
+            { name: `Old ${action} Reason`, value: extra.reason.old },
+            { name: `New ${action} Reason`, value: extra.reason.new },
+            { name: `Old ${action} Length`, value: extra.lengthStr.old },
+            { name: `New ${action} Length`, value: extra.lengthStr.new },
+        ];
+        Util.sendEmbed(channel, `${action} Changed`, null, Util.makeEmbedFooter(resolvedModerator.original), Util.getAvatar(resolvedUser.member), colGreen, sendEmbedFields);
 
-            const outStr = ['**Your mute has been changed**\n```'];
+        if (resolvedUser.member) {
+            const outStr = [`**Your ${action.toLowerCase()} has been changed**\n\`\`\``];
             outStr.push(`Guild: ${guild.name}`);
-            if (muteReason.new != muteReason.old) {
-                outStr.push(`Old mute reason: ${muteReason.old} | New mute reason: ${muteReason.new}`);
+            if (extra.reason.new != extra.reason.old) {
+                outStr.push(`Old ${action} reason: ${extra.reason.old} | New ${action} reason: ${extra.reason.new}`);
             }
-            if (muteLengthStr.new != muteLengthStr.old) {
-                outStr.push(`Old mute length: ${muteLengthStr.old} | New mute length: ${muteLengthStr.new}`);
+            if (extra.lengthStr.new != extra.lengthStr.old) {
+                outStr.push(`Old ${action} length: ${extra.lengthStr.old} | New ${action} length: ${extra.lengthStr.new}`);
             }
-            if (endStr.new != endStr.old) {
-                outStr.push(`Old mute expiration: ${endStr.old} | New mute expiration: ${endStr.new}`);
+            if (extra.endStr.new != extra.endStr.old) {
+                outStr.push(`Old ${action} expiration: ${extra.endStr.old} | New ${action} expiration: ${extra.endStr.new}`);
             }
             outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'Mute Changed',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention },
-                { name: 'Moderator', value: moderatorMention },
-                { name: 'Old Mute Reason', value: muteReason.old },
-                { name: 'New Mute Reason', value: muteReason.new },
-                { name: 'Old Mute Length', value: muteLengthStr.old },
-                { name: 'New Mute Length', value: muteLengthStr.new },
-                { name: 'Old Mute Expires', value: endStr.old },
-                { name: 'New Mute Expires', value: endStr.new },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-
-            Util.sendLog(sendLogData, colAction);
+            Util.print(resolvedUser.member, outStr.join('\n'));
         }
-    } else if (actionType === 'UnMute') {
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-            Util.sendEmbed(channel, 'User Unmuted', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
 
-            const outStr = ['**You have been unmuted**\n```'];
-            outStr.push(`Guild: ${guild.name}`);
-            outStr.push(`Mute history: ${muteHistoryStr}`);
-            outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'User Unmuted',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention }, // Can resolve from user id
-                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
+        const sendLogData = [
+            `${action} Changed`,
+            guild,
+            resolvedUser.member || resolvedUser.id,
+            { name: 'Username', value: resolvedUser.mention },
+            { name: 'Moderator', value: resolvedModerator.mention },
+            { name: `Old ${action} Reason`, value: extra.reason.old },
+            { name: `New ${action} Reason`, value: extra.reason.new },
+            { name: `Old ${action} Length`, value: extra.lengthStr.old },
+            { name: `New ${action} Length`, value: extra.lengthStr.new },
+            { name: `Old ${action} Expires`, value: extra.endStr.old },
+            { name: `New ${action} Expires`, value: extra.endStr.new },
+            { name: `${action} History`, value: extra.historyStr },
+        ];
 
-            Util.sendLog(sendLogData, colAction);
-        }
-    } else if (actionType === 'RemMute') {
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-            Util.sendEmbed(channel, 'Reverted Mute', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
-
-            const outStr = ['**Your last mute has been reverted**\n```'];
-            outStr.push(`Guild: ${guild.name}`);
-            outStr.push(`Mute history: ${muteHistoryStr}`);
-            outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'Reverted Mute',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention }, // Can resolve from user id
-                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-
-            Util.sendLog(sendLogData, colAction);
-        }
-    } else if (actionType === 'ClearMutes') {
-        if (messageType === 'Channel') {
-            const sendEmbedFields = [
-                { name: 'Username', value: memberMention },
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-            Util.sendEmbed(channel, 'Cleared Mute History', null, Util.makeEmbedFooter(moderatorResolvable), Util.getAvatar(userMember), colGreen, sendEmbedFields);
-        } else if (messageType === 'DM') {
-            if (!hasMember) return;
-
-            const outStr = ['**Your mute history has been cleared**\n```'];
-            outStr.push(`Guild: ${guild.name}`);
-            outStr.push(`Mute history: ${muteHistoryStr}`);
-            outStr.push('```');
-            Util.print(userMember, outStr.join('\n'));
-        } else if (messageType === 'Log') {
-            const sendLogData = [
-                'Cleared Mute History',
-                guild,
-                userMember || userId,
-                { name: 'Username', value: memberMention }, // Can resolve from user id
-                { name: 'Moderator', value: moderatorMention }, // Can resolve from user id
-                { name: 'Mute History', value: muteHistoryStr },
-            ];
-
-            Util.sendLog(sendLogData, colAction);
-        }
+        Util.sendLog(sendLogData, colAction);
+    } else {
+        sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra);
+        sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra);
+        sendAlertLog(action, guild, channel, resolvedUser, resolvedModerator, extra);
     }
 
-    Util.logc('Mutes1', `Sent a ${messageType} alert for the ${actionType} event`);
+    Util.logc('Admin1', `Sent alerts for the ${tag} event`);
 }
 
 function remSendMessages(member) { // Remove SendMessages role
@@ -255,58 +196,68 @@ function addSendMessages(member) { // Add SendMessages role
     }
 }
 
-function remTimeout(guild, userId) { // Remove mute timeout
+function remTimeout(guild, userId, offenseTag) { // Remove mute timeout
     const guildId = Data.getBaseGuildId(guild.id);
 
-    for (let i = muteTimeouts.length - 1; i >= 0; i--) {
-        const timeoutData = muteTimeouts[i];
+    offenseTag = offenseTag.toLowerCase();
+    const nowTimeouts = timeouts[offenseTag];
+
+    for (let i = nowTimeouts.length - 1; i >= 0; i--) {
+        const timeoutData = nowTimeouts[i];
         if (timeoutData.guildId === guildId && timeoutData.userId === userId) {
             clearTimeout(timeoutData.timeout);
-            Util.logc('Mutes1', `Removed mute timeout for ${userId} @ ${guild.name}`);
-            muteTimeouts.splice(i, 1);
+            Util.logc('Admin1', `Removed timeout for ${userId} @ ${guild.name}`);
+            nowTimeouts.splice(i, 1);
         }
     }
 }
 
-async function addTimeout(guild, userId, endTick) { // Add mute timeout
+async function addTimeout(guild, userId, endTick, offenseTag) { // Add mute/tempban timeout
     const guildId = Data.getBaseGuildId(guild.id);
+
+    offenseTag = offenseTag.toLowerCase();
+    const nowTimeouts = timeouts[offenseTag];
 
     const nowTick = +new Date();
     const remaining = endTick - nowTick;
 
-    remTimeout(guild, userId);
+    remTimeout(guild, userId, offenseTag);
 
     const timeoutLength = Math.min(remaining, 2147483646);
     const timeoutRemaining = remaining - timeoutLength;
 
-    const nowTimeoutId = muteTimeoutId++;
+    const nowTimeoutId = timeoutId++;
 
-    muteTimeouts.push({
+    nowTimeouts.push({
         'timeoutId': nowTimeoutId,
         'guildId': guildId,
         'userId': userId,
         'timeout': (setTimeout(() => {
-            for (let i = 0; i < muteTimeouts.length; i++) {
-                const timeoutData = muteTimeouts[i];
+            for (let i = 0; i < nowTimeouts.length; i++) {
+                const timeoutData = nowTimeouts[i];
                 if (timeoutData.timeoutId === nowTimeoutId) {
-                    muteTimeouts.splice(i, 1);
+                    nowTimeouts.splice(i, 1);
                     break;
                 }
             }
 
             if (timeoutRemaining > 0) {
-                Util.logc('AddTimeout1', `Mute shard timeout for ${userId} @ ${guild.name} ended; Starting next shard...`);
-                addTimeout(guild, userId, endTick);
+                Util.logc('AddTimeout1', `Shard timeout for ${userId} @ ${guild.name} ended; Starting next shard...`);
+                addTimeout(guild, userId, endTick, offenseTag);
                 return;
             }
 
-            Util.logc('AddTimeout1', `Mute timeout for ${userId} @ ${guild.name} ended; Unmuting...`);
+            Util.logc('AddTimeout1', `Timeout for ${userId} @ ${guild.name} ended; Ending offense...`);
 
-            exports.unMute(guild, null, userId, 'System');
+            if (offenseTag == 'mute') {
+                exports.unMute(guild, null, userId, 'System');
+            } else if (offenseTag == 'ban') {
+                exports.unBan(guild, null, userId, 'System');
+            }
         }, timeoutLength)),
     });
 
-    Util.logc('Mutes1', `Added mute timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
+    Util.logc('Admin1', `Added offense timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
 function resolveUser(guild, userResolvable, isMod) {
@@ -314,6 +265,7 @@ function resolveUser(guild, userResolvable, isMod) {
         member: userResolvable,
         id: userResolvable,
         mention: userResolvable,
+        original: userResolvable,
     };
 
     let userType = 0; // Member
@@ -328,19 +280,19 @@ function resolveUser(guild, userResolvable, isMod) {
         }
     }
 
-    Util.logc('Mutes1', `User type: ${userType} (isMod ${isMod || false})`);
+    Util.logc('Admin1', `User type: ${userType} (isMod ${isMod || false})`);
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
         resolvedData.mention = userResolvable.toString();
     } else if (userType === 1) { // ID
         resolvedData.member = guild.members.get(userResolvable);
-        resolvedData.mention = resolvedData.member ? resolvedData.member.toString() : userResolvable;
+        resolvedData.mention = resolvedData.member ? resolvedData.member.toString() : `<@${userResolvable}>`;
     } else if (userType === 2) { // Name or System
-        if (system) {
+        if (system) { // VaeBot
             resolvedData.member = guild.members.get(selfId);
             resolvedData.id = selfId;
-        } else {
+        } else { // Name
             resolvedData.member = Util.getMemberByMixed(userResolvable, guild);
             if (!resolvedData.member) return 'User not found';
             resolvedData.id = resolvedData.member.id;
@@ -348,7 +300,7 @@ function resolveUser(guild, userResolvable, isMod) {
         }
     }
 
-    return resolvedData;
+    return resolvedData; // [Definite Values] ID: Always | Mention: Always | Member: All inputs except ID
 }
 
 function higherRank(moderator, member, canBeEqual) { // Check if member can be muted
@@ -380,8 +332,60 @@ function getNextMuteTime(time, muteReason, pastMutes) {
     return time ? Math.min(time, maxMuteLength) : maxMuteLength;
 }
 
-async function getNextMuteTimeFromUser(guild, member, time, muteReason) {
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: member.id }).length;
+function unBanMember(guild, channel, resolvedUser, resolvedModerator, extra) {
+    const tempStr = extra.temp ? 'Temp' : '';
+
+    const linkedGuilds = Data.getLinkedGuilds(guild);
+
+    for (let i = 0; i < linkedGuilds.length; i++) {
+        const linkedGuild = linkedGuilds[i];
+        linkedGuild.unban(resolvedUser.id)
+            .then((user) => {
+                Util.logc('RemoveBan1', `Link-removed ban for ${Util.getMention(user, true)} @ ${linkedGuild.name}`);
+            })
+            .catch(error => Util.logc('RemoveBan1', `[E_LinkRoleAdd1] ${error}`));
+    }
+
+    // Send the relevant messages
+
+    sendAlert(`Un${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `Un${tempStr}Banned`, end: true, total: extra.totalBans });
+}
+
+function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extra) {
+    const tempStr = extra.temp ? 'Temp' : '';
+    const endStr = has.call(extra, 'dateEnd') ? `${DateFormat(extra.dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT` : 'Never';
+
+    const memberName = resolvedUser.member ? Util.getFullName(resolvedUser.member) : resolvedUser.mention;
+    const moderatorName = resolvedModerator.member ? Util.getFullName(resolvedModerator.member) : resolvedModerator.mention;
+
+    // Ban the user in all linked guilds
+
+    const linkedGuilds = Data.getLinkedGuilds(guild);
+    for (let i = 0; i < linkedGuilds.length; i++) {
+        const linkedGuild = linkedGuilds[i];
+        linkedGuild.ban(resolvedUser.id, { days: 0, reason })
+            .then((userResolvable) => {
+                Util.logc('AddBan1', `Link-added ban for ${Util.getMention(userResolvable, true)} @ ${linkedGuild.name}`);
+            })
+            .catch(Util.logErr);
+    }
+
+    // Send the relevant messages
+
+    sendAlert(`${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `${tempStr}Banned`, end: false, total: extra.totalBans, lengthStr: extra.banLengthStr, reason, endStr });
+
+    Trello.addCard(guild, 'Bans', memberName, {
+        'User ID': resolvedUser.id,
+        'Moderator': moderatorName,
+        'Reason': `[${extra.temp ? 'Temp' : 'Full'}Ban] ${reason}`,
+    });
+
+    return true;
+}
+
+async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
+    if (Util.isObject(userResolvable)) userResolvable = userResolvable.id;
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userResolvable }).length;
 
     return getNextMuteTime(time, muteReason, pastMutes);
 }
@@ -392,7 +396,7 @@ exports.getNextMuteTime = getNextMuteTime;
 exports.getNextMuteTimeFromUser = getNextMuteTimeFromUser;
 
 exports.addMute = async function (guild, channel, userResolvable, moderatorResolvable, muteData) { // Add mute
-    Util.logc('Mutes1', `\nStarted AddMute on ${userResolvable}`);
+    Util.logc('Admin1', `\nStarted AddMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -409,7 +413,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', `${resolvedUser}`);
     }
 
-    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
     // Get past mute data
 
@@ -467,7 +471,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Add mute timeout (and automatically remove any active timeouts)
 
-    addTimeout(guild, resolvedUser.id, endTick);
+    addTimeout(guild, resolvedUser.id, endTick, 'mute');
 
     // Remove SendMessages role
 
@@ -475,17 +479,15 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStr, muteReason, endStr);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStr, muteReason, endStr);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'Mute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStr, muteReason, endStr);
+    sendAlert('Mute', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Muted', end: false, total: totalMutes, lengthStr: muteLengthStr, reason: muteReason, endStr });
 
-    Util.logc('Mutes1', 'Completed AddMute');
+    Util.logc('Admin1', 'Completed AddMute');
 
     return true;
 };
 
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
-    Util.logc('Mutes1', `\nStarted ChangeMute on ${userResolvable}`);
+    Util.logc('Admin1', `\nStarted ChangeMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -497,7 +499,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', `${resolvedUser}`);
     }
 
-    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
     // Get mute data
 
@@ -579,7 +581,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Change mute timeout (and automatically remove any active timeouts)
 
-    addTimeout(guild, resolvedUser.id, endTickNew);
+    addTimeout(guild, resolvedUser.id, endTickNew, 'mute');
 
     // Get changed data and format it
 
@@ -598,17 +600,15 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Send relevant messages
 
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ChangeMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes, muteLengthStrChanges, muteReasonChanges, endStrChanges);
+    sendAlert('ChangeMute', guild, channel, resolvedUser, resolvedModerator, { total: totalMutes, lengthStr: muteLengthStrChanges, reason: muteReasonChanges, endStrChanges });
 
-    Util.logc('Mutes1', 'Completed ChangeMute');
+    Util.logc('Admin1', 'Completed ChangeMute');
 
     return true;
 };
 
 exports.unMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop mute
-    Util.logc('Mutes1', `\nStarted UnMute on ${userResolvable}`);
+    Util.logc('Admin1', `\nStarted UnMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
 
     // Resolve parameter data
@@ -620,7 +620,7 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', `${resolvedUser}`);
     }
 
-    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
     // Get mute data
 
@@ -657,7 +657,7 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Remove mute timeout (if stopped early)
 
-    remTimeout(guild, resolvedUser.id);
+    remTimeout(guild, resolvedUser.id, 'mute');
 
     // Add SendMessages role
 
@@ -665,23 +665,21 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'UnMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendAlert('UnMute', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'UnMuted', end: true, total: totalMutes });
 
-    Util.logc('Mutes1', 'Completed UnMute');
+    Util.logc('Admin1', 'Completed UnMute');
 
     return true;
 };
 
 exports.remMute = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    Util.logc('Mutes1', `\nStarted RemMute on ${userResolvable}, waiting for UnMute to complete...`);
+    Util.logc('Admin1', `\nStarted RemMute on ${userResolvable}, waiting for UnMute to complete...`);
 
     // Stop active mute
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.logc('Mutes1', 'UnMute completed, continuing RemMute');
+    Util.logc('Admin1', 'UnMute completed, continuing RemMute');
 
     // Resolve parameter data
 
@@ -692,7 +690,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', `${resolvedUser}`);
     }
 
-    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
     const userMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
     const totalMutes = userMutes.length - 1;
@@ -721,23 +719,21 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'RemMute', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendAlert('RemMute', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Mute Reverted', end: true, total: totalMutes });
 
-    Util.logc('Mutes1', 'Completed RemMute');
+    Util.logc('Admin1', 'Completed RemMute');
 
     return true;
 };
 
 exports.clearMutes = async function (guild, channel, userResolvable, moderatorResolvable) { // Undo mute
-    Util.logc('Mutes1', `\nStarted ClearMutes on ${userResolvable}, waiting for UnMute to complete...`);
+    Util.logc('Admin1', `\nStarted ClearMutes on ${userResolvable}, waiting for UnMute to complete...`);
 
     // Stop active mute
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.logc('Mutes1', 'UnMute completed, continuing ClearMutes');
+    Util.logc('Admin1', 'UnMute completed, continuing ClearMutes');
 
     // Resolve parameter data
 
@@ -748,7 +744,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
         return Util.commandFailed(channel, moderatorResolvable, 'ClearMutes', `${resolvedUser}`);
     }
 
-    Util.logc('Mutes1', `Resolved user as ${resolvedUser.id}`);
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
     const userMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
     const totalMutes = 0;
@@ -772,11 +768,159 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
 
     // Send the relevant messages
 
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Channel', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'DM', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
-    sendMuteMessage(guild, channel, resolvedUser.id, 'ClearMutes', 'Log', resolvedUser.member, moderatorResolvable, resolvedModerator.mention, totalMutes);
+    sendAlert('ClearMutes', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Mute Cleared', end: true, total: totalMutes });
 
-    Util.logc('Mutes1', 'Completed ClearMutes');
+    Util.logc('Admin1', 'Completed ClearMutes');
+
+    return true;
+};
+
+exports.addBan = async function (guild, channel, userResolvable, moderatorResolvable, banData) { // Add ban
+    Util.logc('Admin1', `\nStarted AddBan on ${userResolvable}`);
+
+    // Resolve parameter data
+
+    if (!banData) banData = {};
+
+    let banLength = banData.time;
+    const banReason = banData.reason || 'No reason provided'; // TODO: Add ' | The user's final message was: msg'
+    const banTemp = banData.temp;
+
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, 'AddBan', `${resolvedUser}`);
+    }
+
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
+
+    // Get past ban data
+
+    const userMutes = await Data.getRecords(guild, 'mutes', { user_id: resolvedUser.id });
+    const userBans = await Data.getRecords(guild, 'bans', { user_id: resolvedUser.id });
+    const activeBan = userBans.find(banRecord => banRecord.active == 1);
+    const pastMutes = userMutes.length;
+    const totalBans = userBans.length + 1;
+
+    // Stop here if the ban isn't temporary
+
+    if (!banTemp) {
+        banMember(guild, channel, resolvedUser, resolvedModerator, banReason, { temp: banTemp, totalBans, banLengthStr: 'Forever' });
+        return true;
+    }
+
+    // Get ban time data
+
+    const startTick = +new Date();
+
+    banLength = getNextMuteTime(banLength, banReason, pastMutes);
+
+    const endTick = startTick + banLength;
+
+    const dateEnd = new Date();
+    dateEnd.setTime((+dateEnd) + banLength);
+
+    const banLengthStr = Util.historyToString(banLength);
+
+    // Verify they can be banned
+
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'User has equal or higher rank');
+    }
+
+    if (activeBan && activeBan.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeBan.mod_id, guild)) && activeBan.end_tick > endTick) {
+        return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'The user is already banned: You can\'t override a user\'s ban with an earlier end time unless you have higher privilege than the original moderator');
+    }
+
+    // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Add their ban to the database and cache
+
+    const newRow = {
+        'user_id': resolvedUser.id, // VARCHAR(24)
+        'mod_id': resolvedModerator.id, // VARCHAR(24)
+        'ban_reason': banReason, // TEXT
+        'start_tick': startTick, // BIGINT
+        'end_tick': endTick, // BIGINT
+        'active': 1, // BIT
+    };
+
+    Data.updateRecords(guild, 'bans', {
+        user_id: resolvedUser.id,
+    }, {
+        active: 0,
+    });
+
+    Data.addRecord(guild, 'bans', newRow);
+
+    // Add ban timeout (and automatically remove any active timeouts)
+
+    addTimeout(guild, resolvedUser.id, endTick, 'ban');
+
+    // Ban member
+
+    banMember(guild, channel, resolvedUser, resolvedModerator, banReason, { temp: banTemp, dateEnd, totalBans, banLengthStr });
+
+    Util.logc('Admin1', 'Completed AddBan');
+
+    return true;
+};
+
+exports.unBan = async function (guild, channel, userResolvable, moderatorResolvable) { // Stop temp ban
+    Util.logc('Admin1', `\nStarted UnBan on ${userResolvable}`);
+
+    // Resolve parameter data
+
+    const resolvedUser = resolveUser(guild, userResolvable);
+    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+
+    if (typeof resolvedUser === 'string') {
+        return Util.commandFailed(channel, moderatorResolvable, 'UnBan', `${resolvedUser}`);
+    }
+
+    Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
+
+    // Get ban data
+
+    const userBans = await Data.getRecords(guild, 'bans', { user_id: resolvedUser.id });
+    const totalBans = userBans.length;
+
+    // Check they are actually banned
+
+    const activeBan = userBans.find(banRecord => banRecord.active == 1);
+
+    /* if (!activeBan) { // Could have been banned manually
+        return Util.commandFailed(channel, moderatorResolvable, 'UnBan', 'User is not banned');
+    } */
+
+    // Verify ban can be changed
+
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'UnBan', 'User has equal or higher rank');
+    }
+
+    if (activeBan && activeBan.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeBan.mod_id, guild))) {
+        return Util.commandFailed(channel, moderatorResolvable, 'UnTempBan', 'Moderator who banned has equal or higher privilege');
+    }
+
+    // Update ban SQL record and cache
+
+    Data.updateRecords(guild, 'bans', {
+        user_id: resolvedUser.id,
+    }, {
+        active: 0,
+    });
+
+    // Remove ban timeout (if stopped early)
+
+    remTimeout(guild, resolvedUser.id, 'ban');
+
+    // Remove ban from the server
+
+    unBanMember(guild, channel, resolvedUser, resolvedModerator, { totalBans, temp: activeBan != null });
+
+    Util.logc('Admin1', 'Completed UnBan');
 
     return true;
 };
@@ -804,7 +948,7 @@ exports.initialize = async function () { // Get mute data from db, start all ini
 
             if (muteStored.active == 1) {
                 muteCacheActive[guildId][muteStored.user_id] = muteStored;
-                addTimeout(guild, muteStored.user_id, muteStored.end_tick);
+                addTimeout(guild, muteStored.user_id, muteStored.end_tick, 'mute');
             }
         }
     }));

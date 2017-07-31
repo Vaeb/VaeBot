@@ -17,6 +17,6 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         args = args.trim();
 
-        Mutes.clearMutes(guild, channel, args, speaker);
+        Admin.clearMutes(guild, channel, args, speaker);
     },
 });

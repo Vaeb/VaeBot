@@ -16,7 +16,7 @@ module.exports = Cmds.addCommand({
         const target = Util.getEitherByMixed(args, guild);
         if (target == null) return Util.commandFailed(channel, speaker, 'User not found');
 
-        const isMuted = Mutes.checkMuted(guild, target.id);
+        const isMuted = Admin.checkMuted(guild, target.id);
         const numMutes = await Util.getNumMutes(target.id, guild);
         const historyStr = `${numMutes} mute${numMutes == 1 ? '' : 's'}`;
 

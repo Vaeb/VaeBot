@@ -60,7 +60,7 @@ module.exports = Cmds.addCommand({
         const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
-        Mutes.changeMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
+        Admin.changeMute(guild, channel, member, speaker, { 'time': time, 'reason': reason });
 
         return true;
     },

@@ -17,8 +17,8 @@ module.exports = Cmds.addCommand({
     func: async (cmd, args, msgObj, speaker, channel, guild) => {
         const sendEmbedFields = [];
 
-        for (let i = 0; i < Mutes.badOffenses.length; i++) {
-            const offenseData = Mutes.badOffenses[i];
+        for (let i = 0; i < Admin.badOffenses.length; i++) {
+            const offenseData = Admin.badOffenses[i];
 
             const offenseStr = offenseData.offense;
             const timeStr = Util.formatTime(offenseData.time);

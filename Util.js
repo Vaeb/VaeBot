@@ -717,10 +717,11 @@ exports.getElapsed = function (tag, remove) {
     if (has.call(elapseTimeTags, tag)) {
         const startTimeData = elapseTimeTags[tag];
         const elapsedTimeData = process.hrtime(startTimeData); // Seconds, Nanoseconds (Seconds * 1e9)
-        elapsed = (elapsedTimeData[0] * 1e3) + (elapsedTimeData[1] / 1e6);
+        elapsed = (elapsedTimeData[0] * 1e3) + Number((elapsedTimeData[1] / 1e6).toFixed(3));
     }
 
     if (remove) {
+        elapseTimeTags[tag] = null;
         delete elapseTimeTags[tag]; // Remove time storage
     } else {
         elapseTimeTags[tag] = process.hrtime(); // Mark the start time
@@ -1058,16 +1059,15 @@ exports.splitMessages = function (messages) {
     return chunkMessage(messages.join(' '));
 };
 
-const ePrint = error => Util.log(`[E_Print] ${error}`);
-
 exports.print = function (channel, ...args) {
     const messages = exports.splitMessages(args);
+    const promises = [];
     for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
         // Util.log(`${channel.name}: ${msg.length}`);
-        channel.send(msg)
-            .catch(ePrint);
+        promises.push(channel.send(msg));
     }
+    return Promise.all(promises);
 };
 
 exports.sortPerms = function (permsArr) {
@@ -1094,9 +1094,25 @@ exports.getGuildRoles = function (guild) {
     return roles;
 };
 
-exports.getName = function (member) {
-    const result = member.username || (member.user ? member.user.username : null);
-    return result;
+exports.getName = function (userResolvable) {
+    if (userResolvable == null) return null;
+    if (typeof userResolvable == 'string') return userResolvable;
+    return Util.isMember(userResolvable) ? userResolvable.user.username : userResolvable.username;
+};
+
+exports.getMostName = function (userResolvable) {
+    if (userResolvable == null) return null;
+    if (typeof userResolvable == 'string') return userResolvable;
+    const username = exports.getName(userResolvable);
+    const discrim = Util.isMember(userResolvable) ? userResolvable.user.discriminator : userResolvable.discriminator;
+    return `${username}#${discrim}`;
+};
+
+exports.getFullName = function (userResolvable, strict) {
+    if (userResolvable == null) return strict ? null : 'null'; // TODO: Make strict default at some point
+    if (typeof userResolvable == 'string') return userResolvable;
+    const mostName = exports.getMostName(userResolvable);
+    return `${mostName} (${userResolvable.id})`;
 };
 
 exports.getDisplayName = function (member) {
@@ -1104,17 +1120,19 @@ exports.getDisplayName = function (member) {
     return result;
 };
 
-exports.getMostName = function (user) {
-    const result = `${exports.getName(user)}#${user.getProp('discriminator')}`;
-    return result;
-};
+exports.getMention = function (userResolvable, full) {
+    let out;
 
-exports.getFullName = function (user) {
-    const result = user != null ? (`${exports.getMostName(user)} (${user.id})`) : 'null';
-    return result;
-};
+    if (userResolvable.user) { // Member
+        out = userResolvable.toString();
+    } else if (userResolvable.id) { // User
+        out = full ? exports.getFullName(userResolvable) : exports.getMostName(userResolvable);
+    } else { // Id
+        out = `<@${userResolvable}>`;
+    }
 
-exports.getMention = obj => obj.toString();
+    return out;
+};
 
 exports.getAvatar = function (userResolvable, outStr) {
     if (userResolvable != null && exports.isObject(userResolvable)) {
@@ -1332,6 +1350,10 @@ exports.sendLog = function (embData, embColor) {
     const embFooter = exports.makeEmbedFooter(embAuthor);
     const embAvatar = exports.getAvatar(embAuthor);
 
+    for (let i = embFields.length - 1; i >= 0; i--) {
+        if (!embFields[i].name) embFields.splice(i, 1);
+    }
+
     exports.sendEmbed(
         embChannel,
         embTitle,
@@ -1392,13 +1414,11 @@ exports.getDayStr = function (d) {
     return user;
 } */
 
-exports.searchUserPartial = function (col, nameParam) {
-    let name = nameParam;
-
+exports.searchUserPartial = function (col, name) {
     name = name.toLowerCase();
     return col.find((member) => {
-        const userName = exports.getName(member);
-        if (member.id === name || exports.safe(userName.toLowerCase()).includes(name)) {
+        const username = exports.getName(member);
+        if (member.id === name || exports.safe(username.toLowerCase()).includes(name)) {
             return true;
         }
         return false;
@@ -2292,7 +2312,8 @@ exports.fetchMessages = async function (channel, numScan, checkFunc) {
     return foundMessages;
 };
 
-exports.banMember = function (member, moderator, reason) {
+exports.banMember = function (member, moderator, reason, tempEnd) {
+    const guild = member.guild;
     const memberId = member.id;
     const memberMostName = exports.getMostName(member);
 
@@ -2301,13 +2322,34 @@ exports.banMember = function (member, moderator, reason) {
     let modFullName = moderator;
     if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
-    member.ban()
-        .catch(console.error);
+    const linkedGuilds = Data.getLinkedGuilds(member.guild);
+
+    for (let i = 0; i < linkedGuilds.length; i++) {
+        const linkedGuild = linkedGuilds[i];
+        linkedGuild.ban(member.id, { days: 0, reason })
+            .then((userResolvable) => {
+                Util.logc('AddBan1', `Link-added ban for ${exports.getMention(userResolvable, true)} @ ${linkedGuild.name}`);
+            })
+            .catch(exports.logErr);
+    }
+
+    const sendLogData = [
+        `Guild ${tempEnd ? 'Temporary ' : ''}Ban`,
+        guild,
+        member,
+        { name: 'Username', value: member.toString() },
+        { name: 'Moderator', value: member.toString() },
+        { name: 'Ban Reason', value: reason },
+    ];
+
+    if (tempEnd) sendLogData.push({ name: 'Ban Ends', value: tempEnd });
+
+    exports.sendLog(sendLogData, colAction);
 
     Trello.addCard(member.guild, 'Bans', memberMostName, {
         'User ID': memberId,
         'Moderator': modFullName,
-        'Reason': reason,
+        'Reason': `[TempBan] ${reason}`,
     });
 
     return true;
@@ -2419,14 +2461,20 @@ exports.log = function (...args) {
     lastTag = null;
 };
 
-exports.logn = function (...args) {
-    postOutString(args, false);
-    lastTag = null;
-};
-
 exports.logc = function (...args) {
     const nowTag = String(args.splice(0, 1)).toLowerCase();
     const isNew = lastTag != nowTag;
     postOutString(args, isNew);
     lastTag = nowTag;
+};
+
+exports.logn = function (...args) {
+    postOutString(args, false);
+    lastTag = null;
+};
+
+exports.logErr = function (...args) {
+    args.unshift('[ERROR]');
+    postOutString(args, true);
+    lastTag = null;
 };

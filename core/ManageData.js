@@ -1,9 +1,9 @@
 const FileSys = index.FileSys;
 
-const mutesDir = '/home/flipflop8421/files/discordExp/VaeBot/data/mutes.json';
-const histDir = '/home/flipflop8421/files/discordExp/VaeBot/data/history.json';
-const autoRoleDir = '/home/flipflop8421/files/discordExp/VaeBot/data/autoroles.json';
-const playlistDir = '/home/flipflop8421/files/discordExp/VaeBot/data/playlist.json';
+const mutesDir = '/home/flipflop8421/files/discordExp/VaeBot/data/mutes.json'; // Legacy (replaced with MySQL DB)
+const histDir = '/home/flipflop8421/files/discordExp/VaeBot/data/history.json'; // Legacy (replaced with MySQL DB)
+const autoRoleDir = '/home/flipflop8421/files/discordExp/VaeBot/data/autoroles.json'; // Legacy (replaced with MySQL DB)
+const playlistDir = '/home/flipflop8421/files/discordExp/VaeBot/data/playlist.json'; // Legacy (replaced with MySQL DB)
 
 const linkGuilds = index.linkGuilds;
 
@@ -315,8 +315,8 @@ exports.updateCache = async function (updateTableName) {
     }));
 };
 
-exports.getCache = async function (guildId, tableName) {
-    if (!exports.cache[tableName]) await exports.updateCache(tableName);
+exports.getCache = function (guildId, tableName) {
+    if (!exports.cache[tableName]) return null;
     if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
     return [exports.cache[tableName][guildId], exports.cache[tableName]._primaryKey];
 };
@@ -341,7 +341,7 @@ exports.getRecords = async function (guild, tableName, identity, fromSQL) { // D
     const guildId = exports.getBaseGuildId(guild.id);
 
     if (!fromSQL) {
-        const [nowCache] = await exports.getCache(guildId, tableName);
+        const [nowCache] = exports.getCache(guildId, tableName);
 
         const results = getRecordsFromCache(nowCache, identity);
 
@@ -374,10 +374,10 @@ exports.getRecords = async function (guild, tableName, identity, fromSQL) { // D
     return exports.query(queryStr, valueArr);
 };
 
-exports.deleteRecords = async function (guild, tableName, identity) { // DBFunc
+exports.deleteRecords = function (guild, tableName, identity) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
-    const [nowCache, primaryColumn] = await exports.getCache(guildId, tableName);
+    const [nowCache, primaryColumn] = exports.getCache(guildId, tableName);
 
     const results = getRecordsFromCache(nowCache, identity);
 
@@ -410,10 +410,10 @@ exports.deleteRecords = async function (guild, tableName, identity) { // DBFunc
     return exports.query(queryStr, valueArr);
 };
 
-exports.updateRecords = async function (guild, tableName, identity, data) { // DBFunc
+exports.updateRecords = function (guild, tableName, identity, data) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
-    const [nowCache] = await exports.getCache(guildId, tableName);
+    const [nowCache] = exports.getCache(guildId, tableName);
 
     const results = getRecordsFromCache(nowCache, identity);
 
@@ -495,45 +495,89 @@ exports.updateRecords = async function (guild, tableName, identity, data) { // D
 
 */
 
-exports.addRecord = async function (guild, tableName, data) { // DBFunc
+// Currently formatted as addRecord(guild, 'members', [ { 'user_id': '421', 'buyer': 0, 'nickname': 'Brian' }, { 'user_id': '317', 'buyer': 1, 'nickname': 'Max' } ]);
+// Could format as addRecord(guild, 'members', { columns: ['user_id', 'buyer', 'nickname'], values: [ ['421', 0, 'Brian'], ['317', 1, 'Max'] ] })
+
+exports.addRecord = function (guild, tableName, dataArr) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
-    const [nowCache, primaryColumn] = await exports.getCache(guildId, tableName);
+    const [nowCache, primaryColumn] = exports.getCache(guildId, tableName);
 
-    let columnStr = ['guild_id'];
-    let valueStr = ['?'];
-    let setStr = ['guild_id=?'];
-    const valueArr = [guildId];
+    const multipleRecords = dataArr instanceof Array; // All records must have the same columns
 
-    const updateData = has.call(data, primaryColumn) && has.call(nowCache, data[primaryColumn]);
+    if (!dataArr || multipleRecords && dataArr.length == 0) return exports.emptyPromise();
 
-    for (const [column, value] of Object.entries(data)) {
-        columnStr.push(column);
-        valueStr.push('?');
-        valueArr.push(value);
-        setStr.push(`${column}=?`);
-    }
+    if (!multipleRecords) dataArr = [dataArr];
 
-    if (updateData) {
-        const nowCacheRecord = nowCache[data[primaryColumn]];
-        for (const [column, value] of Object.entries(data)) {
-            nowCacheRecord[column] = Util.cloneObj(value, true);
+    let columnStr = [];
+    let multiValueStr = [];
+    let updateColumnStr = [];
+    const multiValueArr = [];
+
+    /*
+
+    INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr}) ON DUPLICATE KEY UPDATE ${setStr};
+    INSERT INTO ${tableName} (${columnStr}) VALUES ${multiValueStr} ON DUPLICATE KEY UPDATE ${updateColumnStr};
+
+    columnStr = ['guild_id', 'user_id', 'buyer', 'nickname'];
+    multiValueStr = ['?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?']
+    updateColumnStr = ['guild_id = VALUES(guild_id)', 'user_id = VALUES(user_id)', 'buyer = VALUES(buyer)', 'nickname = VALUES(nickname)'];
+    multiValueArr = ['5678', '421', 0, 'Brian', '5678', '317', 1, 'Max', '5678', '592', 0, 'Sam']
+    INSERT INTO members (guild_id, user_id, buyer, nickname) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE guild_id = VALUES(guild_id), user_id = VALUES(user_id), buyer = VALUES(buyer), nickname = VALUES(nickname);
+
+    */
+
+    for (let rowNum = 0; rowNum < dataArr.length; rowNum++) {
+        const data = dataArr[rowNum];
+        data.guild_id = guildId;
+
+        if (rowNum == 0) {
+            const recordColumns = Object.keys(data);
+
+            for (const [column] of recordColumns) {
+                columnStr.push(column);
+                updateColumnStr.push(`${column} = VALUES(${column})`);
+            }
+
+            for (let i = 0; i < dataArr.length; i++) {
+                const recordValues = [];
+
+                for (let j = 0; j < recordColumns.length; j++) {
+                    recordValues.push('?');
+                }
+
+                multiValueStr.push(`(${recordValues.join(', ')})`);
+            }
         }
-    } else {
-        if (has.call(exports.nextAutoInc, tableName)) data[exports.nextAutoInc[tableName][0]] = Data.nextInc(tableName);
-        nowCache[data[primaryColumn]] = Util.cloneObj(data, true);
+
+        for (let i = 0; i < columnStr.length; i++) {
+            multiValueArr.push(data[columnStr[i]]);
+        }
+
+        const updateData = has.call(data, primaryColumn) && has.call(nowCache, data[primaryColumn]);
+
+        if (updateData) {
+            const nowCacheRecord = nowCache[data[primaryColumn]];
+            for (const [column, value] of Object.entries(data)) {
+                nowCacheRecord[column] = Util.cloneObj(value, true);
+            }
+        } else {
+            if (has.call(exports.nextAutoInc, tableName)) data[exports.nextAutoInc[tableName][0]] = Data.nextInc(tableName);
+            nowCache[data[primaryColumn]] = Util.cloneObj(data, true);
+        }
     }
 
-    const numValues = valueArr.length;
-    for (let i = 0; i < numValues; i++) valueArr.push(valueArr[i]);
+    columnStr = columnStr.join(', ');
+    updateColumnStr = updateColumnStr.join(', ');
+    multiValueStr = multiValueStr.join(', ');
 
-    columnStr = columnStr.join(',');
-    valueStr = valueStr.join(',');
-    setStr = setStr.join(',');
+    const queryStr = `INSERT INTO ${tableName} (${columnStr}) VALUES ${multiValueStr} ON DUPLICATE KEY UPDATE ${updateColumnStr};`;
 
-    const queryStr = `INSERT INTO ${tableName}(${columnStr}) VALUES(${valueStr}) ON DUPLICATE KEY UPDATE ${setStr};`;
+    Util.logc('AddRecord1', 'AddRecord');
+    Util.logc('AddRecord1', queryStr);
+    Util.logc('AddRecord1', multiValueArr);
 
-    return exports.query(queryStr, valueArr);
+    return exports.query(queryStr, multiValueArr);
 };
 
 exports.connectInitial = async function (dbGuilds) {
@@ -556,20 +600,32 @@ exports.connectInitial = async function (dbGuilds) {
         const sanValues = [];
 
         guild.members.forEach((member) => {
-            sqlCmd.push('INSERT IGNORE INTO members (user_id, buyer, nickname) VALUES(?, ?, ?);');
-            sanValues.push(member.id, Util.hasRoleName(member, 'buyer'), member.nickname);
+            sqlCmd.push('INSERT IGNORE INTO members (user_id, buyer, nickname) VALUES(?, ?, ?);'); // TODO: This does basically nothing for buyers; buyers who aren't currently stored as buyers in the DB need to be updated efficiently
+            sanValues.push(member.id, Util.hasRoleName(member, 'Buyer') ? 1 : 0, member.nickname);
         });
 
         const sqlCmdStr = sqlCmd.join('\n');
 
         exports.query(sqlCmdStr, sanValues)
+            .then(async () => {
+                const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Buyer'));
+                const restoreBuyers = [];
+                await Promise.all(buyerMembers.map(async (member) => {
+                    const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
+                    if (!savedBuyer) {
+                        restoreBuyers.push({ user_id: member.id, buyer: 1, nickname: member.nickname });
+                        Util.logc('BuyerRestore1', `Restoring ${Util.getFullName(member)} as a buyer in MySQL DB`);
+                    }
+                }));
+                Data.addRecord(guild, 'members', restoreBuyers);
+            })
             .catch((err) => {
                 Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
                 process.exit(1);
             });
     }
 
-    Mutes.initialize();
+    Admin.initialize();
 
     // connection.end();
 

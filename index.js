@@ -36,9 +36,9 @@ global.selfId = '224529399003742210';
 global.vaebId = '107593015014486016';
 
 global.Util = require('./Util.js');
-global.Data = require('./data/ManageData.js');
+global.Data = require('./core/ManageData.js');
 global.Trello = require('./core/ManageTrello.js');
-global.Mutes = require('./core/ManageMutesRestricted.js');
+global.Admin = require('./core/ManageAdmin.js');
 global.Music = require('./core/ManageMusic.js');
 global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
@@ -245,7 +245,7 @@ function securityFunc(guild, member, sendRoleParam) {
     }
 
     if (sendRole != null) {
-        const isMuted = Mutes.checkMuted(guild, memberId);
+        const isMuted = Admin.checkMuted(guild, memberId);
         if (isMuted) {
             if (Util.hasRole(member, sendRole)) {
                 member.removeRole(sendRole)
@@ -399,16 +399,15 @@ client.on('guildMemberRemove', (member) => {
 client.on('guildMemberAdd', (member) => {
     const guild = member.guild;
 
-    const guildId = guild.id;
     const guildName = guild.name;
     const memberId = member.id;
     const memberName = Util.getFullName(member);
 
     Util.logc(memberId, `User joined: ${memberName} (${memberId}) @ ${guildName}`);
 
-    // test
+    // Protect Veil Private
 
-    if (guildId === '309785618932563968') {
+    if (guild.id === '309785618932563968') {
         const veilGuild = client.guilds.get('284746138995785729');
         const veilBuyer = veilGuild.roles.find('name', 'Buyer');
         const newBuyer = guild.roles.find('name', 'Buyer');
@@ -438,6 +437,23 @@ client.on('guildMemberAdd', (member) => {
         }
     }
 
+    // Restore buyer role
+
+    if (guild.id == '284746138995785729') {
+        Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
+            if (results.length > 0) {
+                const buyerRole = Util.getRole('Buyer', guild);
+                if (buyerRole) {
+                    member.addRole(buyerRole)
+                        .catch(Util.logErr);
+                    Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
+                }
+            }
+        });
+    }
+
+    // GlobalBan
+
     if (has.call(exports.globalBan, memberId) && (memberId != '169261309353918464' || guild.id != '168742643021512705')) {
         member.kick()
             .catch(console.error);
@@ -445,7 +461,9 @@ client.on('guildMemberAdd', (member) => {
         return;
     }
 
-    const isMuted = Mutes.checkMuted(guild, memberId);
+    // Restore mute
+
+    const isMuted = Admin.checkMuted(guild, memberId);
     if (isMuted) {
         Util.logc(memberId, `Muted user ${memberName} joined ${guildName}`);
     } else {
@@ -501,7 +519,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            const isMuted = Mutes.checkMuted(guild, member.id);
+            const isMuted = Admin.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && isMuted) {
                 member.removeRole(nowRole);
                 Util.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
@@ -522,7 +540,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
 
     if (rolesRemoved.size > 0) {
         rolesRemoved.forEach((nowRole) => {
-            const isMuted = Mutes.checkMuted(guild, member.id);
+            const isMuted = Admin.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && !isMuted) {
                 member.addRole(nowRole)
                     .catch(console.error);
@@ -835,7 +853,7 @@ Util.log(contentLower); */
     }
 
     if (triggered) {
-        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
+        Admin.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
     }
 }); */
 
@@ -861,7 +879,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered == trigger.length) {
-        Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Auto-Mute] Asking stupid questions' });
+        Admin.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Auto-Mute] Asking stupid questions' });
     }
 });
 
@@ -977,7 +995,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
     }
 
     if (triggered) {
-        Mutes.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Anti-Scam] Posting a suspicious link' });
+        Admin.addMute(guild, channel, speaker, 'System', { 'time': 1800000, 'reason': '[Anti-Scam] Posting a suspicious link' });
         return true;
     }
 
@@ -1035,7 +1053,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Mutes.checkMuted(guild, author.id)) {
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Admin.checkMuted(guild, author.id)) {
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
         const nowStamps = messageStamps[authorId];
@@ -1049,11 +1067,11 @@ client.on('message', (msgObj) => {
                 userStatus[authorId] = 2;
             } else {
                 Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} muted`);
-                Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
+                Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                 userStatus[authorId] = 0;
             }
         }
-        if (!Mutes.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
+        if (!Admin.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
             if (nowStamps.length > checkMessages) {
                 nowStamps.splice(checkMessages, nowStamps.length - checkMessages);
             }
@@ -1078,7 +1096,7 @@ client.on('message', (msgObj) => {
                         setTimeout(() => {
                             const lastStamp = nowStamps[0].stamp;
                             setTimeout(() => {
-                                if (Mutes.checkMuted(guild, author.id)) {
+                                if (Admin.checkMuted(guild, author.id)) {
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} is already muted`);
                                     userStatus[authorId] = 0;
                                     return;
@@ -1121,7 +1139,7 @@ client.on('message', (msgObj) => {
                                 Util.logc('AntiSpam1', `[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
                                 if (grad2 >= checkGrad2) {
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
-                                    Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
+                                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                                     userStatus[authorId] = 0;
                                 } else {
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} was put on alert`);
@@ -1132,7 +1150,7 @@ client.on('message', (msgObj) => {
                         }, 350);
                     } else if (userStatus[authorId] === 2) {
                         Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} muted, repeated warns`);
-                        Mutes.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
+                        Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
                         userStatus[authorId] = 0;
                     }
                 } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {

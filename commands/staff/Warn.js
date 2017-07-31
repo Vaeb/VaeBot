@@ -36,7 +36,7 @@ module.exports = Cmds.addCommand({
         const member = data[0];
         const reason = data[1];
 
-        Mutes.addWarning(guild, channel, member, speaker, reason);
+        Admin.addWarning(guild, channel, member, speaker, reason);
 
         return true;
     },

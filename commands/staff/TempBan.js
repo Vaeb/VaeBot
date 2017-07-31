@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Temporarily ban a user from the guild',
 
-    args: '([@user] | [id] | [name]) (OPT: [ban_length]) (OPT: [ban_length_format]) (OPT: [reason])',
+    args: '([@user] | [id] | [name]) (OPTIONAL: [ban_length]) (OPTIONAL: [ban_length_format]) (OPTIONAL: [reason])',
 
     example: 'vae 2 days repeatedly breaking rules',
 
@@ -59,31 +59,7 @@ module.exports = Cmds.addCommand({
         const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
-        // Check if allowed to ban this user
-        if (Mutes.notHigherRank(speaker, member)) {
-            return Util.commandFailed(channel, speaker, 'Temporary Ban', 'User has equal or higher rank');
-        }
-
-        // Get data
-        const startTick = +new Date();
-        const endTick = startTick + await Mutes.getNextMuteTimeFromUser(guild, member, time, reason);
-
-        // Store ban data in database
-        const newRecord = {
-            'user_id': member.id, // VARCHAR(24)
-            'mod_id': speaker.id, // VARCHAR(24)
-            'ban_reason': reason, // TEXT
-            'start_tick': startTick, // BIGINT
-            'end_tick': endTick, // BIGINT
-            'active': 1, // BIT
-        };
-
-        Data.addRecord(guild, 'bans', newRecord);
-
-        // Message the user with relevant info
-
-        // Ban the member
-        Util.banMember(member, speaker, reason);
+        Admin.addBan(guild, channel, member, speaker, { time, reason, temp: true });
 
         return true;
     },
