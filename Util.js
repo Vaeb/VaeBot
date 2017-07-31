@@ -1369,8 +1369,11 @@ exports.sendLog = function (embData, embColor) {
             exports.cloneObj(embFields));
     }
 
+    const regex = /(\S*)(?:warn|mute|kick|ban)/i;
+    const pre = (regex.exec(embedTitleLower) || [])[1];
+
     const modChannel = exports.findChannel('mod-logs', embGuild);
-    if (modChannel && (embedTitleLower.includes('warn') || embedTitleLower.includes('mute') || embedTitleLower.includes('ban') || embedTitleLower.includes('kick'))) {
+    if (modChannel && pre != null && pre != 'un' && !embedTitleLower.includes('revert') && !embedTitleLower.includes('cleared')) {
         const embFooter = exports.makeEmbedFooter(embAuthor);
         const embAvatar = exports.getAvatar(embAuthor);
 
