@@ -608,6 +608,9 @@ exports.connectInitial = async function (dbGuilds) {
 
         const sqlCmdStr = sqlCmd.join('\n');
 
+        console.log(sqlCmdStr);
+        console.log(sanValues);
+
         exports.query(sqlCmdStr, sanValues)
             .then(async () => {
                 const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Buyer'));
