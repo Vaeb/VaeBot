@@ -47,7 +47,7 @@ function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerato
 }
 
 function sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra) {
-    if (!resolvedUser.member) return;
+    if (!resolvedUser.member || action == 'Ban' || action == 'TempBan') return;
 
     const outStr = [`**You have been ${extra.actionPast.toLowerCase()}**\n\`\`\``];
     outStr.push(`Guild: ${guild.name}`);
@@ -351,14 +351,35 @@ function unBanMember(guild, channel, resolvedUser, resolvedModerator, extra) {
     sendAlert(`Un${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Unbanned', end: true, total: extra.totalBans });
 }
 
-function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extra) {
+async function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extra) {
     const tempStr = extra.temp ? 'Temp' : '';
+    const action = `${tempStr}Ban`;
+    const actionPast = `${extra.temp ? 'Temp ' : ''}Banned`;
     const endStr = has.call(extra, 'dateEnd') ? `${DateFormat(extra.dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT` : 'Never';
 
     const memberName = resolvedUser.member ? Util.getFullName(resolvedUser.member) : resolvedUser.mention;
     const moderatorName = resolvedModerator.member ? Util.getFullName(resolvedModerator.member) : resolvedModerator.mention;
 
     // Ban the user in all linked guilds
+
+    if (resolvedUser.member && extra.temp) {
+        const outStr = [`**You have been ${actionPast.toLowerCase()}**\n\`\`\``];
+        outStr.push(`Guild: ${guild.name}`);
+        outStr.push(`${action} reason: ${reason}`);
+        outStr.push(`${action} length: ${extra.banLengthStr}`);
+        outStr.push(`${action} expires: ${endStr}`);
+        outStr.push('```');
+        outStr.push('------------------------------------------------------------------------------------');
+        outStr.push('Please keep in mind that bots cannot DM users who they do not share a server with, so you will not be notified when your ban ends.');
+        outStr.push('------------------------------------------------------------------------------------');
+        outStr.push(`${guild.name} invite link: https://discord.gg/aVvcjDS`);
+        outStr.push('The invite link may still display as **expired** when your ban ends, this is due to Discord caching your ban. If this happens you can try the following:');
+        outStr.push('-Option 1: Restart Discord with a VPN active');
+        outStr.push('-Option 2: Try using the web version of Discord in an incognito tab');
+        outStr.push('-Option 3: Fully unplug your modem and leave it disconnected for 6 minutes');
+
+        await Util.print(resolvedUser.member, outStr.join('\n'));
+    }
 
     const linkedGuilds = Data.getLinkedGuilds(guild);
     for (let i = 0; i < linkedGuilds.length; i++) {
@@ -372,7 +393,7 @@ function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extr
 
     // Send the relevant messages
 
-    sendAlert(`${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `${extra.temp ? 'Temp ' : ''}Banned`, end: false, total: extra.totalBans, lengthStr: extra.banLengthStr, reason, endStr });
+    sendAlert(action, guild, channel, resolvedUser, resolvedModerator, { actionPast, end: false, total: extra.totalBans, lengthStr: extra.banLengthStr, reason, endStr });
 
     Trello.addCard(guild, 'Bans', memberName, {
         'User ID': resolvedUser.id,
