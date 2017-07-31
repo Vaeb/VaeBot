@@ -601,7 +601,9 @@ exports.connectInitial = async function (dbGuilds) {
 
         guild.members.forEach((member) => {
             sqlCmd.push('INSERT IGNORE INTO members (user_id, buyer, nickname) VALUES(?, ?, ?);'); // TODO: This does basically nothing for buyers; buyers who aren't currently stored as buyers in the DB need to be updated efficiently
-            sanValues.push(member.id, Util.hasRoleName(member, 'Buyer') ? 1 : 0, member.nickname);
+            sanValues.push(member.id);
+            sanValues.push(Util.hasRoleName(member, 'Buyer') ? 1 : 0);
+            sanValues.push(member.nickname);
         });
 
         const sqlCmdStr = sqlCmd.join('\n');
