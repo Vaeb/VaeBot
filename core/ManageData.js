@@ -593,10 +593,8 @@ exports.connectInitial = async function (dbGuilds) {
     await exports.initAutoInc();
     Util.logc('MySQL', '[MySQL] Set up local auto-increment');
 
-    for (let i = 0; i < dbGuilds.length; i++) {
-        const guild = dbGuilds[i];
-
-        const storedMembers = exports.getRecords(guild, 'members');
+    await Promise.all(dbGuilds.map(async (guild) => {
+        const storedMembers = await exports.getRecords(guild, 'members');
         const newMembers = [];
 
         guild.members.forEach((member) => {
@@ -623,7 +621,7 @@ exports.connectInitial = async function (dbGuilds) {
                 Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
                 process.exit(1);
             });
-    }
+    }));
 
     Admin.initialize();
 
