@@ -1348,24 +1348,41 @@ exports.sendLog = function (embData, embColor) {
     const embAuthor = embData[2];
     const embFields = embData.splice(3);
 
-    const embChannel = exports.findChannel('vaebot-log', embGuild);
-    if (embChannel == null) return;
-
-    const embFooter = exports.makeEmbedFooter(embAuthor);
-    const embAvatar = exports.getAvatar(embAuthor);
-
     for (let i = embFields.length - 1; i >= 0; i--) {
         if (!embFields[i].name) embFields.splice(i, 1);
     }
 
-    exports.sendEmbed(
-        embChannel,
-        embTitle,
-        null,
-        embFooter,
-        embAvatar,
-        embColor,
-        embFields);
+    const embedTitleLower = embTitle.toLowerCase();
+
+    const logChannel = exports.findChannel('vaebot-log', embGuild);
+    if (logChannel) {
+        const embFooter = exports.makeEmbedFooter(embAuthor);
+        const embAvatar = exports.getAvatar(embAuthor);
+
+        exports.sendEmbed(
+            logChannel,
+            exports.cloneObj(embTitle),
+            null,
+            exports.cloneObj(embFooter),
+            exports.cloneObj(embAvatar),
+            exports.cloneObj(embColor),
+            exports.cloneObj(embFields));
+    }
+
+    const modChannel = exports.findChannel('mod-logs', embGuild);
+    if (modChannel && (embedTitleLower.includes('warn') || embedTitleLower.includes('mute') || embedTitleLower.includes('ban') || embedTitleLower.includes('kick'))) {
+        const embFooter = exports.makeEmbedFooter(embAuthor);
+        const embAvatar = exports.getAvatar(embAuthor);
+
+        exports.sendEmbed(
+            modChannel,
+            exports.cloneObj(embTitle),
+            null,
+            exports.cloneObj(embFooter),
+            exports.cloneObj(embAvatar),
+            exports.cloneObj(embColor),
+            exports.cloneObj(embFields));
+    }
 };
 
 exports.getHourStr = function (d) {
