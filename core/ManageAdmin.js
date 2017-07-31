@@ -51,9 +51,9 @@ function sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, ex
 
     const outStr = [`**You have been ${extra.actionPast.toLowerCase()}**\n\`\`\``];
     outStr.push(`Guild: ${guild.name}`);
-    if (!extra.end) outStr.push(`${action} reason: ${extra.reason}`);
-    if (!extra.end) outStr.push(`${action} length: ${extra.lengthStr}`);
-    if (!extra.end) outStr.push(`${action} expires: ${extra.endStr}`);
+    if (!extra.end) outStr.push(`Reason: ${extra.reason}`);
+    if (!extra.end) outStr.push(`$Length: ${extra.lengthStr}`);
+    if (!extra.end) outStr.push(`Expires: ${extra.endStr}`);
     outStr.push(`${action} history: ${extra.historyStr}`);
     outStr.push('```');
     Util.print(resolvedUser.member, outStr.join('\n'));
@@ -365,18 +365,19 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
     if (resolvedUser.member && extra.temp) {
         const outStr = [`**You have been ${actionPast.toLowerCase()}**\n\`\`\``];
         outStr.push(`Guild: ${guild.name}`);
-        outStr.push(`${action} reason: ${reason}`);
-        outStr.push(`${action} length: ${extra.banLengthStr}`);
-        outStr.push(`${action} expires: ${endStr}`);
+        outStr.push(`Reason: ${reason}`);
+        outStr.push(`Length: ${extra.banLengthStr}`);
+        outStr.push(`Expires: ${endStr}`);
         outStr.push('```');
         outStr.push('------------------------------------------------------------------------------------');
         outStr.push('Please keep in mind that bots cannot DM users who they do not share a server with, so you will not be notified when your ban ends.');
         outStr.push('------------------------------------------------------------------------------------');
         outStr.push(`${guild.name} invite link: https://discord.gg/aVvcjDS`);
+        outStr.push('------------------------------------------------------------------------------------');
         outStr.push('The invite link may still display as **expired** when your ban ends, this is due to Discord caching your ban. If this happens you can try the following:');
-        outStr.push('-Option 1: Restart Discord with a VPN active');
-        outStr.push('-Option 2: Try using the web version of Discord in an incognito tab');
-        outStr.push('-Option 3: Fully unplug your modem and leave it disconnected for 6 minutes');
+        outStr.push('-Option 1: Restart Discord with a VPN active.');
+        outStr.push('-Option 2: Try using the web version of Discord in an incognito tab.');
+        outStr.push('-Option 3: Fully unplug your modem and leave it disconnected for 6 minutes, then restart your PC.');
 
         await Util.print(resolvedUser.member, outStr.join('\n'));
     }
