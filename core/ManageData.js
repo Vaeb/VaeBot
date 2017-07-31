@@ -316,6 +316,7 @@ exports.updateCache = async function (updateTableName) {
 };
 
 exports.getCache = function (guildId, tableName) {
+    Util.logc('GetCache', tableName, !exports.cache[tableName]);
     if (!exports.cache[tableName]) return null;
     if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
     return [exports.cache[tableName][guildId], exports.cache[tableName]._primaryKey];
