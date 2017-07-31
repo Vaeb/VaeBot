@@ -535,7 +535,7 @@ exports.addRecord = function (guild, tableName, dataArr) { // DBFunc
         if (rowNum == 0) {
             const recordColumns = Object.keys(data);
 
-            for (const [column] of recordColumns) {
+            for (const column of recordColumns) {
                 columnStr.push(column);
                 updateColumnStr.push(`${column} = VALUES(${column})`);
             }
