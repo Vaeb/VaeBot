@@ -31,7 +31,7 @@ exports.badOffenses = [
 
 function getHistoryStr(action, totalMutes) {
     let out = `${totalMutes} ${action.match(/[A-Z][a-z]+$/)[0]}`;
-    if (totalMutes !== 1) out += 's';
+    if (totalMutes !== 1 && out[out.length - 1] !== 's') out += 's';
     return out;
 }
 
@@ -316,6 +316,7 @@ function higherRank(moderator, member, canBeEqual) { // Check if member can be m
 }
 
 function notHigherRank(moderator, member, notEqual) {
+    if (!member || typeof member == 'string' || member.id == selfId) return ;
     return !higherRank(moderator, member, notEqual);
 }
 
@@ -923,7 +924,7 @@ exports.unBan = async function (guild, channel, userResolvable, moderatorResolva
     }
 
     if (activeBan && activeBan.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeBan.mod_id, guild))) {
-        return Util.commandFailed(channel, moderatorResolvable, 'UnTempBan', 'Moderator who banned has equal or higher privilege');
+        return Util.commandFailed(channel, moderatorResolvable, 'UnBan', 'Moderator who banned has equal or higher privilege');
     }
 
     // Update ban SQL record and cache
