@@ -32,7 +32,7 @@ exports.badOffenses = [
 function getHistoryStr(action, totalMutes) {
     let out = `${totalMutes} ${action.match(/[A-Z][a-z]+$/)[0]}`;
     if (totalMutes !== 1 && out[out.length - 1] !== 's') out += 's';
-    return out;
+    return out.toLowerCase();
 }
 
 function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra) {
