@@ -1236,6 +1236,10 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
 
     if (embFields == null) embFields = [];
 
+    for (let i = embFields.length - 1; i >= 0; i--) {
+        if (!embFields[i].name) embFields.splice(i, 1);
+    }
+
     if (embFields.length > 25) {
         manyFields = true;
         extraFields = embFields.splice(25);

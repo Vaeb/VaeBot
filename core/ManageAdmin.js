@@ -348,7 +348,7 @@ function unBanMember(guild, channel, resolvedUser, resolvedModerator, extra) {
 
     // Send the relevant messages
 
-    sendAlert(`Un${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `Un${tempStr}Banned`, end: true, total: extra.totalBans });
+    sendAlert(`Un${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Unbanned', end: true, total: extra.totalBans });
 }
 
 function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extra) {
@@ -372,7 +372,7 @@ function banMember(guild, channel, resolvedUser, resolvedModerator, reason, extr
 
     // Send the relevant messages
 
-    sendAlert(`${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `${tempStr}Banned`, end: false, total: extra.totalBans, lengthStr: extra.banLengthStr, reason, endStr });
+    sendAlert(`${tempStr}Ban`, guild, channel, resolvedUser, resolvedModerator, { actionPast: `${extra.temp ? 'Temp ' : ''}Banned`, end: false, total: extra.totalBans, lengthStr: extra.banLengthStr, reason, endStr });
 
     Trello.addCard(guild, 'Bans', memberName, {
         'User ID': resolvedUser.id,
@@ -665,7 +665,7 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Send the relevant messages
 
-    sendAlert('UnMute', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'UnMuted', end: true, total: totalMutes });
+    sendAlert('UnMute', guild, channel, resolvedUser, resolvedModerator, { actionPast: 'Unmuted', end: true, total: totalMutes });
 
     Util.logc('Admin1', 'Completed UnMute');
 
