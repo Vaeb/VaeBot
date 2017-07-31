@@ -576,7 +576,7 @@ exports.addRecord = function (guild, tableName, dataArr) { // DBFunc
 
     Util.logc('AddRecord1', 'AddRecord');
     Util.logc('AddRecord1', queryStr);
-    Util.logc('AddRecord1', multiValueArr);
+    // Util.logc('AddRecord1', multiValueArr);
 
     return exports.query(queryStr, multiValueArr);
 };
