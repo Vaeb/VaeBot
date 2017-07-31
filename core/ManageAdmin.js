@@ -30,7 +30,7 @@ exports.badOffenses = [
 */
 
 function getHistoryStr(action, totalMutes) {
-    let out = `${totalMutes} ${Util.capitalize2(action)}`;
+    let out = `${totalMutes} ${action.match(/[A-Z][a-z]+$/)[0]}`;
     if (totalMutes !== 1) out += 's';
     return out;
 }
