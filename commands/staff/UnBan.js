@@ -22,7 +22,7 @@ module.exports = Cmds.addCommand({
                 return;
             }
 
-            Admin.unban(guild, channel, target, speaker);
+            Admin.unBan(guild, channel, target, speaker);
         });
     },
 });

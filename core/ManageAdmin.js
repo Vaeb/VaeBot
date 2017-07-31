@@ -375,8 +375,8 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
         outStr.push(`${guild.name} invite link: https://discord.gg/aVvcjDS`);
         outStr.push('------------------------------------------------------------------------------------');
         outStr.push('The invite link may still display as **expired** when your ban ends, this is due to Discord caching your ban. If this happens you can try the following:');
-        outStr.push('-Option 1: Restart Discord with a VPN active.');
-        outStr.push('-Option 2: Try using the web version of Discord in an incognito tab.');
+        outStr.push('-Option 1: Try using the web version of Discord in an incognito tab.');
+        outStr.push('-Option 2: Restart Discord with a VPN active.');
         outStr.push('-Option 3: Fully unplug your modem and leave it disconnected for 6 minutes, then restart your PC.');
 
         await Util.print(resolvedUser.member, outStr.join('\n'));
