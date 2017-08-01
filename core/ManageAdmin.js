@@ -10,6 +10,7 @@ let timeoutId = 0;
 const muteCacheActive = {};
 
 exports.defaultMuteLength = 1800000;
+exports.dayMilli = 86400000;
 
 exports.badOffenses = [
     { offense: 'Posting nsfw images', time: 1000 * 60 * 60 * 24 * 1 },
@@ -316,7 +317,6 @@ function higherRank(moderator, member, canBeEqual) { // Check if member can be m
 }
 
 function notHigherRank(moderator, member, notEqual) {
-    if (!member || typeof member == 'string' || member.id == selfId) return ;
     return !higherRank(moderator, member, notEqual);
 }
 
@@ -829,6 +829,7 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
     const activeBan = userBans.find(banRecord => banRecord.active == 1);
     const pastMutes = userMutes.length;
     const totalBans = userBans.length + 1;
+    const totalOffenses = pastMutes + totalBans;
 
     // Stop here if the ban isn't temporary
 
@@ -841,7 +842,8 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
 
     const startTick = +new Date();
 
-    banLength = getNextMuteTime(banLength, banReason, pastMutes);
+    const maxBanLength = exports.dayMilli * 2 * totalOffenses;
+    banLength = banLength ? Math.min(banLength, maxBanLength) : maxBanLength;
 
     const endTick = startTick + banLength;
 
