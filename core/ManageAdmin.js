@@ -380,7 +380,11 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
         outStr.push('-Option 2: Restart Discord with a VPN active.');
         outStr.push('-Option 3: Fully unplug your modem and leave it disconnected for 6 minutes, then restart your PC.');
 
-        await Util.print(resolvedUser.member, outStr.join('\n'));
+        try {
+            await Util.print(resolvedUser.member, outStr.join('\n'));
+        } catch (err) {
+            Util.logErr('Cannot send DMs to this user, continuing the ban process');
+        }
     }
 
     const linkedGuilds = Data.getLinkedGuilds(guild);
