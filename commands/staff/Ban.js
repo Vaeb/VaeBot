@@ -15,7 +15,8 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (/\bmod/g.test(speaker.highestRole.name.toLowerCase())) return Util.commandFailed(channel, speaker, 'Moderators are not allowed to use the ban command | Please use tempban instead');
+        const highestRoleLower = speaker.highestRole.name.toLowerCase();
+        if (!highestRoleLower.includes('head ') && /\bmod/g.test(highestRoleLower)) return Util.commandFailed(channel, speaker, 'Moderators are not allowed to use the ban command | Please use tempban instead');
 
         const data = Util.getDataFromString(args, [
             function (str) {
