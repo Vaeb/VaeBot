@@ -1120,8 +1120,8 @@ exports.getMention = function (userResolvable, full) {
 
 exports.getAvatar = function (userResolvable, outStr) {
     if (userResolvable != null && exports.isObject(userResolvable)) {
-        if (userResolvable.user) return userResolvable.user.avatarURL('png');
-        return userResolvable.avatarURL('png');
+        if (userResolvable.user) userResolvable = userResolvable.user;
+        return userResolvable.displayAvatarURL({ format: 'png' });
     }
     return (outStr === true ? 'null' : null);
 };
