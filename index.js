@@ -57,7 +57,7 @@ Discord.GuildMember = class extends Discord.BaseGuildMember {
                 // console.log('AA', member.id);
                 // console.log('BB', this.id);
                 // console.log('CC', Reflect.get(member, 'id'));
-                console.log('DD', Reflect.get(this, 'id'));
+                // console.log('DD', Reflect.get(this, 'id'));
                 console.log('EE', super.id);
                 console.log('FF', realMember.id);
                 console.log('GG', Reflect.get(realMember, 'id'));
