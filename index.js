@@ -48,28 +48,23 @@ exports.YtInfo.setKey(Auth.youtube);
 
 Discord.BaseGuildMember = Discord.GuildMember;
 
-Discord.GuildMember = class {
+class ExtendableProxy {
     constructor(guild, data) {
-        const realMember = new Discord.BaseGuildMember(guild, data);
+        this.OriginalGuildMember = new Discord.BaseGuildMember(guild, data);
+
         return new Proxy(this, {
-            get: (member, prop) => {
-                console.log('ZZ', realMember);
-                console.log(444);
-                // console.log('AA', member.id);
-                // console.log('BB', this.id);
-                // console.log('CC', Reflect.get(member, 'id'));
-                // console.log('DD', Reflect.get(this, 'id'));
-                // console.log('EE', super.id);
-                // console.log('FF', realMember.id);
-                console.log('GG', Reflect.get(realMember, 'id'));
-                if (Reflect.has(member, prop) && prop !== 'user') return member[prop];
-                else if (Reflect.has(Reflect.get(member, 'user'), prop)) return Reflect.get(member.user, prop);
-                return undefined;
+            get: (object, key) => {
+                return this.OriginalGuildMember[key];
             },
-            // getPrototypeOf: member => Reflect.getPrototypeOf(member),
+            set: (object, key, value) => {
+                this.OriginalGuildMember[key] = value;
+                return value;
+            },
         });
     }
-};
+}
+
+Discord.GuildMember = class extends ExtendableProxy {};
 
 /* Discord.GuildMember.prototype.getProp = function (p) {
     if (this[p] != null) return this[p];
