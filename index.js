@@ -53,7 +53,7 @@ Discord.GuildMember = class extends Discord.BaseGuildMember {
         super(guild, data);
         return new Proxy(this, {
             get: (member, prop) => {
-                console.log('QQ', member);
+                // console.log('QQ', member);
                 console.log('AA', member.id);
                 console.log('BB', this.id);
                 console.log('CC', super.id);
