@@ -2004,7 +2004,7 @@ exports.isAdmin = function (member) {
     const highestRole = member.highestRole;
     const guildRolesFromTop = exports.getGuildRoles(member.guild);
 
-    for (let i = 0; i < guildRolesFromTop; i++) {
+    for (let i = 0; i < guildRolesFromTop.length; i++) {
         const role = guildRolesFromTop[i];
         if (/\bmod/g.test(role.name.toLowerCase())) {
             return false;
