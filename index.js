@@ -324,13 +324,8 @@ exports.secure = async function () {
     let securityNum = 0;
     const veilGuildsNum = Object.keys(veilGuilds).length;
 
-    await Promise.all(client.guilds.map(async (guild) => {
-        const newGuild = await guild.fetchMembers();
-        if (newGuild == null) {
-            Util.log(newGuild);
-            Util.log('Found null guild');
-            return;
-        }
+    await Promise.all(client.guilds.map(async (newGuild) => {
+        await newGuild.fetchMembers();
 
         if (has.call(veilGuilds, newGuild.id)) {
             securityNum++;
@@ -361,8 +356,8 @@ client.on('ready', async () => {
 
     const dbGuilds = [];
 
-    await Promise.all(client.guilds.map(async (guild) => {
-        const newGuild = await guild.fetchMembers();
+    await Promise.all(client.guilds.map(async (newGuild) => {
+        await newGuild.fetchMembers();
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
     }));
