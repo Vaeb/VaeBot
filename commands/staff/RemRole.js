@@ -55,8 +55,7 @@ module.exports = Cmds.addCommand({
             Util.makeEmbedFooter(speaker), // Username + ID String
             Util.getAvatar(user), // Avatar URL String
             colGreen, // Color Number
-            sendEmbedFields,
-        );
+            sendEmbedFields);
 
         return true;
     },
