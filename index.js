@@ -50,7 +50,7 @@ Discord.BaseGuildMember = Discord.GuildMember;
 
 Discord.GuildMember = class {
     constructor(guild, data) {
-        const realMember = Discord.BaseGuildMember(guild, data);
+        const realMember = new Discord.BaseGuildMember(guild, data);
         return new Proxy(this, {
             get: (member, prop) => {
                 // console.log('QQ', member);
