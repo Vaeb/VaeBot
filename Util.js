@@ -2023,7 +2023,6 @@ exports.getRole = function (nameParam, obj) {
 
     name = name.toLowerCase();
     const nameId = exports.getSafeId(name);
-    Util.log('Available', obj.available);
     const roles = obj.roles;
     return roles.find(role => (role.name.toLowerCase().includes(name) || role.id === nameId));
 };
