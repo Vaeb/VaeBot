@@ -66,7 +66,7 @@ Discord.GuildMember = class {
                 else if (Reflect.has(Reflect.get(member, 'user'), prop)) return Reflect.get(member.user, prop);
                 return undefined;
             },
-            getPrototypeOf: member => Reflect.getPrototypeOf(member),
+            // getPrototypeOf: member => Reflect.getPrototypeOf(member),
         });
     }
 };
