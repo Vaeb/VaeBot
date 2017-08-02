@@ -50,13 +50,17 @@ Discord.BaseGuildMember = Discord.GuildMember;
 
 Discord.GuildMember = class extends Discord.BaseGuildMember {
     constructor(guild, data) {
-        super(guild, data);
+        const realMember = super(guild, data);
         return new Proxy(this, {
             get: (member, prop) => {
                 // console.log('QQ', member);
                 // console.log('AA', member.id);
-                console.log('BB', this.id);
-                console.log('CC', super.id);
+                // console.log('BB', this.id);
+                console.log('CC', Reflect.get(member, 'id'));
+                console.log('DD', Reflect.get(this, 'id'));
+                console.log('EE', super.id);
+                console.log('FF', realMember.id);
+                console.log('GG', Reflect.get(realMember, 'id'));
                 if (Reflect.has(member, prop) && prop !== 'user') return member[prop];
                 else if (Reflect.has(Reflect.get(member, 'user'), prop)) return Reflect.get(member.user, prop);
                 return undefined;
