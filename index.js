@@ -48,7 +48,7 @@ exports.YtInfo.setKey(Auth.youtube);
 
 Discord.BaseGuildMember = Discord.GuildMember;
 
-Discord.GuildMember = class extends Discord.BaseGuildMember {
+Discord.NewGuildMember = class extends Discord.BaseGuildMember {
     constructor(guild, data) {
         super(guild, data);
         return new Proxy(this, {
@@ -61,6 +61,9 @@ Discord.GuildMember = class extends Discord.BaseGuildMember {
         });
     }
 };
+
+Discord.GuildMember.prototype = Discord.NewGuildMember.prototype;
+Discord.GuildMember.constructor = Discord.NewGuildMember.constructor;
 
 /* class ExtendableProxy {
     constructor(guild, data) {
