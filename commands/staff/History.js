@@ -28,7 +28,7 @@ module.exports = Cmds.addCommand({
         for (let i = 0; i < allMutes.length; i++) {
             const record = allMutes[i];
             const userId = record.user_id;
-            if (!has.call(numMutesKeys, userId)) numMutesKeys[userId] = numMutesArr.push([`<@${userId}>`, 0]);
+            if (!has.call(numMutesKeys, userId)) numMutesKeys[userId] = numMutesArr.push([`<@${userId}>`, 0]) - 1;
             ++numMutesArr[numMutesKeys[userId]][1];
         }
 
@@ -38,7 +38,7 @@ module.exports = Cmds.addCommand({
             if (!has.call(splitMutesKeys, numMutes)) {
                 const chunk = [];
                 chunk.numMutes = numMutes;
-                splitMutesKeys[numMutes] = splitMutesArr.push(chunk);
+                splitMutesKeys[numMutes] = splitMutesArr.push(chunk) - 1;
             }
             splitMutesArr[splitMutesKeys[numMutes]].push(userMention);
         }
