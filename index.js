@@ -50,17 +50,19 @@ Discord.BaseGuildMember = Discord.GuildMember;
 
 class ExtendableProxy {
     constructor(guild, data) {
-        /* this.OriginalGuildMember = new Discord.BaseGuildMember(guild, data);
+        const OriginalGuildMember = new Discord.BaseGuildMember(guild, data);
 
         return new Proxy(this, {
             get: (object, key) => {
-                return this.OriginalGuildMember[key];
+                console.log('GOT');
+                console.log(OriginalGuildMember != null);
+                return OriginalGuildMember[key];
             },
             set: (object, key, value) => {
-                this.OriginalGuildMember[key] = value;
+                OriginalGuildMember[key] = value;
                 return value;
             },
-        }); */
+        });
     }
 }
 
