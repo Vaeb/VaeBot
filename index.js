@@ -46,14 +46,30 @@ global.Discord = require('discord.js');
 
 exports.YtInfo.setKey(Auth.youtube);
 
-Discord.GuildMember.prototype.getProp = function (p) {
+Discord.BaseGuildMember = Discord.GuildMember;
+
+Discord.GuildMember = class extends Discord.BaseGuildMember {
+    constructor(guild, data) {
+        super(guild, data);
+        return new Proxy(this, {
+            get: (member, prop) => {
+                if (Reflect.has(member, prop) && prop !== 'user') return Reflect.get(member, prop);
+                else if (Reflect.has(member.user, prop)) return Reflect.get(member.user, prop);
+                return undefined;
+            },
+            getPrototypeOf: member => Reflect.getPrototypeOf(member),
+        });
+    }
+};
+
+/* Discord.GuildMember.prototype.getProp = function (p) {
     if (this[p] != null) return this[p];
     return this.user[p];
 };
 
 Discord.User.prototype.getProp = function (p) {
     return this[p];
-};
+}; */
 
 global.client = new Discord.Client({
     disabledEvents: ['TYPING_START'],
