@@ -53,8 +53,8 @@ Discord.GuildMember = class extends Discord.BaseGuildMember {
         super(guild, data);
         return new Proxy(this, {
             get: (member, prop) => {
-                if (Reflect.has(member, prop) && prop !== 'user') return Reflect.get(member, prop);
-                else if (Reflect.has(member.user, prop)) return Reflect.get(member.user, prop);
+                if (Reflect.has(this, prop) && prop !== 'user') return Reflect.get(member, prop);
+                else if (Reflect.has(this.user, prop)) return Reflect.get(member.user, prop);
                 return undefined;
             },
             getPrototypeOf: member => Reflect.getPrototypeOf(member),
