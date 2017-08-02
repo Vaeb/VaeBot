@@ -1075,7 +1075,7 @@ exports.sortPerms = function (permsArr) {
 };
 
 exports.getGuildRoles = function (guild) {
-    return guild.roles.sort((a, b) => b.position - a.position); // From highest to lowest
+    return Array.from(guild.roles.values()).sort((a, b) => b.position - a.position); // From highest to lowest
 };
 
 exports.getName = function (userResolvable) {

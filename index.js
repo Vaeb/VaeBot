@@ -44,8 +44,6 @@ global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
 
-exports.YtInfo.setKey(Auth.youtube);
-
 Discord.BaseGuildMember = Discord.GuildMember;
 
 Discord.NewGuildMember = class extends Discord.BaseGuildMember {
@@ -91,6 +89,8 @@ Discord.GuildMember = class extends ExtendableProxy {}; */
 Discord.User.prototype.getProp = function (p) {
     return this[p];
 }; */
+
+exports.YtInfo.setKey(Auth.youtube);
 
 global.client = new Discord.Client({
     disabledEvents: ['TYPING_START'],
