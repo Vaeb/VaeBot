@@ -15,6 +15,7 @@ exports.dayMilli = 86400000;
 exports.badOffenses = [
     { offense: 'Posting nsfw images', time: 1000 * 60 * 60 * 24 * 1 },
     { offense: 'Posting nsfw images with VaeBot', time: 1000 * 60 * 60 * 24 * 2 },
+    { offense: 'Sending dangerous files', time: 1000 * 60 * 60 * 24 * 3.5 },
     { offense: 'Genuine scamming', time: 1000 * 60 * 60 * 24 * 7 },
 ];
 
