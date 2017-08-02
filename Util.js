@@ -1075,23 +1075,7 @@ exports.sortPerms = function (permsArr) {
 };
 
 exports.getGuildRoles = function (guild) {
-    const roles = [];
-    const guildRoles = guild.roles;
-
-    guildRoles.forEach((nowRole) => {
-        const rolePos = nowRole.position;
-        let index;
-
-        for (index = 0; index < roles.length; index++) {
-            if (rolePos > roles[index].position) {
-                break;
-            }
-        }
-
-        roles.splice(index, 0, nowRole);
-    });
-
-    return roles;
+    return guild.roles.sort((a, b) => b.position - a.position); // From highest to lowest
 };
 
 exports.getName = function (userResolvable) {
@@ -2014,6 +1998,22 @@ exports.findVoiceChannel = function (nameParam, guild) {
     name = name.toLowerCase();
     const channels = exports.getVoiceChannels(guild);
     return channels.find(nowChannel => nowChannel.id === name || nowChannel.name.toLowerCase() === name);
+};
+
+exports.isAdmin = function (member) {
+    const highestRole = member.highestRole;
+    const guildRolesFromTop = exports.getGuildRoles(member.guild);
+
+    for (let i = 0; i < guildRolesFromTop; i++) {
+        const role = guildRolesFromTop[i];
+        if (/\bmod/g.test(role.name.toLowerCase())) {
+            return false;
+        } else if (role.id == highestRole.id) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 exports.getRole = function (nameParam, obj) {
