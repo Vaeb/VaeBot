@@ -334,6 +334,13 @@ function getNextMuteTime(time, muteReason, pastMutes) {
     return time ? Math.min(time, maxMuteLength) : maxMuteLength;
 }
 
+async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
+    if (Util.isObject(userResolvable)) userResolvable = userResolvable.id;
+    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userResolvable }).length;
+
+    return getNextMuteTime(time, muteReason, pastMutes);
+}
+
 function unBanMember(guild, channel, resolvedUser, resolvedModerator, extra) {
     const tempStr = extra.temp ? 'Temp' : '';
 
@@ -409,13 +416,6 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
     });
 
     return true;
-}
-
-async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
-    if (Util.isObject(userResolvable)) userResolvable = userResolvable.id;
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userResolvable }).length;
-
-    return getNextMuteTime(time, muteReason, pastMutes);
 }
 
 exports.higherRank = higherRank;
@@ -628,7 +628,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Send relevant messages
 
-    sendAlert('ChangeMute', guild, channel, resolvedUser, resolvedModerator, { total: totalMutes, lengthStr: muteLengthStrChanges, reason: muteReasonChanges, endStrChanges });
+    sendAlert('ChangeMute', guild, channel, resolvedUser, resolvedModerator, { total: totalMutes, lengthStr: muteLengthStrChanges, reason: muteReasonChanges, endStr: endStrChanges });
 
     Util.logc('Admin1', 'Completed ChangeMute');
 
