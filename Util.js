@@ -2200,18 +2200,50 @@ exports.fetchMessagesEx = function (channel, left, store, lastParam) {
         .then(messages => exports.onFetch(messages, channel, left, store));
 };
 
+let mirrorProperties = function (member) {
+    const memberProto = Object.getPrototypeOf(member);
+    const userProto = Object.getPrototypeOf(member.user);
+    for (let key in member.user) {
+        let desc = Object.getOwnPropertyDescriptor(memberProto, key);
+        if (!desc) {
+            Object.defineProperty(memberProto, key, {
+                get() {
+                    return this.user[key];
+                },
+                set(val) {
+                    this.user[key] = val;
+                }
+            });
+        }
+    }
+    let descriptors = Object.getOwnPropertyDescriptors(userProto);
+    for (let key in descriptors) {
+        let desc = Object.getOwnPropertyDescriptor(memberProto, key);
+        if (key != 'constructor' && !desc) {
+            Object.defineProperty(memberProto, key, {
+                get() {
+                    return this.user[key];
+                },
+                set(val) {
+                    this.user[key] = val;
+                }
+            });
+        }
+    }
+};
+
 let proxyId = 0;
 
 exports.addProxy = function (member) {
     Util.log('Adding new proxy:');
     Util.log(`Adding proxy to ${String(member)}`);
-    const oldPrototype = Object.getPrototypeOf(member);
+    /* const oldPrototype = Object.getPrototypeOf(member);
 
     if (Reflect.has(oldPrototype, 'proxyId')) return false;
 
-    const nowProxyId = proxyId++;
+    const nowProxyId = proxyId++; */
 
-    const userProxy = new Proxy({ proxyId: nowProxyId }, {
+    /* const userProxy = new Proxy({ proxyId: nowProxyId }, {
         get(storage, prop) {
             Util.log(`Getting ${prop} from ${nowProxyId}`);
             if (Reflect.has(member, prop)) return Reflect.get(member, prop);
@@ -2228,8 +2260,10 @@ exports.addProxy = function (member) {
             return Reflect.getPrototypeOf(member);
         },
     });
+    
+    Object.setPrototypeOf(member, userProxy); */
 
-    Object.setPrototypeOf(member, userProxy);
+    mirrorProperties(member);
 
     return true;
 };
