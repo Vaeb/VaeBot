@@ -2200,6 +2200,38 @@ exports.fetchMessagesEx = function (channel, left, store, lastParam) {
         .then(messages => exports.onFetch(messages, channel, left, store));
 };
 
+exports.addedProxies = {};
+let proxyId = 0;
+
+exports.addProxy = function (member) {
+    const oldPrototype = Object.getPrototypeOf(member);
+
+    if (Reflect.has(oldPrototype, 'proxyId')) return false;
+
+    const nowProxyId = proxyId++;
+
+    const userProxy = new Proxy({ proxyId: nowProxyId }, {
+        get(storage, prop) {
+            if (Reflect.has(member, prop)) return Reflect.get(member, prop);
+            else if (Reflect.has(oldPrototype, prop)) return Reflect.get(oldPrototype, prop, member);
+            else if (Reflect.has(member.user, prop)) return Reflect.get(member.user, prop);
+            return storage[prop];
+        },
+        set(storage, prop, val) {
+            Util.logc('Setter', 'Setting', prop, 'to', val);
+            Reflect.set(member, prop, val); // Could 1st arg be oldPrototype and 4th be member?
+            return val;
+        },
+        getPrototypeOf() {
+            return Reflect.getPrototypeOf(member);
+        },
+    });
+
+    Object.setPrototypeOf(member, userProxy);
+
+    return true;
+};
+
 exports.onFetch = function (messagesParam, channel, leftParam, store) {
     let messages = messagesParam;
     let left = leftParam;

@@ -60,8 +60,7 @@ Discord.NewGuildMember = class extends Discord.BaseGuildMember {
     }
 };
 
-Discord.GuildMember.prototype = Discord.NewGuildMember.prototype;
-Discord.GuildMember.constructor = Discord.NewGuildMember.constructor;
+Object.setPrototypeOf(Discord.GuildMember.prototype, Discord.NewGuildMember.prototype);
 
 /* class ExtendableProxy {
     constructor(guild, data) {
@@ -394,7 +393,9 @@ client.on('ready', async () => {
     const dbGuilds = [];
 
     await Promise.all(client.guilds.map(async (newGuild) => {
-        await newGuild.fetchMembers();
+        const allMembers = await newGuild.fetchMembers();
+
+        allMembers.forEach(m => Util.addProxy(m));
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
     }));
@@ -410,6 +411,12 @@ client.on('disconnect', (closeEvent) => {
     Util.log(`Code: ${closeEvent.code}`);
     Util.log(`Reason: ${closeEvent.reason}`);
     Util.log(`Clean: ${closeEvent.wasClean}`);
+});
+
+client.on('guildCreate', (guild) => {
+    guild.fetchMembers().then((allMembers) => {
+        allMembers.forEach(m => Util.addProxy(m));
+    });
 });
 
 client.on('guildMemberRemove', (member) => {
@@ -429,6 +436,8 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.on('guildMemberAdd', (member) => {
+    Util.addProxy(member);
+
     const guild = member.guild;
 
     const guildName = guild.name;
@@ -508,6 +517,13 @@ client.on('guildMemberAdd', (member) => {
         }
     }
 
+    Data.getRecords(guild, 'members', { user_id: member.id }).then((results) => {
+        if (results.length == 0) {
+            Data.addRecord(guild, 'members', { user_id: member.id, buyer: Util.hasRoleName(member, 'Buyer') ? 1 : 0, nickname: member.nickname });
+            Util.logc(memberId, `Adding new member ${Util.getFullName(member)} to MySQL DB`);
+        }
+    });
+
     if (memberId === '280579952263430145') member.setNickname('<- mentally challenged');
 
     Events.emit(guild, 'UserJoin', member);
@@ -566,6 +582,15 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendLog(sendLogData, colUser);
             }
 
+            if (nowRole.name === 'Buyer') {
+                Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
+                    if (results.length == 0) {
+                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 1, nickname: member.nickname });
+                        Util.logc('BuyerAdd1', `Adding ${Util.getFullName(member)} as a buyer in MySQL DB`);
+                    }
+                });
+            }
+
             Events.emit(guild, 'UserRoleAdd', member, nowRole);
         });
     }
@@ -586,6 +611,15 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                     { name: 'Role Name', value: nowRole.name },
                 ];
                 Util.sendLog(sendLogData, colUser);
+            }
+
+            if (nowRole.name === 'Buyer') {
+                Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
+                    if (results.length > 0) {
+                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 0, nickname: member.nickname });
+                        Util.logc('BuyerAdd1', `Removed ${Util.getFullName(member)} as a buyer in MySQL DB`);
+                    }
+                });
             }
 
             Events.emit(guild, 'UserRoleRemove', member, nowRole);
