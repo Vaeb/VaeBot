@@ -386,7 +386,8 @@ client.on('ready', async () => {
     await Promise.all(client.guilds.map(async (newGuild) => {
         const allMembers = await newGuild.fetchMembers();
 
-        allMembers.forEach(m => Util.addProxy(m));
+        // allMembers.forEach(m => Util.addProxy(m));
+        Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
     }));
@@ -427,7 +428,7 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.on('guildMemberAdd', (member) => {
-    Util.addProxy(member);
+    // Util.addProxy(member);
 
     const guild = member.guild;
 
