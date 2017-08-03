@@ -49,18 +49,9 @@ Discord.BaseGuildMember = Discord.GuildMember;
 Discord.NewGuildMember = class extends Discord.BaseGuildMember {
     constructor(guild, data) {
         super(guild, data);
-        return new Proxy(this, {
-            get: (member, prop) => {
-                if (Reflect.has(member, prop) && prop !== 'user') return Reflect.get(member, prop);
-                else if (Reflect.has(member.user, prop)) return Reflect.get(member.user, prop);
-                return undefined;
-            },
-            getPrototypeOf: member => Reflect.getPrototypeOf(member),
-        });
+        Util.addProxy(this);
     }
 };
-
-Object.setPrototypeOf(Discord.GuildMember.prototype, Discord.NewGuildMember.prototype);
 
 /* class ExtendableProxy {
     constructor(guild, data) {
