@@ -2204,6 +2204,7 @@ exports.addedProxies = {};
 let proxyId = 0;
 
 exports.addProxy = function (member) {
+    Util.log(`Adding proxy to ${String(member)}`);
     const oldPrototype = Object.getPrototypeOf(member);
 
     if (Reflect.has(oldPrototype, 'proxyId')) return false;
@@ -2212,6 +2213,7 @@ exports.addProxy = function (member) {
 
     const userProxy = new Proxy({ proxyId: nowProxyId }, {
         get(storage, prop) {
+            Util.log(`Getting ${prop} from ${nowProxyId}`);
             if (Reflect.has(member, prop)) return Reflect.get(member, prop);
             else if (Reflect.has(oldPrototype, prop)) return Reflect.get(oldPrototype, prop, member);
             else if (Reflect.has(member.user, prop)) return Reflect.get(member.user, prop);
