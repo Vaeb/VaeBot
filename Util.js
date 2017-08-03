@@ -2200,50 +2200,47 @@ exports.fetchMessagesEx = function (channel, left, store, lastParam) {
         .then(messages => exports.onFetch(messages, channel, left, store));
 };
 
-let mirrorProperties = function (member) {
+function mirrorProperties(member) {
     const memberProto = Object.getPrototypeOf(member);
     const userProto = Object.getPrototypeOf(member.user);
-    for (let key in member.user) {
-        let desc = Object.getOwnPropertyDescriptor(memberProto, key);
-        if (!desc) {
+    for (const key in member.user) {
+        if (!Object.getOwnPropertyDescriptor(memberProto, key)) {
             Object.defineProperty(memberProto, key, {
                 get() {
                     return this.user[key];
                 },
                 set(val) {
                     this.user[key] = val;
-                }
+                },
             });
         }
     }
-    let descriptors = Object.getOwnPropertyDescriptors(userProto);
-    for (let key in descriptors) {
-        let desc = Object.getOwnPropertyDescriptor(memberProto, key);
-        if (key != 'constructor' && !desc) {
+    const descriptors = Object.getOwnPropertyDescriptors(userProto);
+    for (const key in descriptors) {
+        if (!Object.getOwnPropertyDescriptor(memberProto, key)) {
             Object.defineProperty(memberProto, key, {
                 get() {
                     return this.user[key];
                 },
                 set(val) {
                     this.user[key] = val;
-                }
+                },
             });
         }
     }
-};
+}
 
-let proxyId = 0;
+exports.mergeUser = function (member) {
+    // Util.log('Adding new proxy:');
+    // Util.log(`Adding proxy to ${String(member)}`);
 
-exports.addProxy = function (member) {
-    Util.log('Adding new proxy:');
-    Util.log(`Adding proxy to ${String(member)}`);
     /* const oldPrototype = Object.getPrototypeOf(member);
 
     if (Reflect.has(oldPrototype, 'proxyId')) return false;
 
-    const nowProxyId = proxyId++; */
+    const nowProxyId = proxyId++;
 
-    /* const userProxy = new Proxy({ proxyId: nowProxyId }, {
+    const userProxy = new Proxy({ proxyId: nowProxyId }, {
         get(storage, prop) {
             Util.log(`Getting ${prop} from ${nowProxyId}`);
             if (Reflect.has(member, prop)) return Reflect.get(member, prop);

@@ -44,14 +44,14 @@ global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
 
-Discord.BaseGuildMember = Discord.GuildMember;
+/* Discord.BaseGuildMember = Discord.GuildMember;
 
 Discord.NewGuildMember = class extends Discord.BaseGuildMember {
     constructor(guild, data) {
         super(guild, data);
-        Util.addProxy(this);
+        Util.mergeUser(this);
     }
-};
+}; */
 
 /* class ExtendableProxy {
     constructor(guild, data) {
@@ -386,7 +386,7 @@ client.on('ready', async () => {
     await Promise.all(client.guilds.map(async (newGuild) => {
         const allMembers = await newGuild.fetchMembers();
 
-        // allMembers.forEach(m => Util.addProxy(m));
+        allMembers.forEach(m => Util.mergeUser(m));
         Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
@@ -407,7 +407,7 @@ client.on('disconnect', (closeEvent) => {
 
 client.on('guildCreate', (guild) => {
     guild.fetchMembers().then((allMembers) => {
-        allMembers.forEach(m => Util.addProxy(m));
+        allMembers.forEach(m => Util.mergeUser(m));
     });
 });
 
@@ -428,7 +428,7 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.on('guildMemberAdd', (member) => {
-    // Util.addProxy(member);
+    Util.mergeUser(member);
 
     const guild = member.guild;
 
