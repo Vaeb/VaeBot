@@ -336,7 +336,7 @@ function getNextMuteTime(time, muteReason, pastMutes) {
 
 async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
     if (Util.isObject(userResolvable)) userResolvable = userResolvable.id;
-    const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: userResolvable }).length;
+    const pastMutes = (await Data.getRecords(guild, 'mutes', { user_id: userResolvable })).length;
 
     return getNextMuteTime(time, muteReason, pastMutes);
 }
