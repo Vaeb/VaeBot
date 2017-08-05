@@ -1111,109 +1111,109 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Admin.checkMuted(guild, author.id)) {
-        if (!has.call(userStatus, authorId)) userStatus[authorId] = 0;
-        if (!has.call(messageStamps, authorId)) messageStamps[authorId] = [];
-        const nowStamps = messageStamps[authorId];
-        const stamp = (+new Date());
-        nowStamps.unshift({ stamp, message: contentLower });
-        if (Util.isSpam(content)) {
-            if (userStatus[authorId] == 0) {
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Admin.checkMuted(guild, author.id)) { // If they are eligible for anti-spam checks
+        if (!has.call(userStatus, authorId)) userStatus[authorId] = 0; // Initialise user status
+        if (!has.call(messageStamps, authorId)) messageStamps[authorId] = []; // Initialise user message storage
+        const nowStamps = messageStamps[authorId]; // Get user message storage
+        const stamp = (+new Date()); // Get current timestamp
+        nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
+        if (Util.isSpam(content)) { // Check if the message contains single-message-spam
+            if (userStatus[authorId] == 0) { // If the user has not yet been warned recently
                 Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} warned`);
-                Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
-                lastWarn[authorId] = stamp;
-                userStatus[authorId] = 2;
-            } else {
+                Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
+                lastWarn[authorId] = stamp; // Record time of warning in case they get another one soon
+                userStatus[authorId] = 2; // Set status to "monitoring for spam on high alert"
+            } else { // If the user has already had a warning
                 Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} muted`);
-                Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
-                userStatus[authorId] = 0;
+                Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user
+                userStatus[authorId] = 0; // Reset their status to the default
             }
         }
-        if (!Admin.checkMuted(guild, author.id) && userStatus[authorId] !== 1) {
-            if (nowStamps.length > checkMessages) {
-                nowStamps.splice(checkMessages, nowStamps.length - checkMessages);
+        if (!Admin.checkMuted(guild, author.id) && userStatus[authorId] !== 1) { // If the user has not been muted and they are not currently being timeout-analysed for spam
+            if (nowStamps.length > checkMessages) { // If the user has more than the number of messages to check stored
+                nowStamps.splice(checkMessages, nowStamps.length - checkMessages); // Remove the oldest messages
             }
-            if (nowStamps.length >= checkMessages) {
-                const oldStamp = nowStamps[checkMessages - 1].stamp;
-                const elapsed = (stamp - oldStamp) / 1000;
-                const grad1 = (checkMessages / elapsed) * 10;
-                let checkGrad1 = sameGrad;
-                const latestMsg = nowStamps[0].message;
-                for (let i = 0; i < checkMessages; i++) {
-                    if (nowStamps[i].message !== latestMsg) {
-                        checkGrad1 = warnGrad;
+            if (nowStamps.length >= checkMessages) { // If they have enough messages recorded to check for spam
+                const oldStamp = nowStamps[checkMessages - 1].stamp; // Get the oldest message's timestamp
+                const elapsed = (stamp - oldStamp) / 1000; // Get the time elapsed since then in seconds
+                const grad1 = (checkMessages / elapsed) * 10; // Calculate the gradient (velocity) at which they sent messages
+                let checkGrad1 = sameGrad; // Initialise the comparison gradient as the sensitive gradient for if all messages are the same
+                const latestMsg = nowStamps[0].message; // Get the latest (current) message's content
+                for (let i = 0; i < checkMessages; i++) { // Go through all the recorded messages
+                    if (nowStamps[i].message != latestMsg) { // If all the content is *not* the same
+                        checkGrad1 = warnGrad; // Use the normal comparison gradient
                         break;
                     }
                 }
                 // Util.log("User: " + Util.getName(speaker) + " | Elapsed Since " + checkMessages + " Messages: " + elapsed + " | Gradient1: " + grad1);
-                if (grad1 >= checkGrad1) { // Is spamming
-                    if (userStatus[authorId] === 0) {
+                if (grad1 >= checkGrad1) { // If the current gradient (velocity) is higher than the comparison gradient
+                    if (userStatus[authorId] === 0) { // If the user hasn't been warned recently
                         Util.logc('AntiSpam1', `[1] ${Util.getName(speaker)} warned, gradient ${grad1} larger than ${checkGrad1}`);
-                        userStatus[authorId] = 1;
+                        userStatus[authorId] = 1; // Set status to "analysing their future messages"
                         Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted');
-                        setTimeout(() => {
-                            const lastStamp = nowStamps[0].stamp;
-                            setTimeout(() => {
-                                if (Admin.checkMuted(guild, author.id)) {
+                        setTimeout(() => { // Set a timeout for if they haven't seen the warning message yet (not using await due to ratelimtis in raids)
+                            const lastStamp = nowStamps[0].stamp; // Get the timestamp of the latest message
+                            setTimeout(() => { // Continue storing all their messages for monitoring until this timer ends
+                                if (Admin.checkMuted(guild, author.id)) { // If they've been muted during this time cancel the analysis here
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} is already muted`);
-                                    userStatus[authorId] = 0;
-                                    return;
+                                    userStatus[authorId] = 0; // Reset status to default
+                                    return; // Cancel
                                 }
-                                let numNew = 0;
-                                let checkGrad2 = sameGrad;
-                                const newStamp = (+new Date());
-                                const latestMsg2 = nowStamps[0].message;
+                                let numNew = 0; // Declare var for counting new messages
+                                let checkGrad2 = sameGrad; // Initialise the comparison gradient as the sensitive gradient for if all messages are the same
+                                const newStamp = (+new Date()); // Get the new current timestamp
+                                const latestMsg2 = nowStamps[0].message; // Get the most recent message's content
                                 // var origStamp2;
-                                for (let i = 0; i < nowStamps.length; i++) {
+                                for (let i = 0; i < nowStamps.length; i++) { // For each new message from latest
                                     const curStamp = nowStamps[i];
-                                    const isFinal = curStamp.stamp === lastStamp;
-                                    if (isFinal && stamp === lastStamp) break;
-                                    numNew++;
+                                    const isFinal = curStamp.stamp === lastStamp; // Is it the oldest (excluded) message
+                                    if (isFinal && stamp === lastStamp) break; // If so and the oldest message was also the original message (no new messages) then break
+                                    numNew++; // Increase total message count
                                     // origStamp2 = curStamp.stamp;
-                                    if (curStamp.message !== latestMsg2) checkGrad2 = muteGrad;
-                                    if (isFinal) break;
+                                    if (curStamp.message != latestMsg2) checkGrad2 = muteGrad; // If messages are not the same use nkrmal gradient
+                                    if (isFinal) break; // If it was the final message to check then break
                                 }
-                                if (numNew <= 1) {
+                                if (numNew == 0) { // If they haven't sent any new messages
                                     Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} stopped spamming and was put on alert`);
-                                    lastWarn[authorId] = newStamp;
-                                    userStatus[authorId] = 2;
-                                    return;
+                                    lastWarn[authorId] = newStamp; // Store the stamp for their last warning
+                                    userStatus[authorId] = 2; // Set status to monitoring on high alert
+                                    return; // Cancel
                                 }
-                                let numNew2 = 0;
+                                let numNew2 = 0; // New var for counting messages
                                 let elapsed2 = 0;
                                 let grad2 = 0;
                                 // var elapsed2 = (newStamp-origStamp2)/1000;
                                 // var grad2 = (numNew/elapsed2)*10;
-                                for (let i = 2; i < numNew; i++) {
-                                    const curStamp = nowStamps[i].stamp;
-                                    const nowElapsed = (newStamp - curStamp) / 1000;
-                                    const nowGradient = ((i + 1) / nowElapsed) * 10;
-                                    if (nowGradient > grad2) {
-                                        grad2 = nowGradient;
-                                        elapsed2 = nowElapsed;
-                                        numNew2 = i + 1;
+                                for (let i = 2; i < numNew; i++) { // They must have sent at least 2 messages
+                                    const curStamp = nowStamps[i].stamp; // Get now message time
+                                    const nowElapsed = (newStamp - curStamp) / 1000; // Get time elapsed between the message and now
+                                    const nowGradient = ((i + 1) / nowElapsed) * 10; // Calculate gradient for message sending velocity over the time since this message
+                                    if (nowGradient > grad2) { // If now gradient is larger than highest record gradient
+                                        grad2 = nowGradient; // Set gradient as highest recorded
+                                        elapsed2 = nowElapsed; // Set elapsed as elapsed time between this message and now
+                                        numNew2 = i + 1; // Set number of new messages as i+1
                                     }
                                 }
                                 Util.logc('AntiSpam1', `[2] User: ${Util.getName(speaker)} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`);
-                                if (grad2 >= checkGrad2) {
+                                if (grad2 >= checkGrad2) { // If gradient (velocity) is higher than checking gradient
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} muted, gradient ${grad2} larger than ${checkGrad2}`);
-                                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
-                                    userStatus[authorId] = 0;
+                                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute user
+                                    userStatus[authorId] = 0; // Reset monitoring status to normal
                                 } else {
                                     Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} was put on alert`);
-                                    lastWarn[authorId] = newStamp;
-                                    userStatus[authorId] = 2;
+                                    lastWarn[authorId] = newStamp;// Store the stamp for their last warning
+                                    userStatus[authorId] = 2; // Set status to monitoring on high alert
                                 }
                             }, waitTime * 1000);
                         }, 350);
-                    } else if (userStatus[authorId] === 2) {
+                    } else if (userStatus[authorId] === 2) { // If the user has already been warned recently
                         Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} muted, repeated warns`);
-                        Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' });
-                        userStatus[authorId] = 0;
+                        Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user for multiple warnings in a short period of time
+                        userStatus[authorId] = 0; // Reset user monitoring status to default
                     }
-                } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) {
+                } else if (userStatus[authorId] === 2 && (stamp - lastWarn[authorId]) > (endAlert * 1000)) { // If it's been longer than the necessary monitoring time since their last warning
                     Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} ended their alert`);
-                    userStatus[authorId] = 0;
+                    userStatus[authorId] = 0; // Deem the user safe and reset their monitoring status to normal
                 }
             }
         }

@@ -2468,57 +2468,59 @@ exports.getLines = function (str) {
 };
 
 exports.getLines2 = function (str) {
-    return exports.chunkString(str, 153);
+    return exports.chunkString(str, 153); // Take 153 characters as average line length on average 1080p window
 };
 
 function simplifyStr(str) {
-    for (let i = 1; i < str.length; i++) {
-        const num = str.length / i;
-        const sub = str.substr(0, i);
-        if (str == sub.repeat(num)) return [sub, num];
+    const strLength = str.length;
+    for (let i = 1; i < str.length; i++) { // Increment for number of characters in the string excluding before the last (no need to check if whole string is a repetition of itself)
+        const sub = str.substr(0, i); // Get the substring from start of length i
+        const num = strLength / i; // Get the number of times i goes into the length of the substring (number of times to repeat sub to make it fit)
+        const repeatedSub = sub.repeat(num); // Repeat the substring floor(num) times
+        if (repeatedSub == str) return [sub, num]; // If repeatedSub is equal to original string, return substring and repetition count
     }
-    return [str, 1];
+    return [str, 1]; // Return substring and repetition count
 }
 
 exports.isSpam = function (content) {
-    if (exports.getLines2(content).length >= 500) return true;
+    if (exports.getLines2(content).length >= 500) return true; // If the message contains too many chunk-lines (so characters) consider it spam
 
-    const pattern = /\S+/g;
-    const matches = content.match(pattern);
+    const pattern = /\S+/g; // Pattern for finding all matches for continuous substrings of non space characters
+    const matches = content.match(pattern); // Get the matches
 
-    for (let i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) { // Iterate through the matches
         // Util.log(`---${i + 1}---`);
-        for (let j = 0; j < matches.length; j++) {
-            let long = matches[j];
-            if (j + i >= matches.length) continue;
-            for (let k = 1; k <= i; k++) long += matches[j + k];
+        for (let j = 0; j < matches.length; j++) { // Iterate through the matches again in each iteration for concatenating multiple adjacent matches
+            let long = matches[j]; // Get the substring on non space characters
+            if (j + i >= matches.length) continue; // If there isn't a match at index j+i it can't be concatenated to joined-substring so skip
+            for (let k = 1; k <= i; k++) long += matches[j + k]; // Concatenate all matches after the one at j, onto the match at j, up until (inclusive) the match at i
             // Util.log(long);
-            const simpData = simplifyStr(long);
-            const sub = simpData[0];
-            const num = simpData[1];
-            const subLength = sub.length;
-            let triggered = false;
-            if (num >= 3) {
-                if (subLength == 1) { // 1 character, 100+ repetitions
-                    if (num >= 100) triggered = true;
-                } else if (subLength == 2) { // 2 characters, 20+ repetitions
-                    if (num >= 20) triggered = true;
-                } else if (subLength == 3) { // 3 characters, 7+ repetitions
-                    if (num >= 7) triggered = true;
-                } else if (subLength <= 5) { // 4-5 characters, 4+ repetitions
-                    if (num >= 4) triggered = true;
-                } else { // 6+ characters, 3+ repetitions
-                    triggered = true;
+            const simpData = simplifyStr(long); // Simplify the resultant concatenated substring that is made up of the match at j and the following matched substrings, to see if it consists of one repeated substring
+            const sub = simpData[0]; // The substring that can be repeated to make up the long var
+            const num = simpData[1]; // The number of times the substring needs to be repeated to make up the long var
+            const subLength = sub.length; // The number of characters in the repeated substring
+            let triggered = false; // Initialise spam detection variable
+            if (num >= 3) { // Only check for spam if substring has been repeated at least 3 times
+                if (subLength == 1) { // 1 character in substring, 100+ repetitions
+                    if (num >= 100) triggered = true; // Is spam
+                } else if (subLength == 2) { // 2 characters in substring, 20+ repetitions
+                    if (num >= 20) triggered = true; // Is spam
+                } else if (subLength == 3) { // 3 characters in substring, 7+ repetitions
+                    if (num >= 7) triggered = true; // Is spam
+                } else if (subLength <= 5) { // 4-5 characters in substring, 4+ repetitions
+                    if (num >= 4) triggered = true; // Is spam
+                } else { // 6+ characters in substring, 3+ repetitions
+                    triggered = true; // Is spam
                 }
             }
-            if (triggered) {
+            if (triggered) { // If it was counted as spam
                 Util.log(long, ':', sub, ':', num);
-                return true;
+                return true; // Return true (spam)
             }
         }
     }
 
-    return false;
+    return false; // Return false (not spam)
 };
 
 exports.reverse = function (str) {
