@@ -1133,7 +1133,7 @@ client.on('message', (msgObj) => {
             if (nowStamps.length > checkMessages) { // If the user has more than the number of messages to check stored
                 nowStamps.splice(checkMessages, nowStamps.length - checkMessages); // Remove the oldest messages
             }
-            if (nowStamps.length >= checkMessages) { // If they have enough messages recorded to check for spam
+            if (nowStamps.length >= checkMessages) { // Continue if they have enough messages recorded to check for multi-message spam
                 const oldStamp = nowStamps[checkMessages - 1].stamp; // Get the oldest message's timestamp
                 const elapsed = (stamp - oldStamp) / 1000; // Get the time elapsed since then in seconds
                 const grad1 = (checkMessages / elapsed) * 10; // Calculate the gradient (velocity) at which they sent messages
