@@ -916,7 +916,7 @@ Util.log(contentLower); */
 }); */
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     let contentLower = msgObj.content.toLowerCase();
     contentLower = contentLower.replace(/\s/g, '');
@@ -987,7 +987,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 });
 
 function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, original) {
-    if (speaker == null || msgObj == null || speaker.user.bot === true) return false;
+    if (speaker == null || msgObj == null || speaker.user.bot === true || speaker.id === vaebId) return false;
 
     if (original) {
         contentLower = contentLower.replace(/[\n\r]/g, ' ');
@@ -1111,7 +1111,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && !Admin.checkMuted(guild, author.id)) { // If they are eligible for anti-spam checks
+    if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && author.id !== vaebId && !Admin.checkMuted(guild, author.id)) { // If they are eligible for anti-spam checks
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0; // Initialise user status
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = []; // Initialise user message storage
         const nowStamps = messageStamps[authorId]; // Get user message storage
