@@ -1129,7 +1129,7 @@ client.on('message', (msgObj) => {
                 userStatus[authorId] = 0; // Reset their status to the default
             }
         }
-        if (!Admin.checkMuted(guild, author.id) && userStatus[authorId] !== 1) { // If the user has not been muted and they are not currently being timeout-analysed for spam
+        if (!Admin.checkMuted(guild, author.id) && userStatus[authorId] !== 1) { // If the user has not been muted in the single-message spam check and they are not currently being timeout-analysed for spam
             if (nowStamps.length > checkMessages) { // If the user has more than the number of messages to check stored
                 nowStamps.splice(checkMessages, nowStamps.length - checkMessages); // Remove the oldest messages
             }
