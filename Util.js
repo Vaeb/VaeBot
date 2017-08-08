@@ -1080,13 +1080,13 @@ exports.getGuildRoles = function (guild) {
 
 exports.getName = function (userResolvable) {
     if (userResolvable == null) return null;
-    if (typeof userResolvable == 'string') return userResolvable;
+    if (typeof userResolvable === 'string') return userResolvable;
     return Util.isMember(userResolvable) ? userResolvable.user.username : userResolvable.username;
 };
 
 exports.getMostName = function (userResolvable) {
     if (userResolvable == null) return null;
-    if (typeof userResolvable == 'string') return userResolvable;
+    if (typeof userResolvable === 'string') return userResolvable;
     const username = exports.getName(userResolvable);
     const discrim = Util.isMember(userResolvable) ? userResolvable.user.discriminator : userResolvable.discriminator;
     return `${username}#${discrim}`;
@@ -1094,7 +1094,7 @@ exports.getMostName = function (userResolvable) {
 
 exports.getFullName = function (userResolvable, strict) {
     if (userResolvable == null) return strict ? null : 'null'; // TODO: Make strict default at some point
-    if (typeof userResolvable == 'string') return userResolvable;
+    if (typeof userResolvable === 'string') return userResolvable;
     const mostName = exports.getMostName(userResolvable);
     return `${mostName} (${userResolvable.id})`;
 };
@@ -1127,6 +1127,7 @@ exports.getAvatar = function (userResolvable, outStr) {
 };
 
 exports.getDateString = function (d) {
+    if (d == null) d = new Date();
     const result = `${DateFormat(d, 'ddd, mmm dS yyyy @ h:MM TT')} GMT`;
     return result;
 };
@@ -2267,6 +2268,12 @@ exports.mergeUser = function (member) {
     return true;
 };
 
+exports.getMentionFromUser = function (user) {
+    if (!user) return null;
+    if (typeof user === 'string') return user;
+    return `${user.toString()} (${exports.getMostName(user)})`;
+};
+
 exports.resolveUser = function (guild, userResolvable, isMod) { // If user is moderator, userResolvable as text would be the system
     const resolvedData = {
         member: userResolvable,
@@ -2291,10 +2298,10 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
 
     if (userType === 0) { // Member
         resolvedData.id = userResolvable.id;
-        resolvedData.mention = userResolvable.toString();
+        resolvedData.mention = exports.getMentionFromUser(userResolvable);
     } else if (userType === 1) { // ID
         resolvedData.member = guild.members.get(userResolvable);
-        resolvedData.mention = resolvedData.member ? resolvedData.member.toString() : `<@${userResolvable}>`;
+        resolvedData.mention = resolvedData.member ? exports.getMentionFromUser(resolvedData.member) : `<@${userResolvable}>`;
     } else if (userType === 2) { // Name or System
         if (system) { // VaeBot
             resolvedData.member = guild.members.get(selfId);
@@ -2303,7 +2310,7 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
             resolvedData.member = exports.getMemberByMixed(userResolvable, guild);
             if (!resolvedData.member) return 'User not found';
             resolvedData.id = resolvedData.member.id;
-            resolvedData.mention = resolvedData.member.toString();
+            resolvedData.mention = exports.getMentionFromUser(resolvedData.member);
         }
     }
 
