@@ -262,49 +262,6 @@ async function addTimeout(guild, userId, endTick, offenseTag) { // Add mute/temp
     Util.logc('Admin1', `Added offense timeout for ${userId} @ ${guild.name}; Remaining: ${remaining} ms`);
 }
 
-function resolveUser(guild, userResolvable, isMod) {
-    const resolvedData = {
-        member: userResolvable,
-        id: userResolvable,
-        mention: userResolvable,
-        original: userResolvable,
-    };
-
-    let userType = 0; // Member
-    let system = false;
-
-    if (typeof userResolvable === 'string') {
-        if (Util.isId(userResolvable)) { // ID [IMPORTANT] This needs to be improved; as it is right now any number between 16 and 19 characters will be treated as an ID, when it could just be someone's name
-            userType = 1; // ID
-        } else {
-            userType = 2; // Name or System
-            system = isMod && userResolvable.match(/[a-z]/i); // When resolving moderator the only use of text should be when the moderator is the system.
-        }
-    }
-
-    Util.logc('Admin1', `User type: ${userType} (isMod ${isMod || false})`);
-
-    if (userType === 0) { // Member
-        resolvedData.id = userResolvable.id;
-        resolvedData.mention = userResolvable.toString();
-    } else if (userType === 1) { // ID
-        resolvedData.member = guild.members.get(userResolvable);
-        resolvedData.mention = resolvedData.member ? resolvedData.member.toString() : `<@${userResolvable}>`;
-    } else if (userType === 2) { // Name or System
-        if (system) { // VaeBot
-            resolvedData.member = guild.members.get(selfId);
-            resolvedData.id = selfId;
-        } else { // Name
-            resolvedData.member = Util.getMemberByMixed(userResolvable, guild);
-            if (!resolvedData.member) return 'User not found';
-            resolvedData.id = resolvedData.member.id;
-            resolvedData.mention = resolvedData.member.toString();
-        }
-    }
-
-    return resolvedData; // [Definite Values] ID: Always | Mention: Always | Member: All inputs except ID
-}
-
 function higherRank(moderator, member, canBeEqual) { // Check if member can be muted
     if (!moderator) return false;
     if (!member || typeof moderator === 'string' || typeof member === 'string' || moderator.id === selfId || member.id === selfId) return true;
@@ -434,8 +391,8 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     let muteLength = muteData.time;
     const muteReason = muteData.reason || 'N/A';
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'AddMute', `${resolvedUser}`);
@@ -520,8 +477,8 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'ChangeMute', `${resolvedUser}`);
@@ -641,8 +598,8 @@ exports.unMute = async function (guild, channel, userResolvable, moderatorResolv
 
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'UnMute', `${resolvedUser}`);
@@ -711,8 +668,8 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
 
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'RemMute', `${resolvedUser}`);
@@ -765,8 +722,8 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
 
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'ClearMutes', `${resolvedUser}`);
@@ -814,8 +771,8 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
     const banReason = banData.reason || 'No reason provided'; // TODO: Add ' | The user's final message was: msg'
     const banTemp = banData.temp;
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'AddBan', `${resolvedUser}`);
@@ -902,8 +859,8 @@ exports.unBan = async function (guild, channel, userResolvable, moderatorResolva
 
     // Resolve parameter data
 
-    const resolvedUser = resolveUser(guild, userResolvable);
-    const resolvedModerator = resolveUser(guild, moderatorResolvable, true);
+    const resolvedUser = Util.resolveUser(guild, userResolvable);
+    const resolvedModerator = Util.resolveUser(guild, moderatorResolvable, true);
 
     if (typeof resolvedUser === 'string') {
         return Util.commandFailed(channel, moderatorResolvable, 'UnBan', `${resolvedUser}`);
