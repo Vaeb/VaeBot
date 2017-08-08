@@ -1,5 +1,3 @@
-const DateFormat = index.DateFormat;
-
 const timeouts = {
     mute: [],
     ban: [],
@@ -39,11 +37,11 @@ function getHistoryStr(action, totalMutes) {
 
 function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra) {
     const sendEmbedFields = [
-        { name: 'Username', value: resolvedUser.mention },
-        (!extra.end) ? { inline: false, name: `${action} Reason`, value: extra.reason } : {},
-        (!extra.end) ? { name: `${action} Length`, value: extra.lengthStr } : {},
-        (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
-        (extra.end) ? { name: `${action} History`, value: extra.historyStr } : {},
+        { name: 'User', value: resolvedUser.mention },
+        (!extra.end) ? { inline: false, name: 'Reason', value: extra.reason } : {},
+        (!extra.end) ? { name: 'Length', value: extra.lengthStr } : {},
+        (!extra.end) ? { name: 'Expires', value: extra.endStr } : {},
+        (extra.end) ? { name: 'History', value: extra.historyStr } : {},
     ];
     Util.sendDescEmbed(channel, `User ${extra.actionPast}`, Util.fieldsToDesc(sendEmbedFields), Util.makeEmbedFooter(resolvedModerator.original), Util.getAvatar(resolvedUser.member), colGreen);
 }
@@ -321,7 +319,7 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
     const tempStr = extra.temp ? 'Temp' : '';
     const action = `${tempStr}Ban`;
     const actionPast = `${extra.temp ? 'Temp ' : ''}Banned`;
-    const endStr = has.call(extra, 'dateEnd') ? `${DateFormat(extra.dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT` : 'Never';
+    const endStr = has.call(extra, 'dateEnd') ? Util.getDateString(extra.dateEnd) : 'Never';
 
     const memberName = resolvedUser.member ? Util.getFullName(resolvedUser.member) : resolvedUser.mention;
     const moderatorName = resolvedModerator.member ? Util.getFullName(resolvedModerator.member) : resolvedModerator.mention;
@@ -418,7 +416,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     const dateEnd = new Date();
     dateEnd.setTime((+dateEnd) + muteLength);
 
-    const endStr = `${DateFormat(dateEnd, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
+    const endStr = Util.getDateString(dateEnd);
     const muteLengthStr = Util.historyToString(muteLength);
 
     // Verify they can be muted
@@ -576,8 +574,8 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     const dateEndOld = new Date(); dateEndOld.setTime(endTickOld);
     const dateEndNew = new Date(); dateEndNew.setTime(endTickNew);
 
-    const endStrOld = `${DateFormat(dateEndOld, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
-    const endStrNew = `${DateFormat(dateEndNew, '[dd/mm/yyyy] HH:MM:ss')} GMT`;
+    const endStrOld = Util.getDateString(dateEndOld);
+    const endStrNew = Util.getDateString(dateEndNew);
 
     const muteLengthStrChanges = { old: muteLengthStrOld, new: muteLengthStrNew };
     const endStrChanges = { old: endStrOld, new: endStrNew };
