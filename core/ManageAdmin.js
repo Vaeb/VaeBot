@@ -40,7 +40,7 @@ function getHistoryStr(action, totalMutes) {
 function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra) {
     const sendEmbedFields = [
         { name: 'Username', value: resolvedUser.mention },
-        (!extra.end) ? { name: `${action} Reason`, value: extra.reason } : {},
+        (!extra.end) ? { inline: false, name: `${action} Reason`, value: extra.reason } : {},
         (!extra.end) ? { name: `${action} Length`, value: extra.lengthStr } : {},
         (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
         (extra.end) ? { name: `${action} History`, value: extra.historyStr } : {},
@@ -68,7 +68,7 @@ function sendAlertLog(action, guild, channel, resolvedUser, resolvedModerator, e
         resolvedUser.member || resolvedUser.id,
         { name: 'Username', value: resolvedUser.mention }, // Can resolve from user id
         { name: 'Moderator', value: resolvedModerator.mention },
-        (!extra.end) ? { name: `${action} Reason`, value: extra.reason } : {},
+        (!extra.end) ? { inline: false, name: `${action} Reason`, value: extra.reason } : {},
         (!extra.end) ? { name: `${action} Length`, value: extra.lengthStr } : {},
         (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
         { name: `${action} History`, value: extra.historyStr },
