@@ -1,31 +1,27 @@
 module.exports = Cmds.addCommand({
-    cmds: [";bans", ";getbans"],
+    cmds: [';bans', ';getbans'],
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
-    desc: "Get all banned users",
+    desc: 'Get all banned users',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        guild.fetchBans().then((bans, err) => {
-            if (err) {
-                Util.print(channel, "Error retrieving bans:", err);
-            } else {
-                var outStr = ["**Guild bans:**\n```"];
-                bans.forEach(function(user, index, self) {
-                    outStr.push("Username: " + Util.getName(user));
-                });
-                outStr.push("```");
-                Util.print(channel, outStr.join("\n"));
-            }
+        guild.fetchBans().then((bans) => {
+            const outStr = ['**Guild bans:**\n```'];
+            bans.forEach((user) => {
+                outStr.push(`Username: ${Util.getName(user)}`);
+            });
+            outStr.push('```');
+            Util.print(channel, outStr.join('\n'));
         });
-    }
+    },
 });

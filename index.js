@@ -264,7 +264,7 @@ function securityFunc(guild, member, sendRoleParam) {
     let sendRole = sendRoleParam;
     if (sendRole == null) sendRole = Util.getRole('SendMessages', guild);
 
-    if (has.call(exports.globalBan, memberId) && (memberId != '169261309353918464' || guild.id != '168742643021512705')) {
+    if (has.call(exports.globalBan, memberId)) {
         member.kick()
             .catch(console.error);
         Util.logc('BanOld1', `Globally banned user ${memberName} had already joined ${guildName}`);
@@ -487,7 +487,7 @@ client.on('guildMemberAdd', (member) => {
 
     // GlobalBan
 
-    if (has.call(exports.globalBan, memberId) && (memberId != '169261309353918464' || guild.id != '168742643021512705')) {
+    if (has.call(exports.globalBan, memberId)) {
         member.kick()
             .catch(console.error);
         Util.logc(memberId, `Globally banned user ${memberName} joined ${guildName}`);

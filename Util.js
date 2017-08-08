@@ -714,7 +714,7 @@ const elapseTimeTags = {};
 exports.getElapsed = function (tag, remove) {
     let elapsed;
 
-    if (has.call(elapseTimeTags, tag)) {
+    if (elapseTimeTags[tag] != null) {
         const startTimeData = elapseTimeTags[tag];
         const elapsedTimeData = process.hrtime(startTimeData); // Seconds, Nanoseconds (Seconds * 1e9)
         elapsed = (elapsedTimeData[0] * 1e3) + Number((elapsedTimeData[1] / 1e6).toFixed(3));
@@ -2605,4 +2605,25 @@ exports.logErr = function (...args) {
     args.unshift('[ERROR]');
     postOutString(args, true);
     lastTag = null;
+};
+
+const getAuditLogChunk = 3;
+const getAuditLogMax = 10;
+
+async function getAuditLogRec(guild, auditLogOptions, target, iteration) {
+    if (iteration > getAuditLogMax) return null;
+    const entries = (await guild.fetchAuditLogs(auditLogOptions)).entries;
+    const outLog = entries.find(log => log.target.id === target);
+    if (outLog) return outLog;
+    return getAuditLogRec(guild, auditLogOptions, target, iteration + 1);
+}
+
+exports.getAuditLog = async function (guild, type, userData) {
+    if (!userData.target) {
+        const auditLogOptions = { type, user: userData.executor, limit: 1 };
+        return (await guild.fetchAuditLogs(auditLogOptions)).entries.first();
+    }
+
+    const auditLogOptions = { type, user: userData.executor, limit: getAuditLogChunk };
+    return getAuditLogRec(guild, auditLogOptions, userData.target, 1);
 };
