@@ -2271,7 +2271,11 @@ exports.mergeUser = function (member) {
 exports.getMentionFromUser = function (user) {
     if (!user) return null;
     if (typeof user === 'string') return user;
-    return `${user.toString()} (${exports.getMostName(user)})`;
+    return `${Util.getMostName(user)} (${user.toString()})`;
+};
+
+exports.fieldsToDesc = function (fields) {
+    return `​\n${fields.filter(fieldData => fieldData.name != null).map(fieldData => `**${fieldData.name}${fieldData.value != null ? ': ' : ''}**${fieldData.value != null ? fieldData.value : ''}`).join('\n\n')}`;
 };
 
 exports.resolveUser = function (guild, userResolvable, isMod) { // If user is moderator, userResolvable as text would be the system

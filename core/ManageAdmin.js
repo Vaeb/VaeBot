@@ -45,7 +45,7 @@ function sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerato
         (!extra.end) ? { name: `${action} Expires`, value: extra.endStr } : {},
         (extra.end) ? { name: `${action} History`, value: extra.historyStr } : {},
     ];
-    Util.sendEmbed(channel, `User ${extra.actionPast}`, null, Util.makeEmbedFooter(resolvedModerator.original), Util.getAvatar(resolvedUser.member), colGreen, sendEmbedFields);
+    Util.sendDescEmbed(channel, `User ${extra.actionPast}`, Util.fieldsToDesc(sendEmbedFields), Util.makeEmbedFooter(resolvedModerator.original), Util.getAvatar(resolvedUser.member), colGreen);
 }
 
 function sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra) {
