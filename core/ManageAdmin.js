@@ -926,14 +926,23 @@ exports.initialize = async function () { // Get mute data from db, start all ini
         if (guildId != guild.id) return;
 
         muteCacheActive[guildId] = {};
-        const results = await Data.getRecords(guild, 'mutes');
+        const allMutes = await Data.getRecords(guild, 'mutes');
+        const allBans = await Data.getRecords(guild, 'bans');
 
-        for (let i = 0; i < results.length; i++) {
-            const muteStored = results[i];
+        for (let i = 0; i < allMutes.length; i++) {
+            const record = allMutes[i];
 
-            if (muteStored.active == 1) {
-                muteCacheActive[guildId][muteStored.user_id] = muteStored;
-                addTimeout(guild, muteStored.user_id, muteStored.end_tick, 'mute');
+            if (record.active == 1) {
+                muteCacheActive[guildId][record.user_id] = record;
+                addTimeout(guild, record.user_id, record.end_tick, 'mute');
+            }
+        }
+
+        for (let i = 0; i < allBans.length; i++) {
+            const record = allBans[i];
+
+            if (record.active == 1) {
+                addTimeout(guild, record.user_id, record.end_tick, 'ban');
             }
         }
     }));
