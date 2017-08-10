@@ -1423,11 +1423,11 @@ exports.getDayStr = function (d) {
     return user;
 } */
 
-exports.searchUserPartial = function (col, name) {
+exports.searchUserPartial = function (container, name) {
     name = name.toLowerCase();
-    return col.find((member) => {
-        const username = exports.getName(member);
-        if (member.id === name || exports.safe(username.toLowerCase()).includes(name)) {
+    return container.find((user) => {
+        const username = exports.getName(user);
+        if (user.id === name || exports.safe(username.toLowerCase()).includes(name)) {
             return true;
         }
         return false;

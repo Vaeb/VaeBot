@@ -469,6 +469,30 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     return true;
 };
 
+exports.warnStatus = {};
+
+/*
+    warnStatus {
+        guildId: {
+            warnTag {
+                userId: {
+                    status: 1 // 0 = Not warned, 1 = Was warned recently
+                    statusChanged: +new Date() // When the status was last changed or 0
+                }
+            }
+        }
+    }
+
+    funcData {
+        reason,
+        length, // null = 30 minutes, 'next' = Next mute time
+    }
+*/
+
+exports.addWarning = async function (guild, channel, userResolvable, moderatorResolvable, funcData) {
+
+};
+
 exports.changeMute = async function (guild, channel, userResolvable, moderatorResolvable, newData) { // Change a mute's time, reason, etc.
     Util.logc('Admin1', `\nStarted ChangeMute on ${userResolvable}`);
     const guildId = Data.getBaseGuildId(guild.id);
