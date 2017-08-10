@@ -43,7 +43,6 @@
     -exports.leave(guild, channel)
     -exports.addSongAuto(guild, channel, nameResolvable, position)
     -exports.remSongAuto(guild, channel, positionResolvable)
-    -exports.setPositionAuto(guild, channel, oldPositionResolvable, newPositionResolvable, trigger)
 
     -exports.triggerPlay(guild)
         -Check guild queue exists
