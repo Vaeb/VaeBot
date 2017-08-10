@@ -29,7 +29,7 @@
     }
 
     -exports.textChannel(channelResolvable)
-    -exports.triggerPlay(guild) // Plays the song at start of queue or auto playlist, stops current song if playing, stops current triggerPlay call if exists (incrementing triggerId)
+    -exports.triggerPlay(guild) // Plays the song at start of queue or auto playlist, stops current song if playing (causing it to start the next one)
     -exports.addSong(guild, channel, nameResolvable, position)
     -exports.remSong(guild, channel, positionResolvable)
     -exports.setPosition(guild, channel, oldPositionResolvable, newPositionResolvable, trigger)
