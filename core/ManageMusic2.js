@@ -100,7 +100,7 @@ exports.initGuild = async function (guild) {
 };
 
 exports.textChannel = function (guild, channelResolvable) {
-    if (!has.call(exports.queue, guild.id)) return Util.commandFailed(guild.defaultTextChannel, 'System', 'Internal Error', 'Can\'t set music text channel without guild queue initialisation');
+    if (!has.call(exports.queue, guild.id)) return Util.commandFailed(guild.defaultTextChannel, 'System', 'Internal Error', 'Guild queue not initialized');
     const guildQueue = exports.queue[guild.id];
     const newTextChannel = Util.findTextChannel(channelResolvable, guild);
     if (!newTextChannel) return Util.commandFailed(guildQueue.textChannel || guild.defaultTextChannel, 'System', 'Channel not found');
@@ -161,5 +161,54 @@ exports.triggerPlay = async function (guild) {
         exports.triggerPlay(guild);
     });
 
+    return true;
+};
+
+exports.formatSong = function (data, isFile) {
+    if (!data) return 'Audio not found';
+
+    if (isFile) data = { id: data, snippet: { title: data } };
+
+    const songData = {
+        source: typeof (data.id) === 'object' ? data.id.videoId : data.id,
+        type: isFile ? 'file' : 'stream',
+        name: data.snippet.title,
+        addedBy: null,
+    };
+
+    return songData;
+};
+
+exports.getSong = function (nameResolvable) { // Cross your fingers and hope for promisify
+    if (nameResolvable.includes('http')) {
+        let songId = /[^/=]+$/.exec(nameResolvable);
+        if (songId != null && songId[0]) {
+            songId = songId[0];
+            index.YtInfo.getById(songId, (error, result) => {
+                const songData = result.items[0];
+                return exports.formatSong(songData, false);
+            });
+        } else {
+            return 'Incorrect format for URL';
+        }
+    } else {
+        index.YtInfo.search(nameResolvable, 6, (error, result) => {
+            if (error) return error;
+            const items = result.items;
+            for (let i = 0; i < items.length; i++) {
+                const songData = items[i];
+                if (songData != null && has.call(songData, 'id') && songData.id.kind == 'youtube#video') {
+                    return exports.formatSong(songData, false);
+                }
+            }
+            return 'Audio not found';
+        });
+    }
+};
+
+exports.addSong = function (guild, channel, nameResolvable, position) {
+    if (!has.call(exports.queue, guild.id)) return Util.commandFailed(guild.defaultTextChannel, 'System', 'Internal Error', 'Guild queue not initialized');
+    const guildQueue = exports.queue[guild.id];
+    if (position == null) position = guildQueue.songs.length;
     return true;
 };
