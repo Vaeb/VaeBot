@@ -10,9 +10,9 @@
             songs: [
                 songData {
                     source // Stream URL or File location
-                    type // 'URL' or 'File'
+                    type // 'stream' or 'file'
                     name // Song name
-                    addedBy // Guild member who added song
+                    addedBy // Guild member who added song or 'AutoPlaylist'
                 },
                 ...
             ]
@@ -21,14 +21,14 @@
     }
 
     -exports.autoPlaylist = {
-        guildId: {
+        guildId: [
             songData {},
             ...
-        },
+        ],
         ...
     }
 
-    -exports.textChannel(channelResolvable)
+    -exports.textChannel(guild, channelResolvable)
     -exports.triggerPlay(guild) // Plays the song at start of queue or auto playlist, stops current song if playing (causing it to start the next one)
     -exports.addSong(guild, channel, nameResolvable, position)
     -exports.remSong(guild, channel, positionResolvable)
@@ -74,3 +74,92 @@
     -Call: exports.triggerPlay(guild)
 
 */
+
+exports.queue = {};
+exports.autoPlaylist = {};
+
+exports.initGuild = async function (guild) {
+    Util.log(`Initialising music queue for ${guild.name}`);
+
+    exports.queue[guild.id] = {
+        canPlay: true,
+        textChannel: null,
+        playing: false,
+        dispatcher: null,
+        volume: 50, // *100
+        songs: [],
+    };
+
+    exports.autoPlaylist[guild.id] = [];
+
+    const autoPlaylistData = Util.cloneObj(await Data.getRecords(guild, 'autoplaylist'));
+
+    for (let i = 0; i < autoPlaylistData.length; i++) {
+        exports.autoPlaylist[guild.id].push(autoPlaylistData[i]);
+    }
+};
+
+exports.textChannel = function (guild, channelResolvable) {
+    if (!has.call(exports.queue, guild.id)) return Util.commandFailed(guild.defaultTextChannel, 'System', 'Internal Error', 'Can\'t set music text channel without guild queue initialisation');
+    const guildQueue = exports.queue[guild.id];
+    const newTextChannel = Util.findTextChannel(channelResolvable, guild);
+    if (!newTextChannel) return Util.commandFailed(guildQueue.textChannel || guild.defaultTextChannel, 'System', 'Channel not found');
+    guildQueue.textChannel = newTextChannel;
+    return true;
+};
+
+exports.join = async function (guild, channel, voiceChannelResolvable) {
+    if (voiceChannelResolvable == null) voiceChannelResolvable = Util.findVoiceChannel('music', guild);
+    if (voiceChannelResolvable == null) return Util.commandFailed(channel, 'System', 'Default (music) channel not found');
+    if (typeof voiceChannelResolvable === 'string') voiceChannelResolvable = Util.findVoiceChannel(voiceChannelResolvable, guild);
+    if (voiceChannelResolvable == null) return Util.commandFailed(channel, 'System', 'Channel not found');
+    return voiceChannelResolvable.join();
+};
+
+exports.triggerPlay = async function (guild) {
+    if (!has.call(exports.queue, guild.id)) await exports.initGuild(guild);
+
+    const guildQueue = exports.queue[guild.id];
+    const guildAuto = exports.autoPlaylist[guild.id];
+    const textChannel = guildQueue.textChannel || guild.defaultTextChannel; // defaultTextChannel?
+
+    if (!guildQueue.canPlay) return false;
+
+    if (!guild.voiceConnection) {
+        await exports.join(guild, textChannel);
+        return exports.triggerPlay(guild);
+    }
+
+    if (guildQueue.playing) {
+        guildQueue.dispatcher.end();
+        return true;
+    }
+
+    const songData = guildQueue.songs[0] || guildAuto[Util.getRandomInt(0, guildAuto.length)];
+
+    if (songData.type === 'stream') {
+        const streamData = index.Ytdl(songData.source, { filter: 'audioonly' });
+        guildQueue.dispatcher = guild.voiceConnection.playStream(streamData, { volume: guildQueue.volume / 100 });
+    } else if (songData.type === 'file') {
+        guildQueue.dispatcher = guild.voiceConnection.playFile(songData.source);
+    } else {
+        return Util.commandFailed(textChannel, 'System', 'Errr something\'s not quite right with the songData typing here');
+    }
+
+    guildQueue.playing = true;
+
+    guildQueue.dispatcher.on('end', () => {
+        guildQueue.playing = false;
+        guildQueue.dispatcher = null;
+        exports.triggerPlay(guild);
+    });
+
+    guildQueue.dispatcher.on('error', (err) => {
+        guildQueue.playing = false;
+        guildQueue.dispatcher = null;
+        Util.commandFailed(textChannel, 'System', 'Internal Music Error', err);
+        exports.triggerPlay(guild);
+    });
+
+    return true;
+};
