@@ -40,6 +40,7 @@ global.Data = require('./core/ManageData.js');
 global.Trello = require('./core/ManageTrello.js');
 global.Admin = require('./core/ManageAdmin.js');
 global.Music = require('./core/ManageMusic.js');
+global.Music2 = require('./core/ManageMusic2.js');
 global.Cmds = require('./core/ManageCommands.js');
 global.Events = require('./core/ManageEvents.js');
 global.Discord = require('discord.js');
@@ -389,6 +390,8 @@ client.on('ready', async () => {
 
         allMembers.forEach(m => Util.mergeUser(m));
         Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
+
+        Music2.initGuild(newGuild);
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
     }));
@@ -805,20 +808,24 @@ client.on('messageDelete', (msgObj) => {
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     if (guild != null) {
-        const attachmentLinks = [];
-        msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
+        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => {
+            const executor = auditEntry && auditEntry.executor;
 
-        const sendLogData = [
-            'Message Deleted',
-            guild,
-            author,
-            { name: 'Username', value: author.toString() },
-            // { name: 'Moderator', value: entry.executor.toString() },
-            { name: 'Channel Name', value: channel.toString() },
-            { name: 'Message', value: content },
-            { name: 'Attachments', value: attachmentLinks.join('\n') },
-        ];
-        Util.sendLog(sendLogData, colMessage);
+            const attachmentLinks = [];
+            msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
+
+            const sendLogData = [
+                'Message Deleted',
+                guild,
+                author,
+                { name: 'User', value: Util.getMentionFromUser(author) },
+                executor ? { name: 'Moderator', value: Util.getMentionFromUser(executor) } : {},
+                { name: 'Channel Name', value: channel.toString() },
+                { name: 'Message', value: content },
+                { name: 'Attachments', value: attachmentLinks.join('\n') },
+            ];
+            Util.sendLog(sendLogData, colMessage);
+        });
 
         /* setTimeout(() => {
             guild.fetchAuditLogs({
@@ -1064,6 +1071,59 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     antiScam(msgObj, msgObj.content.toLowerCase().trim(), speaker, channel, guild, isEdit, true);
+});
+
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (speaker == null || msgObj == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id) return false;
+
+    let contentLower = msgObj.content.toLowerCase();
+
+    contentLower = contentLower.replace(/[\n\r]/g, ' '); // All newlines become spaces
+    contentLower = contentLower.replace(/0/g, 'o');
+    contentLower = contentLower.replace(/1/g, 'i');
+    contentLower = contentLower.replace(/3/g, 'e');
+    contentLower = contentLower.replace(/4/g, 'a');
+    contentLower = contentLower.replace(/5/g, 's');
+    contentLower = contentLower.replace(/8/g, 'b');
+    contentLower = contentLower.replace(/@/g, 'a');
+    contentLower = contentLower.replace(/https?/g, ''); // http(s) removed
+    contentLower = contentLower.replace(/www\./g, ''); // www. removed
+    contentLower = contentLower.replace(/[^a-z ./]+/g, ''); // Any characters that aren't letters, spaces or dots are removed
+    contentLower = contentLower.replace(/dot/g, '.');
+    // contentLower = contentLower.replace(/(.)\1+/g, '$1');
+    // contentLower = contentLower.replace(/ +/g, ''); // All spaces removed
+
+    let triggered = false;
+
+    const trigger = [ // Will only contain: Letters, spaces, forward-slashes and dots
+        {
+            regex: /d *i *s *c *o *r *d *(?:\. *)?(?:. *. *)?\/[^. ]+/, // https://discord.gg/aYx5zq
+            allow: [],
+        },
+    ];
+
+    for (let i = 0; i < trigger.length; i++) {
+        let matches = trigger[i].regex.exec(contentLower);
+        if (!matches) continue;
+        if (guild.id == '166601083584643072') Util.logc('blockLink1', matches);
+        const triggerAllow = trigger[i].allow;
+        for (let j = 0; j < triggerAllow.length; j++) {
+            if (triggerAllow[j].test(matches[j + 1])) {
+                matches = null;
+                break;
+            }
+        }
+        if (!matches) continue;
+        triggered = true;
+        break;
+    }
+
+    if (triggered) {
+        Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Advertising Discord server' });
+        return true;
+    }
+
+    return false;
 });
 
 client.on('message', (msgObj) => {
