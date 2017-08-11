@@ -16,7 +16,7 @@ const checkFuncs = {
     }),
 
     hook: (function checkHook(msgObj) {
-        return msgObj.author.bot === true;
+        return !!msgObj.webhook_id;
     }),
 
     image: (function checkImage(msgObj) {
