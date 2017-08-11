@@ -94,7 +94,7 @@ exports.playNextAuto = function (guild, channel, doPrint) {
     /* var newSongNum = songNum+1;
     if (newSongNum >= autoSongs.length) newSongNum = 0;
     autoPlaylist.songNum = newSongNum;
-    Data.guildSaveData(Data.playlist);*/
+    Data.guildSaveData(Data.playlist); */
     Util.log('Playing Next Auto');
     guildMusicInfo.activeSong = songData;
     guildMusicInfo.activeAuthor = author;
@@ -219,10 +219,10 @@ exports.joinMusic = function (guild, channel, func) {
         const musicChannel = Util.findVoiceChannel('music', guild);
         if (musicChannel) {
             musicChannel.join()
-            .then((connection2) => {
-                func(connection2);
-            })
-            .catch(error => Util.log(`[E_JoinMusic] ${error}`));
+                .then((connection2) => {
+                    func(connection2);
+                })
+                .catch(error => Util.log(`[E_JoinMusic] ${error}`));
         } else {
             Util.print(channel, 'Not connected to a voice channel');
         }
