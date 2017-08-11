@@ -1509,11 +1509,11 @@ exports.getMemberById = function (id, guild) {
     return guild.members.get(id);
 };
 
-exports.isId = function (id) {
-    id = id.match(/^\d+$/);
+exports.isId = function (str) {
+    let id = str.match(/^\d+$/);
 
     if (id == null) {
-        id = id.match(/^<.?(\d+)>$/);
+        id = str.match(/^<.?(\d+)>$/);
         if (id == null) return undefined;
         id = id[1];
     } else {
