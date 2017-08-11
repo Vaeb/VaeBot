@@ -100,7 +100,7 @@ module.exports = Cmds.addCommand({
                 || lower === 'file' || lower === 'link' || lower === 'mention') {
                     return lower;
                 }
-                return Util.getMemberByMixed(str, guild);
+                return Util.getMemberByMixed(str, guild) || Util.isId(str);
             },
             function (str) {
                 let numArgs = Number(str);
@@ -119,15 +119,17 @@ module.exports = Cmds.addCommand({
         const userOrType = data[0];
         let numArgs = data[1];
         // const scope = data[2];
+        const isId = typeof userOrType === 'string' && /^\d+$/.test(userOrType);
         const isUser = Util.isObject(userOrType);
-        const userId = isUser ? userOrType.id : null;
+        let userId = userOrType;
+        if (!isId) userId = isUser ? userOrType.id : null;
         const msgStore = [];
 
         if (userOrType === 'all' || userId === speaker.id) numArgs++;
 
         let checkFunc;
 
-        if (isUser) {
+        if (isUser || isId) {
             checkFunc = checkFuncs.user;
         } else {
             checkFunc = checkFuncs[userOrType];
@@ -162,8 +164,8 @@ module.exports = Cmds.addCommand({
 
                 if (chunk.length > 1) {
                     channel.bulkDelete(chunk)
-                    .then(() => Util.log(`Cleared ${chunk.length} messages`))
-                    .catch(console.error);
+                        .then(() => Util.log(`Cleared ${chunk.length} messages`))
+                        .catch(console.error);
                 } else {
                     chunk[0].delete();
                     Util.log('Cleared 1 message');
