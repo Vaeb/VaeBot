@@ -1512,9 +1512,13 @@ exports.getMemberById = function (id, guild) {
 exports.isId = function (id) {
     id = id.match(/^\d+$/);
 
-    if (id == null) return undefined;
-
-    id = id[0];
+    if (id == null) {
+        id = id.match(/^<.?(\d+)>$/);
+        if (id == null) return undefined;
+        id = id[1];
+    } else {
+        id = id[0];
+    }
 
     if (id.length < 17 || id.length > 19) return undefined;
 
