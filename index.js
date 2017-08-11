@@ -391,7 +391,7 @@ client.on('ready', async () => {
         allMembers.forEach(m => Util.mergeUser(m));
         Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
-        Music2.initGuild(newGuild);
+        // Music2.initGuild(newGuild);
 
         if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
     }));
