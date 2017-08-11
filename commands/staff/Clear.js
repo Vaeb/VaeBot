@@ -1,27 +1,19 @@
 const checkFuncs = {
-    user: (function checkUser(msgObj, userId) {
-        return msgObj.author.id === userId;
-    }),
+    user: ((msgObj, userId) => msgObj.author.id === userId),
 
-    all: (function checkAll() {
-        return true;
-    }),
+    regex: ((msgObj, regexObj) => regexObj.test(msgObj.content)),
 
-    cmd: (function checkBot(msgObj) {
-        return msgObj.author.id === selfId || Cmds.getCommand(msgObj.content) != null;
-    }),
+    all: (() => true),
 
-    bot: (function checkBot(msgObj) {
-        return msgObj.author.bot === true;
-    }),
+    cmd: (msgObj => msgObj.author.id === selfId || Cmds.getCommand(msgObj.content) != null),
 
-    hook: (function checkHook(msgObj) {
-        return msgObj.author.bot === true;
-    }),
+    bot: (msgObj => msgObj.author.bot === true),
 
-    image: (function checkImage(msgObj) {
-        const embeds = msgObj.embeds != null ? msgObj.embeds : [];
-        const attachments = msgObj.attachments != null ? msgObj.attachments : [];
+    hook: (msgObj => msgObj.author.bot === true),
+
+    image: ((msgObj) => {
+        const embeds = msgObj.embeds || [];
+        const attachments = msgObj.attachments || [];
 
         for (let i = 0; i < embeds.length; i++) {
             const nowEmbed = embeds[i];
@@ -40,7 +32,7 @@ const checkFuncs = {
         return false;
     }),
 
-    file: (function checkFile(msgObj) {
+    file: ((msgObj) => {
         const attachments = msgObj.attachments != null ? msgObj.attachments : [];
 
         for (let i = 0; i < attachments.length; i++) {
@@ -53,7 +45,7 @@ const checkFuncs = {
         return false;
     }),
 
-    link: (function checkLink(msgObj) {
+    link: ((msgObj) => {
         if (Util.checkURLs(msgObj.content).length > 0) return true;
 
         const embeds = msgObj.embeds != null ? msgObj.embeds : [];
@@ -68,7 +60,7 @@ const checkFuncs = {
         return false;
     }),
 
-    mention: (function checkMentions(msgObj) {
+    mention: ((msgObj) => {
         const mentions = msgObj.mentions;
 
         return mentions.length > 0;
@@ -83,24 +75,33 @@ module.exports = Cmds.addCommand({
         loud: false,
     },
 
-    desc: 'Delete the last <1-1000> messages from a [user | message-type] in the channel',
+    desc: 'Delete the last <1-1000> messages matching a [user | regex-pattern | message-type] in the channel',
 
-    args: '([@user] | [id] | [name] | [all | bots | hooks | images | files | links | mentions]) (<1-1000>)',
+    args: '([userResolvable] | [/regex/] | [all | bots | hooks | images | files | links | mentions]) (<1-1000>)',
 
     example: 'vaeb 30',
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
         const data = Util.getDataFromString(args, [
             function (str) {
                 let lower = str.toLowerCase();
                 if (lower.substring(lower.length - 1) === 's') lower = lower.substr(0, lower.length - 1);
-                if (lower === 'all' || lower === 'cmd' || lower === 'bot' || lower === 'hook' || lower === 'image'
-                || lower === 'file' || lower === 'link' || lower === 'mention') {
-                    return lower;
+                // types
+                if (lower === 'all' || lower === 'cmd' || lower === 'bot' || lower === 'hook' || lower === 'image' || lower === 'file' || lower === 'link' || lower === 'mention') {
+                    return [lower];
                 }
-                return Util.getMemberByMixed(str, guild) || Util.isId(str);
+                // regex
+                const regMatch = /^\/(.+)\/$/.exec(str);
+                if (regMatch) return ['regex', regMatch[1]];
+                // member
+                const member = Util.getMemberByMixed(str, guild);
+                if (member) return ['member', member];
+                // user id
+                const userId = Util.isId(str);
+                if (userId) return ['id', userId];
+                return undefined;
             },
             function (str) {
                 let numArgs = Number(str);
@@ -116,62 +117,72 @@ module.exports = Cmds.addCommand({
             return Util.commandFailed(channel, speaker, 'Invalid parameters');
         }
 
-        const userOrType = data[0];
+        const matchData = data[0];
         let numArgs = data[1];
         // const scope = data[2];
-        const isId = typeof userOrType === 'string' && /^\d+$/.test(userOrType);
-        const isUser = Util.isObject(userOrType);
-        let userId = userOrType;
-        if (!isId) userId = isUser ? userOrType.id : null;
-        const msgStore = [];
+        const matchType = matchData[0];
+        const matchVal = matchData[1];
 
-        if (userOrType === 'all' || userId === speaker.id) numArgs++;
+        let funcData;
+        if (matchType === 'member') {
+            funcData = matchVal.id;
+        } else if (matchType === 'id') {
+            funcData = matchVal;
+        } else if (matchType === 'regex') {
+            funcData = new RegExp(matchVal, 'gim');
+        }
+
+        if (matchType === 'all' || funcData === speaker.id) numArgs++;
 
         let checkFunc;
 
-        if (isUser || isId) {
+        if (matchType === 'member' || matchType === 'id') {
             checkFunc = checkFuncs.user;
         } else {
-            checkFunc = checkFuncs[userOrType];
+            checkFunc = checkFuncs[matchType];
         }
 
-        let numSearch = userOrType !== 'all' ? numArgs * 30 : numArgs;
+        let numSearch = matchType !== 'all' ? numArgs * 30 : numArgs;
         numSearch = Math.min(numSearch, 1000);
 
         let last = null;
-        if (userOrType === 'cmd') {
+        if (matchType === 'cmd') {
             last = msgObj;
             numArgs *= 2;
         }
 
-        Util.fetchMessagesEx(channel, numSearch, msgStore, last).then(() => {
-            Util.log(`Messages checked: ${msgStore.length}`);
+        const msgStore = [];
 
-            const msgStoreUser = [];
-            for (let i = 0; i < msgStore.length; i++) {
-                if (checkFunc(msgStore[i], userId)) {
-                    msgStoreUser.push(msgStore[i]);
-                    if (msgStoreUser.length >= numArgs) break;
-                }
+        // +++++++++++++++++++++ MESSAGE SCANNING +++++++++++++++++++++
+
+        await Util.fetchMessagesEx(channel, numSearch, msgStore, last);
+        Util.log(`Messages checked: ${msgStore.length}`);
+
+        const msgStoreUser = [];
+        for (let i = 0; i < msgStore.length; i++) {
+            if (checkFunc(msgStore[i], funcData)) {
+                msgStoreUser.push(msgStore[i]);
+                if (msgStoreUser.length >= numArgs) break;
             }
+        }
 
-            const storeLength = msgStoreUser.length;
-            const chunkLength = 99;
-            Util.log(`Matches found: ${msgStoreUser.length}`);
+        const storeLength = msgStoreUser.length;
+        const chunkLength = 99;
+        Util.log(`Matches found: ${msgStoreUser.length}`);
 
-            for (let i = 0; i < storeLength; i += chunkLength) {
-                const chunk = msgStoreUser.slice(i, i + chunkLength);
+        for (let i = 0; i < storeLength; i += chunkLength) {
+            const chunk = msgStoreUser.slice(i, i + chunkLength);
 
-                if (chunk.length > 1) {
-                    channel.bulkDelete(chunk)
-                        .then(() => Util.log(`Cleared ${chunk.length} messages`))
-                        .catch(console.error);
-                } else {
-                    chunk[0].delete();
-                    Util.log('Cleared 1 message');
-                }
+            if (chunk.length > 1) {
+                channel.bulkDelete(chunk)
+                    .then(() => Util.log(`Cleared ${chunk.length} messages`))
+                    .catch(Util.logErr);
+            } else {
+                chunk[0].delete()
+                    .then(() => Util.log('Cleared 1 message'))
+                    .catch(Util.logErr);
             }
-        });
+        }
 
         return undefined;
     },
