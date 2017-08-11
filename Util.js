@@ -2667,15 +2667,17 @@ exports.logErr = function (...args) {
     lastTag = null;
 };
 
-const getAuditLogChunk = 3;
-const getAuditLogMax = 10;
+const getAuditLogChunk = 1;
+const getAuditLogMax = 10; // This is completely pointless ...?
 
-async function getAuditLogRec(guild, auditLogOptions, target, iteration) {
-    if (iteration > getAuditLogMax) return null;
+async function getAuditLogRec(guild, auditLogOptions, target, checkedLogs) {
+    if (checkedLogs.length >= getAuditLogMax) return null;
     const entries = (await guild.fetchAuditLogs(auditLogOptions)).entries;
-    const outLog = entries.find(log => log.target.id === target);
+    const outLog = entries.find(log => log.target.id === target); // Needs to check latest first
     if (outLog) return outLog;
-    return getAuditLogRec(guild, auditLogOptions, target, iteration + 1);
+    entries.forEach(log => checkedLogs.push(log));
+    auditLogOptions.limit++;
+    return getAuditLogRec(guild, auditLogOptions, target, checkedLogs);
 }
 
 exports.getAuditLog = async function (guild, type, userData) {
@@ -2685,5 +2687,5 @@ exports.getAuditLog = async function (guild, type, userData) {
     }
 
     const auditLogOptions = { type, user: userData.executor, limit: getAuditLogChunk };
-    return getAuditLogRec(guild, auditLogOptions, userData.target, 1);
+    return getAuditLogRec(guild, auditLogOptions, userData.target, []);
 };
