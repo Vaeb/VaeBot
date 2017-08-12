@@ -132,7 +132,12 @@ module.exports = Cmds.addCommand({
             funcData = new RegExp(matchVal, 'gim');
         }
 
-        if (matchType === 'all' || funcData === speaker.id) numArgs++;
+        let includeSelf = false;
+
+        if (matchType === 'all' || funcData === speaker.id) {
+            includeSelf = true;
+            numArgs++;
+        }
 
         let checkFunc;
 
@@ -160,8 +165,9 @@ module.exports = Cmds.addCommand({
 
         const msgStoreUser = [];
         for (let i = 0; i < msgStore.length; i++) {
-            if (checkFunc(msgStore[i], funcData)) {
-                msgStoreUser.push(msgStore[i]);
+            const nowMsgObj = msgStore[i];
+            if ((includeSelf || nowMsgObj.id !== msgObj.id) && checkFunc(nowMsgObj, funcData)) {
+                msgStoreUser.push(nowMsgObj);
                 if (msgStoreUser.length >= numArgs) break;
             }
         }
