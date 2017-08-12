@@ -1086,18 +1086,18 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     contentLower = contentLower.replace(/5/g, 's');
     contentLower = contentLower.replace(/8/g, 'b');
     contentLower = contentLower.replace(/@/g, 'a');
-    contentLower = contentLower.replace(/https?/g, ''); // http(s) removed
+    contentLower = contentLower.replace(/https?(?:\/\/)?/g, ''); // http(s)// removed
     contentLower = contentLower.replace(/www\./g, ''); // www. removed
     contentLower = contentLower.replace(/[^a-z ./]+/g, ''); // Any characters that aren't letters, spaces or dots are removed
     contentLower = contentLower.replace(/dot/g, '.');
-    contentLower = contentLower.replace(/(.)\1+/g, '$1');
+    // contentLower = contentLower.replace(/(.)\1+/g, '$1');
     // contentLower = contentLower.replace(/ +/g, ''); // All spaces removed
 
     let triggered = false;
 
     const trigger = [ // Will only contain: Letters, spaces, forward-slashes and dots
         {
-            regex: /d *i *(?:s *)?[ck] *(?:. *)?o *r *d *(?:\. *)?(?:. *)?(?:. *)?(?:. *)?\/ *([^. ]+)/, // https://discord.gg/XVeAZd6
+            regex: /d *i *(?:s *)?[ck] *(?:. *)?o *r *d *(?:\. *)?[^.]*?\/ *([^. ]+)/, // https://discord.gg/XVeAZd6
             allow: [/^(?:aVvcjDS|7gPhEKv|roblox)$/gi], // Caps matter but just-in-case
         },
     ];
