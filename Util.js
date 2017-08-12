@@ -2310,8 +2310,8 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
         resolvedData.id = userResolvable.id;
         resolvedData.mention = exports.getMentionFromUser(userResolvable);
     } else if (userType === 1) { // ID
-        resolvedData.member = guild.members.get(userResolvable);
-        resolvedData.mention = resolvedData.member ? exports.getMentionFromUser(resolvedData.member) : `<@${userResolvable}>`;
+        resolvedData.member = guild.members.get(resolvedData.id);
+        resolvedData.mention = resolvedData.member ? exports.getMentionFromUser(resolvedData.member) : `<@${resolvedData.id}>`;
     } else if (userType === 2) { // Name or System
         if (system) { // VaeBot
             resolvedData.member = guild.members.get(selfId);
