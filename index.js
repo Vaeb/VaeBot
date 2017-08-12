@@ -1036,9 +1036,9 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
         }, {
             regex: /bit\.ly/, // bit.ly
             allow: [],
-        }, {
+        /* }, {
             regex: /goo\.gl/, // goo.gl
-            allow: [],
+            allow: [], */
         }, {
             regex: /tinyurl\.com/, // tinyurl.com
             allow: [],
@@ -1090,15 +1090,15 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     contentLower = contentLower.replace(/www\./g, ''); // www. removed
     contentLower = contentLower.replace(/[^a-z ./]+/g, ''); // Any characters that aren't letters, spaces or dots are removed
     contentLower = contentLower.replace(/dot/g, '.');
-    // contentLower = contentLower.replace(/(.)\1+/g, '$1');
+    contentLower = contentLower.replace(/(.)\1+/g, '$1');
     // contentLower = contentLower.replace(/ +/g, ''); // All spaces removed
 
     let triggered = false;
 
     const trigger = [ // Will only contain: Letters, spaces, forward-slashes and dots
         {
-            regex: /d *i *s *c *o *r *d *(?:\. *)?(?:. *. *)?\/[^. ]+/, // https://discord.gg/aYx5zq
-            allow: [],
+            regex: /d *i *(?:s *)?[ck] *(?:. *)?o *r *d *(?:\. *)?(?:. *)?(?:. *)?(?:. *)?\/ *([^. ]+)/, // https://discord.gg/XVeAZd6
+            allow: [/^(?:aVvcjDS|7gPhEKv|roblox)$/gi], // Caps matter but just-in-case
         },
     ];
 
