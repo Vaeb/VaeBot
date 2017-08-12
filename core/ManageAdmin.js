@@ -822,8 +822,12 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
 
     const startTick = +new Date();
 
-    const maxBanLength = exports.dayMilli * 2 * totalOffenses;
-    banLength = banLength ? Math.min(banLength, maxBanLength) : maxBanLength;
+    if (banTemp) {
+        const maxBanLength = exports.dayMilli * 2 * totalOffenses;
+        banLength = banLength ? Math.min(banLength, maxBanLength) : maxBanLength;
+    } else {
+        banLength = 3155692608000; // 100 years
+    }
 
     const endTick = startTick + banLength;
 
