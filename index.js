@@ -808,7 +808,7 @@ client.on('messageDelete', (msgObj) => {
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     if (guild != null) {
-        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => {
+        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author.id }).then((auditEntry) => {
             const executor = auditEntry && auditEntry.executor;
 
             const attachmentLinks = [];
@@ -819,7 +819,7 @@ client.on('messageDelete', (msgObj) => {
                 guild,
                 author,
                 { name: 'User', value: Util.getMentionFromUser(author) },
-                executor ? { name: 'Moderator', value: Util.getMentionFromUser(executor) } : {},
+                executor ? { name: 'Possible Moderator', value: Util.getMentionFromUser(executor) } : {},
                 { name: 'Channel Name', value: channel.toString() },
                 { name: 'Message', value: content },
                 { name: 'Attachments', value: attachmentLinks.join('\n') },
