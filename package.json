@@ -1,0 +1,48 @@
+{
+  "name": "vaebot",
+  "version": "1.1.0",
+  "description": "Discord bot for everything from moderation to music.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vaeb/VaeBot.git"
+  },
+  "keywords": [
+    "Vaeb",
+    "VaeBot",
+    "Discord",
+    "Bot"
+  ],
+  "author": "Vaeb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vaeb/VaeBot/issues"
+  },
+  "homepage": "https://github.com/Vaeb/VaeBot#readme",
+  "dependencies": {
+    "bufferutil": "^3.0.0",
+    "dateformat": "^2.0.0",
+    "discord.js": "git://github.com/hydrabolt/discord.js.git#master",
+    "erlpack": "github:hammerandchisel/erlpack",
+    "google-translate-api": "^2.3.0",
+    "libsodium-wrappers": "^0.5.1",
+    "mysql": "^2.14.1",
+    "node-opus": "^0.2.6",
+    "node-trello": "^1.2.1",
+    "request": "^2.81.0",
+    "urban": "^0.3.1",
+    "youtube-node": "^1.3.0",
+    "ytdl-core": "^0.15.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.1.0"
+  }
+}

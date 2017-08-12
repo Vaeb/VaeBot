@@ -1,8 +1,6 @@
 # Packages
 node_modules/
-package.json
 yarn.lock
-.eslintrc.json
 
 # Log files
 *.log

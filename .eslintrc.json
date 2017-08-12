@@ -1,0 +1,53 @@
+{
+    "env": {
+        "node": true
+    },
+    "extends": "airbnb",
+    "globals": {
+        "index": true,
+		"has": true,
+		"selfId": true,
+		"vaebId": true,
+		"Util": true,
+		"Data": true,
+		"Trello": true,
+		"Admin": true,
+		"Music": true,
+		"Music2": true,
+		"Cmds": true,
+		"Events": true,
+		"Discord": true,
+        "client": true,
+        "colAction": true,
+		"colUser": true,
+		"colMessage": true,
+		"colCommand": true,
+		"colGreen": true,
+		"colBlue": true
+    },
+    "rules": {
+        "default-case": "off",
+        "eqeqeq": "off",
+        "import/no-dynamic-require": "off",
+        "indent": ["error", 4],
+        "func-names": "off",
+        "global-require": "off",
+        "jsx-a11y/href-no-hash": "off",
+        "max-len": "off",
+        "no-bitwise": "off",
+        "no-cond-assign": "off",
+        "no-console": "off",
+        "no-continue": "off",
+        "no-control-regex": "off",
+        "no-eval": "off",
+        "no-irregular-whitespace": "off",
+        "no-lonely-if": "off",
+        "no-mixed-operators": "off",
+        "no-multi-spaces": ["error", {"ignoreEOLComments": true}],
+        "no-param-reassign": "off",
+        "no-plusplus": "off",
+        "no-restricted-syntax": "off",
+        "no-underscore-dangle": "off",
+        "quote-props": "off"
+    }
+}
