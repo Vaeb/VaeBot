@@ -1097,7 +1097,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
     const trigger = [ // Will only contain: Letters, spaces, forward-slashes and dots
         {
-            regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:[^. /] *){0,3}\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
+            regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:g *g *|i *o *|m *e *|c *o *m *)\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
             allow: [/^(?:aVvcjDS|7gPhEKv|roblox)$/gi], // Caps matter but just-in-case
         },
     ];
