@@ -2283,6 +2283,8 @@ exports.fieldsToDesc = function (fields) {
 };
 
 exports.resolveUser = function (guild, userResolvable, isMod) { // If user is moderator, userResolvable as text would be the system
+    if (userResolvable == null) return null;
+
     const resolvedData = {
         member: userResolvable,
         id: userResolvable,
@@ -2307,6 +2309,7 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
     exports.logc('Admin1', `User type: ${userType} (isMod ${isMod || false})`);
 
     if (userType === 0) { // Member
+        if (!userResolvable.guild) resolvedData.member = undefined;
         resolvedData.id = userResolvable.id;
         resolvedData.mention = exports.getMentionFromUser(userResolvable);
     } else if (userType === 1) { // ID
@@ -2324,7 +2327,7 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
         }
     }
 
-    return resolvedData; // [Definite Values] ID: Always | Mention: Always | Member: All inputs except ID
+    return resolvedData; // [Definite Values] ID: Always | Mention: Always | Member: All inputs except ID and User
 };
 
 exports.onFetch = function (messagesParam, channel, leftParam, store) {
