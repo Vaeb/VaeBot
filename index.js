@@ -797,6 +797,8 @@ client.on('messageDelete', (msgObj) => {
     const author = msgObj.author;
     const content = msgObj.content;
 
+    const eventTime = +new Date();
+
     // const evTime = +new Date();
 
     // const contentLower = content.toLowerCase();
@@ -809,7 +811,11 @@ client.on('messageDelete', (msgObj) => {
 
     if (guild != null) {
         Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author.id }).then((auditEntry) => {
-            const executor = auditEntry && auditEntry.executor;
+            auditEntry = auditEntry || {};
+            const executor = auditEntry.executor;
+            const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
+
+            if (executor) Util.log(`[MESSAGE_DELETE] Elapsed since audit log: ${sinceAuditLog}`);
 
             const attachmentLinks = [];
             msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
