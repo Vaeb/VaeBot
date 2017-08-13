@@ -1636,7 +1636,7 @@ exports.getBestMatch = function (container, key, name) { // [v3.0] Visible name 
         }
     });
 
-    return strongest != null ? strongest.obj : null;
+    return strongest != null ? strongest.obj : undefined;
 };
 
 exports.getMemberByName = function (name, guild) { // [v3.0] Visible name match, real name match, length match, caps match, position match
@@ -1728,7 +1728,7 @@ exports.getMemberByName = function (name, guild) { // [v3.0] Visible name match,
         }
     });
 
-    return strongest != null ? strongest.member : null;
+    return strongest != null ? strongest.member : undefined;
 };
 
 exports.getMemberByNameOld = function (name, guild) { // [v2.0] Visible name match, real name match, length match, caps match, position match //
