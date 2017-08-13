@@ -2769,16 +2769,17 @@ exports.logErr = function (...args) {
 };
 
 const getAuditLogChunk = 1;
-const getAuditLogMax = 10; // This is completely pointless ...?
+const getAuditLogMax = 4; // This is completely pointless ...?
 
-async function getAuditLogRec(guild, auditLogOptions, target, checkedLogs) {
+async function getAuditLogRec(guild, auditLogOptions, userData, checkedLogs) {
     if (checkedLogs.length >= getAuditLogMax) return null;
     const entries = (await guild.fetchAuditLogs(auditLogOptions)).entries;
-    const outLog = entries.find(log => log.target.id === target.id); // Needs to check latest first
+    const outLog = entries.find(log => userData.nowTimestamp - log.createdTimestamp < userData.maxElapsed && log.target.id === userData.target.id); // Needs to check latest first
     if (outLog) return outLog;
-    entries.forEach(log => checkedLogs.push(log));
+    entries.forEach((log) => { if (!checkedLogs.includes(log.id)) checkedLogs.push(log.id); });
     auditLogOptions.limit++;
-    return getAuditLogRec(guild, auditLogOptions, target, checkedLogs);
+    userData.maxElapsed += 700;
+    return getAuditLogRec(guild, auditLogOptions, userData, checkedLogs);
 }
 
 exports.getAuditLog = async function (guild, type, userData) {
@@ -2790,7 +2791,11 @@ exports.getAuditLog = async function (guild, type, userData) {
     }
 
     userData.target = Util.resolveUser(guild, userData.target);
+    userData.maxElapsed = userData.maxElapsed || 3000;
+
+    const nowTimestamp = +new Date();
+    userData.nowTimestamp = nowTimestamp;
 
     const auditLogOptions = { type, user: userData.executor, limit: getAuditLogChunk };
-    return getAuditLogRec(guild, auditLogOptions, userData.target, []);
+    return getAuditLogRec(guild, auditLogOptions, userData, []);
 };
