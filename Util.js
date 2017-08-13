@@ -810,7 +810,7 @@ exports.fixMessageLengthNew = function (msgParam) {
         let msg = argsFixed[i];
         const numBlock = (msg.match(/```/g) || []).length; // Number of user created code blocks in this chunk
         if (totalBlocks % 2 == 1) msg = `\`\`\`\n${msg}`; // If code block is currently open then this chunk needs to be formatted
-        totalBlocks += numBlock; // The user created code blocks may close/open new code block (don't need to include added ones because they just account for seperate messages)
+        totalBlocks += numBlock; // The user created code blocks may close/open new code block (don't need to include added ones because they just account for separate messages)
         let lastIsOpener = totalBlocks % 2 == 1; // Checks whether the last code block is an opener or a closer
         if (lastIsOpener && msg.length > minusLimit) { // If the chunk ends with the code block still open then it needs to be auto-closed so the chunk needs to be shortened so it can fit
             passOver = msg.substring(minusLimit);
@@ -1560,7 +1560,86 @@ exports.getDiscriminatorFromName = function (name) {
     return discrim;
 };
 
-exports.getMemberByName = function (name, guild) { // [v2.0] Visible name match, real name match, length match, caps match, position match //
+exports.getBestMatch = function (container, key, name) { // [v3.0] Visible name match, real name match, length match, caps match, position match
+    if (container == null) return undefined;
+
+    let removeUnicode = false;
+
+    if (key === 'username') {
+        removeUnicode = true;
+        const nameDiscrim = exports.getDiscriminatorFromName(name);
+        if (nameDiscrim) {
+            const namePre = name.substr(0, name.length - 5);
+            const user = container.find(m => m.username === namePre && m.discriminator === nameDiscrim);
+            if (user) return user;
+        }
+    }
+
+    const origName = name.trim();
+
+    if (removeUnicode) {
+        name = name.replace(/[^\x00-\x7F]/g, '').trim();
+        if (name.length == 0) {
+            name = origName;
+            removeUnicode = false;
+        }
+    }
+
+    const str2Lower = name.toLowerCase();
+    let strongest = null;
+
+    container.forEach((obj) => {
+        let realName = obj[key];
+        if (removeUnicode) realName = realName.replace(/[^\x00-\x7F]/g, '');
+        realName = realName.trim();
+        const nameMatch = realName.toLowerCase().indexOf(str2Lower);
+
+        const strength = { 'obj': obj };
+        let layer = 0;
+
+        if (nameMatch >= 0) {
+            strength[layer++] = 1;
+
+            // Util.log("(" + i + ") " + realName + ": " + value);
+            const filled = Math.min(name.length / realName.length, 0.999);
+            // Util.log("filled: " + filled);
+            strength[layer++] = filled;
+
+            const maxCaps = Math.min(name.length, realName.length);
+            let numCaps = 0;
+            for (let j = 0; j < maxCaps; j++) {
+                if (name[j] === realName[nameMatch + j]) numCaps++;
+            }
+            const caps = Math.min(numCaps / maxCaps, 0.999);
+            // const capsExp = (filledExp * 0.5 - 1 + caps);
+            // Util.log("caps: " + caps + " (" + numCaps + "/" + maxCaps + ")");
+            strength[layer++] = caps;
+
+            const totalPosition = realName.length - name.length;
+            const perc = 1 - (totalPosition * nameMatch == 0 ? 0.001 : nameMatch / totalPosition);
+            // const percExp = (capsExp - 2 + perc);
+            // Util.log("pos: " + perc + " (" + nameMatch + "/" + totalPosition + ")");
+            strength[layer++] = perc;
+
+            if (strongest == null) {
+                strongest = strength;
+            } else {
+                for (let i = 0; i < layer; i++) {
+                    if (strength[i] > strongest[i]) {
+                        strongest = strength;
+                        break;
+                    } else if (strength[i] < strongest[i]) {
+                        break;
+                    }
+                }
+            }
+        }
+    });
+
+    return strongest != null ? strongest.obj : null;
+};
+
+exports.getMemberByName = function (name, guild) { // [v3.0] Visible name match, real name match, length match, caps match, position match
     if (guild == null) return undefined;
 
     const nameDiscrim = exports.getDiscriminatorFromName(name);
@@ -2046,7 +2125,7 @@ exports.getPosition = function (speaker) {
 
 exports.getUserById = id => client.users.get(id);
 
-exports.getUserByName = name => exports.searchUserPartial(client.users, name);
+exports.getUserByName = name => exports.getBestMatch(client.users, 'username', name);
 
 exports.getUserByMixed = function (name) {
     let user = exports.getUserById(name);
@@ -2272,21 +2351,22 @@ exports.mergeUser = function (member) {
     return true;
 };
 
-exports.getMentionFromUser = function (user) {
-    if (!user) return null;
-    if (typeof user === 'string') return user;
-    return `${Util.getMostName(user)} (${user.toString()})`;
+exports.resolveMention = function (userResolvable) {
+    if (userResolvable == null) return undefined;
+    if (typeof user === 'string') return `<@${userResolvable}>`;
+    return `${Util.getMostName(userResolvable)} (${userResolvable.toString()})`;
 };
 
 exports.fieldsToDesc = function (fields) {
     return `​\n${fields.filter(fieldData => fieldData.name != null).map(fieldData => `**${fieldData.name}${fieldData.value != null ? ': ' : ''}**${fieldData.value != null ? fieldData.value : ''}`).join('\n\n')}`;
 };
 
-exports.resolveUser = function (guild, userResolvable, isMod) { // If user is moderator, userResolvable as text would be the system
-    if (userResolvable == null) return null;
+exports.resolveUser = function (guild, userResolvable, canBeSystem) { // If user can be system, userResolvable as text would be the bot/system
+    if (userResolvable == null) return undefined;
 
     const resolvedData = {
         member: userResolvable,
+        user: userResolvable,
         id: userResolvable,
         mention: userResolvable,
         original: userResolvable,
@@ -2297,33 +2377,51 @@ exports.resolveUser = function (guild, userResolvable, isMod) { // If user is mo
 
     if (typeof userResolvable === 'string') {
         const idMatch = exports.isId(userResolvable);
-        if (idMatch) { // ID [IMPORTANT] This needs to be improved; as it is right now any number between 16 and 19 characters will be treated as an ID, when it could just be someone's name
+        if (idMatch) {
             userType = 1; // ID
             resolvedData.id = idMatch;
         } else {
             userType = 2; // Name or System
-            system = isMod && userResolvable.match(/[a-z]/i); // When resolving moderator the only use of text should be when the moderator is the system.
+            system = canBeSystem && userResolvable.match(/[a-z]/i); // When resolving with system possibility the only use of text should be when the moderator is the system.
         }
     }
 
-    exports.logc('Admin1', `User type: ${userType} (isMod ${isMod || false})`);
+    exports.logc('Admin1', `User type: ${userType} (canBeSystem ${canBeSystem || false})`);
 
-    if (userType === 0) { // Member
-        if (!userResolvable.guild) resolvedData.member = undefined;
-        resolvedData.id = userResolvable.id;
-        resolvedData.mention = exports.getMentionFromUser(userResolvable);
-    } else if (userType === 1) { // ID
+    if (userType === 0) { // Member or User
+        if (!userResolvable.guild) resolvedData.member = guild.members.get(resolvedData.user.id); // User
+        else resolvedData.user = resolvedData.member.user; // Member
+        resolvedData.id = resolvedData.user.id;
+        resolvedData.mention = exports.resolveMention(resolvedData.member || resolvedData.user);
+    } else if (userType === 1) { // Contained ID
         resolvedData.member = guild.members.get(resolvedData.id);
-        resolvedData.mention = resolvedData.member ? exports.getMentionFromUser(resolvedData.member) : `<@${resolvedData.id}>`;
-    } else if (userType === 2) { // Name or System
+        resolvedData.user = resolvedData.member ? resolvedData.member.user : client.users.get(resolvedData.id);
+        if (!resolvedData.user) { // Could be a name imitating an ID
+            resolvedData.member = userResolvable;
+            resolvedData.user = userResolvable;
+            resolvedData.id = userResolvable;
+            resolvedData.mention = userResolvable;
+            userType = 2;
+        } else {
+            resolvedData.mention = exports.resolveMention(resolvedData.member || resolvedData.user);
+        }
+    }
+
+    if (userType === 2) { // Name or System (Separate if statement for branching from userType_1)
         if (system) { // VaeBot
             resolvedData.member = guild.members.get(selfId);
+            resolvedData.user = resolvedData.member.user;
             resolvedData.id = selfId;
         } else { // Name
             resolvedData.member = exports.getMemberByMixed(userResolvable, guild);
-            if (!resolvedData.member) return 'User not found';
-            resolvedData.id = resolvedData.member.id;
-            resolvedData.mention = exports.getMentionFromUser(resolvedData.member);
+            if (!resolvedData.member) { // Not in guild
+                resolvedData.user = exports.getUserByName(userResolvable);
+                if (!resolvedData.user) return 'User not found'; // No user or member
+            } else { // Is in guild
+                resolvedData.user = resolvedData.member.user;
+            }
+            resolvedData.id = resolvedData.user.id;
+            resolvedData.mention = exports.resolveMention(resolvedData.member || resolvedData.user);
         }
     }
 
@@ -2686,10 +2784,14 @@ async function getAuditLogRec(guild, auditLogOptions, target, checkedLogs) {
 }
 
 exports.getAuditLog = async function (guild, type, userData) {
+    userData.executor = Util.resolveUser(guild, userData.executor);
+
     if (!userData.target) {
         const auditLogOptions = { type, user: userData.executor, limit: 1 };
         return (await guild.fetchAuditLogs(auditLogOptions)).entries.first();
     }
+
+    userData.target = Util.resolveUser(guild, userData.target);
 
     const auditLogOptions = { type, user: userData.executor, limit: getAuditLogChunk };
     return getAuditLogRec(guild, auditLogOptions, userData.target, []);
