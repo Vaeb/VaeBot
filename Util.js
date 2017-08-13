@@ -2110,7 +2110,8 @@ exports.getRole = function (nameParam, obj) {
     name = name.toLowerCase();
     const nameId = exports.getSafeId(name);
     const roles = obj.roles;
-    return roles.find(role => (role.name.toLowerCase().includes(name) || role.id === nameId));
+    if (roles.has(nameId)) return roles.get(nameId);
+    return exports.getBestMatch(roles, 'name', name);
 };
 
 exports.getHighestRole = member => member.highestRole;
