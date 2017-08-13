@@ -2774,7 +2774,7 @@ const getAuditLogMax = 10; // This is completely pointless ...?
 async function getAuditLogRec(guild, auditLogOptions, target, checkedLogs) {
     if (checkedLogs.length >= getAuditLogMax) return null;
     const entries = (await guild.fetchAuditLogs(auditLogOptions)).entries;
-    const outLog = entries.find(log => log.target.id === target); // Needs to check latest first
+    const outLog = entries.find(log => log.target.id === target.id); // Needs to check latest first
     if (outLog) return outLog;
     entries.forEach(log => checkedLogs.push(log));
     auditLogOptions.limit++;

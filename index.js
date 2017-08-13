@@ -811,7 +811,7 @@ client.on('messageDelete', (msgObj) => {
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     if (guild != null) {
-        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author.id }).then((auditEntry) => {
+        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => {
             auditEntry = auditEntry || {};
             const executor = auditEntry.executor;
             const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
