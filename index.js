@@ -790,6 +790,7 @@ const Actions = {
 } */
 
 client.on('messageDelete', (msgObj) => {
+    Util.log('qqq1');
     if (msgObj == null) return;
     const channel = msgObj.channel;
     const guild = msgObj.guild;
