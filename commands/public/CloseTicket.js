@@ -41,11 +41,10 @@ module.exports = Cmds.addCommand({
         });
 
         const sendEmbedFields = [
-            { name: 'Ticket Number', value: `<@${foundTicket.user_id}>`, inline: false },
             { name: 'Ticket User', value: `<@${foundTicket.user_id}>`, inline: false },
             { name: 'Ticket Date', value: Util.getDateString(new Date(foundTicket.open_tick)), inline: false },
         ];
-        Util.sendEmbed(channel, 'Support Ticket Closed', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
+        Util.sendEmbed(channel, `Closed Ticket #${foundTicket.ticket_id}`, null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 
         return true;
     },
