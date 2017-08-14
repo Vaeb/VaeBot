@@ -30,11 +30,10 @@ module.exports = Cmds.addCommand({
         Data.addRecord(guild, 'tickets', newRow);
 
         const sendEmbedFields = [
-            { name: 'Ticket Number', value: nextTicketNum, inline: false },
             { name: 'Ticket User', value: Util.resolveMention(speaker), inline: false },
             { name: 'Ticket Info', value: args, inline: false },
         ];
-        Util.sendEmbed(channel, 'Generated Support Ticket', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
+        Util.sendEmbed(channel, `Generated Support Ticket #${nextTicketNum}`, null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 
         const roleSupport = Util.getRole('Support', guild);
 
