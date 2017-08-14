@@ -19,6 +19,8 @@ exports.cache = {};
 exports.nextAutoInc = {
     'mutes': ['mute_id', 0],
     'bans': ['ban_id', 0],
+    'autoplaylist': ['auto_id', 0],
+    'tickets': ['ticket_id', 0],
 };
 
 exports.getLinkedGuilds = function (guild) {

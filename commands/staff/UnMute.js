@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Unmute a user',
 
-    args: '([@user] | [id] | [name])',
+    args: '([user_resolvable])',
 
     example: 'vae',
 

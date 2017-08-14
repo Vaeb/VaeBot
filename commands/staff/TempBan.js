@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Temporarily ban a user from the guild',
 
-    args: '([@user] | [id] | [name]) (OPTIONAL: [ban_length]) (OPTIONAL: [ban_length_format]) (OPTIONAL: [reason])',
+    args: '([user_resolvable]) (OPTIONAL: [ban_length]) (OPTIONAL: [ban_length_format]) (OPTIONAL: [reason])',
 
     example: 'vae 2 days repeatedly breaking rules',
 

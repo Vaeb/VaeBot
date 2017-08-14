@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Mute a user (in all guild channels) and add the mute to their record',
 
-    args: '([@user] | [id] | [name]) (OPT: [mute_length]) (OPT: [mute_length_format]) (OPT: [reason])',
+    args: '([user_resolvable]) (OPTIONAL: [mute_length]) (OPTIONAL: [mute_length_format]) (OPTIONAL: [reason])',
 
     example: 'vae 2 minutes being weird',
 

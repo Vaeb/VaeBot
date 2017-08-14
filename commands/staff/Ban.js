@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: 'Ban a user from the guild',
 
-    args: '([@user] | [id] | [name]) (OPTIONAL: [reason])',
+    args: '([user_resolvable) (OPTIONAL: [reason])',
 
     example: 'vaeb being weird',
 

@@ -8,7 +8,7 @@ module.exports = Cmds.addCommand({
 
     desc: "Remove a user's last mute from their record and unmute them if they are muted",
 
-    args: '([@user] | [id] | [name])',
+    args: '([user_resolvable])',
 
     example: 'vae',
 
