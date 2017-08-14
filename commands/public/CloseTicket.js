@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';ticket ', ';support ', ';ask ', ';addticket ', ';submitticket ', ';sendticket ', ';newticket '],
+    cmds: [';closeticket ', ';closesupport ', ';stopticket ', ';endticket '],
 
     requires: {
         guild: true,
@@ -27,7 +27,7 @@ module.exports = Cmds.addCommand({
 
         if (!data) return Util.commandFailed(channel, speaker, 'Invalid parameters');
 
-        const numTicket = data[0] - 1;
+        const numTicket = data[0];
 
         Data.updateRecords(guild, 'tickets', {
             ticket_id: numTicket,
