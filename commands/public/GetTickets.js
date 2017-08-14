@@ -32,7 +32,7 @@ module.exports = Cmds.addCommand({
 
             const openDateStr = Util.getDateString(new Date(openTick));
 
-            sendEmbedFields.push({ name: `Ticket #${ticketNum}`, value: `​User: <@${userId}>\nDate Opened: ${openDateStr}\nDescription: ${description}​`, inline: false });
+            sendEmbedFields.push({ name: `Ticket #${ticketNum}`, value: `​User: <@${userId}>\nOpen Date: ${openDateStr}\nInfo: ${description}​`, inline: false });
         }
 
         Util.sendEmbed(channel, 'Open Tickets', null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);

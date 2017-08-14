@@ -29,20 +29,21 @@ module.exports = Cmds.addCommand({
 
         const numTicket = data[0];
 
+        const foundTicket = ((await Data.getRecords(guild, 'tickets', { ticket_id: numTicket })) || [])[0];
+
+        if (!foundTicket) return Util.commandFailed(channel, speaker, `Ticket #${numTicket} does not exist`);
+        if (!foundTicket.active) return Util.commandFailed(channel, speaker, `Ticket #${numTicket} is already closed`);
+
         Data.updateRecords(guild, 'tickets', {
             ticket_id: numTicket,
         }, {
             active: 0,
         });
 
-        const foundTicket = ((await Data.getRecords(guild, 'tickets', { ticket_id: numTicket })) || [])[0];
-
-        if (!foundTicket) return Util.commandFailed(channel, speaker, `Ticket #${numTicket} does not exist`);
-        if (!foundTicket.active) return Util.commandFailed(channel, speaker, `Ticket #${numTicket} is already closed`);
-
         const sendEmbedFields = [
+            { name: 'Ticket Number', value: `<@${foundTicket.user_id}>`, inline: false },
             { name: 'Ticket User', value: `<@${foundTicket.user_id}>`, inline: false },
-            { name: 'Ticket Opened', value: Util.getDateString(new Date(foundTicket.open_tick)), inline: false },
+            { name: 'Ticket Date', value: Util.getDateString(new Date(foundTicket.open_tick)), inline: false },
         ];
         Util.sendEmbed(channel, 'Support Ticket Closed', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 

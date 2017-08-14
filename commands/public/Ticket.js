@@ -19,6 +19,8 @@ module.exports = Cmds.addCommand({
             return Util.commandFailed(channel, speaker, 'Support tickets can only be generated in #support');
         }
 
+        const nextTicketNum = Data.nextIncGet('tickets');
+
         const newRow = {
             user_id: speaker.id,
             description: args,
@@ -28,8 +30,9 @@ module.exports = Cmds.addCommand({
         Data.addRecord(guild, 'tickets', newRow);
 
         const sendEmbedFields = [
-            { name: 'User Requiring Assistance', value: Util.resolveMention(speaker), inline: false },
-            { name: 'Ticket Description', value: args, inline: false },
+            { name: 'Ticket Number', value: nextTicketNum, inline: false },
+            { name: 'Ticket User', value: Util.resolveMention(speaker), inline: false },
+            { name: 'Ticket Info', value: args, inline: false },
         ];
         Util.sendEmbed(channel, 'Generated Support Ticket', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 

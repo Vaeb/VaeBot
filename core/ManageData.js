@@ -340,6 +340,10 @@ exports.nextInc = function (tableName) {
     return exports.nextAutoInc[tableName][1]++;
 };
 
+exports.nextIncGet = function (tableName) {
+    return exports.nextAutoInc[tableName][1];
+};
+
 exports.getRecords = async function (guild, tableName, identity, fromSQL) { // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
