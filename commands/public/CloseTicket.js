@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';closeticket ', ';closesupport ', ';stopticket ', ';endticket '],
+    cmds: [';closeticket ', ';closesupport ', ';stopticket ', ';endticket ', ';close '],
 
     requires: {
         guild: true,
