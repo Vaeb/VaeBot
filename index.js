@@ -1209,7 +1209,7 @@ client.on('message', (msgObj) => {
                 let checkGrad1 = sameGrad; // Initialise the comparison gradient as the sensitive gradient for if all messages are the same
                 const latestMsg = nowStamps[0].message; // Get the latest (current) message's content
                 for (let i = 0; i < checkMessages; i++) { // Go through all the recorded messages
-                    if (nowStamps[i].message != latestMsg) { // If all the content is *not* the same
+                    if (!Util.similarStrings(nowStamps[i].message, latestMsg)) { // If all the content is *not* the same
                         checkGrad1 = warnGrad; // Use the normal comparison gradient
                         break;
                     }
@@ -1239,7 +1239,7 @@ client.on('message', (msgObj) => {
                                     if (isFinal && stamp === lastStamp) break; // If so and the oldest message was also the original message (no new messages) then break
                                     numNew++; // Increase total message count
                                     // origStamp2 = curStamp.stamp;
-                                    if (curStamp.message != latestMsg2) checkGrad2 = muteGrad; // If messages are not the same use nkrmal gradient
+                                    if (!Util.similarStrings(curStamp.message, latestMsg2)) checkGrad2 = muteGrad; // If messages are not the same use nkrmal gradient
                                     if (isFinal) break; // If it was the final message to check then break
                                 }
                                 if (numNew == 0) { // If they haven't sent any new messages
