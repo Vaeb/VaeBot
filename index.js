@@ -877,9 +877,9 @@ const messageStamps = {};
 const userStatus = {};
 const lastWarn = {};
 const checkMessages = 5; // (n)
-const warnGrad = 13.5; // Higher = More Spam (Messages per Second) | 10 = 1 message per second
+const warnGrad = 11.5; // Higher = More Spam (Messages per Second) | 10 = 1 message per second
 const sameGrad = 4;
-const muteGrad = 8; // 9
+const muteGrad = 8.5; // 9
 const waitTime = 5.5;
 const endAlert = 40;
 

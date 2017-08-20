@@ -1560,6 +1560,14 @@ exports.getDiscriminatorFromName = function (name) {
     return discrim;
 };
 
+exports.isNumeric = function (str) {
+    return !isNaN(parseFloat(str)) && isFinite(str);
+};
+
+exports.entirelyNumbers = function (str) {
+    return /^\d+$/.test(str);
+};
+
 exports.getBestMatch = function (container, key, name) { // [v3.0] Visible name match, real name match, length match, caps match, position match
     if (container == null) return undefined;
 
