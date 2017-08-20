@@ -2693,6 +2693,7 @@ exports.simplifyStr = function (str) {
 
 exports.simplifyStrHeavy = function (str) {
     // Assume str is already lowercase
+    str = str.replace(/\s/g, '');
     const strLength = str.length;
     const midPoint = (str.length / 2) + 1; // The first int x for which floor(strLength / x) is 1, a.k.a the length when a substring is too large to repeat and fit into str
     let numCanChange = 0;
