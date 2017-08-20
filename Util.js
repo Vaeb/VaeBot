@@ -2678,16 +2678,59 @@ exports.getLines2 = function (str) {
     return exports.chunkString(str, 153); // Take 153 characters as average line length on average 1080p window
 };
 
-function simplifyStr(str) {
+exports.simplifyStr = function (str) {
+    str = str.toLowerCase();
     const strLength = str.length;
-    for (let i = 1; i < str.length; i++) { // Increment for number of characters in the string excluding before the last (no need to check if whole string is a repetition of itself)
+    const midPoint = (str.length / 2) + 1;
+    for (let i = 1; i < midPoint; i++) { // Increment for number of characters in the string stopping before the last (no need to check if whole string is a repetition of itself)
         const sub = str.substr(0, i); // Get the substring from start of length i
-        const num = strLength / i; // Get the number of times i goes into the length of the substring (number of times to repeat sub to make it fit)
+        const num = Math.floor(strLength / i); // Get the number of times i goes into the length of the substring (number of times to repeat sub to make it fit)
         const repeatedSub = sub.repeat(num); // Repeat the substring floor(num) times
         if (repeatedSub == str) return [sub, num]; // If repeatedSub is equal to original string, return substring and repetition count
     }
     return [str, 1]; // Return substring and repetition count
-}
+};
+
+exports.simplifyStrHeavy = function (str) {
+    // Assume str is already lowercase
+    const strLength = str.length;
+    const midPoint = (str.length / 2) + 1; // The first int x for which floor(strLength / x) is 1, a.k.a the length when a substring is too large to repeat and fit into str
+    let numCanChange = 0;
+    let nextInc = 2;
+    for (let i = 1; i < midPoint; i++) { // Increments for number of characters in the string stopping before the midpoint
+        const sub = str.substr(0, i); // Get the str substring of length i
+        const num = Math.floor(strLength / i); // Get the number of times i goes into the length of the substring (number of times to repeat sub to make it fit)
+        const repeatedSub = sub.repeat(num); // Repeat the substring num times
+        const nowMaxChanges = Math.min(numCanChange * num, strLength / 2); // Get number of allowed alterations between strings to be classed as similar
+        if (exports.getChanges(repeatedSub, str) <= nowMaxChanges) return [sub, num]; // If repeatedSub is similar to original string, return substring and repetition count
+        if (i >= nextInc) { // Update multiplier for nowMaxChanges when length is large enough
+            numCanChange++;
+            nextInc *= 2;
+        }
+    }
+    return [str, 1]; // Return substring and repetition count
+};
+
+exports.similarStrings = function (str1, str2) {
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
+
+    // Get number of allowed alterations between strings to be classed as similar
+    let maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
+
+    // Check if the original strings are similar (have a number of alterations between them [levenshtein distance] less/equal to maxChanges)
+    if (exports.getChanges(str1, str2) <= maxChanges) return true;
+
+    // Simplify both strings removing repeated similar data
+    [str1] = exports.simplifyStrHeavy(str1); // Reduce similar repeated strings (e.g. dog1dog2dog3 becomes dog1)
+    [str2] = exports.simplifyStrHeavy(str2);
+
+    // Update maxChanges for new string lengths
+    maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
+
+    // Check if simplified strings are similar
+    return exports.getChanges(str1, str2) <= maxChanges;
+};
 
 exports.isSpam = function (content) {
     if (exports.getLines2(content).length >= 500) return true; // If the message contains too many chunk-lines (so characters) consider it spam
@@ -2702,9 +2745,9 @@ exports.isSpam = function (content) {
             if (j + i >= matches.length) continue; // If there isn't a match at index j+i it can't be concatenated to joined-substring so skip
             for (let k = 1; k <= i; k++) long += matches[j + k]; // Concatenate all matches after the one at j, onto the match at j, up until (inclusive) the match at i
             // Util.log(long);
-            const simpData = simplifyStr(long); // Simplify the resultant concatenated substring that is made up of the match at j and the following matched substrings, to see if it consists of one repeated substring
-            const sub = simpData[0]; // The substring that can be repeated to make up the long var
-            const num = simpData[1]; // The number of times the substring needs to be repeated to make up the long var
+            const [sub, num] = exports.simplifyStr(long); // Simplify the resultant concatenated substring that is made up of the match at j and the following matched substrings, to see if it consists of one repeated substring
+            // sub: The substring that can be repeated to make up the long var
+            // num: The number of times the substring needs to be repeated to make up the long var
             const subLength = sub.length; // The number of characters in the repeated substring
             let triggered = false; // Initialise spam detection variable
             if (num >= 3) { // Only check for spam if substring has been repeated at least 3 times
