@@ -2713,8 +2713,8 @@ exports.simplifyStrHeavy = function (str) {
 };
 
 exports.similarStrings = function (str1, str2) {
-    str1 = str1.toLowerCase();
-    str2 = str2.toLowerCase();
+    str1 = str1.toLowerCase().trim();
+    str2 = str2.toLowerCase().trim();
 
     // Get number of allowed alterations between strings to be classed as similar
     let maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
@@ -2735,6 +2735,33 @@ exports.similarStrings = function (str1, str2) {
 
 exports.isSpam = function (content) {
     if (exports.getLines2(content).length >= 500) return true; // If the message contains too many chunk-lines (so characters) consider it spam
+
+    const strLines = exports.getLines(content);
+
+    if (strLines.length > 1) {
+        let numSimilar = 0;
+        let mostCommon = strLines[0];
+        let numLines = strLines.length;
+
+        for (let i = 1; i < strLines.length; i++) {
+            const nowStr = strLines[i];
+            if (nowStr.trim().length < 1) {
+                numLines--;
+                continue;
+            }
+            const compStr = numSimilar === 0 ? strLines[i - 1] : mostCommon;
+            if (exports.similarStrings(nowStr, compStr)) {
+                if (numSimilar === 0) mostCommon = nowStr;
+                numSimilar++;
+            } else if (i === 2 && numSimilar === 0 && exports.similarStrings(nowStr, mostCommon)) {
+                numSimilar++;
+            }
+        }
+
+        if (numSimilar >= 3 || numSimilar == numLines) return true;
+    }
+
+    // ////////////////////////////////////////////////////////////////////////////////////////
 
     const pattern = /\S+/g; // Pattern for finding all matches for continuous substrings of non space characters
     const matches = content.match(pattern); // Get the matches
