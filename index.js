@@ -1133,6 +1133,8 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     return false;
 });
 
+const staffMessages = {};
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
@@ -1178,6 +1180,10 @@ client.on('message', (msgObj) => {
         for (let i = 0; i < exports.runFuncs.length; i++) {
             exports.runFuncs[i](msgObj, speaker, channel, guild, false);
         }
+    }
+
+    if (guild != null && speaker != null) {
+        if (!has.call(staffMessages, speaker.id)) staffMessages[speaker.id] = {};
     }
 
     if (guild != null && author.bot === false && content.length > 0 && author.id !== guild.owner.id && author.id !== vaebId && !Admin.checkMuted(guild, author.id)) { // If they are eligible for anti-spam checks

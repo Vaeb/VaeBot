@@ -811,6 +811,12 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
     const totalBans = userBans.length + 1;
     const totalOffenses = pastMutes + totalBans;
 
+    // Verify they can be banned
+
+    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
+        return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'User has equal or higher rank');
+    }
+
     // Stop here if the ban isn't temporary
 
     if (!banTemp) {
@@ -838,13 +844,9 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
 
     // Verify they can be banned
 
-    if (notHigherRank(moderatorResolvable, resolvedUser.member)) {
-        return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'User has equal or higher rank');
-    }
-
     if (activeBan && activeBan.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeBan.mod_id, guild)) && activeBan.end_tick > endTick) {
         return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'The user is already banned: You can\'t override a user\'s ban with an earlier end time unless you have higher privilege than the original moderator');
-    }
+    
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

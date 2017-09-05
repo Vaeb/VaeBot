@@ -1,20 +1,20 @@
 module.exports = Cmds.addCommand({
-    cmds: ["ping"],
+    cmds: ['ping'],
 
     requires: {
         guild: false,
-        loud: true
+        loud: true,
     },
 
-    desc: "pong",
+    desc: 'pong',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        Util.sendDescEmbed(channel, null, "pong", null, null, null);
-    }
+    func: (cmd, args, msgObj, speaker, channel) => {
+        Util.sendDescEmbed(channel, null, 'pong', null, null, null);
+    },
 });

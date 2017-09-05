@@ -23,7 +23,8 @@
 		"colMessage": true,
 		"colCommand": true,
 		"colGreen": true,
-		"colBlue": true
+        "colBlue": true,
+        "cmd": true, "args": true, "msgObj": true, "speaker": true, "channel": true, "guild": true
     },
     "rules": {
         "default-case": "off",
