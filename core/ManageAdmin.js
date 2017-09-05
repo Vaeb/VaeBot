@@ -846,7 +846,7 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
 
     if (activeBan && activeBan.mod_id != resolvedModerator.id && notHigherRank(moderatorResolvable, Util.getMemberById(activeBan.mod_id, guild)) && activeBan.end_tick > endTick) {
         return Util.commandFailed(channel, moderatorResolvable, 'AddBan', 'The user is already banned: You can\'t override a user\'s ban with an earlier end time unless you have higher privilege than the original moderator');
-    
+    }
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
