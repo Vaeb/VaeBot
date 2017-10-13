@@ -1134,7 +1134,13 @@ exports.getDateString = function (d) {
 
 exports.hasRole = (member, role) => member.roles.has(role.id);
 
-exports.hasRoleName = (member, name) => member.roles.some(role => role.name.toLowerCase().includes(name.toLowerCase()));
+exports.hasRoleName = (member, name) => {
+    name = name.toLowerCase();
+    let returnRole = member.roles.some(role => role.name.toLowerCase().includes(name));
+    if (returnRole == null && name == 'support') returnRole = exports.hasRoleName(member, 'helper ghoul');
+    if (returnRole == null && name == 'trial support') returnRole = exports.hasRoleName(member, 'helper ghoul in training');
+    return returnRole;
+}
 
 exports.makeEmbedFooter = function (user, dateParam) {
     const memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
@@ -2110,16 +2116,20 @@ exports.isAdmin = function (member) {
     return false;
 };
 
-exports.getRole = function (nameParam, obj) {
+exports.getRole = function (name, obj) {
     if (obj == null) return undefined;
 
-    let name = nameParam;
-
     name = name.toLowerCase();
+
     const nameId = exports.getSafeId(name);
     const roles = obj.roles;
     if (roles.has(nameId)) return roles.get(nameId);
-    return exports.getBestMatch(roles, 'name', name);
+
+    const returnRole = exports.getBestMatch(roles, 'name', name);
+    if (returnRole == null && name == 'support') returnRole = exports.getRole('helper ghoul', obj);
+    if (returnRole == null && name == 'trial support') returnRole = exports.getRole('helper ghoul in training', obj);
+
+    return returnRole;
 };
 
 exports.getHighestRole = member => member.highestRole;
