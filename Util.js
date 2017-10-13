@@ -1137,8 +1137,7 @@ exports.hasRole = (member, role) => member.roles.has(role.id);
 exports.hasRoleName = (member, name) => {
     name = name.toLowerCase();
     let returnRole = member.roles.some(role => role.name.toLowerCase().includes(name));
-    if (returnRole == null && name == 'support') returnRole = exports.hasRoleName(member, 'helper ghoul');
-    if (returnRole == null && name == 'trial support') returnRole = exports.hasRoleName(member, 'helper ghoul in training');
+    if (returnRole == null && name.includes('support')) returnRole = exports.hasRoleName(member, 'helper ghoul');
     return returnRole;
 }
 
