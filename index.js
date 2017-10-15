@@ -17,7 +17,7 @@ const YtInfoObj = require('youtube-node');
 exports.Translate = require('google-translate-api');
 exports.MySQL = require('mysql');
 exports.NodeUtil = require('util');
-exports.YoutubeSearch = require('youtube-search');
+// exports.YoutubeSearch = require('youtube-search');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
