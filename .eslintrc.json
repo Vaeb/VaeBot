@@ -8,6 +8,7 @@
 		"has": true,
 		"selfId": true,
 		"vaebId": true,
+		"botDir": true,
 		"Util": true,
 		"Data": true,
 		"Trello": true,

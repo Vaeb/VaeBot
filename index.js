@@ -17,6 +17,7 @@ const YtInfoObj = require('youtube-node');
 exports.Translate = require('google-translate-api');
 exports.MySQL = require('mysql');
 exports.NodeUtil = require('util');
+exports.YoutubeSearch = require('youtube-search');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
@@ -34,6 +35,7 @@ global.index = module.exports;
 global.has = Object.prototype.hasOwnProperty;
 global.selfId = '224529399003742210';
 global.vaebId = '107593015014486016';
+global.botDir = '/home/flipflop8421/files/discordExp/VaeBot'; // '/home/flipflop8421/files/discordExp/VaeBot' 'C:\\Users\\Adam\\Documents\\GitVaeb\\VaeBot'
 
 global.Util = require('./Util.js');
 global.Data = require('./core/ManageData.js');

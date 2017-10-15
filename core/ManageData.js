@@ -1,9 +1,9 @@
 const FileSys = index.FileSys;
 
-const mutesDir = '/home/flipflop8421/files/discordExp/VaeBot/data/mutes.json'; // Legacy (replaced with MySQL DB)
-const histDir = '/home/flipflop8421/files/discordExp/VaeBot/data/history.json'; // Legacy (replaced with MySQL DB)
-const autoRoleDir = '/home/flipflop8421/files/discordExp/VaeBot/data/autoroles.json'; // Legacy (replaced with MySQL DB)
-const playlistDir = '/home/flipflop8421/files/discordExp/VaeBot/data/playlist.json'; // Legacy (replaced with MySQL DB)
+const mutesDir = `${botDir}/data/mutes.json`; // Legacy (replaced with MySQL DB)
+const histDir = `${botDir}/data/history.json`; // Legacy (replaced with MySQL DB)
+const autoRoleDir = `${botDir}/data/autoroles.json`; // Legacy (replaced with MySQL DB)
+const playlistDir = `${botDir}/data/playlist.json`; // Legacy (replaced with MySQL DB)
 
 const linkGuilds = index.linkGuilds;
 

@@ -1139,7 +1139,7 @@ exports.hasRoleName = (member, name) => {
     let hasRoleVal = member.roles.some(role => role.name.toLowerCase().includes(name));
     if (!hasRoleVal && name.includes('support')) hasRoleVal = exports.hasRoleName(member, 'helper ghoul');
     return hasRoleVal;
-}
+};
 
 exports.makeEmbedFooter = function (user, dateParam) {
     const memberName = exports.isObject(user) ? exports.getDisplayName(user) : String(user);
@@ -2124,7 +2124,7 @@ exports.getRole = function (name, obj) {
     const roles = obj.roles;
     if (roles.has(nameId)) return roles.get(nameId);
 
-    const returnRole = exports.getBestMatch(roles, 'name', name);
+    let returnRole = exports.getBestMatch(roles, 'name', name);
     if (!returnRole && name == 'support') returnRole = exports.getRole('helper ghoul', obj);
     if (!returnRole && name == 'trial support') returnRole = exports.getRole('helper ghoul in training', obj);
 

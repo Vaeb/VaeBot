@@ -57,7 +57,7 @@ exports.getCommand = function (contentParam) {
 };
 
 exports.initCommands = function () {
-    Util.bulkRequire('/home/flipflop8421/files/discordExp/VaeBot/commands/');
+    Util.bulkRequire(`${botDir}/commands/`);
 };
 
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
