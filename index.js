@@ -257,6 +257,7 @@ exports.globalBan = {
     '284410389469593611': true, // Papi
     '255779902387650560': true, // Shiro's Twin
     '80385350316339200': true, // Fennec
+    '175013861701713920': true, // chrome
 };
 
 function securityFunc(guild, member, sendRoleParam) {
