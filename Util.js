@@ -1136,8 +1136,7 @@ exports.hasRole = (member, role) => member.roles.has(role.id);
 
 exports.hasRoleName = (member, name) => {
     name = name.toLowerCase();
-    let hasRoleVal = member.roles.some(role => role.name.toLowerCase().includes(name));
-    if (!hasRoleVal && name.includes('support')) hasRoleVal = exports.hasRoleName(member, 'helper ghoul');
+    const hasRoleVal = member.roles.some(role => role.name.toLowerCase().includes(name));
     return hasRoleVal;
 };
 
@@ -2124,9 +2123,7 @@ exports.getRole = function (name, obj) {
     const roles = obj.roles;
     if (roles.has(nameId)) return roles.get(nameId);
 
-    let returnRole = exports.getBestMatch(roles, 'name', name);
-    if (!returnRole && name == 'support') returnRole = exports.getRole('helper ghoul', obj);
-    if (!returnRole && name == 'trial support') returnRole = exports.getRole('helper ghoul in training', obj);
+    const returnRole = exports.getBestMatch(roles, 'name', name);
 
     return returnRole;
 };
