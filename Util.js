@@ -2739,6 +2739,21 @@ exports.similarStrings = function (str1, str2) {
     return exports.getChanges(str1, str2) <= maxChanges;
 };
 
+exports.similarStringsStrict = function (str1, str2) {
+    str1 = str1.toLowerCase().trim();
+    str2 = str2.toLowerCase().trim();
+
+    if (str1.length == 1 || str2.length == 1) return str1 == str2;
+
+    // Get number of allowed alterations between strings to be classed as similar
+    const maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
+
+    // Check if the original strings are similar (have a number of alterations between them [levenshtein distance] less/equal to maxChanges)
+    if (exports.getChanges(str1, str2) <= maxChanges) return true;
+
+    return false;
+};
+
 exports.isSpam = function (content) {
     if (exports.getLines2(content).length >= 500) return true; // If the message contains too many chunk-lines (so characters) consider it spam
 

@@ -1241,17 +1241,17 @@ client.on('message', (msgObj) => {
 
         if (!Admin.checkMuted(guild, author.id)) {
             let numSimilar = 0;
-            const prevSpam = spamMessages.some(spamMsg => Util.similarStrings(content, spamMsg.msg));
+            const prevSpam = spamMessages.some(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
                 const recentMsg = recentMessages[i];
-                if (Util.similarStrings(content, recentMsg.msg)) {
+                if (Util.similarStringsStrict(content, recentMsg.msg)) {
                     numSimilar++;
                 } else if ((stamp - recentMsg.stamp) > recentMs) {
                     recentMessages.splice(i, 1);
                 }
             }
             if (numSimilar >= numSimilarForSpam || prevSpam) { // Is spam
-                if (!prevSpam) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
+                if (!prevSpam && content.lenth > 3) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
                 /* if (userStatus[authorId] == 0) {
                     Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
                     userStatus[authorId] = 2;
