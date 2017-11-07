@@ -1174,7 +1174,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
 const staffMessages = {};
 
-const recentMs = 10000; // What's the maximum elapsed time to count a message as recent?
+const recentMs = 20000; // What's the maximum elapsed time to count a message as recent?
 const recentMessages = []; // Messages sent in the last recentMs milliseconds
 const numSimilarForSpam = 3;
 const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
