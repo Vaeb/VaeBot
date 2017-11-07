@@ -1174,6 +1174,11 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
 const staffMessages = {};
 
+const recentMs = 10000; // What's the maximum elapsed time to count a message as recent?
+const recentMessages = []; // Messages sent in the last recentMs milliseconds
+const numSimilarForSpam = 3;
+const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
@@ -1231,7 +1236,28 @@ client.on('message', (msgObj) => {
         const nowStamps = messageStamps[authorId]; // Get user message storage
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
-        if (Util.isSpam(content)) { // Check if the message contains single-message-spam
+        
+        if (!Admin.checkMuted(guild, author.id)) {
+            let numSimilar = 0;
+            const prevSpam = spamMessages.some(spamMsg => Util.similarStrings(content, spamMsg.msg));
+            for (let i = recentMessages.length-1; i >= 0; i--) {
+                const recentMsg = recentMessages[i];
+                if (Util.similarStrings(content, recentMsg.msg)) {
+                    numSimilar++;
+                } else if ((stamp - recentMsg.stamp) > recentMs) {
+                    recentMessages.splice(i, 1);
+                }
+            }
+            if (numSimilar >= numSimilarForSpam || prevSpam) { // Is spam
+                if (!prevSpam) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
+                Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user
+                userStatus[authorId] = 0; // Reset their status to the default
+            }
+        }
+
+        recentMessages.push({ msg: content, stamp });
+
+        if (!Admin.checkMuted(guild, author.id) && Util.isSpam(content)) { // Check if the message contains single-message-spam
             if (userStatus[authorId] == 0) { // If the user has not yet been warned recently
                 Util.logc('AntiSpam1', `[4] ${Util.getName(speaker)} warned`);
                 Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
