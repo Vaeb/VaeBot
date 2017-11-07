@@ -1239,7 +1239,7 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
 
-        if (!Admin.checkMuted(guild, author.id)) {
+        if (!Admin.checkMuted(guild, author.id) && contentLower.substr(0, 1) != ';' && contentLower != 'ping') {
             let numSimilar = 0;
             const prevSpam = spamMessages.some(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
@@ -1250,7 +1250,8 @@ client.on('message', (msgObj) => {
                     recentMessages.splice(i, 1);
                 }
             }
-            if (numSimilar >= numSimilarForSpam || prevSpam) { // Is spam
+            const nowCheck = numSimilarForSpam;
+            if (numSimilar >= nowCheck || prevSpam) { // Is spam
                 if (!prevSpam && content.length > 3) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
                 /* if (userStatus[authorId] == 0) {
                     Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
