@@ -1238,11 +1238,11 @@ client.on('message', (msgObj) => {
         const nowStamps = messageStamps[authorId]; // Get user message storage
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
-        
+
         if (!Admin.checkMuted(guild, author.id)) {
             let numSimilar = 0;
             const prevSpam = spamMessages.some(spamMsg => Util.similarStrings(content, spamMsg.msg));
-            for (let i = recentMessages.length-1; i >= 0; i--) {
+            for (let i = recentMessages.length - 1; i >= 0; i--) {
                 const recentMsg = recentMessages[i];
                 if (Util.similarStrings(content, recentMsg.msg)) {
                     numSimilar++;
