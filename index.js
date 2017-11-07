@@ -1251,7 +1251,7 @@ client.on('message', (msgObj) => {
                 }
             }
             if (numSimilar >= numSimilarForSpam || prevSpam) { // Is spam
-                if (!prevSpam && content.lenth > 3) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
+                if (!prevSpam && content.length > 3) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
                 /* if (userStatus[authorId] == 0) {
                     Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
                     userStatus[authorId] = 2;
