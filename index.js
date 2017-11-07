@@ -1179,6 +1179,8 @@ const recentMessages = []; // Messages sent in the last recentMs milliseconds
 const numSimilarForSpam = 3;
 const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
 
+const msgStatus = {};
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
@@ -1250,8 +1252,13 @@ client.on('message', (msgObj) => {
             }
             if (numSimilar >= numSimilarForSpam || prevSpam) { // Is spam
                 if (!prevSpam) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
-                Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user
-                userStatus[authorId] = 0; // Reset their status to the default
+                /* if (userStatus[authorId] == 0) {
+                    Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
+                    userStatus[authorId] = 2;
+                } else { */
+                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user
+                    userStatus[authorId] = 0; // Reset their status to the default
+                // } // Problem: Should be msgStatus, not userStatus, warning given based on the similar message, not the user themself
             }
         }
 
