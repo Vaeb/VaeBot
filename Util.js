@@ -2743,7 +2743,7 @@ exports.similarStringsStrict = function (str1, str2) {
     str1 = str1.toLowerCase().trim();
     str2 = str2.toLowerCase().trim();
 
-    if (str1.length == 1 || str2.length == 1) return str1 == str2;
+    if ((str1.length < 4 || str2.length < 4) && (!(str1.length == 3 || str2.length == 3) || (str1.length <= 3 && str2.length <= 3))) return str1 == str2;
 
     // Get number of allowed alterations between strings to be classed as similar
     const maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));

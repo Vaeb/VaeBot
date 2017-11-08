@@ -1239,9 +1239,9 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
 
-        if (!Admin.checkMuted(guild, author.id) && contentLower.substr(0, 1) != ';' && contentLower != 'ping') {
+        if (!Admin.checkMuted(guild, author.id) && contentLower.length >= 3 && contentLower.substr(0, 1) != ';' && contentLower != 'ping') {
             let numSimilar = 0;
-            const prevSpam = spamMessages.some(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
+            const prevSpam = spamMessages.find(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
                 const recentMsg = recentMessages[i];
                 if (Util.similarStringsStrict(content, recentMsg.msg)) {
@@ -1252,14 +1252,20 @@ client.on('message', (msgObj) => {
             }
             const nowCheck = numSimilarForSpam;
             if (numSimilar >= nowCheck || prevSpam) { // Is spam
-                if (!prevSpam && content.length > 3) spamMessages.push({ msg: content, stamp }); // At some point remove spam messages with really old stamp?
-                /* if (userStatus[authorId] == 0) {
-                    Util.print(channel, speaker.toString(), 'Warning: If you continue to spam you will be auto-muted'); // Warn the user
-                    userStatus[authorId] = 2;
-                } else { */
-                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Spamming' }); // Mute the user
-                    userStatus[authorId] = 0; // Reset their status to the default
-                // } // Problem: Should be msgStatus, not userStatus, warning given based on the similar message, not the user themself
+                if (prevSpam) { // If message is similar to one previously detected as spam
+                    prevSpam.numSince = 0;
+                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
+                } else { // If message was detected as spam based on similar recent messages
+                    spamMessages.push({ msg: content, stamp, numSince: 0 }); // At some point remove spam messages with really old stamp?
+                    Util.print(channel, speaker.toString(), 'Warning: If users continue to send variants of this message, it will be treated as spam and the users sending it will be muted'); // Warn the user
+                    // Maybe put all the users who've spammed the message on a warning?
+                }
+            } else {
+                for (let i = spamMessages.length - 1; i >= 0; i--) { // Remove old spam message checks
+                    const oldSpam = spamMessages[i];
+                    oldSpam.numSince++;
+                    if (oldSpam.numSince >= 25) spamMessages.splice(i, 1); // Too old -> Remove
+                }
             }
         }
 
