@@ -1012,7 +1012,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
     let triggered = 0;
 
-    const trigger = [/d[ei]?s?[ck]{1,2}s?w?[ou]rd/g, / id|id /g, /what/g];
+    const trigger = [/d[ei]?s?[ck]{1,2}s?w?[ou]r?d/g, / id|id /g, /what/g];
     for (let i = 0; i < trigger.length; i++) {
         if (trigger[i].test(contentLower)) triggered++;
     }
