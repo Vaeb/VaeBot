@@ -996,6 +996,28 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
+
+    let contentLower = msgObj.content.toLowerCase();
+    // contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/how/g, 'what');
+    contentLower = contentLower.replace(/my/g, 'what');
+    contentLower = contentLower.replace(/where/g, 'what');
+    contentLower = contentLower.replace(/find/g, 'what');
+
+    let triggered = 0;
+
+    const trigger = [/dis[ck]ord/g, / id|id /g, /what/g];
+    for (let i = 0; i < trigger.length; i++) {
+        if (trigger[i].test(contentLower)) triggered++;
+    }
+
+    if (triggered == trigger.length) {
+        Util.sendDescEmbed(channel, Util.getMostName(speaker), `Your Discord ID: ${speaker.id}`, null, null, colGreen);
+    }
+});
+
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
