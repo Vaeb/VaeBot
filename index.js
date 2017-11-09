@@ -1003,6 +1003,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     // contentLower = contentLower.replace(/\s/g, '');
     contentLower = contentLower.replace(/how/g, 'what');
     contentLower = contentLower.replace(/my/g, 'what');
+    contentLower = contentLower.replace(/mah/g, 'what');
     contentLower = contentLower.replace(/where/g, 'what');
     contentLower = contentLower.replace(/find/g, 'what');
 
