@@ -1253,10 +1253,11 @@ client.on('message', (msgObj) => {
             const nowCheck = numSimilarForSpam;
             if (numSimilar >= nowCheck || prevSpam) { // Is spam
                 if (prevSpam) { // If message is similar to one previously detected as spam
+                    prevSpam.initWarn = false;
                     prevSpam.numSince = -20;
                     Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
                 } else { // If message was detected as spam based on similar recent messages
-                    spamMessages.push({ msg: content, stamp, numSince: 0 }); // At some point remove spam messages with really old stamp?
+                    spamMessages.push({ msg: content, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
                     Util.print(channel, speaker.toString(), `Warning: If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`); // Warn the user
                     // Maybe put all the users who've spammed the message on a warning?
                 }
