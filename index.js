@@ -1001,17 +1001,16 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
     let contentLower = msgObj.content.toLowerCase();
     // contentLower = contentLower.replace(/\s/g, '');
-    contentLower = contentLower.replace(/wat/g, 'what');
-    contentLower = contentLower.replace(/wut/g, 'what');
-    contentLower = contentLower.replace(/how/g, 'what');
+    contentLower = contentLower.replace(/w[au@]t/g, 'what');
+    contentLower = contentLower.replace(/h[o0]w/g, 'what');
     contentLower = contentLower.replace(/my/g, 'what');
-    contentLower = contentLower.replace(/mah/g, 'what');
-    contentLower = contentLower.replace(/where/g, 'what');
-    contentLower = contentLower.replace(/find/g, 'what');
+    contentLower = contentLower.replace(/m[a@]h/g, 'what');
+    contentLower = contentLower.replace(/wh[e3]r[e3]/g, 'what');
+    contentLower = contentLower.replace(/f[i1]nd/g, 'what');
     contentLower = contentLower.replace(/see/g, 'what');
-    contentLower = contentLower.replace(/please/g, 'what');
-    contentLower = contentLower.replace(/pls/g, 'what');
-    contentLower = contentLower.replace(/plz/g, 'what');
+    contentLower = contentLower.replace(/ c /g, 'what');
+    contentLower = contentLower.replace(/ple{1,2}a?[sz]e/g, 'what');
+    contentLower = contentLower.replace(/pl[eoyi][szx]/g, 'what');
 
     let triggered = 0;
 
