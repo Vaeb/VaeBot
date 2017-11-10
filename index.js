@@ -1010,7 +1010,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     contentLower = contentLower.replace(/see/g, 'what');
     contentLower = contentLower.replace(/ c /g, 'what');
     contentLower = contentLower.replace(/ple{1,2}a?[sz]e/g, 'what');
-    contentLower = contentLower.replace(/pl[eoyi][szx]/g, 'what');
+    contentLower = contentLower.replace(/pl[eoyi]?[szx]/g, 'what');
 
     let triggered = 0;
 
