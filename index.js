@@ -1267,7 +1267,7 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
 
-        if (!Admin.checkMuted(guild, author.id) && contentLower.length >= 5 && contentLower.substr(0, 1) != ';' && contentLower != 'ping') {
+        if (!Admin.checkMuted(guild, author.id) && contentLower.length >= 1 && contentLower.substr(0, 1) != ';' && contentLower != 'ping' && contentLower != '!buy') { // >= 5
             let numSimilar = 0;
             const prevSpam = spamMessages.find(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
