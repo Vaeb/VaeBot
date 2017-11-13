@@ -1000,6 +1000,34 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
+
+    let contentLower = msgObj.content.toLowerCase();
+    // contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/w[au@]t/g, 'what');
+    contentLower = contentLower.replace(/h[o0]w/g, 'what');
+    contentLower = contentLower.replace(/my/g, 'what');
+    contentLower = contentLower.replace(/m[a@]h/g, 'what');
+    contentLower = contentLower.replace(/wh[e3]r[e3]/g, 'what');
+    contentLower = contentLower.replace(/f[i1]nd/g, 'what');
+    contentLower = contentLower.replace(/see/g, 'what');
+    contentLower = contentLower.replace(/ c /g, 'what');
+    contentLower = contentLower.replace(/ple{1,2}a?[sz]e/g, 'what');
+    contentLower = contentLower.replace(/pl[eoyi]?[szx]/g, 'what');
+
+    let triggered = 0;
+
+    const trigger = [/d[eouyi]?s?[ck]{1,2}s?w?[ouey]r{0,2}[dt ]/g, / id|id /g, /what/g];
+    for (let i = 0; i < trigger.length; i++) {
+        if (trigger[i].test(contentLower)) triggered++;
+    }
+
+    if (triggered == trigger.length) {
+        Util.sendDescEmbed(channel, Util.getMostName(speaker), `Your Discord ID: ${speaker.id}`, null, null, colGreen);
+    }
+});
+
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
@@ -1258,7 +1286,7 @@ client.on('message', (msgObj) => {
         const stamp = (+new Date()); // Get current timestamp
         nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
 
-        if (!Admin.checkMuted(guild, author.id) && contentLower.length >= 3 && contentLower.substr(0, 1) != ';' && contentLower != 'ping') {
+        if (!Admin.checkMuted(guild, author.id) && contentLower.length >= 5 && contentLower.substr(0, 1) != ';' && contentLower != 'ping' && contentLower != '!buy') { // >= 5
             let numSimilar = 0;
             const prevSpam = spamMessages.find(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
@@ -1272,18 +1300,19 @@ client.on('message', (msgObj) => {
             const nowCheck = numSimilarForSpam;
             if (numSimilar >= nowCheck || prevSpam) { // Is spam
                 if (prevSpam) { // If message is similar to one previously detected as spam
-                    prevSpam.numSince = -50;
+                    prevSpam.initWarn = false;
+                    prevSpam.numSince = 0;
                     Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
                 } else { // If message was detected as spam based on similar recent messages
-                    spamMessages.push({ msg: content, stamp, numSince: 0 }); // At some point remove spam messages with really old stamp?
-                    Util.print(channel, speaker.toString(), 'Warning: If users continue to send variants of this message, it will be treated as spam and the users sending it will be muted'); // Warn the user
+                    spamMessages.push({ msg: content, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
+                    Util.print(channel, speaker.toString(), `Warning: If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`); // Warn the user
                     // Maybe put all the users who've spammed the message on a warning?
                 }
             } else {
                 for (let i = spamMessages.length - 1; i >= 0; i--) { // Remove old spam message checks
                     const oldSpam = spamMessages[i];
                     oldSpam.numSince++;
-                    if (oldSpam.numSince >= 25) spamMessages.splice(i, 1); // Too old -> Remove
+                    if (oldSpam.numSince >= 20) spamMessages.splice(i, 1); // Too old -> Remove
                 }
             }
         }
