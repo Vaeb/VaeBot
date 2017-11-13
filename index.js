@@ -1046,7 +1046,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
     let triggered = 0;
 
-    const trigger = [/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]/g, / v[aeyui]{1,3}l /g, /what/g];
+    const trigger = [/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]|l[i1]nk/g, / v[aeyui]{1,3}l /g, /what/g];
     for (let i = 0; i < trigger.length; i++) {
         if (trigger[i].test(contentLower)) triggered++; // Mother fuckin' triggered
     }
