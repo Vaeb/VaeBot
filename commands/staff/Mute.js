@@ -65,11 +65,11 @@ module.exports = Cmds.addCommand({
         } */
 
         if (Admin.checkMuted(guild, member.id)) {
-            Util.print(channel, `Eurghh... Are you sure you want to re-mute that guy instead of using \`;changemute\` <@${speaker.id}>...?\nI do hope you realised that he was already muted...`);
+            Util.print(channel, `Eurghh... <@${speaker.id}> Are you sure you want to re-mute that guy instead of using \`;changemute\`...?\n\nI do hope you realised that he was already muted...`);
 
-            const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id && msgObjTemp.content.includes(selfId);
+            const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id;
 
-            channel.awaitMessages(isResponse, { max: 1, time: 1000 * 15, errors: ['time'] })
+            channel.awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
                 .then((collected) => {
                     const response = collected.first();
                     if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(response.content.toLowerCase())) {
@@ -81,7 +81,7 @@ module.exports = Cmds.addCommand({
                 })
                 .catch(() => {
                     Util.print(channel, `What a drag, I've been waiting far too long for an answer <@${speaker.id}>, snails get stitches...`);
-                    Admin.addMute(guild, channel, speaker, speaker, { time: 1000 * 60, reason: 'Snails get stitches' });
+                    Admin.addMute(guild, channel, speaker, 'System', { time: 1000 * 60 * 1.5, reason: 'Snails get stitches' });
                 });
         } else {
             Admin.addMute(guild, channel, member, speaker, { time, reason });
