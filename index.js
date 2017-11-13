@@ -373,6 +373,10 @@ exports.secure = async function () {
     Util.log('> Security setup complete');
 };
 
+function notifyOn(channel) { // Not if the last message was a reminder...
+    Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
+}
+
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
 Cmds.initCommands();
@@ -1179,7 +1183,12 @@ const recentMessages = []; // Messages sent in the last recentMs milliseconds
 const numSimilarForSpam = 3;
 const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
 
-const msgStatus = {};
+const msgStatus = {}; // Coming soon?
+
+let lastTimeout = {
+    timeout: null,
+    stamp: 0,
+};
 
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
@@ -1189,6 +1198,8 @@ client.on('message', (msgObj) => {
     let author = msgObj.author;
     let content = msgObj.content;
     const authorId = author.id;
+
+    const presentStamp = +new Date();
 
     // if (guild.id !== '166601083584643072') return;
 
@@ -1212,6 +1223,14 @@ client.on('message', (msgObj) => {
                 msgObj.delete();
                 return;
             }
+        }
+    }
+
+    if (guild != null) {
+        if (lastTimeout.timeout) clearTimeout(lastTimeout.timeout);
+        if (presentStamp - lastTimeout.stamp > 1000 * 60 * 10) { // Hmmm, 10 minutes?
+            lastTimeout.timeout = setTimeout(notifyOn, 1000 * 60 * 0.1, channel); // Low value for testing stage (6 seconds)
+            lastTimeout.stamp = presentStamp;
         }
     }
 
