@@ -55,7 +55,7 @@ module.exports = Cmds.addCommand({
         Util.log(`Change Arg Data: ${data}`);
 
         const member = data[0];
-        const mult = data[2] || 1/60;
+        const mult = data[2] || 1 / 60;
         const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
@@ -83,6 +83,8 @@ module.exports = Cmds.addCommand({
                     Util.print(channel, `What a drag, I've been waiting far too long for an answer <@${speaker.id}>, snails get stitches...`);
                     Admin.addMute(guild, channel, speaker, speaker, { time: 1000 * 60, reason: 'Snails get stitches' });
                 });
+        } else {
+            Admin.addMute(guild, channel, member, speaker, { time, reason });
         }
 
         return true;
