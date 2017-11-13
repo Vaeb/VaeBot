@@ -6,7 +6,7 @@ module.exports = Cmds.addCommand({
         loud: false,
     },
 
-    desc: 'Kick a user from the guild (extra hard)',
+    desc: 'Kick a user from the guild (extra hard)', // Does this command even do anything?????????????????
 
     args: '([@user] | [id] | [name]) ([reason])',
 
