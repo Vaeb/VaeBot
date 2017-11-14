@@ -373,6 +373,10 @@ exports.secure = async function () {
     Util.log('> Security setup complete');
 };
 
+function notifyOn(channel) { // Not if the last message was a reminder...
+    Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
+}
+
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
 Cmds.initCommands();
@@ -1025,6 +1029,34 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
+exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
+
+    let contentLower = msgObj.content.toLowerCase();
+    // contentLower = contentLower.replace(/\s/g, '');
+    contentLower = contentLower.replace(/w[au@]t/g, 'what');
+    contentLower = contentLower.replace(/h[o0]w/g, 'what');
+    contentLower = contentLower.replace(/my/g, 'what');
+    contentLower = contentLower.replace(/m[a@]h/g, 'what');
+    contentLower = contentLower.replace(/wh[e3]r[e3]/g, 'what');
+    contentLower = contentLower.replace(/f[i1]nd/g, 'what');
+    contentLower = contentLower.replace(/see/g, 'what');
+    contentLower = contentLower.replace(/ c /g, 'what');
+    contentLower = contentLower.replace(/ple{1,2}a?[sz]e/g, 'what');
+    contentLower = contentLower.replace(/pl[eoyi]?[szx]/g, 'what');
+
+    let triggered = 0;
+
+    const trigger = [/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]|l[i1]nk/g, / v[aeyui]{1,3}l /g, /what/g];
+    for (let i = 0; i < trigger.length; i++) {
+        if (trigger[i].test(contentLower)) triggered++; // Mother fuckin' triggered
+    }
+
+    if (triggered == trigger.length) {
+        Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+    }
+});
+
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
@@ -1208,7 +1240,12 @@ const recentMessages = []; // Messages sent in the last recentMs milliseconds
 const numSimilarForSpam = 3;
 const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
 
-const msgStatus = {};
+const msgStatus = {}; // Coming soon?
+
+let lastTimeout = {
+    timeout: null,
+    stamp: 0,
+};
 
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
@@ -1218,6 +1255,8 @@ client.on('message', (msgObj) => {
     let author = msgObj.author;
     let content = msgObj.content;
     const authorId = author.id;
+
+    const presentStamp = +new Date();
 
     // if (guild.id !== '166601083584643072') return;
 
@@ -1241,6 +1280,14 @@ client.on('message', (msgObj) => {
                 msgObj.delete();
                 return;
             }
+        }
+    }
+
+    if (guild != null) {
+        if (lastTimeout.timeout) clearTimeout(lastTimeout.timeout);
+        if (presentStamp - lastTimeout.stamp > 1000 * 60 * 10) { // Hmmm, 10 minutes?
+            lastTimeout.timeout = setTimeout(notifyOn, 1000 * 60 * 3, channel); // 3 minutes
+            lastTimeout.stamp = presentStamp;
         }
     }
 
