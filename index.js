@@ -1047,13 +1047,17 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 
     let triggered = 0;
 
-    const trigger = [/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]|l[i1]nk/g, / v[aeyui]{1,3}l /g, /what/g];
+    const trigger = [/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]|l[i1]nk/g, / v[aeyui]{1,3}l|what|d[eouyi]?s?[ck]{1,2}s?w?[ouey]r{0,2}[dt ]/g];
     for (let i = 0; i < trigger.length; i++) {
         if (trigger[i].test(contentLower)) triggered++; // Mother fuckin' triggered
     }
 
     if (triggered == trigger.length) {
         Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+    } else {
+        if (/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]\s*l[i1]nk/g.test(contentLower)) {
+            Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+        }
     }
 });
 
