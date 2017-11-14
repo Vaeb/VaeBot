@@ -518,8 +518,9 @@ client.on('guildMemberAdd', (member) => {
     }
 
     Data.getRecords(guild, 'members', { user_id: member.id }).then((results) => {
-        if (results.length == 0) {
-            Data.addRecord(guild, 'members', { user_id: member.id, buyer: Util.hasRoleName(member, 'Buyer') ? 1 : 0, nickname: member.nickname });
+        const isBuyer = Util.hasRoleName(member, 'Buyer');
+        if (results.length == 0 && isBuyer) {
+            Data.addRecord(guild, 'members', { user_id: member.id, buyer: isBuyer ? 1 : 0, nickname: member.nickname });
             Util.logc(memberId, `Adding new member ${Util.getFullName(member)} to MySQL DB`);
         }
     });
