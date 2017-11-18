@@ -1,6 +1,6 @@
-# VaeBot - A Discord bot with every feature that you could need, from moderation to music.
+# VaeBot - A Discord bot for all uses from moderation to music.
 
-# Staff-Only Commands
+## Staff-Only Commands
 ​
 **;actions** OR **;guild** actions OR **;all** actions - Output all actions that can be used in **;link**
 
@@ -83,7 +83,7 @@
 **;warn** OR **;warnhammer** - Warns a user and puts the warning on their record
 
 
-# Public Commands
+## Public Commands
 ​
 **;autoplaylist** OR **;ap** - Output all the bangin' tunes in the auto-playlist
 
