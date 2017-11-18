@@ -2,7 +2,7 @@ const TrelloHandler = index.TrelloHandler;
 const DateFormat = index.DateFormat;
 
 const boards = {
-    '284746138995785729': '59392df2d36f09ca35556339', // Veil
+    '381518821288181760': '59392df2d36f09ca35556339', // Veil
 };
 
 const lists = {

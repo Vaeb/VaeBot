@@ -23,7 +23,7 @@ exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
 
 exports.linkGuilds = [
-    ['284746138995785729', '309785618932563968'],
+    ['381518821288181760', '309785618932563968'],
 ];
 
 exports.dbPass = Auth.dbPass;
@@ -304,7 +304,7 @@ function setupSecurity(guild) {
 }
 
 function setupSecurityVeil() {
-    const veilGuild = client.guilds.get('284746138995785729');
+    const veilGuild = client.guilds.get('381518821288181760');
     if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
     if (!guild) return Util.logc('SecureVeil1', '[ERROR_VP] New Veil guild not found!');
@@ -347,7 +347,7 @@ function setupSecurityVeil() {
 }
 
 const veilGuilds = {
-    '284746138995785729': true,
+    '381518821288181760': true,
     '309785618932563968': true,
 };
 
@@ -401,7 +401,7 @@ client.on('ready', async () => {
 
         // Music2.initGuild(newGuild);
 
-        if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
+        if (newGuild.id == '381518821288181760') dbGuilds.push(newGuild);
     }));
 
     Util.log('> Cached all guild members!');
@@ -453,7 +453,7 @@ client.on('guildMemberAdd', (member) => {
     // Protect Veil Private
 
     if (guild.id === '309785618932563968') {
-        const veilGuild = client.guilds.get('284746138995785729');
+        const veilGuild = client.guilds.get('381518821288181760');
         const veilBuyer = veilGuild.roles.find('name', 'Buyer');
         const newBuyer = guild.roles.find('name', 'Buyer');
         if (!veilGuild) {
@@ -484,7 +484,7 @@ client.on('guildMemberAdd', (member) => {
 
     // Restore buyer role
 
-    if (guild.id == '284746138995785729') {
+    if (guild.id == '381518821288181760') {
         Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
             if (results.length > 0) {
                 const buyerRole = Util.getRole('Buyer', guild);
@@ -560,7 +560,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            if (nowRole.name === 'Buyer' && guild.id === '284746138995785729') {
+            if (nowRole.name === 'Buyer' && guild.id === '381518821288181760') {
                 const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
@@ -1062,7 +1062,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
-    if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
+    if (isEdit || guild == null || guild.id != '381518821288181760' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
     let contentLower = msgObj.content.toLowerCase().trim();
 
