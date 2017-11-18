@@ -600,7 +600,7 @@ exports.connectInitial = async function (dbGuilds) {
     await exports.initAutoInc();
     Util.logc('MySQL', '[MySQL] Set up local auto-increment');
 
-    await Promise.all(dbGuilds.map(async (guild) => { // 1
+    /* await Promise.all(dbGuilds.map(async (guild) => { // 1
         const storedMembers = await exports.getRecords(guild, 'members');
         const newMembers = [];
 
@@ -628,7 +628,20 @@ exports.connectInitial = async function (dbGuilds) {
                 Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
                 process.exit(1);
             });
-    })); // 2
+    })); // 2 */
+
+    const newBuyer = guild.roles.find('name', 'Buyer');
+
+    dbGuilds.forEach(async (guild) => { // 3
+        guild.members.forEach(async (member) => {
+            const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
+            if (savedBuyer) {
+                member.addRole(newBuyer)
+                    .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
+                    .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
+            }
+        });
+    }); // 4
 
     Admin.initialize();
 
