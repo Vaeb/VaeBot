@@ -630,9 +630,8 @@ exports.connectInitial = async function (dbGuilds) {
             });
     })); // 2 */
 
-    const newBuyer = guild.roles.find('name', 'Buyer');
-
     dbGuilds.forEach(async (guild) => { // 3
+        const newBuyer = guild.roles.find('name', 'Buyer');
         guild.members.forEach(async (member) => {
             const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
             if (savedBuyer) {
