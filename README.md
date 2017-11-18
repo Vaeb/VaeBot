@@ -1,4 +1,11 @@
-# VaeBot - A Discord bot for all uses from moderation to music.
+# VaeBot - A Discord bot for all uses
+
+## Includes
+- Full warn/mute based moderation system
+- Powerful anti-raid and anti-spam system
+- Hierarchy-based permission reasoning
+- Complete music system
+- A huge array of commands
 
 ## Staff-Only Commands
 ​
