@@ -1,4 +1,4 @@
-# VaeBot - A Discord bot for all uses
+# VaeBot - A Multi-Purpose Discord Bot
 
 ## Includes
 - Full warn/mute based moderation system
