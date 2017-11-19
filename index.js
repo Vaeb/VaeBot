@@ -374,7 +374,7 @@ exports.secure = async function () {
 };
 
 function notifyOn(channel) { // Not if the last message was a reminder...
-    Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
+    // Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
