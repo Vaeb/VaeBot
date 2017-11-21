@@ -1102,7 +1102,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     }
 
     if (triggered) {
-        Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, colGreen);
+        // Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, colGreen);
     }
 });
 
