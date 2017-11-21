@@ -1053,10 +1053,10 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered == trigger.length) {
-        Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+        // Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
     } else {
         if (/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]\s*l[i1]nk/g.test(contentLower)) {
-            Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+            // Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
         }
     }
 });
