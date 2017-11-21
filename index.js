@@ -565,7 +565,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
 
-                Util.sendDescEmbed(member, title, message, footer, null, colBlue);
+                // Util.sendDescEmbed(member, title, message, footer, null, colBlue);
             }
 
             if (nowRole.name.includes('Mod') && (member.id == '202660584330625024')) {
