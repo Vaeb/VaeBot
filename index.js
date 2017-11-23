@@ -373,9 +373,9 @@ exports.secure = async function () {
     Util.log('> Security setup complete');
 };
 
-function notifyOn(channel) { // Not if the last message was a reminder...
+/* function notifyOn(channel) { // Not if the last message was a reminder...
     // Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
-}
+} */
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -561,11 +561,11 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             }
 
             if (nowRole.name === 'Glutton' && guild.id === '382298323832406016') {
-                const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
+                /* const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
 
-                // Util.sendDescEmbed(member, title, message, footer, null, colBlue);
+                Util.sendDescEmbed(member, title, message, footer, null, colBlue); */
             }
 
             if (nowRole.name.includes('Mod') && (member.id == '202660584330625024')) {
@@ -1246,10 +1246,10 @@ const spamMessages = []; // Messages detected as spam in recentMessages stay her
 
 // const msgStatus = {}; // Coming soon?
 
-const lastTimeout = {
+/* let lastTimeout = {
     timeout: null,
     stamp: 0,
-};
+}; */
 
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
@@ -1260,7 +1260,7 @@ client.on('message', (msgObj) => {
     let content = msgObj.content;
     const authorId = author.id;
 
-    const presentStamp = +new Date();
+    // const presentStamp = +new Date();
 
     // if (guild.id !== '166601083584643072') return;
 
@@ -1287,13 +1287,13 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (guild != null) {
+    /* if (guild != null) {
         if (lastTimeout.timeout) clearTimeout(lastTimeout.timeout);
         if (presentStamp - lastTimeout.stamp > 1000 * 60 * 10) { // Hmmm, 10 minutes?
             lastTimeout.timeout = setTimeout(notifyOn, 1000 * 60 * 3, channel); // 3 minutes
             lastTimeout.stamp = presentStamp;
         }
-    }
+    } */
 
     if (guild != null && contentLower.substr(0, 5) === 'sudo ' && authorId === vaebId) {
         author = Util.getUserById(selfId);
