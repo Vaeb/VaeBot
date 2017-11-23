@@ -23,7 +23,7 @@ exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
 
 exports.linkGuilds = [
-    ['284746138995785729', '309785618932563968'],
+    ['382298323832406016', '309785618932563968'],
 ];
 
 exports.dbPass = Auth.dbPass;
@@ -304,13 +304,13 @@ function setupSecurity(guild) {
 }
 
 function setupSecurityVeil() {
-    const veilGuild = client.guilds.get('284746138995785729');
+    const veilGuild = client.guilds.get('382298323832406016');
     if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
     if (!guild) return Util.logc('SecureVeil1', '[ERROR_VP] New Veil guild not found!');
-    const veilBuyer = veilGuild.roles.find('name', 'Buyer');
+    const veilBuyer = veilGuild.roles.find('name', 'Glutton');
     if (!veilBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] Veil Buyer role not found!');
-    const newBuyer = guild.roles.find('name', 'Buyer');
+    const newBuyer = guild.roles.find('name', 'Glutton');
     if (!newBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] New Buyer role not found!');
     // const guildId = guild.id;
     // const guildName = guild.name;
@@ -347,7 +347,7 @@ function setupSecurityVeil() {
 }
 
 const veilGuilds = {
-    '284746138995785729': true,
+    '382298323832406016': true,
     '309785618932563968': true,
 };
 
@@ -374,7 +374,7 @@ exports.secure = async function () {
 };
 
 function notifyOn(channel) { // Not if the last message was a reminder...
-    Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
+    // Util.sendDescEmbed(channel, 'Reminder', 'You can gain access to the #anime channel by sending a message saying: `;toggle anime`', null, null, colBlue);
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +401,7 @@ client.on('ready', async () => {
 
         // Music2.initGuild(newGuild);
 
-        if (newGuild.id == '284746138995785729') dbGuilds.push(newGuild);
+        if (newGuild.id == '382298323832406016') dbGuilds.push(newGuild);
     }));
 
     Util.log('> Cached all guild members!');
@@ -453,9 +453,9 @@ client.on('guildMemberAdd', (member) => {
     // Protect Veil Private
 
     if (guild.id === '309785618932563968') {
-        const veilGuild = client.guilds.get('284746138995785729');
-        const veilBuyer = veilGuild.roles.find('name', 'Buyer');
-        const newBuyer = guild.roles.find('name', 'Buyer');
+        const veilGuild = client.guilds.get('382298323832406016');
+        const veilBuyer = veilGuild.roles.find('name', 'Glutton');
+        const newBuyer = guild.roles.find('name', 'Glutton');
         if (!veilGuild) {
             Util.logc(memberId, '[ERROR_VP] Veil guild not found!');
         } else if (!veilBuyer) {
@@ -484,10 +484,10 @@ client.on('guildMemberAdd', (member) => {
 
     // Restore buyer role
 
-    if (guild.id == '284746138995785729') {
+    if (guild.id == '382298323832406016') {
         Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
             if (results.length > 0) {
-                const buyerRole = Util.getRole('Buyer', guild);
+                const buyerRole = Util.getRole('Glutton', guild);
                 if (buyerRole) {
                     member.addRole(buyerRole)
                         .catch(Util.logErr);
@@ -522,7 +522,7 @@ client.on('guildMemberAdd', (member) => {
     }
 
     Data.getRecords(guild, 'members', { user_id: member.id }).then((results) => {
-        const isBuyer = Util.hasRoleName(member, 'Buyer');
+        const isBuyer = Util.hasRoleName(member, 'Glutton');
         if (results.length == 0 && isBuyer) {
             Data.addRecord(guild, 'members', { user_id: member.id, buyer: isBuyer ? 1 : 0, nickname: member.nickname });
             Util.logc(memberId, `Adding new member ${Util.getFullName(member)} to MySQL DB`);
@@ -560,12 +560,12 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            if (nowRole.name === 'Buyer' && guild.id === '284746138995785729') {
+            if (nowRole.name === 'Glutton' && guild.id === '382298323832406016') {
                 const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
 
-                Util.sendDescEmbed(member, title, message, footer, null, colBlue);
+                // Util.sendDescEmbed(member, title, message, footer, null, colBlue);
             }
 
             if (nowRole.name.includes('Mod') && (member.id == '202660584330625024')) {
@@ -587,7 +587,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendLog(sendLogData, colUser);
             }
 
-            if (nowRole.name === 'Buyer') {
+            if (nowRole.name === 'Glutton') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length == 0) {
                         Data.addRecord(guild, 'members', { user_id: member.id, buyer: 1, nickname: member.nickname });
@@ -618,7 +618,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendLog(sendLogData, colUser);
             }
 
-            if (nowRole.name === 'Buyer') {
+            if (nowRole.name === 'Glutton') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length > 0) {
                         Data.addRecord(guild, 'members', { user_id: member.id, buyer: 0, nickname: member.nickname });
@@ -1053,16 +1053,16 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered == trigger.length) {
-        Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+        // Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
     } else {
         if (/[i1]n{1,2}v{1,2}[i1]t{1,2}[e3]\s*l[i1]nk/g.test(contentLower)) {
-            Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
+            // Util.sendDescEmbed(channel, Util.getMostName(speaker), 'The invite link for Veil Discord is https://discord.gg/aVvcjDS', null, null, colGreen);
         }
     }
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
-    if (isEdit || guild == null || guild.id != '284746138995785729' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
+    if (isEdit || guild == null || guild.id != '382298323832406016' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
     let contentLower = msgObj.content.toLowerCase().trim();
 
@@ -1102,7 +1102,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
     }
 
     if (triggered) {
-        Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, colGreen);
+        // Util.sendDescEmbed(channel, 'How To Buy', 'To buy veil send a message saying !buy', null, null, colGreen);
     }
 });
 
