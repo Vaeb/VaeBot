@@ -1244,9 +1244,9 @@ const recentMessages = []; // Messages sent in the last recentMs milliseconds
 const numSimilarForSpam = 3;
 const spamMessages = []; // Messages detected as spam in recentMessages stay here for limited period of time
 
-const msgStatus = {}; // Coming soon?
+// const msgStatus = {}; // Coming soon?
 
-let lastTimeout = {
+const lastTimeout = {
     timeout: null,
     stamp: 0,
 };
