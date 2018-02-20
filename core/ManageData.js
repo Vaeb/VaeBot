@@ -600,36 +600,6 @@ exports.connectInitial = async function (dbGuilds) {
     await exports.initAutoInc();
     Util.logc('MySQL', '[MySQL] Set up local auto-increment');
 
-    /* await Promise.all(dbGuilds.map(async (guild) => { // 1
-        const storedMembers = await exports.getRecords(guild, 'members');
-        const newMembers = [];
-
-        guild.members.forEach((member) => {
-            if (!storedMembers.find(m => m.user_id == member.id)) {
-                newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Glutton') ? 1 : 0, nickname: member.nickname });
-                Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
-            }
-        });
-
-        Data.addRecord(guild, 'members', newMembers)
-            .then(async () => {
-                const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Glutton'));
-                const restoreBuyers = [];
-                await Promise.all(buyerMembers.map(async (member) => {
-                    const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
-                    if (!savedBuyer) {
-                        restoreBuyers.push({ user_id: member.id, buyer: 1, nickname: member.nickname });
-                        Util.logc('BuyerRestore1', `Restoring ${Util.getFullName(member)} as a buyer in MySQL DB`);
-                    }
-                }));
-                Data.addRecord(guild, 'members', restoreBuyers);
-            })
-            .catch((err) => {
-                Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
-                process.exit(1);
-            });
-    })); // 2 */
-
     dbGuilds.forEach(async (guild) => { // 3
         const newBuyer = guild.roles.find('name', 'Glutton');
         guild.members.forEach(async (member) => {
