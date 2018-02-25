@@ -179,9 +179,11 @@ exports.fromBuffer = function (buffer) {
 let connection;
 let connectionVeil;
 
-exports.query = function (statement, inputs) {
+exports.query = function (statement, inputs, useConnection) {
+    const nowConnection = useConnection != null ? useConnection : connection;
+
     return new Promise((resolve, reject) => {
-        connection.query(statement, inputs, (err, result, resultData) => {
+        nowConnection.query(statement, inputs, (err, result, resultData) => {
             if (err) return reject(err);
             return resolve(result, resultData);
         });
