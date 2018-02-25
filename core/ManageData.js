@@ -671,17 +671,22 @@ exports.connectInitial = async function (dbGuilds) {
             });
     })); // 2
 
-    dbGuilds.forEach(async (guild) => { // 3
-        const newBuyer = guild.roles.find('name', 'Veil-Owner');
-        guild.members.forEach(async (member) => {
-            const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
-            if (savedBuyer) {
-                member.addRole(newBuyer)
-                    .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
-                    .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
-            }
-        });
-    }); // 4
+    Data.query('SELECT * FROM whitelist WHERE Disabled IS NULL;', null, Data.connectionVeil).then((whitelistData) => {
+        dbGuilds.forEach(async (guild) => { // 3
+            const newBuyer = guild.roles.find('name', 'Veil-Owner');
+            guild.members.forEach(async (member) => {
+                let savedBuyer = whitelistData.find(memberWhite => memberWhite.DiscordId == member.id);
+
+                if (!savedBuyer) savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
+
+                if (savedBuyer) {
+                    member.addRole(newBuyer)
+                        .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
+                        .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
+                }
+            });
+        }); // 4
+    });
 
     Admin.initialize();
 
