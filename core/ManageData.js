@@ -606,7 +606,7 @@ exports.connectInitial = async function (dbGuilds) {
 
         guild.members.forEach((member) => {
             if (!storedMembers.find(m => m.user_id == member.id)) {
-                newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Veil-Owner') ? 1 : 0, nickname: member.nickname });
+                newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Veil-Owner') ? 1 : 0 });
                 Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
             }
         });
@@ -618,7 +618,7 @@ exports.connectInitial = async function (dbGuilds) {
                 await Promise.all(buyerMembers.map(async (member) => {
                     const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
                     if (!savedBuyer) {
-                        restoreBuyers.push({ user_id: member.id, buyer: 1, nickname: member.nickname });
+                        restoreBuyers.push({ user_id: member.id, buyer: 1 });
                         Util.logc('BuyerRestore1', `Restoring ${Util.getFullName(member)} as a buyer in MySQL DB`);
                     }
                 }));
