@@ -631,10 +631,13 @@ exports.connectInitial = async function (dbGuilds) {
     })); // 2
 
     dbGuilds.forEach(async (guild) => { // 3
+        Util.log(111);
         const newBuyer = guild.roles.find('name', 'Veil-Owner');
         guild.members.forEach(async (member) => {
             const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
+            Util.log(222);
             if (savedBuyer) {
+                Util.log(333);
                 member.addRole(newBuyer)
                     .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
                     .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
