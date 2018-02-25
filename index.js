@@ -525,7 +525,7 @@ client.on('guildMemberAdd', (member) => {
     Data.getRecords(guild, 'members', { user_id: member.id }).then((results) => {
         const isBuyer = Util.hasRoleName(member, 'Veil-Owner');
         if (results.length == 0 && isBuyer) {
-            Data.addRecord(guild, 'members', { user_id: member.id, buyer: isBuyer ? 1 : 0, nickname: member.nickname });
+            Data.addRecord(guild, 'members', { user_id: member.id, buyer: isBuyer ? 1 : 0 });
             Util.logc(memberId, `Adding new member ${Util.getFullName(member)} to MySQL DB`);
         }
     });
@@ -591,7 +591,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             if (nowRole.name === 'Veil-Owner') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length == 0) {
-                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 1, nickname: member.nickname });
+                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 1 });
                         Util.logc('BuyerAdd1', `Adding ${Util.getFullName(member)} as a buyer in MySQL DB`);
                     }
                 });
@@ -622,7 +622,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             if (nowRole.name === 'Veil-Owner') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length > 0) {
-                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 0, nickname: member.nickname });
+                        Data.addRecord(guild, 'members', { user_id: member.id, buyer: 0 });
                         Util.logc('BuyerAdd1', `Removed ${Util.getFullName(member)} as a buyer in MySQL DB`);
                     }
                 });
