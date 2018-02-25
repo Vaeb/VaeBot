@@ -177,6 +177,7 @@ exports.fromBuffer = function (buffer) {
 };
 
 let connection;
+let connectionVeil;
 
 exports.query = function (statement, inputs) {
     return new Promise((resolve, reject) => {
@@ -187,7 +188,7 @@ exports.query = function (statement, inputs) {
     });
 };
 
-exports.connect = function () {
+exports.connect1 = function () {
     connection = index.MySQL.createConnection({
         host: 'localhost',
         user: 'vaebot',
@@ -201,6 +202,7 @@ exports.connect = function () {
 
     return new Promise((resolve, reject) => {
         Util.logc('MySQL', '[MySQL] Connecting...');
+
         connection.connect((err) => {
             if (err) return reject(err);
             return resolve();
@@ -210,12 +212,49 @@ exports.connect = function () {
             if (err.fatal) {
                 Util.logc('MySQL', `[MySQL] Fatal error: ${err.code}`);
                 Util.logc('MySQL', '[MySQL] Attempting to reconnect...');
-                exports.connect();
+                exports.connect1();
             } else {
                 Util.log(`Non-fatal error: ${err.code}`);
             }
         });
     });
+};
+
+exports.connect2 = function () {
+    connectionVeil = index.MySQL.createConnection({
+        host: 'ergobotdb.cgwg1mrado7l.us-west-2.rds.amazonaws.com',
+        user: 'Ergo',
+        password: index.dbPassVeil,
+        database: 'ErgoBotDatabase',
+        multipleStatements: true,
+    });
+
+    exports.connectionVeil = connectionVeil;
+
+    return new Promise((resolve, reject) => {
+        Util.logc('MySQL2', '[MySQL2] Connecting...');
+
+        connectionVeil.connect((err) => {
+            if (err) return reject(err);
+            return resolve();
+        });
+
+        connectionVeil.on('error', (err) => {
+            if (err.fatal) {
+                Util.logc('MySQL2', `[MySQL2] Fatal error: ${err.code}`);
+                Util.logc('MySQL2', '[MySQL2] Attempting to reconnect...');
+                exports.connect2();
+            } else {
+                Util.log(`Non-fatal error 2: ${err.code}`);
+            }
+        });
+    });
+};
+
+exports.connect = function () {
+    exports.connect2();
+
+    return exports.connect1();
 };
 
 /*
