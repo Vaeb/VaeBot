@@ -219,10 +219,10 @@ function remSendMessages(member) { // Remove SendMessages role
             const role = Util.getRole('SendMessages', linkedMember);
             if (role != null) {
                 linkedMember.removeRole(role)
-                .then(() => {
-                    Util.logc('RemMainRole1', `Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
-                })
-                .catch(error => Util.logc('RemMainRole1', `[E_LinkRoleRem1] ${error}`));
+                    .then(() => {
+                        Util.logc('RemMainRole1', `Link-removed SendMessages from ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    })
+                    .catch(error => Util.logc('RemMainRole1', `[E_LinkRoleRem1] ${error}`));
             }
         }
     }
@@ -241,10 +241,10 @@ function addSendMessages(member) { // Add SendMessages role
             const role = Util.getRole('SendMessages', linkedGuild);
             if (role != null) {
                 linkedMember.addRole(role)
-                .then(() => {
-                    Util.logc('AddMainRole1', `Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
-                })
-                .catch(error => Util.logc('AddMainRole1', `[E_LinkRoleAdd1] ${error}`));
+                    .then(() => {
+                        Util.logc('AddMainRole1', `Link-added SendMessages to ${Util.getName(linkedMember)} @ ${linkedGuild.name}`);
+                    })
+                    .catch(error => Util.logc('AddMainRole1', `[E_LinkRoleAdd1] ${error}`));
             }
         }
     }
@@ -431,10 +431,10 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
     }, {
         active: 0,
     })
-    .then(() => {
-        Data.addRecord(guild, 'mutes', newRow);
-    })
-    .catch(console.error);
+        .then(() => {
+            Data.addRecord(guild, 'mutes', newRow);
+        })
+        .catch(console.error);
 
     for (let i = 0; i < muteCache[guildId].length; i++) {
         const row = muteCache[guildId][i];
