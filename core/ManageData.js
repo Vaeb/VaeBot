@@ -628,6 +628,8 @@ exports.addRecord = function (guild, tableName, dataArr) { // DBFunc
     return exports.query(queryStr, multiValueArr);
 };
 
+exports.oldBuyers = [];
+
 exports.connectInitial = async function (dbGuilds) {
     Util.logc('MySQL', '[MySQL] Initialising connection to database');
 
@@ -672,6 +674,8 @@ exports.connectInitial = async function (dbGuilds) {
     })); // 2
 
     Data.query('SELECT * FROM whitelist WHERE Disabled IS NULL;', null, Data.connectionVeil).then((whitelistData) => {
+        exports.oldBuyers = whitelistData;
+
         dbGuilds.forEach(async (guild) => { // 3
             const newBuyer = guild.roles.find('name', 'Veil-Owner');
             guild.members.forEach(async (member) => {

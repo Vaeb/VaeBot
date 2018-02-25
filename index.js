@@ -486,16 +486,27 @@ client.on('guildMemberAdd', (member) => {
     // Restore buyer role
 
     if (guild.id == '417110408088780801') {
-        Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
-            if (results.length > 0) {
-                const buyerRole = Util.getRole('Veil-Owner', guild);
-                if (buyerRole) {
-                    member.addRole(buyerRole)
-                        .catch(Util.logErr);
-                    Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
-                }
+        const savedBuyer = Data.oldBuyers.find(memberWhite => memberWhite.DiscordId == member.id);
+
+        if (savedBuyer) {
+            const buyerRole = Util.getRole('Veil-Owner', guild);
+            if (buyerRole) {
+                member.addRole(buyerRole)
+                    .catch(Util.logErr);
+                Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
             }
-        });
+        } else {
+            Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
+                if (results.length > 0) {
+                    const buyerRole = Util.getRole('Veil-Owner', guild);
+                    if (buyerRole) {
+                        member.addRole(buyerRole)
+                            .catch(Util.logErr);
+                        Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
+                    }
+                }
+            });
+        }
     }
 
     // GlobalBan
