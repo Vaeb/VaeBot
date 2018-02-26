@@ -683,7 +683,7 @@ exports.connectInitial = async function (dbGuilds) {
 
                 if (!savedBuyer) savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
 
-                if (savedBuyer) {
+                if (savedBuyer && !Util.hasRole(member, newBuyer)) {
                     member.addRole(newBuyer)
                         .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
                         .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
