@@ -14,7 +14,8 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker) => {
+    func: (cmd, args, msgObj, speaker, channel) => {
         Util.print(speaker, `Click this **personal** link to update your Veil Discord account: https://veil.pkamara.me/linkdiscord.php?discordid=${speaker.id}`);
+        Util.sendDescEmbed(channel, speaker.displayName, 'Update link sent, please check your Discord Messages.', null, null, null);
     },
 });
