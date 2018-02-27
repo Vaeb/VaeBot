@@ -14,7 +14,7 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel) => {
+    func: (cmd, args, msgObj, speaker, channel, guild) => {
         const newBuyer = guild.roles.find('name', 'Veil-Owner');
 
         Data.query(`SELECT * FROM whitelist WHERE Disabled IS NULL AND DiscordId=${speaker.id};`, null, Data.connectionVeil).then((whitelistData) => {
