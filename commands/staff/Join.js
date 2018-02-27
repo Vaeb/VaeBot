@@ -3,7 +3,7 @@ module.exports = Cmds.addCommand({
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
     desc: "Make VaeBot join a voice channel",
