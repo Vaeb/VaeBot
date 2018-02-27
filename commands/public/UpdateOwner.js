@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';newdiscord'],
+    cmds: [';updateowner'],
 
     requires: {
         guild: false,
