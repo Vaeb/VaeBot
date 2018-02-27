@@ -494,17 +494,6 @@ client.on('guildMemberAdd', (member) => {
                         .catch(Util.logErr);
                     Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
                 }
-            } else {
-                Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
-                    if (results.length > 0) {
-                        const buyerRole = Util.getRole('Veil-Owner', guild);
-                        if (buyerRole) {
-                            member.addRole(buyerRole)
-                                .catch(Util.logErr);
-                            Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
-                        }
-                    }
-                });
             }
         });
     }
