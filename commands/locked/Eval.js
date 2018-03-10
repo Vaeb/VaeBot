@@ -18,16 +18,16 @@ module.exports = Cmds.addCommand({
         args = `(async function() {\n${args}\n})()`;
         const outStr = ['**Output:**'];
         eval(args)
-        .then((result) => {
-            Util.log('Eval result:', result);
-            outStr.push('```');
-            outStr.push(index.NodeUtil.format(result));
-            outStr.push('```');
-            if (result !== undefined) Util.print(channel, outStr.join('\n'));
-        })
-        .catch((err) => {
-            Util.log('Eval Error:');
-            Util.log(err);
-        });
+            .then((result) => {
+                Util.log('Eval result:', result);
+                outStr.push('```');
+                outStr.push(index.NodeUtil.format(result));
+                outStr.push('```');
+                if (result !== undefined) Util.print(channel, outStr.join('\n'));
+            })
+            .catch((err) => {
+                Util.log('Eval Error:');
+                Util.log(err);
+            });
     },
 });
