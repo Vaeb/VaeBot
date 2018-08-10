@@ -309,9 +309,9 @@ function setupSecurityVeil() {
     if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
     if (!guild) return Util.logc('SecureVeil1', '[ERROR_VP] New Veil guild not found!');
-    const veilBuyer = veilGuild.roles.find('name', 'Veil-Owner');
+    const veilBuyer = veilGuild.roles.find('name', 'Vashta-Owner');
     if (!veilBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] Veil Buyer role not found!');
-    const newBuyer = guild.roles.find('name', 'Veil-Owner');
+    const newBuyer = guild.roles.find('name', 'Vashta-Owner');
     if (!newBuyer) return Util.logc('SecureVeil1', '[ERROR_VP] New Buyer role not found!');
     // const guildId = guild.id;
     // const guildName = guild.name;
@@ -455,8 +455,8 @@ client.on('guildMemberAdd', (member) => {
 
     if (guild.id === '309785618932563968') {
         const veilGuild = client.guilds.get('477270527535480834');
-        const veilBuyer = veilGuild.roles.find('name', 'Veil-Owner');
-        const newBuyer = guild.roles.find('name', 'Veil-Owner');
+        const veilBuyer = veilGuild.roles.find('name', 'Vashta-Owner');
+        const newBuyer = guild.roles.find('name', 'Vashta-Owner');
         if (!veilGuild) {
             Util.logc(memberId, '[ERROR_VP] Veil guild not found!');
         } else if (!veilBuyer) {
@@ -486,9 +486,9 @@ client.on('guildMemberAdd', (member) => {
     // Restore buyer role
 
     if (guild.id == '477270527535480834') {
-        Data.query(`SELECT * FROM whitelist WHERE Disabled IS NULL AND DiscordId=${member.id};`, null, Data.connectionVeil).then((whitelistData) => {
+        Data.query(`SELECT * FROM Users WHERE Disabled IS NULL AND DiscordId=${member.id};`, null, Data.connectionVeil).then((whitelistData) => {
             if (whitelistData.length > 0) {
-                const buyerRole = Util.getRole('Veil-Owner', guild);
+                const buyerRole = Util.getRole('Vashta-Owner', guild);
                 if (buyerRole) {
                     member.addRole(buyerRole)
                         .catch(Util.logErr);
@@ -523,7 +523,7 @@ client.on('guildMemberAdd', (member) => {
     }
 
     Data.getRecords(guild, 'members', { user_id: member.id }).then((results) => {
-        const isBuyer = Util.hasRoleName(member, 'Veil-Owner');
+        const isBuyer = Util.hasRoleName(member, 'Vashta-Owner');
         if (results.length == 0 && isBuyer) {
             Data.addRecord(guild, 'members', { user_id: member.id, buyer: isBuyer ? 1 : 0 });
             Util.logc(memberId, `Adding new member ${Util.getFullName(member)} to MySQL DB`);
@@ -561,7 +561,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            if (nowRole.name === 'Veil-Owner' && guild.id === '477270527535480834') {
+            if (nowRole.name === 'Vashta-Owner' && guild.id === '477270527535480834') {
                 /* const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
@@ -588,7 +588,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendLog(sendLogData, colUser);
             }
 
-            if (nowRole.name === 'Veil-Owner') {
+            if (nowRole.name === 'Vashta-Owner') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length == 0) {
                         Data.addRecord(guild, 'members', { user_id: member.id, buyer: 1 });
@@ -619,7 +619,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendLog(sendLogData, colUser);
             }
 
-            if (nowRole.name === 'Veil-Owner') {
+            if (nowRole.name === 'Vashta-Owner') {
                 Data.getRecords(guild, 'members', { user_id: member.id, buyer: 1 }).then((results) => {
                     if (results.length > 0) {
                         Data.addRecord(guild, 'members', { user_id: member.id, buyer: 0 });
@@ -1336,10 +1336,10 @@ client.on('message', (msgObj) => {
                 if (prevSpam) { // If message is similar to one previously detected as spam
                     prevSpam.initWarn = false;
                     prevSpam.numSince = 0;
-                    // Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
+                    Admin.addMute(guild, channel, speaker, 'System', { 'reason': '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
                 } else { // If message was detected as spam based on similar recent messages
                     spamMessages.push({ msg: content, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
-                    // Util.print(channel, speaker.toString(), `Warning: If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`); // Warn the user
+                    Util.print(channel, speaker.toString(), `Warning: If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`); // Warn the user
                     // Maybe put all the users who've spammed the message on a warning?
                 }
             } else {

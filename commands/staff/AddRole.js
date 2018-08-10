@@ -29,7 +29,7 @@ module.exports = Cmds.addCommand({
         const user = data[0];
         const role = data[1];
 
-        if (role.name == 'Veil-Owner' && !Util.isAdmin(speaker)) {
+        if (role.name == 'Vashta-Owner' && !Util.isAdmin(speaker)) {
             return Util.commandFailed(channel, speaker, 'You are not allowed to add this role');
         }
 

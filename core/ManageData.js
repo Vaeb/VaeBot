@@ -663,14 +663,14 @@ exports.connectInitial = async function (dbGuilds) {
 
             guild.members.forEach((member) => {
                 if (!storedMembers.find(m => m.user_id == member.id)) {
-                    newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Veil-Owner') ? 1 : 0 });
+                    newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Vashta-Owner') ? 1 : 0 });
                     Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
                 }
             });
 
             Data.addRecord(guild, 'members', newMembers)
                 .then(async () => {
-                    const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Veil-Owner'));
+                    const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Vashta-Owner'));
                     const restoreBuyers = [];
                     await Promise.all(
                         buyerMembers.map(async (member) => {
@@ -695,7 +695,7 @@ exports.connectInitial = async function (dbGuilds) {
 
         dbGuilds.forEach(async (guild) => {
             // 3
-            const newBuyer = guild.roles.find('name', 'Veil-Owner');
+            const newBuyer = guild.roles.find('name', 'Vashta-Owner');
             guild.members.forEach(async (member) => {
                 let savedBuyer = whitelistData.find(memberWhite => memberWhite.DiscordId == member.id);
 
