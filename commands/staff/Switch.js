@@ -15,8 +15,8 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (guild.id === '417110408088780801' && (speaker.id === vaebId || speaker.id === '75743432164773888' || speaker.id === '87185859949899776')) {
-            const salesChannel = Util.findChannel('417110408088780801', guild);
+        if (guild.id === '477270527535480834' && (speaker.id === vaebId || speaker.id === '75743432164773888' || speaker.id === '87185859949899776')) {
+            const salesChannel = Util.findChannel('477270527535480834', guild);
             if (salesChannel) {
                 if (salesChannel.name.includes('open')) {
                     salesChannel.setName('sales_closed')

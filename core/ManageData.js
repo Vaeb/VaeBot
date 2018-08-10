@@ -17,10 +17,10 @@ exports.muted = {};
 exports.cache = {};
 
 exports.nextAutoInc = {
-    'mutes': ['mute_id', 0],
-    'bans': ['ban_id', 0],
-    'autoplaylist': ['auto_id', 0],
-    'tickets': ['ticket_id', 0],
+    mutes: ['mute_id', 0],
+    bans: ['ban_id', 0],
+    autoplaylist: ['auto_id', 0],
+    tickets: ['ticket_id', 0],
 };
 
 exports.getLinkedGuilds = function (guild) {
@@ -88,7 +88,7 @@ exports.getBaseGuildId = function (guildId) {
     return guildId;
 };
 
-exports.guildSaveData = function (obj/* , retry */) {
+exports.guildSaveData = function (obj /* , retry */) {
     if (!exports.loadedData[obj]) return;
     const objName = obj.__name;
     const objPath = obj.__path;
@@ -224,10 +224,10 @@ exports.connect1 = function () {
 
 exports.connect2 = function () {
     connectionVeil = index.MySQL.createConnection({
-        host: 'ergobotdb.cgwg1mrado7l.us-west-2.rds.amazonaws.com',
-        user: 'Ergo',
+        host: 'vashta.cluster-cgwg1mrado7l.us-west-2.rds.amazonaws.com',
+        user: 'Vaeb',
         password: index.dbPassVeil,
-        database: 'ErgoBotDatabase',
+        database: 'vashta',
         multipleStatements: true,
     });
 
@@ -328,7 +328,9 @@ function getRecordsFromCache(nowCache, identity) {
 }
 
 exports.getTableNames = async function () {
-    return (await Data.query('SELECT table_name FROM information_schema.tables where table_schema=DATABASE();')).map(tableData => tableData.table_name);
+    return (await Data.query('SELECT table_name FROM information_schema.tables where table_schema=DATABASE();')).map(
+        tableData => tableData.table_name,
+    );
 };
 
 exports.fetchPrimaryKey = async function (tableName) {
@@ -336,26 +338,30 @@ exports.fetchPrimaryKey = async function (tableName) {
 };
 
 exports.fetchAutoIncKey = async function (tableName) {
-    return (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE();', [tableName]))[0].AUTO_INCREMENT;
+    return (await Data.query('SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name=? AND table_schema=DATABASE();', [
+        tableName,
+    ]))[0].AUTO_INCREMENT;
 };
 
 exports.updateCache = async function (updateTableName) {
-    const matchNames = updateTableName ? [updateTableName] : (await exports.getTableNames());
-    await Promise.all(matchNames.map(async (tableName) => {
-        const tableRecords = await exports.query(`SELECT * FROM ${tableName}`);
-        if (tableRecords.length > 0 && !tableRecords[0].guild_id) return;
-        if (!exports.cache[tableName]) {
-            exports.cache[tableName] = {};
-            exports.cache[tableName]._primaryKey = await exports.fetchPrimaryKey(tableName);
-        }
-        const primaryColumn = exports.cache[tableName]._primaryKey;
-        for (let i = 0; i < tableRecords.length; i++) {
-            const record = tableRecords[i];
-            const guildId = record.guild_id;
-            if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
-            exports.cache[tableName][guildId][record[primaryColumn]] = Util.cloneObj(record, true);
-        }
-    }));
+    const matchNames = updateTableName ? [updateTableName] : await exports.getTableNames();
+    await Promise.all(
+        matchNames.map(async (tableName) => {
+            const tableRecords = await exports.query(`SELECT * FROM ${tableName}`);
+            if (tableRecords.length > 0 && !tableRecords[0].guild_id) return;
+            if (!exports.cache[tableName]) {
+                exports.cache[tableName] = {};
+                exports.cache[tableName]._primaryKey = await exports.fetchPrimaryKey(tableName);
+            }
+            const primaryColumn = exports.cache[tableName]._primaryKey;
+            for (let i = 0; i < tableRecords.length; i++) {
+                const record = tableRecords[i];
+                const guildId = record.guild_id;
+                if (!exports.cache[tableName][guildId]) exports.cache[tableName][guildId] = {};
+                exports.cache[tableName][guildId][record[primaryColumn]] = Util.cloneObj(record, true);
+            }
+        }),
+    );
 };
 
 exports.getCache = function (guildId, tableName) {
@@ -372,9 +378,11 @@ exports.initAutoInc = async function () {
         promises.push([tableName, exports.fetchAutoIncKey(tableName)]);
     }
 
-    await Promise.all(promises.map(async (data) => {
-        exports.nextAutoInc[data[0]][1] = await data[1];
-    }));
+    await Promise.all(
+        promises.map(async (data) => {
+            exports.nextAutoInc[data[0]][1] = await data[1];
+        }),
+    );
 };
 
 exports.nextInc = function (tableName) {
@@ -385,7 +393,8 @@ exports.nextIncGet = function (tableName) {
     return exports.nextAutoInc[tableName][1];
 };
 
-exports.getRecords = async function (guild, tableName, identity, fromSQL) { // DBFunc
+exports.getRecords = async function (guild, tableName, identity, fromSQL) {
+    // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
     if (!fromSQL) {
@@ -422,7 +431,8 @@ exports.getRecords = async function (guild, tableName, identity, fromSQL) { // D
     return exports.query(queryStr, valueArr);
 };
 
-exports.deleteRecords = function (guild, tableName, identity) { // DBFunc
+exports.deleteRecords = function (guild, tableName, identity) {
+    // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
     const [nowCache, primaryColumn] = exports.getCache(guildId, tableName);
@@ -458,7 +468,8 @@ exports.deleteRecords = function (guild, tableName, identity) { // DBFunc
     return exports.query(queryStr, valueArr);
 };
 
-exports.updateRecords = function (guild, tableName, identity, data) { // DBFunc
+exports.updateRecords = function (guild, tableName, identity, data) {
+    // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
     const [nowCache] = exports.getCache(guildId, tableName);
@@ -546,14 +557,15 @@ exports.updateRecords = function (guild, tableName, identity, data) { // DBFunc
 // Currently formatted as addRecord(guild, 'members', [ { 'user_id': '421', 'buyer': 0, 'nickname': 'Brian' }, { 'user_id': '317', 'buyer': 1, 'nickname': 'Max' } ]);
 // Could format as addRecord(guild, 'members', { columns: ['user_id', 'buyer', 'nickname'], values: [ ['421', 0, 'Brian'], ['317', 1, 'Max'] ] })
 
-exports.addRecord = function (guild, tableName, dataArr) { // DBFunc
+exports.addRecord = function (guild, tableName, dataArr) {
+    // DBFunc
     const guildId = exports.getBaseGuildId(guild.id);
 
     const [nowCache, primaryColumn] = exports.getCache(guildId, tableName);
 
     const multipleRecords = dataArr instanceof Array; // All records must have the same columns
 
-    if (!dataArr || multipleRecords && dataArr.length == 0) return exports.emptyPromise();
+    if (!dataArr || (multipleRecords && dataArr.length == 0)) return exports.emptyPromise();
 
     if (!multipleRecords) dataArr = [dataArr];
 
@@ -643,40 +655,46 @@ exports.connectInitial = async function (dbGuilds) {
     await exports.initAutoInc();
     Util.logc('MySQL', '[MySQL] Set up local auto-increment');
 
-    await Promise.all(dbGuilds.map(async (guild) => { // 1
-        const storedMembers = await exports.getRecords(guild, 'members');
-        const newMembers = [];
+    await Promise.all(
+        dbGuilds.map(async (guild) => {
+            // 1
+            const storedMembers = await exports.getRecords(guild, 'members');
+            const newMembers = [];
 
-        guild.members.forEach((member) => {
-            if (!storedMembers.find(m => m.user_id == member.id)) {
-                newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Veil-Owner') ? 1 : 0 });
-                Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
-            }
-        });
-
-        Data.addRecord(guild, 'members', newMembers)
-            .then(async () => {
-                const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Veil-Owner'));
-                const restoreBuyers = [];
-                await Promise.all(buyerMembers.map(async (member) => {
-                    const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
-                    if (!savedBuyer) {
-                        restoreBuyers.push({ user_id: member.id, buyer: 1 });
-                        Util.logc('BuyerRestore1', `Restoring ${Util.getFullName(member)} as a buyer in MySQL DB`);
-                    }
-                }));
-                Data.addRecord(guild, 'members', restoreBuyers);
-            })
-            .catch((err) => {
-                Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
-                process.exit(1);
+            guild.members.forEach((member) => {
+                if (!storedMembers.find(m => m.user_id == member.id)) {
+                    newMembers.push({ user_id: member.id, buyer: Util.hasRoleName(member, 'Veil-Owner') ? 1 : 0 });
+                    Util.logc('MembersInit1', `Adding ${Util.getFullName(member)} to MySQL DB`);
+                }
             });
-    })); // 2
+
+            Data.addRecord(guild, 'members', newMembers)
+                .then(async () => {
+                    const buyerMembers = guild.members.filter(m => Util.hasRoleName(m, 'Veil-Owner'));
+                    const restoreBuyers = [];
+                    await Promise.all(
+                        buyerMembers.map(async (member) => {
+                            const savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
+                            if (!savedBuyer) {
+                                restoreBuyers.push({ user_id: member.id, buyer: 1 });
+                                Util.logc('BuyerRestore1', `Restoring ${Util.getFullName(member)} as a buyer in MySQL DB`);
+                            }
+                        }),
+                    );
+                    Data.addRecord(guild, 'members', restoreBuyers);
+                })
+                .catch((err) => {
+                    Util.logc('MySQL', `[MySQL] Queries Failed: ${guild.name} ${err}`);
+                    process.exit(1);
+                });
+        }),
+    ); // 2
 
     Data.query('SELECT * FROM whitelist WHERE Disabled IS NULL;', null, Data.connectionVeil).then((whitelistData) => {
         exports.oldBuyers = whitelistData;
 
-        dbGuilds.forEach(async (guild) => { // 3
+        dbGuilds.forEach(async (guild) => {
+            // 3
             const newBuyer = guild.roles.find('name', 'Veil-Owner');
             guild.members.forEach(async (member) => {
                 let savedBuyer = whitelistData.find(memberWhite => memberWhite.DiscordId == member.id);
@@ -684,7 +702,8 @@ exports.connectInitial = async function (dbGuilds) {
                 if (!savedBuyer) savedBuyer = (await exports.getRecords(guild, 'members', { user_id: member.id, buyer: 1 })).length > 0;
 
                 if (savedBuyer && !Util.hasRole(member, newBuyer)) {
-                    member.addRole(newBuyer)
+                    member
+                        .addRole(newBuyer)
                         .then(() => Util.logc('BuyerRestore1', `Restored ${Util.getFullName(member)}'s role in the server`))
                         .catch(error => Util.logc('BuyerRestore2', `Failed to restore role to ${Util.getFullName(member)} | ${error}`));
                 }

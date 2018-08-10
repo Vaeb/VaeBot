@@ -305,7 +305,7 @@ function setupSecurity(guild) {
 }
 
 function setupSecurityVeil() {
-    const veilGuild = client.guilds.get('417110408088780801');
+    const veilGuild = client.guilds.get('477270527535480834');
     if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
     const guild = client.guilds.get('309785618932563968');
     if (!guild) return Util.logc('SecureVeil1', '[ERROR_VP] New Veil guild not found!');
@@ -348,7 +348,7 @@ function setupSecurityVeil() {
 }
 
 const veilGuilds = {
-    '417110408088780801': true,
+    '477270527535480834': true,
     '309785618932563968': true,
 };
 
@@ -402,7 +402,7 @@ client.on('ready', async () => {
 
         // Music2.initGuild(newGuild);
 
-        if (newGuild.id == '417110408088780801') dbGuilds.push(newGuild);
+        if (newGuild.id == '477270527535480834') dbGuilds.push(newGuild);
     }));
 
     Util.log('> Cached all guild members!');
@@ -454,7 +454,7 @@ client.on('guildMemberAdd', (member) => {
     // Protect Veil Private
 
     if (guild.id === '309785618932563968') {
-        const veilGuild = client.guilds.get('417110408088780801');
+        const veilGuild = client.guilds.get('477270527535480834');
         const veilBuyer = veilGuild.roles.find('name', 'Veil-Owner');
         const newBuyer = guild.roles.find('name', 'Veil-Owner');
         if (!veilGuild) {
@@ -485,7 +485,7 @@ client.on('guildMemberAdd', (member) => {
 
     // Restore buyer role
 
-    if (guild.id == '417110408088780801') {
+    if (guild.id == '477270527535480834') {
         Data.query(`SELECT * FROM whitelist WHERE Disabled IS NULL AND DiscordId=${member.id};`, null, Data.connectionVeil).then((whitelistData) => {
             if (whitelistData.length > 0) {
                 const buyerRole = Util.getRole('Veil-Owner', guild);
@@ -561,7 +561,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 member.removeRole(nowRole);
             }
 
-            if (nowRole.name === 'Veil-Owner' && guild.id === '417110408088780801') {
+            if (nowRole.name === 'Veil-Owner' && guild.id === '477270527535480834') {
                 /* const message = 'Please join the Veil Buyers Discord:\n\nhttps://discord.gg/PRq6fcg\n\nThis is very important, thank you.';
                 const title = 'Congratulations on your purchase of Veil';
                 const footer = Util.makeEmbedFooter('AutoMessage');
@@ -1063,7 +1063,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
-    if (isEdit || guild == null || guild.id != '417110408088780801' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
+    if (isEdit || guild == null || guild.id != '477270527535480834' || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === guild.owner.id) return;
 
     let contentLower = msgObj.content.toLowerCase().trim();
 
