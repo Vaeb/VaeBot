@@ -590,7 +590,7 @@ exports.checkStaff = function (guild, member) {
     if (member.id === vaebId || member.id === selfId || member.id === guild.ownerID) return true;
     const speakerRoles = member.roles;
     if (!speakerRoles) return false;
-    if (exports.getPermRating(guild, member) >= 30) return true;
+    // if (exports.getPermRating(guild, member) >= 30) return true;
     return speakerRoles.some(role => role.name === 'Staff' || role.name === 'Owner/Seller' || role.name === 'Bot Admin'
         || role.name === 'Moderator' || role.name.includes('Head Mod') || role.name === 'Trial Moderator');
 };
