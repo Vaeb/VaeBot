@@ -1332,7 +1332,7 @@ client.on('message', (msgObj) => {
                 }
             }
             const nowCheck = numSimilarForSpam;
-            if (numSimilar >= nowCheck || prevSpam) { // Is spam
+            if ((numSimilar >= nowCheck || prevSpam) && !contentLower.includes('welcome')) { // Is spam
                 if (prevSpam) { // If message is similar to one previously detected as spam
                     prevSpam.initWarn = false;
                     prevSpam.numSince = 0;
