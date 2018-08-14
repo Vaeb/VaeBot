@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';unmute ', ';unwarn ', ';unmutehammer '],
+    cmds: [';unmute ', ';unwarn ', ';unmutehammer ', ';free '],
 
     requires: {
         guild: true,

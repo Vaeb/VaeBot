@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';mute ', ';mutehammer '],
+    cmds: [';mute ', ';mutehammer ', ';arrest '],
 
     requires: {
         guild: true,
@@ -17,7 +17,8 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         args = args.trim();
 
-        const data = Util.getDataFromString(args,
+        const data = Util.getDataFromString(
+            args,
             [
                 [
                     function (str) {
@@ -45,8 +46,9 @@ module.exports = Cmds.addCommand({
                         return mult;
                     },
                 ],
-            ]
-            , true);
+            ],
+            true,
+        );
 
         if (!data) {
             return Util.sendEmbed(channel, 'Mute Failed', 'User not found', Util.makeEmbedFooter(speaker), null, colGreen, null);
@@ -65,22 +67,31 @@ module.exports = Cmds.addCommand({
         } */
 
         if (Admin.checkMuted(guild, member.id)) {
-            Util.print(channel, `Eurghh... <@${speaker.id}> Are you sure you want to re-mute that guy instead of using \`;changemute\`...?\n\nI do hope you realised that he was already muted...`);
+            Util.print(
+                channel,
+                `Eurghh... <@${
+                    speaker.id
+                }> Are you sure you want to re-mute that guy instead of using \`;changemute\`...?\n\nI do hope you realised that he was already muted...`,
+            );
 
             const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id;
 
-            channel.awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
+            channel
+                .awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
                 .then((collected) => {
                     const response = collected.first();
                     if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(response.content.toLowerCase())) {
-                        Util.print(channel, 'Well okay then, it\'s your choice, I just hope it\'s not a retarded one...');
+                        Util.print(channel, "Well okay then, it's your choice, I just hope it's not a retarded one...");
                         Admin.addMute(guild, channel, member, speaker, { time, reason });
                     } else {
                         Util.print(channel, 'Guess you made a mistake eh... Well fine, your request has been cancelled.');
                     }
                 })
                 .catch(() => {
-                    Util.print(channel, `What a drag, I've been waiting far too long for an answer <@${speaker.id}>, snails get stitches...`);
+                    Util.print(
+                        channel,
+                        `What a drag, I've been waiting far too long for an answer <@${speaker.id}>, snails get stitches...`,
+                    );
                     Admin.addMute(guild, channel, speaker, 'System', { time: 1000 * 60 * 1.5, reason: 'Snails get stitches' });
                 });
         } else {
