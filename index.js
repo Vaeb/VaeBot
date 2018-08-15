@@ -901,7 +901,7 @@ contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
 Util.log(contentLower); */
 
-/* exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
     let contentLower = msgObj.content.toLowerCase();
@@ -939,7 +939,7 @@ Util.log(contentLower); */
     if (triggered) {
         Admin.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
     }
-}); */
+});
 
 /* exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id) return;
