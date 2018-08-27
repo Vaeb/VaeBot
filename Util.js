@@ -711,6 +711,12 @@ exports.cloneObj = function (obj, fixBuffer) {
 
 const elapseTimeTags = {};
 
+exports.throwErr = function () {
+    setTimeout(() => {
+        throw new Error('err');
+    }, 1000);
+};
+
 exports.getElapsed = function (tag, remove) {
     let elapsed;
 
