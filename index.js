@@ -901,45 +901,45 @@ contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
 // contentLower = replaceAll(contentLower, ' ', '');
 Util.log(contentLower); */
 
-exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
+// exports.runFuncs.push((msgObj, speaker, channel, guild) => { // More sensitive
+//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
-    let contentLower = msgObj.content.toLowerCase();
-    contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
-    contentLower = Util.replaceAll(contentLower, ' ', '');
-    contentLower = Util.replaceAll(contentLower, 'one', '1');
-    contentLower = Util.replaceAll(contentLower, 'won', '1');
-    contentLower = Util.replaceAll(contentLower, 'uno', '1');
-    contentLower = Util.replaceAll(contentLower, 'una', '1');
-    contentLower = Util.replaceAll(contentLower, 'two', '2');
-    contentLower = Util.replaceAll(contentLower, 'dose', '2');
-    contentLower = Util.replaceAll(contentLower, 'dos', '2');
-    contentLower = Util.replaceAll(contentLower, 'too', '2');
-    contentLower = Util.replaceAll(contentLower, 'to', '2');
-    contentLower = Util.replaceAll(contentLower, 'three', '3');
-    contentLower = Util.replaceAll(contentLower, 'tres', '3');
-    contentLower = Util.replaceAll(contentLower, 'free', '3');
+//     let contentLower = msgObj.content.toLowerCase();
+//     contentLower = contentLower.replace(/<[^ ]*?[:#@][^ ]*?>/gm, '');
+//     contentLower = Util.replaceAll(contentLower, ' ', '');
+//     contentLower = Util.replaceAll(contentLower, 'one', '1');
+//     contentLower = Util.replaceAll(contentLower, 'won', '1');
+//     contentLower = Util.replaceAll(contentLower, 'uno', '1');
+//     contentLower = Util.replaceAll(contentLower, 'una', '1');
+//     contentLower = Util.replaceAll(contentLower, 'two', '2');
+//     contentLower = Util.replaceAll(contentLower, 'dose', '2');
+//     contentLower = Util.replaceAll(contentLower, 'dos', '2');
+//     contentLower = Util.replaceAll(contentLower, 'too', '2');
+//     contentLower = Util.replaceAll(contentLower, 'to', '2');
+//     contentLower = Util.replaceAll(contentLower, 'three', '3');
+//     contentLower = Util.replaceAll(contentLower, 'tres', '3');
+//     contentLower = Util.replaceAll(contentLower, 'free', '3');
 
-    let triggered = false;
+//     let triggered = false;
 
-    if (contentLower === '3') {
-        triggered = true;
-    } else {
-        // const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
-        // const trigger = [/[123][123][123]/g, /muteme/g];
-        const trigger = [/[123][^\d]?[^\d]?[123][^\d]?[^\d]?[123]/g, /[123][123]\d/g, /muteme/g];
-        for (let i = 0; i < trigger.length; i++) {
-            if (trigger[i].test(contentLower)) {
-                triggered = true;
-                break;
-            }
-        }
-    }
+//     if (contentLower === '3') {
+//         triggered = true;
+//     } else {
+//         // const trigger = [/11./g, /12[^8]/g, /13./g, /21./g, /22./g, /23./g, /31./g, /32[^h]/g, /33./g, /muteme/g, /onet.?o/g, /threet.?o/g];
+//         // const trigger = [/[123][123][123]/g, /muteme/g];
+//         const trigger = [/[123][^\d]?[^\d]?[123][^\d]?[^\d]?[123]/g, /[123][123]\d/g, /muteme/g];
+//         for (let i = 0; i < trigger.length; i++) {
+//             if (trigger[i].test(contentLower)) {
+//                 triggered = true;
+//                 break;
+//             }
+//         }
+//     }
 
-    if (triggered) {
-        Admin.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
-    }
-});
+//     if (triggered) {
+//         Admin.addMute(guild, channel, speaker, 'System', { 'reason': 'Muted Themself' });
+//     }
+// });
 
 /* exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id) return;
