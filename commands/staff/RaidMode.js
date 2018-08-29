@@ -18,6 +18,7 @@ module.exports = Cmds.addCommand({
         if (index.raidMode[guild.id]) {
             Util.log('Raid mode is already active');
             Util.print(channel, 'Raid mode is already active');
+            return;
         }
 
         index.raidMode[guild.id] = true;
