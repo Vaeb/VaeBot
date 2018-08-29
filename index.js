@@ -304,6 +304,8 @@ function setupSecurity(guild) {
     });
 }
 
+exports.setupSecurityFunc = setupSecurity;
+
 function setupSecurityVeil() {
     const veilGuild = client.guilds.get('477270527535480834');
     if (!veilGuild) return Util.logc('SecureVeil1', '[ERROR_VP] Veil guild not found!');
@@ -448,7 +450,7 @@ client.on('guildMemberAdd', (member) => {
     if (exports.raidMode[guild.id]) {
         const nowDate = +new Date();
         const createdAt = +member.user.createdAt;
-        if (createdAt == null || (nowDate - createdAt) < 1000 * 60 * 60 * 24 * 1.5) {
+        if (createdAt == null || (nowDate - createdAt) < 1000 * 60 * 60 * 24 * 6.5) {
             const mainChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
             if (mainChannel) {
                 Admin.addBan(guild, mainChannel, member, 'System', { reason: 'Raid Auto-Ban' });
