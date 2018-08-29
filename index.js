@@ -427,6 +427,8 @@ client.on('guildCreate', (guild) => {
 client.on('guildMemberRemove', (member) => {
     const guild = member.guild;
 
+    if (exports.raidMode[guild.id]) return;
+
     Events.emit(guild, 'UserLeave', member);
 
     const sendLogData = [
@@ -441,15 +443,29 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.on('guildMemberAdd', (member) => {
-    Util.mergeUser(member);
-
     const guild = member.guild;
+
+    if (exports.raidMode[guild.id]) {
+        const nowDate = +new Date();
+        const createdAt = +member.user.createdAt;
+        if (createdAt == null || (nowDate - createdAt) < 1000 * 60 * 60 * 24 * 1.5) {
+            const mainChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
+            if (mainChannel) {
+                Admin.addBan(guild, mainChannel, member, 'System', { reason: 'Raid Auto-Ban' });
+            } else {
+                member.ban();
+            }
+        }
+        return;
+    }
 
     const guildName = guild.name;
     const memberId = member.id;
     const memberName = Util.getFullName(member);
 
     Util.logc(memberId, `User joined: ${memberName} (${memberId}) @ ${guildName}`);
+
+    Util.mergeUser(member);
 
     // Protect Veil Private
 
@@ -485,18 +501,18 @@ client.on('guildMemberAdd', (member) => {
 
     // Restore buyer role
 
-    if (guild.id == '477270527535480834') {
-        Data.query(`SELECT * FROM Users WHERE Disabled IS NULL AND DiscordId=${member.id};`, null, Data.connectionVeil).then((whitelistData) => {
-            if (whitelistData.length > 0) {
-                const buyerRole = Util.getRole('Vashta-Owner', guild);
-                if (buyerRole) {
-                    member.addRole(buyerRole)
-                        .catch(Util.logErr);
-                    Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
-                }
-            }
-        });
-    }
+    // if (guild.id == '477270527535480834') {
+    //     Data.query(`SELECT * FROM Users WHERE Disabled IS NULL AND DiscordId=${member.id};`, null, Data.connectionVeil).then((whitelistData) => {
+    //         if (whitelistData.length > 0) {
+    //             const buyerRole = Util.getRole('Vashta-Owner', guild);
+    //             if (buyerRole) {
+    //                 member.addRole(buyerRole)
+    //                     .catch(Util.logErr);
+    //                 Util.logc(member.id, `Assigned Buyer to new buyer ${memberName} who just joined ${guildName}`);
+    //             }
+    //         }
+    //     });
+    // }
 
     // GlobalBan
 
@@ -546,6 +562,9 @@ client.on('guildMemberAdd', (member) => {
 
 client.on('guildMemberUpdate', (oldMember, member) => {
     const guild = member.guild;
+
+    if (exports.raidMode[guild.id]) return;
+
     const previousNick = oldMember.nickname;
     const nowNick = member.nickname;
     const oldRoles = oldMember.roles;
@@ -714,6 +733,7 @@ exports.lockChannel = null;
 
 exports.calmSpeed = 7000;
 exports.slowChat = {};
+exports.raidMode = {};
 exports.slowInterval = {};
 exports.chatQueue = {};
 exports.chatNext = {};
@@ -1261,6 +1281,8 @@ client.on('message', (msgObj) => {
     let content = msgObj.content;
     const authorId = author.id;
 
+    const isRaidMode = exports.raidMode[guild.id];
+
     // const presentStamp = +new Date();
 
     // if (guild.id !== '166601083584643072') return;
@@ -1484,15 +1506,17 @@ client.on('message', (msgObj) => {
         // exports.chatQueue[guild.id].push(msgObj);
     }
 
-    Cmds.checkMessage(msgObj, speaker || author, channel, guild, content, contentLower, authorId, isStaff);
+    if (!isRaidMode || isStaff) {
+        Cmds.checkMessage(msgObj, speaker || author, channel, guild, content, contentLower, authorId, isStaff);
 
-    if (author.bot === true) { // RETURN IF BOT
-        return;
+        if (author.bot === true) { // RETURN IF BOT
+            return;
+        }
+
+        Events.emit(guild, 'MessageCreate', speaker, channel, msgObj, content);
+
+        if (contentLower.includes(('👀').toLowerCase())) Util.print(channel, '👀');
     }
-
-    Events.emit(guild, 'MessageCreate', speaker, channel, msgObj, content);
-
-    if (contentLower.includes(('👀').toLowerCase())) Util.print(channel, '👀');
 });
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
