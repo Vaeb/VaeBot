@@ -2617,11 +2617,11 @@ exports.banMember = function (member, moderator, reason, tempEnd) {
 
     exports.sendLog(sendLogData, colAction);
 
-    Trello.addCard(member.guild, 'Bans', memberMostName, {
-        'User ID': memberId,
-        'Moderator': modFullName,
-        'Reason': `[TempBan] ${reason}`,
-    });
+    // Trello.addCard(member.guild, 'Bans', memberMostName, {
+    //     'User ID': memberId,
+    //     'Moderator': modFullName,
+    //     'Reason': `[TempBan] ${reason}`,
+    // });
 
     return true;
 };
@@ -2638,11 +2638,11 @@ exports.kickMember = function (member, moderator, reason) {
     member.kick()
         .catch(console.error);
 
-    Trello.addCard(member.guild, 'Kicks', memberMostName, {
-        'User ID': memberId,
-        'Moderator': modFullName,
-        'Reason': reason,
-    });
+    // Trello.addCard(member.guild, 'Kicks', memberMostName, {
+    //     'User ID': memberId,
+    //     'Moderator': modFullName,
+    //     'Reason': reason,
+    // });
 };
 
 exports.getChanges = function (str1, str2) {

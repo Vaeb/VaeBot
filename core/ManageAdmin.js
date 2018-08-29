@@ -161,7 +161,7 @@ function sendAlert(tag, guild, channel, resolvedUser, resolvedModerator, extra) 
         Util.sendLog(sendLogData, colAction);
     } else {
         sendAlertChannel(action, guild, channel, resolvedUser, resolvedModerator, extra);
-        sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra);
+        if (!index.raidMode[guild.id]) sendAlertDM(action, guild, channel, resolvedUser, resolvedModerator, extra);
         sendAlertLog(action, guild, channel, resolvedUser, resolvedModerator, extra);
     }
 
@@ -285,7 +285,9 @@ async function addTimeout(guild, userId, endTick, offenseTag) {
 function higherRank(moderator, member, canBeEqual) {
     // Check if member can be muted
     if (!moderator) return false;
-    if (!member || typeof moderator === 'string' || typeof member === 'string' || moderator.id === selfId || member.id === selfId) { return true; }
+    if (!member || typeof moderator === 'string' || typeof member === 'string' || moderator.id === selfId || member.id === selfId) {
+        return true;
+    }
 
     const memberPos = Util.getPosition(member);
     const moderatorPos = Util.getPosition(moderator);
@@ -404,11 +406,11 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
         endStr,
     });
 
-    Trello.addCard(guild, 'Bans', memberName, {
-        'User ID': resolvedUser.id,
-        Moderator: moderatorName,
-        Reason: `[${extra.temp ? 'Temp' : 'Full'}Ban] ${reason}`,
-    });
+    // Trello.addCard(guild, 'Bans', memberName, {
+    //     'User ID': resolvedUser.id,
+    //     Moderator: moderatorName,
+    //     Reason: `[${extra.temp ? 'Temp' : 'Full'}Ban] ${reason}`,
+    // });
 
     return true;
 }
