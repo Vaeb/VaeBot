@@ -1283,7 +1283,7 @@ client.on('message', (msgObj) => {
     let content = msgObj.content;
     const authorId = author.id;
 
-    const isRaidMode = exports.raidMode[guild.id];
+    const isRaidMode = guild ? exports.raidMode[guild.id] : false;
 
     // const presentStamp = +new Date();
 
