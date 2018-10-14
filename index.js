@@ -89,7 +89,7 @@ exports.YtInfo.setKey(Auth.youtube);
 global.client = new Discord.Client({
     disabledEvents: ['TYPING_START'],
     fetchAllMembers: true,
-    // disableEveryone: true,
+    disableEveryone: true,
 });
 
 // //////////////////////////////////////////////////////////////////////////////////////////////
