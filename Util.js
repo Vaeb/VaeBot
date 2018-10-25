@@ -2627,13 +2627,13 @@ exports.banMember = function (member, moderator, reason, tempEnd) {
 };
 
 exports.kickMember = function (member, moderator, reason) {
-    const memberId = member.id;
-    const memberMostName = exports.getMostName(member);
+    // const memberId = member.id;
+    // const memberMostName = exports.getMostName(member);
 
     if (reason == null || reason.length < 1) reason = 'No reason provided';
 
-    let modFullName = moderator;
-    if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
+    // let modFullName = moderator;
+    // if (exports.isObject(moderator)) modFullName = exports.getFullName(moderator);
 
     member.kick()
         .catch(console.error);

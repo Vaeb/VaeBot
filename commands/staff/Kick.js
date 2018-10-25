@@ -14,13 +14,23 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (speaker.id == '138274235435974656') return Util.commandFailed(channel, speaker, 'Temporarily disabled kick permissions for this moderator as a precaution due to complaints');
-        const data = Util.getDataFromString(args, [
-            function (str) {
-                return Util.getMemberByMixed(str, guild);
-            },
-        ], true);
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
+        if (speaker.id == '138274235435974656') {
+            return Util.commandFailed(
+                channel,
+                speaker,
+                'Temporarily disabled kick permissions for this moderator as a precaution due to complaints',
+            );
+        }
+        const data = Util.getDataFromString(
+            args,
+            [
+                function (str) {
+                    return Util.getMemberByMixed(str, guild);
+                },
+            ],
+            true,
+        );
         if (!data) return Util.commandFailed(channel, speaker, 'User not found');
         const target = data[0];
         const reason = data[1];
@@ -35,7 +45,7 @@ module.exports = Cmds.addCommand({
         outStr.push(`Guild: ${guild.name}`);
         outStr.push(`Reason: ${reason}`);
         outStr.push('```');
-        Util.print(target, outStr.join('\n'));
+        await Util.print(target, outStr.join('\n'));
 
         Util.kickMember(target, speaker, reason);
 
