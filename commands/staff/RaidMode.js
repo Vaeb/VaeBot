@@ -21,9 +21,6 @@ module.exports = Cmds.addCommand({
             return;
         }
 
-        index.activateRaidMode(guild);
-
-        Util.log('Raid mode enabled');
-        Util.print(channel, 'Raid mode activated');
+        index.activateRaidMode(guild, channel);
     },
 });
