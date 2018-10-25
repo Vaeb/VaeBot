@@ -444,13 +444,45 @@ client.on('guildMemberRemove', (member) => {
     Util.sendLog(sendLogData, colUser);
 });
 
+exports.newMemberTime = 1000 * 30;
+exports.newMemberTime2 = 1000 * 60 * 6;
+exports.recentMembers = [];
+exports.recentMembers2 = [];
+
+const youngAccountTime = 1000 * 60 * 60 * 24 * 6.5;
+
+exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel) {
+    const createdAt = +member.user.createdAt;
+    if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
+        if (defaultChannel) {
+            Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
+        } else {
+            member.ban();
+        }
+    }
+};
+
+exports.activateRaidMode = function (guild) {
+    exports.raidMode[guild.id] = true;
+
+    const raidingMembers = exports.recentMembers2.slice();
+
+    const joinStamp = +new Date();
+    const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
+
+    for (let i = 0; i < raidingMembers.length; i++) {
+        const member = guild.members.get(raidingMembers[i].id);
+        if (member) exports.checkRaidMember(guild, member, joinStamp, defaultChannel);
+    }
+};
+
 client.on('guildMemberAdd', (member) => {
     const guild = member.guild;
+    const joinStamp = +new Date();
 
     if (exports.raidMode[guild.id]) {
-        const nowDate = +new Date();
         const createdAt = +member.user.createdAt;
-        if (createdAt == null || (nowDate - createdAt) < 1000 * 60 * 60 * 24 * 6.5) {
+        if (createdAt == null || (joinStamp - createdAt) < 1000 * 60 * 60 * 24 * 6.5) {
             const mainChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
             if (mainChannel) {
                 Admin.addBan(guild, mainChannel, member, 'System', { reason: 'Raid Auto-Ban' });
@@ -460,6 +492,27 @@ client.on('guildMemberAdd', (member) => {
         }
         return;
     }
+
+    // Check raid mode
+
+    exports.recentMembers.push({ id: member.id, joinStamp });
+    exports.recentMembers = exports.recentMembers.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime);
+
+    exports.recentMembers2.push({ id: member.id, joinStamp });
+    exports.recentMembers2 = exports.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime2);
+
+    if (exports.recentMembers.length >= 6) {
+        exports.activateRaidMode(guild);
+
+        const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
+
+        Util.log('Raid mode enabled');
+        if (defaultChannel) Util.print(channel, 'Raid mode activated');
+
+        return;
+    }
+
+    // Member joined
 
     const guildName = guild.name;
     const memberId = member.id;
