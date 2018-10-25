@@ -466,7 +466,7 @@ exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, se
     }
 };
 
-exports.activateRaidMode = function (guild, defaultChannel) {
+exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
     exports.raidMode[guild.id] = true;
 
     const raidingMembers = exports.recentMembers2.slice();
@@ -478,8 +478,11 @@ exports.activateRaidMode = function (guild, defaultChannel) {
         defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
     }
 
+    const modRole = guild.roles.find(r => r.name === 'Moderator');
+    const modeRoleStr = modRole ? ` ${modRole}` : '';
+
     Util.log('Raid mode enabled');
-    if (defaultChannel) Util.print(defaultChannel, 'Raid mode activated');
+    if (defaultChannel) Util.print(defaultChannel, wasAuto ? `Raid detected - Raid mode has been automatically activated${modeRoleStr}` : 'Raid mode activated');
 
     for (let i = 0; i < raidingMembers.length; i++) {
         const member = guild.members.get(raidingMembers[i].id);
@@ -513,7 +516,7 @@ client.on('guildMemberAdd', (member) => {
     exports.recentMembers2 = exports.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime2);
 
     if (exports.recentMembers.length >= 6) {
-        exports.activateRaidMode(guild);
+        exports.activateRaidMode(guild, null, true);
 
         return;
     }
