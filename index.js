@@ -451,14 +451,18 @@ exports.recentMembers2 = [];
 
 const youngAccountTime = 1000 * 60 * 60 * 24 * 6.5;
 
-exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel) {
+exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, sendRole) {
     const createdAt = +member.user.createdAt;
     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
         if (defaultChannel) {
             Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
         } else {
-            member.ban();
+            member.ban()
+                .catch(console.error);
         }
+    } else if (sendRole && Util.hasRole(member, sendRole)) {
+        member.removeRole(sendRole)
+            .catch(console.error);
     }
 };
 
@@ -469,10 +473,11 @@ exports.activateRaidMode = function (guild) {
 
     const joinStamp = +new Date();
     const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
+    const sendRole = Util.getRole('SendMessages', guild);
 
     for (let i = 0; i < raidingMembers.length; i++) {
         const member = guild.members.get(raidingMembers[i].id);
-        if (member) exports.checkRaidMember(guild, member, joinStamp, defaultChannel);
+        if (member) exports.checkRaidMember(guild, member, joinStamp, defaultChannel, sendRole);
     }
 };
 
