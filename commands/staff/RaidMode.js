@@ -21,6 +21,10 @@ module.exports = Cmds.addCommand({
             return;
         }
 
+        const joinStamp = +new Date();
+
+        index.recentMembers = index.recentMembers.filter(memberData => joinStamp - memberData.joinStamp < index.newMemberTime);
+        index.recentMembers2 = index.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < index.newMemberTime2);
         index.activateRaidMode(guild, channel);
     },
 });
