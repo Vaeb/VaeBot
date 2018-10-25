@@ -15,16 +15,30 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: async (cmd, args, msgObj, speaker, channel, guild) => {
-        const data = Util.getDataFromString(args, [
-            function (str) {
-                return Util.getMemberByMixed(str, guild);
-            },
-        ], false);
+        const data = Util.getDataFromString(
+            args,
+            [
+                function (str) {
+                    return Util.getMemberByMixed(str, guild) || Util.isId(str);
+                },
+            ],
+            false,
+        );
         if (!data) return Util.commandFailed(channel, speaker, 'User not found');
 
         const member = data[0];
 
-        const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: member.id });
+        let memberId = member;
+        let memberName = member;
+
+        if (typeof member === 'object') {
+            memberId = member.id;
+            memberName = Util.getMostName(member);
+        } else {
+            memberName = `<@${member}>`;
+        }
+
+        const pastMutes = await Data.getRecords(guild, 'mutes', { user_id: memberId });
 
         const sendEmbedFields = [];
 
@@ -42,10 +56,14 @@ module.exports = Cmds.addCommand({
             const modMention = Util.resolveUserMention(guild, moderatorId);
             const activeStr = active ? 'Yes' : 'No';
 
-            sendEmbedFields.push({ name: `[${i + 1}] ${muteDateStr}`, value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive: ${activeStr}`, inline: false });
+            sendEmbedFields.push({
+                name: `[${i + 1}] ${muteDateStr}`,
+                value: `​Reason: ${reason}\nLength: ${muteLengthStr}\nModerator: ${modMention}\nActive: ${activeStr}`,
+                inline: false,
+            });
         }
 
-        Util.sendEmbed(channel, `Mute History: ${Util.getMostName(member)}`, null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
+        Util.sendEmbed(channel, `Mute History: ${memberName}`, null, Util.makeEmbedFooter(speaker), null, colBlue, sendEmbedFields);
 
         return true;
     },
