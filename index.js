@@ -479,7 +479,7 @@ exports.activateRaidMode = function (guild, defaultChannel) {
     }
 
     Util.log('Raid mode enabled');
-    if (defaultChannel) Util.print(channel, 'Raid mode activated');
+    if (defaultChannel) Util.print(defaultChannel, 'Raid mode activated');
 
     for (let i = 0; i < raidingMembers.length; i++) {
         const member = guild.members.get(raidingMembers[i].id);
