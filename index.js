@@ -500,15 +500,8 @@ client.on('guildMemberAdd', (member) => {
     const joinStamp = +new Date();
 
     if (exports.raidMode[guild.id]) {
-        const createdAt = +member.user.createdAt;
-        if (createdAt == null || (joinStamp - createdAt) < 1000 * 60 * 60 * 24 * 6.5) {
-            const mainChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
-            if (mainChannel) {
-                Admin.addBan(guild, mainChannel, member, 'System', { reason: 'Raid Auto-Ban' });
-            } else {
-                member.ban();
-            }
-        }
+        const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
+        exports.checkRaidMember(guild, member, joinStamp, defaultChannel, null);
         return;
     }
 
