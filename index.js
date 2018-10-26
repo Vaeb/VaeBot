@@ -455,7 +455,12 @@ exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, se
     const createdAt = +member.user.createdAt;
     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
         if (defaultChannel) {
-            Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
+            const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
+            member.ban()
+                .catch(console.error);
+            defaultChannel.send(`Auto-banned detected raider: ${memberName}`)
+                .catch(console.error);
+            // Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
         } else {
             member.ban()
                 .catch(console.error);
