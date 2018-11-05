@@ -14,7 +14,7 @@ module.exports = Cmds.addCommand({
 
     // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
         args = args.trim();
 
         const data = Util.getDataFromString(
@@ -32,18 +32,18 @@ module.exports = Cmds.addCommand({
                 ],
                 [
                     function (str) {
-                        let mult;
+                        let timeMult;
                         str = str.toLowerCase();
                         if (str.substr(str.length - 1, 1) == 's' && str.length > 2) str = str.substr(0, str.length - 1);
-                        if (str == 'millisecond' || str == 'ms') mult = 1 / 60 / 60 / 1000;
-                        if (str == 'second' || str == 's' || str == 'sec') mult = 1 / 60 / 60;
-                        if (str == 'minute' || str == 'm' || str == 'min') mult = 1 / 60;
-                        if (str == 'hour' || str == 'h') mult = 1;
-                        if (str == 'day' || str == 'd') mult = 24;
-                        if (str == 'week' || str == 'w') mult = 24 * 7;
-                        if (str == 'month' || str == 'mo') mult = 24 * 30.42;
-                        if (str == 'year' || str == 'y') mult = 24 * 365.2422;
-                        return mult;
+                        if (str == 'millisecond' || str == 'ms') timeMult = 1 / 60 / 60 / 1000;
+                        if (str == 'second' || str == 's' || str == 'sec') timeMult = 1 / 60 / 60;
+                        if (str == 'minute' || str == 'm' || str == 'min') timeMult = 1 / 60;
+                        if (str == 'hour' || str == 'h') timeMult = 1;
+                        if (str == 'day' || str == 'd') timeMult = 24;
+                        if (str == 'week' || str == 'w') timeMult = 24 * 7;
+                        if (str == 'month' || str == 'mo') timeMult = 24 * 30.42;
+                        if (str == 'year' || str == 'y') timeMult = 24 * 365.2422;
+                        return timeMult;
                     },
                 ],
             ],
@@ -61,6 +61,8 @@ module.exports = Cmds.addCommand({
         const time = data[1] ? data[1] * 1000 * 60 * 60 * mult : null;
         const reason = data[3];
 
+        let success;
+
         /* if (speaker.id == '119203482598244356') {
             member = speaker;
             speaker = speaker.displayName;
@@ -69,20 +71,20 @@ module.exports = Cmds.addCommand({
         if (Admin.checkMuted(guild, member.id)) {
             Util.print(
                 channel,
-                `Eurghh... <@${
+                `<@${
                     speaker.id
-                }> Are you sure you want to re-mute that guy instead of using \`;changemute\`...?\n\nI do hope you realised that he was already muted...`,
+                }> Are you sure you want to re-mute that guy instead of using \`;changemute\`...?\n\n You only need to re-mute if it's a separate offense.`,
             );
 
             const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id;
 
             channel
                 .awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
-                .then((collected) => {
+                .then(async (collected) => {
                     const response = collected.first();
                     if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(response.content.toLowerCase())) {
-                        Util.print(channel, "Well okay then, it's your choice, I just hope it's not a retarded one...");
-                        Admin.addMute(guild, channel, member, speaker, { time, reason });
+                        Util.print(channel, 'Well okay then, your will is my command...');
+                        success = await Admin.addMute(guild, channel, member, speaker, { time, reason });
                     } else {
                         Util.print(channel, 'Guess you made a mistake eh... Well fine, your request has been cancelled.');
                     }
@@ -95,7 +97,60 @@ module.exports = Cmds.addCommand({
                     Admin.addMute(guild, channel, speaker, 'System', { time: 1000 * 60 * 1.5, reason: 'Snails get stitches' });
                 });
         } else {
-            Admin.addMute(guild, channel, member, speaker, { time, reason });
+            success = await Admin.addMute(guild, channel, member, speaker, { time, reason });
+        }
+
+        if (time === null && success === true) {
+            Util.print(
+                channel,
+                `<@${
+                    speaker.id
+                }> The user was muted for his default mute time (based on his mute history), do you want to adjust it? If you do, just tell me the new time now...`,
+            );
+
+            const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id;
+
+            channel
+                .awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
+                .then((collected) => {
+                    const response = collected.first();
+
+                    const data2 = Util.getDataFromString(response, [
+                        [
+                            function (str) {
+                                return Util.matchWholeNumber(str);
+                            },
+                        ],
+                        [
+                            function (str) {
+                                let timeMult;
+                                str = str.toLowerCase();
+                                if (str.substr(str.length - 1, 1) == 's' && str.length > 2) str = str.substr(0, str.length - 1);
+                                if (str == 'millisecond' || str == 'ms') timeMult = 1 / 60 / 60 / 1000;
+                                if (str == 'second' || str == 's' || str == 'sec') timeMult = 1 / 60 / 60;
+                                if (str == 'minute' || str == 'm' || str == 'min') timeMult = 1 / 60;
+                                if (str == 'hour' || str == 'h') timeMult = 1;
+                                if (str == 'day' || str == 'd') timeMult = 24;
+                                if (str == 'week' || str == 'w') timeMult = 24 * 7;
+                                if (str == 'month' || str == 'mo') timeMult = 24 * 30.42;
+                                if (str == 'year' || str == 'y') timeMult = 24 * 365.2422;
+                                return timeMult;
+                            },
+                        ],
+                    ]);
+
+                    if (!data2) return;
+
+                    Util.log(`Change Arg Data New: ${data2}`);
+
+                    const mult2 = data2[1] || 1 / 60;
+                    const time2 = data2[0] ? data[0] * 1000 * 60 * 60 * mult2 : null;
+
+                    if (time2 == null) return;
+
+                    Admin.changeMute(guild, channel, member, speaker, { time: time2 });
+                })
+                .catch(console.log);
         }
 
         return true;
