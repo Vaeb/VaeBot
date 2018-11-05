@@ -107,7 +107,7 @@ module.exports = Cmds.addCommand({
                 channel,
                 `<@${
                     speaker.id
-                }> The user was muted for his default mute time (based on his mute history), do you want to adjust it? If you do, just tell me the new time now...`,
+                }> This user was muted for his default mute time (based on his mute history), do you want to adjust it? If you do, just tell me the new time now...`,
             );
 
             const isResponse = msgObjTemp => msgObjTemp.author.id == speaker.id;
@@ -122,6 +122,11 @@ module.exports = Cmds.addCommand({
                         .replace(/<@.?\d+?>\s*/g, '')
                         .replace(/[^\sa-z0-9]+/gi, '')
                         .trim();
+
+                    if (/\bno|no\b|\bcancel|\bkeep|\bdont|^n$/i.test(responseMsg)) {
+                        Util.print(channel, 'Got it!');
+                        return;
+                    }
 
                     const data2 = Util.getDataFromString(responseMsg, [
                         [
@@ -152,7 +157,7 @@ module.exports = Cmds.addCommand({
                     Util.log(`Change Arg Data New: ${data2}`);
 
                     const mult2 = data2[1] || 1 / 60;
-                    const time2 = data2[0] ? data[0] * 1000 * 60 * 60 * mult2 : null;
+                    const time2 = data2[0] ? data2[0] * 1000 * 60 * 60 * mult2 : null;
 
                     if (time2 == null) return;
 
