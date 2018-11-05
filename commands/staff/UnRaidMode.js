@@ -21,11 +21,6 @@ module.exports = Cmds.addCommand({
             return;
         }
 
-        index.raidMode[guild.id] = undefined;
-
-        Util.log('Raid mode disabled');
-        Util.print(channel, 'Raid mode disabled');
-
-        index.setupSecurityFunc(guild);
+        index.disableRaidMode(guild, channel);
     },
 });
