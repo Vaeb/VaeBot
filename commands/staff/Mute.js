@@ -84,7 +84,7 @@ module.exports = Cmds.addCommand({
                     const response = collected.first();
                     const responseMsg = response.content;
 
-                    if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(responseMsg.toLowerCase())) {
+                    if (/y[aeiouy]+?[shp]|y[aeiy]+?\b|\by\b/.test(responseMsg.toLowerCase())) {
                         Util.print(channel, 'Well okay then, your will is my command...');
                         success = await Admin.addMute(guild, channel, member, speaker, { time, reason });
                     } else {
