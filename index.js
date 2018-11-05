@@ -469,8 +469,7 @@ exports.disableRaidMode = function (guild, defaultChannel) {
 
     const botRole = guild.roles.find(r => r.name.startsWith('Server Bot'));
     if (botRole) {
-        botRole.setName('Server Bot').catch(console.error);
-        botRole.setColor('#8c7ae6').catch(console.error);
+        botRole.edit({ name: 'Server Bot', color: '#8c7ae6' }).catch(console.error);
     }
 
     Util.log('Raid mode disabled');
@@ -504,8 +503,7 @@ exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
 
     const botRole = guild.roles.find(r => r.name.startsWith('Server Bot'));
     if (botRole) {
-        botRole.setName('Server Bot [RAIDMODE]').catch(console.error);
-        botRole.setColor('#eb2f06').catch(console.error);
+        botRole.edit({ name: 'Server Bot [RAIDMODE]', color: '#eb2f06' }).catch(console.error);
     }
 
     for (let i = 0; i < raidingMembers.length; i++) {
