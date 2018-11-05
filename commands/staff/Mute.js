@@ -128,29 +128,33 @@ module.exports = Cmds.addCommand({
                         return;
                     }
 
-                    const data2 = Util.getDataFromString(responseMsg, [
+                    const data2 = Util.getDataFromString(
+                        responseMsg,
                         [
-                            function (str) {
-                                return Util.matchWholeNumber(str);
-                            },
+                            [
+                                function (str) {
+                                    return Util.matchWholeNumber(str);
+                                },
+                            ],
+                            [
+                                function (str) {
+                                    let timeMult;
+                                    str = str.toLowerCase();
+                                    if (str.substr(str.length - 1, 1) == 's' && str.length > 2) str = str.substr(0, str.length - 1);
+                                    if (str == 'millisecond' || str == 'ms') timeMult = 1 / 60 / 60 / 1000;
+                                    if (str == 'second' || str == 's' || str == 'sec') timeMult = 1 / 60 / 60;
+                                    if (str == 'minute' || str == 'm' || str == 'min') timeMult = 1 / 60;
+                                    if (str == 'hour' || str == 'h') timeMult = 1;
+                                    if (str == 'day' || str == 'd') timeMult = 24;
+                                    if (str == 'week' || str == 'w') timeMult = 24 * 7;
+                                    if (str == 'month' || str == 'mo') timeMult = 24 * 30.42;
+                                    if (str == 'year' || str == 'y') timeMult = 24 * 365.2422;
+                                    return timeMult;
+                                },
+                            ],
                         ],
-                        [
-                            function (str) {
-                                let timeMult;
-                                str = str.toLowerCase();
-                                if (str.substr(str.length - 1, 1) == 's' && str.length > 2) str = str.substr(0, str.length - 1);
-                                if (str == 'millisecond' || str == 'ms') timeMult = 1 / 60 / 60 / 1000;
-                                if (str == 'second' || str == 's' || str == 'sec') timeMult = 1 / 60 / 60;
-                                if (str == 'minute' || str == 'm' || str == 'min') timeMult = 1 / 60;
-                                if (str == 'hour' || str == 'h') timeMult = 1;
-                                if (str == 'day' || str == 'd') timeMult = 24;
-                                if (str == 'week' || str == 'w') timeMult = 24 * 7;
-                                if (str == 'month' || str == 'mo') timeMult = 24 * 30.42;
-                                if (str == 'year' || str == 'y') timeMult = 24 * 365.2422;
-                                return timeMult;
-                            },
-                        ],
-                    ]);
+                        true,
+                    );
 
                     if (!data2) return;
 
