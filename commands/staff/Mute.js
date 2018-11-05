@@ -82,7 +82,9 @@ module.exports = Cmds.addCommand({
                 .awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
                 .then(async (collected) => {
                     const response = collected.first();
-                    if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(response.content.toLowerCase())) {
+                    const responseMsg = response.content;
+
+                    if (/y[aeiouy]+?[sh]|y[aeiy]+?\b|\by\b/.test(responseMsg.toLowerCase())) {
                         Util.print(channel, 'Well okay then, your will is my command...');
                         success = await Admin.addMute(guild, channel, member, speaker, { time, reason });
                     } else {
@@ -114,8 +116,14 @@ module.exports = Cmds.addCommand({
                 .awaitMessages(isResponse, { max: 1, time: 1000 * 25, errors: ['time'] })
                 .then((collected) => {
                     const response = collected.first();
+                    let responseMsg = response.content;
 
-                    const data2 = Util.getDataFromString(response, [
+                    responseMsg = responseMsg
+                        .replace(/<@.?\d+?>\s*/g, '')
+                        .replace(/[^\sa-z0-9]+/gi, '')
+                        .trim();
+
+                    const data2 = Util.getDataFromString(responseMsg, [
                         [
                             function (str) {
                                 return Util.matchWholeNumber(str);
