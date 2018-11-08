@@ -107,16 +107,24 @@ function sendAlert(tag, guild, channel, resolvedUser, resolvedModerator, extra) 
         if (extra.reason.new != extra.reason.old) fieldsChanged.push(`${action} Reason`);
         if (extra.lengthStr.new != extra.lengthStr.old) fieldsChanged.push(`${action} Length`);
 
+        // const fieldsChangedArr = fieldsChanged;
         fieldsChanged = fieldsChanged.join(', ');
 
         const sendEmbedFields = [
             { name: 'Username', value: resolvedUser.mention },
             { name: 'Fields Changed', value: fieldsChanged },
-            { name: `Old ${action} Reason`, value: extra.reason.old },
-            { name: `New ${action} Reason`, value: extra.reason.new },
-            { name: `Old ${action} Length`, value: extra.lengthStr.old },
-            { name: `New ${action} Length`, value: extra.lengthStr.new },
         ];
+
+        if (extra.reason.new != extra.reason.old) {
+            sendEmbedFields.push({ name: `Old ${action} Reason`, value: extra.reason.old });
+            sendEmbedFields.push({ name: `New ${action} Reason`, value: extra.reason.new });
+        }
+
+        if (extra.lengthStr.new != extra.lengthStr.old) {
+            sendEmbedFields.push({ name: `Old ${action} Length`, value: extra.lengthStr.old });
+            sendEmbedFields.push({ name: `New ${action} Length`, value: extra.lengthStr.new });
+        }
+
         Util.sendEmbed(
             channel,
             `${action} Changed`,
