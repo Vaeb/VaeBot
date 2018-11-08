@@ -96,20 +96,33 @@ function sendMuteMessage(
         if (muteReason.new !== muteReason.old) fieldsChanged.push('Mute Reason');
         if (muteLengthStr.new !== muteLengthStr.old) fieldsChanged.push('Mute Length');
 
-        fieldsChanged = fieldsChanged.join(', ');
+        const fieldsChangedArr = fieldsChanged;
+        fieldsChanged = fieldsChangedArr.join(', ');
 
         if (messageType === 'Channel') {
             const sendEmbedFields = [{ name: 'Username', value: memberMention }, { name: 'Fields Changed', value: fieldsChanged }];
 
-            if (muteReason.old != muteReason.new) {
+            if (fieldsChangedArr.includes('Mute Reason')) {
                 sendEmbedFields.push({ name: 'Old Mute Reason', value: muteReason.old });
                 sendEmbedFields.push({ name: 'New Mute Reason', value: muteReason.new });
             }
 
-            if (muteLengthStr.old != muteLengthStr.new) {
+            if (fieldsChangedArr.includes('Mute Length')) {
                 sendEmbedFields.push({ name: 'Old Mute Length', value: muteLengthStr.old });
                 sendEmbedFields.push({ name: 'New Mute Length', value: muteLengthStr.new });
             }
+
+            console.log(
+                muteLengthStr.old,
+                '|',
+                muteLengthStr.new,
+                '|',
+                muteLengthStr.old == muteLengthStr.new,
+                '|',
+                fieldsChangedArr,
+                '|',
+                fieldsChangedArr.includes('Mute Length'),
+            );
 
             Util.sendEmbed(
                 channel,
