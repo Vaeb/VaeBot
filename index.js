@@ -472,7 +472,7 @@ const raidMsgPossible = `Hi! Unfortunately you've joined our Vashta Discord whil
 
 It's not all bad though, looking at the details of your account there's a possibility that you aren't a raider, so if that is the case then you'll probably be unbanned shortly and can rejoin, if so I apologise for the trouble.
 
-If you don't get unbanned for some reason (and you aren't trying to raid us), please contact Vaeb#0001 (<@107593015014486016>) my developer, and he will sort you out. If you are a raider, better look next time.
+If you don't get unbanned for some reason (and you aren't trying to raid us), please contact Vaeb#0001 (<@107593015014486016>) my developer, and he will sort you out. If you are a raider, better luck next time.
 
 As a reminder, here's our server invite for if you're a real human and will be joining us later, or if you're a raider and want to try again: https://discord.gg/wZRwXyj`;
 
