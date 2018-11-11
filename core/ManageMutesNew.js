@@ -404,7 +404,7 @@ function resolveUser(guild, userResolvable, isMod) {
         }
     }
 
-    Util.logc('Mutes1', `User type: ${userType} (isMod ${isMod || false})`);
+    // Util.logc('Mutes1', `User type: ${userType} (isMod ${isMod || false})`);
 
     if (userType === 0) {
         // Member
@@ -576,7 +576,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
         endStr,
     );
 
-    Util.logc('Mutes1', 'Completed AddMute');
+    // Util.logc('Mutes1', 'Completed AddMute');
 
     return true;
 };
@@ -744,7 +744,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
         endStrChanges,
     );
 
-    Util.logc('Mutes1', 'Completed ChangeMute');
+    // Util.logc('Mutes1', 'Completed ChangeMute');
 
     return true;
 };
@@ -852,7 +852,7 @@ exports.unMute = function (guild, channel, userResolvable, moderatorResolvable) 
         totalMutes,
     );
 
-    Util.logc('Mutes1', 'Completed UnMute');
+    // Util.logc('Mutes1', 'Completed UnMute');
 
     return true;
 };
@@ -866,7 +866,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.logc('Mutes1', 'UnMute completed, continuing RemMute');
+    // Util.logc('Mutes1', 'UnMute completed, continuing RemMute');
 
     // Resolve parameter data
 
@@ -945,7 +945,7 @@ exports.remMute = async function (guild, channel, userResolvable, moderatorResol
         totalMutes,
     );
 
-    Util.logc('Mutes1', 'Completed RemMute');
+    // Util.logc('Mutes1', 'Completed RemMute');
 
     return true;
 };
@@ -959,7 +959,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
 
     exports.unMute(guild, null, userResolvable, moderatorResolvable);
 
-    Util.logc('Mutes1', 'UnMute completed, continuing ClearMutes');
+    // Util.logc('Mutes1', 'UnMute completed, continuing ClearMutes');
 
     // Resolve parameter data
 
@@ -1033,7 +1033,7 @@ exports.clearMutes = async function (guild, channel, userResolvable, moderatorRe
         totalMutes,
     );
 
-    Util.logc('Mutes1', 'Completed ClearMutes');
+    // Util.logc('Mutes1', 'Completed ClearMutes');
 
     return true;
 };

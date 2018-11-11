@@ -2409,7 +2409,7 @@ exports.resolveUser = function (guild, userResolvable, canBeSystem) { // If user
         }
     }
 
-    exports.logc('Admin1', `User type: ${userType} (canBeSystem ${canBeSystem || false})`);
+    // exports.logc('Admin1', `User type: ${userType} (canBeSystem ${canBeSystem || false})`);
 
     if (userType === 0) { // Member or User
         if (!userResolvable.guild) resolvedData.member = guild.members.get(resolvedData.user.id); // User

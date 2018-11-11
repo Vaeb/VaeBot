@@ -633,8 +633,8 @@ exports.addRecord = function (guild, tableName, dataArr) {
 
     const queryStr = `INSERT INTO ${tableName} (${columnStr}) VALUES ${multiValueStr} ON DUPLICATE KEY UPDATE ${updateColumnStr};`;
 
-    Util.logc('AddRecord1', 'AddRecord');
-    Util.logc('AddRecord1', queryStr);
+    // Util.logc('AddRecord1', 'AddRecord');
+    // Util.logc('AddRecord1', queryStr);
     // Util.logc('AddRecord1', multiValueArr);
 
     return exports.query(queryStr, multiValueArr);

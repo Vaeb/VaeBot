@@ -444,19 +444,48 @@ exports.recentMembers2 = [];
 
 const youngAccountTime = 1000 * 60 * 60 * 24 * 6.5;
 
-exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, sendRole) {
+// exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, sendRole) {
+//     const createdAt = +member.user.createdAt;
+//     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
+//         if (defaultChannel) {
+//             const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
+//             member.ban().catch(console.error);
+//             defaultChannel.send(`Auto-banned detected raider: ${memberName}`).catch(console.error);
+//             // Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
+//         } else {
+//             member.ban().catch(console.error);
+//         }
+//     } else if (sendRole && Util.hasRole(member, sendRole)) {
+//         member.removeRole(sendRole).catch(console.error);
+//     }
+// };
+
+function raidBan(member, defaultChannel, banMsg) {
+    member.ban()
+        .then(() => {
+            if (defaultChannel) defaultChannel.send(banMsg).catch(console.error);
+        })
+        .catch(console.error);
+}
+
+const raidMsgPossible = `Hi! Unfortunately you've joined our Vashta Discord whilst the server is being raided, so you've been automatically treated as a raider and banned from our server.
+
+It's not all bad though, looking at the details of your account there's a possibility that you aren't a raider, so if that is the case then you'll probably be unbanned shortly and can rejoin, if so I apologise for the trouble.
+
+If you don't get unbanned for some reason (and you aren't trying to raid us), please contact Vaeb#0001 (<@107593015014486016>) my developer, and he will sort you out. If you are a raider, better look next time.
+
+As a reminder, here's our server invite for if you're a real human and will be joining us later, or if you're a raider and want to try again: https://discord.gg/wZRwXyj`;
+
+exports.checkRaidMember = function (member, joinStamp, defaultChannel) {
     const createdAt = +member.user.createdAt;
+    const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
+
     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
-        if (defaultChannel) {
-            const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
-            member.ban().catch(console.error);
-            defaultChannel.send(`Auto-banned detected raider: ${memberName}`).catch(console.error);
-            // Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
-        } else {
-            member.ban().catch(console.error);
-        }
-    } else if (sendRole && Util.hasRole(member, sendRole)) {
-        member.removeRole(sendRole).catch(console.error);
+        raidBan(member, defaultChannel, `Auto-banned detected raider: ${memberName}`);
+    } else {
+        member.send(raidMsgPossible)
+            .then(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`))
+            .catch(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`));
     }
 };
 
@@ -484,7 +513,7 @@ exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
     const raidingMembers = exports.recentMembers2.slice();
 
     const joinStamp = +new Date();
-    const sendRole = Util.getRole('SendMessages', guild);
+    // const sendRole = Util.getRole('SendMessages', guild);
 
     if (!defaultChannel) {
         defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
@@ -508,7 +537,7 @@ exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
 
     for (let i = 0; i < raidingMembers.length; i++) {
         const member = guild.members.get(raidingMembers[i].id);
-        if (member) exports.checkRaidMember(guild, member, joinStamp, defaultChannel, sendRole);
+        if (member) exports.checkRaidMember(member, joinStamp, defaultChannel);
     }
 };
 
@@ -518,7 +547,7 @@ client.on('guildMemberAdd', (member) => {
 
     if (exports.raidMode[guild.id]) {
         const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
-        exports.checkRaidMember(guild, member, joinStamp, defaultChannel, null);
+        exports.checkRaidMember(member, joinStamp, defaultChannel);
         return;
     }
 
@@ -891,7 +920,6 @@ const Actions = {
 } */
 
 client.on('messageDelete', (msgObj) => {
-    Util.log('qqq1');
     if (msgObj == null) return;
     const channel = msgObj.channel;
     const guild = msgObj.guild;
@@ -899,7 +927,7 @@ client.on('messageDelete', (msgObj) => {
     const author = msgObj.author;
     const content = msgObj.content;
 
-    const eventTime = +new Date();
+    // const eventTime = +new Date();
 
     // const evTime = +new Date();
 
@@ -915,9 +943,9 @@ client.on('messageDelete', (msgObj) => {
         Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => {
             auditEntry = auditEntry || {};
             const executor = auditEntry.executor;
-            const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
+            // const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
 
-            if (executor) Util.log(`[MESSAGE_DELETE] Elapsed since audit log: ${sinceAuditLog}`);
+            // if (executor) Util.log(`[MESSAGE_DELETE] Elapsed since audit log: ${sinceAuditLog}`);
 
             const attachmentLinks = [];
             msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
@@ -1558,13 +1586,13 @@ client.on('message', (msgObj) => {
                                 }
                                 if (numNew == 0) {
                                     // If they haven't sent any new messages
-                                    Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} stopped spamming and was put on alert`);
+                                    // Util.logc('AntiSpam1', `[2_] ${Util.getName(speaker)} stopped spamming and was put on alert`);
                                     lastWarn[authorId] = newStamp; // Store the stamp for their last warning
                                     userStatus[authorId] = 2; // Set status to monitoring on high alert
                                     return; // Cancel
                                 }
-                                let numNew2 = 0; // New var for counting messages
-                                let elapsed2 = 0;
+                                // let numNew2 = 0; // New var for counting messages
+                                // let elapsed2 = 0;
                                 let grad2 = 0;
                                 // var elapsed2 = (newStamp-origStamp2)/1000;
                                 // var grad2 = (numNew/elapsed2)*10;
@@ -1576,16 +1604,16 @@ client.on('message', (msgObj) => {
                                     if (nowGradient > grad2) {
                                         // If now gradient is larger than highest record gradient
                                         grad2 = nowGradient; // Set gradient as highest recorded
-                                        elapsed2 = nowElapsed; // Set elapsed as elapsed time between this message and now
-                                        numNew2 = i + 1; // Set number of new messages as i+1
+                                        // elapsed2 = nowElapsed; // Set elapsed as elapsed time between this message and now
+                                        // numNew2 = i + 1; // Set number of new messages as i+1
                                     }
                                 }
-                                Util.logc(
-                                    'AntiSpam1',
-                                    `[2] User: ${Util.getName(
-                                        speaker,
-                                    )} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`,
-                                );
+                                // Util.logc(
+                                //     'AntiSpam1',
+                                //     `[2] User: ${Util.getName(
+                                //         speaker,
+                                //     )} | Messages Since ${elapsed2} Seconds: ${numNew2} | Gradient2: ${grad2}`,
+                                // );
                                 if (grad2 >= checkGrad2) {
                                     // If gradient (velocity) is higher than checking gradient
                                     Util.logc(
@@ -1595,7 +1623,7 @@ client.on('message', (msgObj) => {
                                     Admin.addMute(guild, channel, speaker, 'System', { reason: '[Auto-Mute] Spamming' }); // Mute user
                                     userStatus[authorId] = 0; // Reset monitoring status to normal
                                 } else {
-                                    Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} was put on alert`);
+                                    // Util.logc('AntiSpam1', `[2] ${Util.getName(speaker)} was put on alert`);
                                     lastWarn[authorId] = newStamp; // Store the stamp for their last warning
                                     userStatus[authorId] = 2; // Set status to monitoring on high alert
                                 }
@@ -1609,7 +1637,7 @@ client.on('message', (msgObj) => {
                     }
                 } else if (userStatus[authorId] === 2 && stamp - lastWarn[authorId] > endAlert * 1000) {
                     // If it's been longer than the necessary monitoring time since their last warning
-                    Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} ended their alert`);
+                    // Util.logc('AntiSpam1', `[3] ${Util.getName(speaker)} ended their alert`);
                     userStatus[authorId] = 0; // Deem the user safe and reset their monitoring status to normal
                 }
             }

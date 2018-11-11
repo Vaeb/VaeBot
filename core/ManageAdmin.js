@@ -110,10 +110,7 @@ function sendAlert(tag, guild, channel, resolvedUser, resolvedModerator, extra) 
         // const fieldsChangedArr = fieldsChanged;
         fieldsChanged = fieldsChanged.join(', ');
 
-        const sendEmbedFields = [
-            { name: 'Username', value: resolvedUser.mention },
-            { name: 'Fields Changed', value: fieldsChanged },
-        ];
+        const sendEmbedFields = [{ name: 'Username', value: resolvedUser.mention }, { name: 'Fields Changed', value: fieldsChanged }];
 
         if (extra.reason.new != extra.reason.old) {
             sendEmbedFields.push({ name: `Old ${action} Reason`, value: extra.reason.old });
@@ -173,7 +170,7 @@ function sendAlert(tag, guild, channel, resolvedUser, resolvedModerator, extra) 
         sendAlertLog(action, guild, channel, resolvedUser, resolvedModerator, extra);
     }
 
-    Util.logc('Admin1', `Sent alerts for the ${tag} event`);
+    // Util.logc('Admin1', `Sent alerts for the ${tag} event`);
 }
 
 function remSendMessages(member) {
