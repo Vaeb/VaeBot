@@ -553,11 +553,15 @@ client.on('guildMemberAdd', (member) => {
 
     // Check raid mode
 
-    exports.recentMembers.push({ id: member.id, joinStamp });
-    exports.recentMembers = exports.recentMembers.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime);
+    if (!exports.recentMembers.some(memberData => memberData.id === member.id)) {
+        exports.recentMembers.push({ id: member.id, joinStamp });
+        exports.recentMembers = exports.recentMembers.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime);
+    }
 
-    exports.recentMembers2.push({ id: member.id, joinStamp });
-    exports.recentMembers2 = exports.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime2);
+    if (!exports.recentMembers2.some(memberData => memberData.id === member.id)) {
+        exports.recentMembers2.push({ id: member.id, joinStamp });
+        exports.recentMembers2 = exports.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime2);
+    }
 
     if (exports.recentMembers.length >= 6) {
         exports.activateRaidMode(guild, null, true);
