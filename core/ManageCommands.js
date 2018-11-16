@@ -61,7 +61,11 @@ exports.initCommands = function () {
 };
 
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
-    if ((channel.id !== '168743219788644352' || authorId === vaebId)/* && (guild.id != "257235915498323969" || channel.id == "257244216772526092") */) { // script-builders
+    if (
+        channel.id !== '168743219788644352' ||
+        authorId === vaebId /* && (guild.id != "257235915498323969" || channel.id == "257244216772526092") */
+    ) {
+        // script-builders
         for (let i = 0; i < exports.commands.length; i++) {
             const cmdData = exports.commands[i];
             const cmdNames = cmdData[0];
@@ -74,19 +78,52 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                 const hasParameters = cmd[cmdLength - 1] === ' ';
                 if ((hasParameters && contentLower.substr(0, cmdLength) === cmd) || (!hasParameters && contentLower === cmd)) {
                     if (cmdRequires.staff && !isStaff) {
-                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used by Staff', Util.makeEmbedFooter(speaker), null, colGreen, null);
+                        Util.sendEmbed(
+                            channel,
+                            'Restricted',
+                            'This command can only be used by Staff',
+                            Util.makeEmbedFooter(speaker),
+                            null,
+                            colGreen,
+                            null,
+                        );
                     } else if (cmdRequires.vaeb && authorId !== vaebId) {
-                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used by Vaeb', Util.makeEmbedFooter(speaker), null, colGreen, null);
+                        Util.sendEmbed(
+                            channel,
+                            'Restricted',
+                            'This command can only be used by Vaeb',
+                            Util.makeEmbedFooter(speaker),
+                            null,
+                            colGreen,
+                            null,
+                        );
                     } else if (cmdRequires.guild && guild == null) {
-                        Util.sendEmbed(channel, 'Restricted', 'This command can only be used in Guilds', Util.makeEmbedFooter(speaker), null, colGreen, null);
+                        Util.sendEmbed(
+                            channel,
+                            'Restricted',
+                            'This command can only be used in Guilds',
+                            Util.makeEmbedFooter(speaker),
+                            null,
+                            colGreen,
+                            null,
+                        );
                     } else if (cmdRequires.loud && isQuiet(channel, speaker)) {
-                        Util.sendEmbed(channel, 'Quiet Channel', 'This command cannot be used in this Channel (use #bot-commands)',
-                            Util.makeEmbedFooter(speaker), null, colGreen, null);
+                        Util.sendEmbed(
+                            channel,
+                            'Quiet Channel',
+                            'This command cannot be used in this Channel (use #bot-commands)',
+                            Util.makeEmbedFooter(speaker),
+                            null,
+                            colGreen,
+                            null,
+                        );
                     } else {
                         const args = content.substring(cmdLength);
                         const argStr = args.length < 1 ? 'None' : args;
                         const guildData = guild != null ? `${guild.name} (${guild.id})` : 'NoGuild';
-                        let outLog = `\n> ${Util.getName(speaker)} (${speaker.id}) | ${channel.name} (${channel.id}) | ${guildData}\n    Command Executed: ${cmd.trim()}`;
+                        let outLog = `\n> ${Util.getName(speaker)} (${speaker.id}) | ${channel.name} (${
+                            channel.id
+                        }) | ${guildData}\n    Command Executed: ${cmd.trim()}`;
                         if (hasParameters) outLog += ` | Arguments: ${argStr}`;
                         Util.log(outLog);
 
@@ -95,7 +132,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                                 'Command Entry',
                                 guild,
                                 speaker,
-                                { name: 'Username', value: speaker.toString() },
+                                { name: 'Username', value: Util.resolveMention(speaker) },
                                 { name: 'Channel Name', value: channel.toString() },
                                 { name: 'Command Name', value: cmd },
                             ];
@@ -122,4 +159,3 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
         }
     }
 };
-

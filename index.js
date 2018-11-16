@@ -430,7 +430,7 @@ client.on('guildMemberRemove', (member) => {
         'User Left',
         guild,
         member,
-        { name: 'Username', value: member.toString() },
+        { name: 'Username', value: Util.resolveMention(member) },
         { name: 'Highest Role', value: member.highestRole.name },
     ];
 
@@ -461,7 +461,8 @@ const youngAccountTime = 1000 * 60 * 60 * 24 * 6.5;
 // };
 
 function raidBan(member, defaultChannel, banMsg) {
-    member.ban()
+    member
+        .ban()
         .then(() => {
             if (defaultChannel) defaultChannel.send(banMsg).catch(console.error);
         })
@@ -483,7 +484,8 @@ exports.checkRaidMember = function (member, joinStamp, defaultChannel) {
     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
         raidBan(member, defaultChannel, `Auto-banned detected raider: ${memberName}`);
     } else {
-        member.send(raidMsgPossible)
+        member
+            .send(raidMsgPossible)
             .then(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`))
             .catch(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`));
     }
@@ -657,7 +659,7 @@ client.on('guildMemberAdd', (member) => {
 
     Events.emit(guild, 'UserJoin', member);
 
-    const sendLogData = ['User Joined', guild, member, { name: 'Username', value: member.toString() }];
+    const sendLogData = ['User Joined', guild, member, { name: 'Username', value: Util.resolveMention(member) }];
 
     Util.sendLog(sendLogData, colUser);
 });
@@ -824,7 +826,7 @@ client.on('messageUpdate', (oldMsgObj, newMsgObj) => {
             'Message Updated',
             guild,
             author,
-            { name: 'Username', value: author.toString() },
+            { name: 'Username', value: Util.resolveMention(author) },
             { name: 'Channel Name', value: channel.toString() },
             { name: 'Old Message', value: oldContent },
             { name: 'New Message', value: content },
