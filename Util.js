@@ -1296,8 +1296,14 @@ exports.sendEmbed = function (embChannel, embTitle, embDesc, embFooterParam, emb
         color: embColor,
     };
 
+    console.log(1111, embObj);
+
     embChannel.send(undefined, { embed: embObj })
+        .then(() => {
+            console.log(2222);
+        })
         .catch((error) => {
+            console.log(3333);
             Util.log(`[E_SendEmbed] ${error} ${embChannel}`);
             Util.log(embObj);
             Util.log(JSON.stringify(embFields));

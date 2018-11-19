@@ -1361,7 +1361,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
         // Will only contain: Letters, spaces, forward-slashes and dots
         {
             regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:g *g *|i *o *|m *e *|c *o *m *)\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
-            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj)$/gi], // Caps matter but just-in-case
+            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|sentinel|rrX8bA)$/gi], // Caps matter but just-in-case
         },
     ];
 
@@ -1382,7 +1382,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered) {
-        msgObj.delete().catch(console.error);
+        // msgObj.delete().catch(console.error);
         Admin.addMute(guild, channel, speaker, 'System', { reason: '[Auto-Mute] Advertising Discord server' });
         return true;
     }
