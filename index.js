@@ -394,10 +394,12 @@ client.on('ready', async () => {
 
     await Promise.all(
         client.guilds.map(async (newGuild) => {
-            const allMembers = await newGuild.fetchMembers();
+            await newGuild.fetchMembers();
+
+            const allMembers = newGuild.members;
 
             // allMembers.forEach(m => Util.mergeUser(m));
-	    newGuild.members.forEach(Util.mergeUser);
+	        allMembers.forEach(Util.mergeUser);
             Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
             // Music2.initGuild(newGuild);
@@ -421,7 +423,8 @@ client.on('disconnect', (closeEvent) => {
 });
 
 client.on('guildCreate', (guild) => {
-    guild.fetchMembers().then((allMembers) => {
+    guild.fetchMembers().then(() => {
+        const allMembers = guild.members;
         allMembers.forEach(m => Util.mergeUser(m));
     });
 });

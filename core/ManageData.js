@@ -179,7 +179,7 @@ exports.fromBuffer = function (buffer) {
 };
 
 let connection;
-let connectionVeil;
+// let connectionVeil;
 
 exports.query = function (statement, inputs, useConnection) {
     const nowConnection = useConnection != null ? useConnection : connection;
@@ -225,34 +225,30 @@ exports.connect1 = function () {
 };
 
 exports.connect2 = function () {
-    connectionVeil = index.MySQL.createConnection({
-        host: 'vashta.cluster-cgwg1mrado7l.us-west-2.rds.amazonaws.com',
-        user: 'Vaeb',
-        password: index.dbPassVeil,
-        database: 'vashta',
-        multipleStatements: true,
-    });
-
-    exports.connectionVeil = connectionVeil;
-
-    return new Promise((resolve, reject) => {
-        Util.logc('MySQL2', '[MySQL2] Connecting...');
-
-        connectionVeil.connect((err) => {
-            if (err) return reject(err);
-            return resolve();
-        });
-
-        connectionVeil.on('error', (err) => {
-            if (err.fatal) {
-                Util.logc('MySQL2', `[MySQL2] Fatal error: ${err.code}`);
-                Util.logc('MySQL2', '[MySQL2] Attempting to reconnect...');
-                exports.connect2();
-            } else {
-                Util.log(`Non-fatal error 2: ${err.code}`);
-            }
-        });
-    });
+    // connectionVeil = index.MySQL.createConnection({
+    //     host: 'vashta.cluster-cgwg1mrado7l.us-west-2.rds.amazonaws.com',
+    //     user: 'Vaeb',
+    //     password: index.dbPassVeil,
+    //     database: 'vashta',
+    //     multipleStatements: true,
+    // });
+    // exports.connectionVeil = connectionVeil;
+    // return new Promise((resolve, reject) => {
+    //     Util.logc('MySQL2', '[MySQL2] Connecting...');
+    //     connectionVeil.connect((err) => {
+    //         if (err) return reject(err);
+    //         return resolve();
+    //     });
+    //     connectionVeil.on('error', (err) => {
+    //         if (err.fatal) {
+    //             Util.logc('MySQL2', `[MySQL2] Fatal error: ${err.code}`);
+    //             Util.logc('MySQL2', '[MySQL2] Attempting to reconnect...');
+    //             exports.connect2();
+    //         } else {
+    //             Util.log(`Non-fatal error 2: ${err.code}`);
+    //         }
+    //     });
+    // });
 };
 
 exports.connect = function () {
