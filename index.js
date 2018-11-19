@@ -399,15 +399,16 @@ client.on('ready', async () => {
             const allMembers = newGuild.members;
 
             // allMembers.forEach(m => Util.mergeUser(m));
-	        allMembers.forEach(Util.mergeUser);
+            allMembers.forEach(Util.mergeUser);
             Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
             // Music2.initGuild(newGuild);
 
             if (newGuild.id == '477270527535480834') dbGuilds.push(newGuild);
         }),
-    ).then(() => Util.log('> Cached all guild members'))
-    .catch(e => Util.log('> Error while caching guild members:', e));
+    )
+        .then(() => Util.log('> Cached all guild members'))
+        .catch(e => Util.log('> Error while caching guild members:', e));
 
     // Util.log('> Cached all guild members!');
 
@@ -454,22 +455,6 @@ exports.recentMembers2 = [];
 
 const youngAccountTime = 1000 * 60 * 60 * 24 * 6.5;
 
-// exports.checkRaidMember = function (guild, member, joinStamp, defaultChannel, sendRole) {
-//     const createdAt = +member.user.createdAt;
-//     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
-//         if (defaultChannel) {
-//             const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
-//             member.ban().catch(console.error);
-//             defaultChannel.send(`Auto-banned detected raider: ${memberName}`).catch(console.error);
-//             // Admin.addBan(guild, defaultChannel, member, 'System', { reason: 'Raid Auto-Ban' });
-//         } else {
-//             member.ban().catch(console.error);
-//         }
-//     } else if (sendRole && Util.hasRole(member, sendRole)) {
-//         member.removeRole(sendRole).catch(console.error);
-//     }
-// };
-
 function raidBan(member, defaultChannel, banMsg) {
     member
         .ban()
@@ -487,17 +472,30 @@ If you don't get unbanned for some reason (and you aren't trying to raid us), pl
 
 As a reminder, here's our server invite for if you're a real human and will be joining us later, or if you're a raider and want to try again: https://discord.gg/wZRwXyj`;
 
-exports.checkRaidMember = function (member, joinStamp, defaultChannel) {
-    const createdAt = +member.user.createdAt;
-    const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
+// exports.checkRaidMember = function (member, joinStamp, defaultChannel) {
+//     const createdAt = +member.user.createdAt;
+//     const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
 
+//     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
+//         raidBan(member, defaultChannel, `Auto-banned detected raider: ${memberName}`);
+//     } else {
+//         member
+//             .send(raidMsgPossible)
+//             .then(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`))
+//             .catch(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`));
+//     }
+// };
+
+exports.checkRaidMember = function (member, joinStamp, defaultChannel, sendRole) {
+    const createdAt = +member.user.createdAt;
     if (createdAt == null || joinStamp - createdAt < youngAccountTime) {
-        raidBan(member, defaultChannel, `Auto-banned detected raider: ${memberName}`);
-    } else {
-        member
-            .send(raidMsgPossible)
-            .then(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`))
-            .catch(() => raidBan(member, defaultChannel, `Auto-removed possible raider: ${memberName}`));
+        member.ban().catch(console.error);
+        if (defaultChannel) {
+            const memberName = `${member.user.username}#${member.user.discriminator} (${member.id})`;
+            defaultChannel.send(`Auto-banned detected raider: ${memberName}`).catch(console.error);
+        }
+    } else if (sendRole && Util.hasRole(member, sendRole)) {
+        member.removeRole(sendRole).catch(console.error);
     }
 };
 
@@ -525,7 +523,7 @@ exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
     const raidingMembers = exports.recentMembers2.slice();
 
     const joinStamp = +new Date();
-    // const sendRole = Util.getRole('SendMessages', guild);
+    const sendRole = Util.getRole('SendMessages', guild);
 
     if (!defaultChannel) {
         defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
@@ -549,7 +547,7 @@ exports.activateRaidMode = function (guild, defaultChannel, wasAuto) {
 
     for (let i = 0; i < raidingMembers.length; i++) {
         const member = guild.members.get(raidingMembers[i].id);
-        if (member) exports.checkRaidMember(member, joinStamp, defaultChannel);
+        if (member) exports.checkRaidMember(member, joinStamp, defaultChannel, sendRole);
     }
 };
 
@@ -559,7 +557,8 @@ client.on('guildMemberAdd', (member) => {
 
     if (exports.raidMode[guild.id]) {
         const defaultChannel = guild.channels.find(c => c.name === 'general') || guild.channels.find(c => c.name === 'lounge');
-        exports.checkRaidMember(member, joinStamp, defaultChannel);
+        const sendRole = Util.getRole('SendMessages', guild);
+        exports.checkRaidMember(member, joinStamp, defaultChannel, sendRole);
         return;
     }
 
@@ -576,7 +575,7 @@ client.on('guildMemberAdd', (member) => {
     }
 
     if (exports.recentMembers.length >= 6) {
-        exports.activateRaidMode(guild, null, true);
+        // exports.activateRaidMode(guild, null, true);
 
         return;
     }
