@@ -955,28 +955,39 @@ client.on('messageDelete', (msgObj) => {
     Events.emit(guild, 'MessageDelete', member, channel, content);
 
     if (guild != null) {
-        Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => {
-            auditEntry = auditEntry || {};
-            const executor = auditEntry.executor;
-            // const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
+        const attachmentLinks = [];
+        msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
 
-            // if (executor) Util.log(`[MESSAGE_DELETE] Elapsed since audit log: ${sinceAuditLog}`);
+        // Util.getAuditLog(guild, 'MESSAGE_DELETE', { target: author }).then((auditEntry) => { // WILL FIX LATER
+        //     auditEntry = auditEntry || {};
+        //     const executor = auditEntry.executor;
+        //     // const sinceAuditLog = executor ? eventTime - auditEntry.createdTimestamp : 0;
 
-            const attachmentLinks = [];
-            msgObj.attachments.forEach(obj => attachmentLinks.push(obj.url));
+        //     // if (executor) Util.log(`[MESSAGE_DELETE] Elapsed since audit log: ${sinceAuditLog}`);
 
-            const sendLogData = [
-                'Message Deleted',
-                guild,
-                author,
-                { name: 'User', value: Util.resolveMention(author) },
-                executor ? { name: 'Possible Moderator', value: Util.resolveMention(executor) } : {},
-                { name: 'Channel Name', value: channel.toString() },
-                { name: 'Message', value: content },
-                { name: 'Attachments', value: attachmentLinks.join('\n') },
-            ];
-            Util.sendLog(sendLogData, colMessage);
-        });
+        //     const sendLogData = [
+        //         'Message Deleted',
+        //         guild,
+        //         author,
+        //         { name: 'User', value: Util.resolveMention(author) },
+        //         executor ? { name: 'Possible Moderator', value: Util.resolveMention(executor) } : {},
+        //         { name: 'Channel Name', value: channel.toString() },
+        //         { name: 'Message', value: content },
+        //         { name: 'Attachments', value: attachmentLinks.join('\n') },
+        //     ];
+        //     Util.sendLog(sendLogData, colMessage);
+        // });
+
+        const sendLogData = [
+            'Message Deleted',
+            guild,
+            author,
+            { name: 'User', value: Util.resolveMention(author) },
+            { name: 'Channel Name', value: channel.toString() },
+            { name: 'Message', value: content },
+            { name: 'Attachments', value: attachmentLinks.join('\n') },
+        ];
+        Util.sendLog(sendLogData, colMessage);
 
         /* setTimeout(() => {
             guild.fetchAuditLogs({
