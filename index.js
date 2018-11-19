@@ -4,6 +4,9 @@ console.log('\n-STARTING-\n');
 
 const Auth = require('./Auth.js');
 
+// Vaeb is bad with promises
+process.on('unhandledRejection', error => (console.error(error), process.exit(1)));
+
 exports.FileSys = require('fs');
 exports.DateFormat = require('dateformat');
 exports.Request = require('request');
@@ -385,22 +388,26 @@ client.on('ready', async () => {
         setBriefing();
     }
 
+    Util.log('> Start caching guild members');
+
     const dbGuilds = [];
 
     await Promise.all(
         client.guilds.map(async (newGuild) => {
             const allMembers = await newGuild.fetchMembers();
 
-            allMembers.forEach(m => Util.mergeUser(m));
+            // allMembers.forEach(m => Util.mergeUser(m));
+	    newGuild.members.forEach(Util.mergeUser);
             Util.logc('InitProxy', `Added proxies to the ${allMembers.size} members of ${newGuild.name}`);
 
             // Music2.initGuild(newGuild);
 
             if (newGuild.id == '477270527535480834') dbGuilds.push(newGuild);
         }),
-    );
+    ).then(() => Util.log('> Cached all guild members'))
+    .catch(e => Util.log('> Error while caching guild members:', e));
 
-    Util.log('> Cached all guild members!');
+    // Util.log('> Cached all guild members!');
 
     await Data.connectInitial(dbGuilds);
 });

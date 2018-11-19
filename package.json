@@ -25,10 +25,11 @@
   "dependencies": {
     "bufferutil": "^4.0.0",
     "dateformat": "^3.0.3",
-    "discord.js": "git://github.com/hydrabolt/discord.js.git#master",
+    "discord.js": "^11.4.2",
     "erlpack": "github:hammerandchisel/erlpack",
     "google-translate-api": "^2.3.0",
     "libsodium-wrappers": "^0.7.3",
+    "mysql": "^2.16.0",
     "node-opus": "^0.3.0",
     "node-trello": "^1.2.1",
     "request": "^2.81.0",

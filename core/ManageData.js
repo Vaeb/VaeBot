@@ -1,5 +1,7 @@
 const FileSys = index.FileSys;
 
+const botDir = require('path').resolve(`${__dirname}/..`);
+
 const mutesDir = `${botDir}/data/mutes.json`; // Legacy (replaced with MySQL DB)
 const histDir = `${botDir}/data/history.json`; // Legacy (replaced with MySQL DB)
 const autoRoleDir = `${botDir}/data/autoroles.json`; // Legacy (replaced with MySQL DB)

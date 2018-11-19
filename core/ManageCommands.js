@@ -57,7 +57,7 @@ exports.getCommand = function (contentParam) {
 };
 
 exports.initCommands = function () {
-    Util.bulkRequire(`${botDir}/commands/`);
+    Util.bulkRequire(`${__dirname}/../commands/`);
 };
 
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
