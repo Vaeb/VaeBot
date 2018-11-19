@@ -1,45 +1,49 @@
-var commands = Cmds.commands;
+const commands = Cmds.commands;
 
 module.exports = Cmds.addCommand({
-    cmds: [";cmds", ";commands", ";help"],
+    cmds: [';cmds', ';commands', ';help'],
 
     requires: {
         guild: false,
-        loud: true
+        loud: true,
     },
 
-    desc: "Output all commands",
+    desc: 'Output all commands',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        let separator = " OR ";
+        if (channel.name !== 'bot-commands') {
+            Util.print(channel, 'Please use #bot-commands');
+        }
 
-        let botUser = Util.getMemberById(selfId, guild);
+        const separator = ' OR ';
 
-        let sendEmbedFields1 = [];
-        let sendEmbedFields2 = [];
-        let sendEmbedFields3 = [];
-        let sendEmbedFields4 = [];
+        const botUser = Util.getMemberById(selfId, guild);
+
+        const sendEmbedFields1 = [];
+        const sendEmbedFields2 = [];
+        const sendEmbedFields3 = [];
+        const sendEmbedFields4 = [];
 
         for (let i = 0; i < commands.length; i++) {
-            let cmdData = commands[i];
+            const cmdData = commands[i];
 
-            let cmdNames = cmdData[0];
-            let cmdRequires = cmdData[2];
-            let cmdDesc = cmdData[3];
+            const cmdNames = cmdData[0];
+            const cmdRequires = cmdData[2];
+            const cmdDesc = cmdData[3];
 
-            let trimCmds = [];
+            const trimCmds = [];
 
             for (let c = 0; c < cmdNames.length; c++) {
                 trimCmds.push(cmdNames[c].trim());
             }
 
-            let embedField = {name: trimCmds.join(separator), value: cmdDesc, inline: false};
+            const embedField = { name: trimCmds.join(separator), value: cmdDesc, inline: false };
 
             if (cmdRequires.vaeb) {
                 sendEmbedFields1.push(embedField);
@@ -49,9 +53,9 @@ module.exports = Cmds.addCommand({
                 sendEmbedFields3.push(embedField);
             }
         }
-        
-        Util.sendEmbed(channel, "Locked Commands", null, "Locked Commands", null, 0xF44336, sendEmbedFields1);
-        Util.sendEmbed(channel, "Staff-Only Commands", null, "Staff-Only Commands", null, 0x4CAF50, sendEmbedFields2);
-        Util.sendEmbed(channel, "Public Commands", null, "Public Commands", null, 0x2196F3, sendEmbedFields3);
-    }
+
+        Util.sendEmbed(channel, 'Locked Commands', null, 'Locked Commands', null, 0xf44336, sendEmbedFields1);
+        Util.sendEmbed(channel, 'Staff-Only Commands', null, 'Staff-Only Commands', null, 0x4caf50, sendEmbedFields2);
+        Util.sendEmbed(channel, 'Public Commands', null, 'Public Commands', null, 0x2196f3, sendEmbedFields3);
+    },
 });
