@@ -15,8 +15,9 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        guild.fetchBans().then((bans) => { // Collection<Snowflake, User>
-            bans = bans.map(o => o.user);
+        guild.fetchBans().then((bans) => {
+            // Collection<Snowflake, User>
+            // bans = bans.map(o => o.user);
             const target = Util.searchUserPartial(bans, args);
             if (target == null) {
                 Util.commandFailed(channel, speaker, 'User not found');
