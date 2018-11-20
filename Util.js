@@ -587,6 +587,10 @@ exports.pathRequire = function (filePath) {
 };
 
 exports.checkStaff = function (guild, member) {
+    if (guild == null || member == null) {
+        Util.log(`>>> CHECK STAFF ISSUE: ${guild} ${member} <<<`);
+    }
+
     if (member.id === vaebId || member.id === selfId || member.id === guild.ownerID) return true;
     const speakerRoles = member.roles;
     if (!speakerRoles) return false;

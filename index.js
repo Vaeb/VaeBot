@@ -1344,7 +1344,7 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 }
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
-    if (guild && Util.checkStaff(guild, speaker)) return;
+    if (guild && speaker && Util.checkStaff(guild, speaker)) return;
     antiScam(msgObj, msgObj.content.toLowerCase().trim(), speaker, channel, guild, isEdit, true);
 });
 
