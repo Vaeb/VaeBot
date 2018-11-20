@@ -105,7 +105,7 @@ module.exports = Cmds.addCommand({
         if (time === null && success === true) {
             Util.print(
                 channel,
-                `This user was muted for his default mute time (based on his mute history), do you want to change it <@${
+                `This user was muted for their default mute time (based on their mute history), do you want to change it <@${
                     speaker.id
                 }>? If you do, just tell me the new time now...`,
             );
