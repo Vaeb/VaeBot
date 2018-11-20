@@ -4,8 +4,11 @@ console.log('\n-STARTING-\n');
 
 const Auth = require('./Auth.js');
 
-// Vaeb is bad with promises
-process.on('unhandledRejection', error => (console.error(error), process.exit(1)));
+process.on('unhandledRejection', (error) => {
+    console.log('>>> Uncaught Promise Error <<<');
+    console.error(error);
+    process.exit(1);
+});
 
 exports.FileSys = require('fs');
 exports.DateFormat = require('dateformat');
@@ -1719,7 +1722,7 @@ client.on('message', (msgObj) => {
 
         Events.emit(guild, 'MessageCreate', speaker, channel, msgObj, content);
 
-        if (contentLower.includes('👀'.toLowerCase())) Util.print(channel, '👀');
+        // if (contentLower.includes('👀'.toLowerCase())) Util.print(channel, '👀');
     }
 });
 
@@ -1728,7 +1731,3 @@ client.on('message', (msgObj) => {
 Util.log('-CONNECTING-');
 
 client.login(Auth.discordToken);
-
-process.on('unhandledRejection', (err) => {
-    console.error(`Uncaught Promise Error: \n${err.stack}`);
-});
