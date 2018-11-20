@@ -1490,6 +1490,7 @@ client.on('message', (msgObj) => {
         guild != null &&
         author.bot === false &&
         content.length > 0 &&
+        contentLower != '$mafia' &&
         author.id !== guild.owner.id &&
         author.id !== vaebId &&
         !Admin.checkMuted(guild, author.id)
