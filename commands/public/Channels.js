@@ -33,7 +33,7 @@ module.exports = Cmds.addCommand({
                 } | Bitrate: ${vChannel.bitrate}`,
             );
         });
-        outStr.Push('```');
+        outStr.push('```');
         Util.print(channel, outStr.join('\n'));
     },
 });
