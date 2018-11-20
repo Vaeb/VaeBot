@@ -1344,11 +1344,12 @@ function antiScam(msgObj, contentLower, speaker, channel, guild, isEdit, origina
 }
 
 exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
+    if (guild && Util.checkStaff(guild, speaker)) return;
     antiScam(msgObj, msgObj.content.toLowerCase().trim(), speaker, channel, guild, isEdit, true);
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (speaker == null || msgObj == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id) {
+    if (speaker == null || msgObj == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id || Util.checkStaff(guild, speaker)) {
         return false;
     }
 
@@ -1375,7 +1376,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
         // Will only contain: Letters, spaces, forward-slashes and dots
         {
             regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:g *g *|i *o *|m *e *|c *o *m *)\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
-            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|sentinel|rrX8bA)$/gi], // Caps matter but just-in-case
+            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|sentinel|rrX8bA|9PbETKC)$/gi], // Caps matter but just-in-case
         },
     ];
 
