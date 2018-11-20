@@ -316,7 +316,8 @@ function getNextMuteTime(time, muteReason, pastMutes) {
         maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
     }
 
-    return time ? Math.min(time, maxMuteLength) : maxMuteLength;
+    // return time ? Math.min(time, maxMuteLength) : maxMuteLength;
+    return time != null ? time : maxMuteLength;
 }
 
 async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
