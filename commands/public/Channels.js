@@ -1,30 +1,39 @@
 module.exports = Cmds.addCommand({
-    cmds: [";channels"],
+    cmds: [';channels'],
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
-    desc: "Get all guild channels",
+    desc: 'Get all guild channels',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var outStr = [];
-        outStr.push("**Guild text channels:**\n```");
-        Util.getTextChannels(guild).forEach(function(value, index, self) {
-            outStr.push("Channel: " + value.name + " (" + value.id + ") | Topic: " + value.topic + " | Position: " + value.position + " | Created: " + value.createdAt);
+        const outStr = [];
+        outStr.push('**Guild text channels:**\n```');
+        Util.getTextChannels(guild).forEach((tChannel) => {
+            outStr.push(
+                `Channel: ${tChannel.name} (${tChannel.id}) | Topic: ${tChannel.topic} | Position: ${tChannel.position} | Created: ${
+                    tChannel.createdAt
+                }`,
+            );
         });
-        outStr.push("```");
-        outStr.push("**Guild voice channels:**\n```");
-        Util.getVoiceChannels(guild).forEach(function(value, index, self) {
-            outStr.push("Channel: " + value.name + " (" + value.id + ") | Topic: " + value.topic + " | Position: " + value.position + " | Created: " + value.createdAt + " | Bitrate: " + value.bitrate);
+        outStr.push('```');
+        outStr.push('**Guild voice channels:**\n```');
+        Util.getVoiceChannels(guild).forEach((vChannel) => {
+            outStr.push(
+                `Channel: ${vChannel.name} (${vChannel.id}) | Topic: ${vChannel.topic} | Position: ${vChannel.position} | Created: ${
+                    vChannel.createdAt
+                } | Bitrate: ${vChannel.bitrate}`,
+            );
         });
-        Util.print(channel, outStr.join("\n"));
-    }
+        outStr.Push('```');
+        Util.print(channel, outStr.join('\n'));
+    },
 });
