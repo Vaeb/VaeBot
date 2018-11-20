@@ -1121,31 +1121,31 @@ Util.log(contentLower); */
     }
 }); */
 
-exports.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
+// exports.runFuncs.push((msgObj, speaker, channel, guild) => {
+//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || speaker.id === vaebId) return;
 
-    let contentLower = msgObj.content.toLowerCase();
-    contentLower = contentLower.replace(/\s/g, '');
-    contentLower = contentLower.replace(/which/g, 'what');
-    contentLower = contentLower.replace(/great/g, 'best');
-    contentLower = contentLower.replace(/finest/g, 'best');
-    contentLower = contentLower.replace(/perfect/g, 'best');
-    contentLower = contentLower.replace(/top/g, 'best');
-    contentLower = contentLower.replace(/hack/g, 'exploit');
-    contentLower = contentLower.replace(/h\Sx/g, 'exploit');
-    contentLower = contentLower.replace(/le?v\S?l(?:\d|s|f)/g, 'exploit');
+//     let contentLower = msgObj.content.toLowerCase();
+//     contentLower = contentLower.replace(/\s/g, '');
+//     contentLower = contentLower.replace(/which/g, 'what');
+//     contentLower = contentLower.replace(/great/g, 'best');
+//     contentLower = contentLower.replace(/finest/g, 'best');
+//     contentLower = contentLower.replace(/perfect/g, 'best');
+//     contentLower = contentLower.replace(/top/g, 'best');
+//     contentLower = contentLower.replace(/hack/g, 'exploit');
+//     contentLower = contentLower.replace(/h\Sx/g, 'exploit');
+//     contentLower = contentLower.replace(/le?v\S?l(?:\d|s|f)/g, 'exploit');
 
-    let triggered = 0;
+//     let triggered = 0;
 
-    const trigger = [/wh?[au]t/g, /b\S?st/g, /explo\S?t/g];
-    for (let i = 0; i < trigger.length; i++) {
-        if (trigger[i].test(contentLower)) triggered++;
-    }
+//     const trigger = [/wh?[au]t/g, /b\S?st/g, /explo\S?t/g];
+//     for (let i = 0; i < trigger.length; i++) {
+//         if (trigger[i].test(contentLower)) triggered++;
+//     }
 
-    if (triggered == trigger.length) {
-        Admin.addMute(guild, channel, speaker, 'System', { time: 1800000, reason: '[Auto-Mute] Asking stupid questions' });
-    }
-});
+//     if (triggered == trigger.length) {
+//         Admin.addMute(guild, channel, speaker, 'System', { time: 1800000, reason: '[Auto-Mute] Asking stupid questions' });
+//     }
+// });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;

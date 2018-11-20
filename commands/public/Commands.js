@@ -17,7 +17,7 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (channel.name !== 'bot-commands') {
+        if (!/\bbot\b|commands/i.test(channel.name)) {
             Util.print(channel, 'Please use #bot-commands');
         }
 
