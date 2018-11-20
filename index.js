@@ -1533,8 +1533,7 @@ client.on('message', (msgObj) => {
                     spamMessages.push({ msg: content, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
                     Util.print(
                         channel,
-                        speaker.toString(),
-                        `Warning: If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`,
+                        `**Warning:** If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`,
                     ); // Warn the user
                     // Maybe put all the users who've spammed the message on a warning?
                 }
