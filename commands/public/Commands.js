@@ -19,6 +19,7 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         if (!/\bbot\b|commands/i.test(channel.name)) {
             Util.print(channel, 'Please use #bot-commands');
+            return;
         }
 
         const separator = ' OR ';
