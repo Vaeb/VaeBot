@@ -1134,6 +1134,8 @@ exports.getAvatar = function (userResolvable, outStr) {
 };
 
 exports.isLoud = function (channel) {
+    const guild = channel.guild;
+
     const botRegex = /\bbot\b|commands/i;
     const botRegex2 = /\bbot\b/i;
     const botRegex3 = /commands/i;
