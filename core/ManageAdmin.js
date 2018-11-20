@@ -306,6 +306,11 @@ function notHigherRank(moderator, member, notEqual) {
     return !higherRank(moderator, member, notEqual);
 }
 
+function getMinTime(time, maxTime) {
+    // return time ? Math.min(time, maxTime) : maxTime;
+    return time != null ? time : maxTime;
+}
+
 function getNextMuteTime(time, muteReason, pastMutes) {
     if (!muteReason) muteReason = '';
 
@@ -316,8 +321,7 @@ function getNextMuteTime(time, muteReason, pastMutes) {
         maxMuteLength = Math.max(maxMuteLength, exports.badOffenses[maxMuteLengthIndex].time);
     }
 
-    // return time ? Math.min(time, maxMuteLength) : maxMuteLength;
-    return time != null ? time : maxMuteLength;
+    return getMinTime(time, maxMuteLength);
 }
 
 async function getNextMuteTimeFromUser(guild, userResolvable, time, muteReason) {
@@ -616,10 +620,10 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
 
     if (!muteLengthNew) {
         // If no new mute time and current mute time was default then set to max
-        muteLengthNew = muteLengthOld == maxMuteLengthBase ? maxMuteLength : Math.min(muteLengthOld, maxMuteLength);
+        muteLengthNew = muteLengthOld == maxMuteLengthBase ? maxMuteLength : getMinTime(muteLengthOld, maxMuteLength);
     } else {
         // Compare with max
-        muteLengthNew = Math.min(muteLengthNew, maxMuteLength);
+        muteLengthNew = getMinTime(muteLengthNew, maxMuteLength);
     }
 
     const endTickNew = startTick + muteLengthNew;
@@ -936,7 +940,7 @@ exports.addBan = async function (guild, channel, userResolvable, moderatorResolv
 
     if (banTemp) {
         const maxBanLength = exports.dayMilli * 2 * totalOffenses;
-        banLength = banLength ? Math.min(banLength, maxBanLength) : maxBanLength;
+        banLength = banLength ? getMinTime(banLength, maxBanLength) : maxBanLength;
     } else {
         banLength = 3155692608000; // 100 years
     }
