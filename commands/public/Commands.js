@@ -17,7 +17,7 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        const botRegex = /\bbot\b|commands/i.test(channel.name);
+        const botRegex = /\bbot\b|commands/i;
 
         if (!botRegex.test(channel.name)) {
             const botChannel = guild.channels.find(c => botRegex.test(c.name));
