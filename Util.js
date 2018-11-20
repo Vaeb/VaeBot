@@ -1133,6 +1133,30 @@ exports.getAvatar = function (userResolvable, outStr) {
     return (outStr === true ? 'null' : null);
 };
 
+exports.isLoud = function (channel) {
+    const botRegex = /\bbot\b|commands/i;
+    const botRegex2 = /\bbot\b/i;
+    const botRegex3 = /commands/i;
+
+    if (!botRegex.test(channel.name)) {
+        let botChannel = guild.channels.find(c => botRegex2.test(c.name) && botRegex3.test(c.name));
+        if (!botChannel) botChannel = guild.channels.find(c => botRegex.test(c.name));
+
+        if (botChannel) {
+            exports.print(channel, `Please use ${botChannel}`);
+        } else {
+            exports.print(
+                channel,
+                'Please get the server staff to create a bot commands channel (or to make sure any existing one has "bot" or "commands" in the name)',
+            );
+        }
+
+        return true;
+    }
+
+    return false;
+};
+
 exports.getDateString = function (d) {
     if (d == null) d = new Date();
     const result = `${DateFormat(d, 'ddd, mmm dS yyyy @ h:MM TT')} GMT`;
