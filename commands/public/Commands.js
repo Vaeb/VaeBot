@@ -17,8 +17,20 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (!/\bbot\b|commands/i.test(channel.name)) {
-            Util.print(channel, 'Please use #bot-commands');
+        const botRegex = /\bbot\b|commands/i.test(channel.name);
+
+        if (!botRegex.test(channel.name)) {
+            const botChannel = guild.channels.find(c => botRegex.test(c.name));
+
+            if (botChannel) {
+                Util.print(channel, `Please use ${botChannel}`);
+            } else {
+                Util.print(
+                    channel,
+                    'Please get the server staff to create a bot commands channel (or to make sure any existing one has "bot" or "commands" in the name)',
+                );
+            }
+
             return;
         }
 
