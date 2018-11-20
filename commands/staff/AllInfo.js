@@ -19,7 +19,7 @@ module.exports = Cmds.addCommand({
         outStr.push(`Name: ${guild.name}`);
         outStr.push(`ID: ${guild.id}`);
         outStr.push(`Owner: ${Util.getName(guild.owner)} (${guild.ownerID})`);
-        outStr.push(`Icon: ${guild.iconURL('png')}`);
+        outStr.push(`Icon: ${guild.iconURL}`);
         outStr.push(`AFK timeout: ${guild.afkTimeout} seconds`);
         outStr.push(`Region: ${guild.region}`);
         outStr.push(`Member count: ${guild.memberCount}`);
@@ -29,17 +29,27 @@ module.exports = Cmds.addCommand({
         outStr.push('```');
         outStr.push('**Guild Text Channels**\n```');
         Util.getTextChannels(guild).forEach((value) => {
-            outStr.push(`Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${value.createdAt}`);
+            outStr.push(
+                `Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${value.createdAt}`,
+            );
         });
         outStr.push('```');
         outStr.push('**Guild Voice Channels**\n```');
         Util.getVoiceChannels(guild).forEach((value) => {
-            outStr.push(`Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${value.createdAt} | Bitrate: ${value.bitrate}`);
+            outStr.push(
+                `Channel: ${value.name} (${value.id}) | Topic: ${value.topic} | Position: ${value.position} | Created: ${
+                    value.createdAt
+                } | Bitrate: ${value.bitrate}`,
+            );
         });
         outStr.push('```');
         outStr.push('**Guild Roles**\n```');
         guild.roles.forEach((value) => {
-            outStr.push(`Role: ${value.name} (${value.id}) | Position: ${value.position} | Mentionable: ${value.mentionable} | Color: ${value.color}`);
+            outStr.push(
+                `Role: ${value.name} (${value.id}) | Position: ${value.position} | Mentionable: ${value.mentionable} | Color: ${
+                    value.color
+                }`,
+            );
         });
         outStr.push('```');
         outStr.push('**Guild Permissions**\n```');
