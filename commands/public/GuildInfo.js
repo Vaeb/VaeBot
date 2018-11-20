@@ -30,7 +30,7 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({ name: 'Default Channel', value: Util.capitalize(guild.defaultChannel.name) });
         sendEmbedFields.push({ name: 'AFK Timeout', value: `${guild.afkTimeout} seconds` });
         sendEmbedFields.push({ name: 'Created', value: createdStr });
-        sendEmbedFields.push({ name: 'Icon', value: guild.iconURL('png') });
+        sendEmbedFields.push({ name: 'Icon', value: guild.iconURL });
 
         sendEmbedFields.sort((a, b) => (String(a.name) + String(a.value)).length - (String(b.name) + String(b.value)).length);
 
