@@ -418,7 +418,32 @@ function getURLChecker() {
 
 exports.checkURLs = getURLChecker();
 
-exports.initRoles = async function (sendRole, guild) {
+function forceAddRolesInner(guild, sendRole, iterNum = 1) {
+    let didError = false;
+
+    guild.members.forEach((member) => {
+        if (!exports.hasRole(member, sendRole)) {
+            member.addRole(sendRole)
+                .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
+                .catch((error) => {
+                    didError = true;
+                    Util.log(`[E_InitRoles] addRole: ${error}`);
+                });
+        }
+    });
+
+    if (!didError || iterNum >= 10) return;
+
+    setTimeout(() => {
+        forceAddRolesInner(guild, sendRole, iterNum + 1);
+    }, 1000 * 4);
+}
+
+function forceAddRoles(guild, sendRole) {
+    forceAddRolesInner(guild, sendRole);
+}
+
+exports.initRoles = async function (sendRole, guild, guildChannel) {
     try {
         await Promise.all(guild.roles.map(async (role) => {
             if (role.name !== 'SendMessages' && role.name.toLowerCase() !== 'staff' && role.hasPermission('SEND_MESSAGES', null, false)) {
@@ -453,17 +478,15 @@ exports.initRoles = async function (sendRole, guild) {
                 console.log('[RepPermOverwrites]', err);
             });
         }));
+
+        if (guildChannel) {
+            Util.sendDescEmbed(guildChannel, 'Setup VaeBot', 'Server roles and channels have been setup appropriately', null, null, null);
+        }
     } catch (err) {
         console.log('InitRolesInner Error:', err);
     }
 
-    guild.members.forEach((member) => {
-        if (!exports.hasRole(member, sendRole)) {
-            member.addRole(sendRole)
-                .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
-                .catch(error => Util.log(`[E_InitRoles] addRole: ${error}`));
-        }
-    });
+    forceAddRoles(guild, sendRole);
 };
 
 exports.arrayToObj = function (arr) {

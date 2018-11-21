@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';init roles', ';initroles'],
+    cmds: [';setup', ';init roles', ';initroles'],
 
     requires: {
         guild: true,
@@ -18,7 +18,7 @@ module.exports = Cmds.addCommand({
         let sendRole = Util.getRole('SendMessages', guild);
 
         if (sendRole != null) {
-            Util.initRoles(sendRole, guild);
+            Util.initRoles(sendRole, guild, channel);
             return;
         }
 
@@ -33,7 +33,7 @@ module.exports = Cmds.addCommand({
                 mentionable: false,
             });
 
-            Util.initRoles(sendRole, guild);
+            Util.initRoles(sendRole, guild, channel);
         } catch (err) {
             console.log('InitRolesCmd Error:', err);
         }
