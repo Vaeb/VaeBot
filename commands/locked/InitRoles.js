@@ -1,36 +1,41 @@
 module.exports = Cmds.addCommand({
-    cmds: [";init roles"],
+    cmds: [';init roles', ';initroles'],
 
     requires: {
         guild: true,
-        loud: false
+        loud: false,
     },
 
-    desc: "Assign all SendMessages roles",
+    desc: 'Assign all SendMessages roles',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
-    func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var sendRole = Util.getRole("SendMessages", guild);
+    func: async (cmd, args, msgObj, speaker, channel, guild) => {
+        let sendRole = Util.getRole('SendMessages', guild);
 
         if (sendRole != null) {
             Util.initRoles(sendRole, guild);
-        } else {
-            var newRolePerms = ["CHANGE_NICKNAME", "EMBED_LINKS", "SEND_MESSAGES", "READ_MESSAGES", "READ_MESSAGE_HISTORY", "ADD_REACTIONS", "USE_EXTERNAL_EMOJIS", "CONNECT", "SPEAK", "USE_VAD"];
-            guild.createRole({
-                name: "SendMessages",
-                hoist: false,
-                permissions: newRolePerms,
-                position: 1
-            })
-            .then(role => { 
-                Util.initRoles(role, guild);
-            })
-            .catch(error => Util.log("[E_InitRolesCreate] " + error));
+            return;
         }
-    }
+
+        const newRolePerms = ['CHANGE_NICKNAME', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'READ_MESSAGE_HISTORY', 'CONNECT', 'SPEAK', 'USE_VAD'];
+
+        try {
+            sendRole = await guild.createRole({
+                name: 'SendMessages',
+                hoist: false,
+                position: 1,
+                permissions: newRolePerms,
+                mentionable: false,
+            });
+
+            Util.initRoles(sendRole, guild);
+        } catch (err) {
+            console.log('InitRolesCmd Error:', err);
+        }
+    },
 });

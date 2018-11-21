@@ -76,7 +76,7 @@ exports.rolePermissions = [
     'MANAGE_CHANNELS',
     'MANAGE_GUILD',
     'ADD_REACTIONS', // add reactions to messages
-    'READ_MESSAGES',
+    'VIEW_CHANNEL',
     'SEND_MESSAGES',
     'SEND_TTS_MESSAGES',
     'MANAGE_MESSAGES',
@@ -107,7 +107,7 @@ exports.rolePermissionsObj = {
     MANAGE_CHANNELS: true,
     MANAGE_GUILD: true,
     ADD_REACTIONS: true, // add reactions to messages
-    READ_MESSAGES: true,
+    VIEW_CHANNEL: true,
     SEND_MESSAGES: true,
     SEND_TTS_MESSAGES: true,
     MANAGE_MESSAGES: true,
@@ -133,7 +133,7 @@ exports.textChannelPermissions = [
     'CREATE_INSTANT_INVITE',
     'MANAGE_CHANNEL',
     'ADD_REACTIONS', // add reactions to messages
-    'READ_MESSAGES',
+    'VIEW_CHANNEL',
     'SEND_MESSAGES',
     'SEND_TTS_MESSAGES',
     'MANAGE_MESSAGES',
@@ -148,7 +148,7 @@ exports.textChannelPermissions = [
 
 exports.textChannelPermissionsObj = {
     ADD_REACTIONS: true, // add reactions to messages
-    READ_MESSAGES: true,
+    VIEW_CHANNEL: true,
     SEND_MESSAGES: true,
     SEND_TTS_MESSAGES: true,
     MANAGE_MESSAGES: true,
@@ -219,7 +219,7 @@ exports.permissionsOrder = {
     CREATE_INSTANT_INVITE: 3,
     SEND_MESSAGES: 2,
     READ_MESSAGE_HISTORY: 1,
-    READ_MESSAGES: 0,
+    VIEW_CHANNEL: 0,
 };
 
 exports.permRating = [
@@ -418,10 +418,46 @@ function getURLChecker() {
 
 exports.checkURLs = getURLChecker();
 
-exports.initRoles = function (sendRole, guild) {
-    const members = guild.members;
+exports.initRoles = async function (sendRole, guild) {
+    try {
+        await Promise.all(guild.roles.map(async (role) => {
+            if (role.name !== 'SendMessages' && role.name.toLowerCase() !== 'staff' && role.hasPermission('SEND_MESSAGES', null, false)) {
+                try {
+                    await role.setPermissions(role.permissions & (~2048));
+                } catch (err) {
+                    console.log('[RolePermRem]', err);
+                }
+            }
+        }));
 
-    members.forEach((member) => {
+        await Promise.all(guild.channels.map(async (channel) => {
+            const deniesMessages = channel.permissionOverwrites.some(channelPerm => channelPerm.type === 'role' && channelPerm.denied.toArray(false).includes('SEND_MESSAGES'));
+
+            if (deniesMessages) return;
+
+            const newOverwrites = channel.permissionOverwrites.map((channelPerm) => {
+                // const permObj = channelPerm.type === 'role' ? guild.roles.get(channelPerm.id) : guild.members.get(channelPerm.id);
+
+                const allowed = channelPerm.allowed.toArray(false).filter(perm => perm !== 'SEND_MESSAGES');
+                const denied = channelPerm.denied.toArray(false).filter(perm => perm !== 'SEND_MESSAGES');
+
+                return {
+                    allowed,
+                    denied,
+                    id: channelPerm.id,
+                    type: channelPerm.type,
+                };
+            });
+
+            channel.replacePermissionOverwrites({ overwrites: newOverwrites }).catch((err) => {
+                console.log('[RepPermOverwrites]', err);
+            });
+        }));
+    } catch (err) {
+        console.log('InitRolesInner Error:', err);
+    }
+
+    guild.members.forEach((member) => {
         if (!exports.hasRole(member, sendRole)) {
             member.addRole(sendRole)
                 .then(() => Util.log(`Assigned role to ${exports.getName(member)}`))
