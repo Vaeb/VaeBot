@@ -578,7 +578,7 @@ client.on('guildMemberAdd', (member) => {
     }
 
     if (exports.recentMembers.length >= 8) {
-        exports.activateRaidMode(guild, null, true);
+        // exports.activateRaidMode(guild, null, true);
 
         return;
     }
