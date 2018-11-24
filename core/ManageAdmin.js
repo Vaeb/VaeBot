@@ -451,7 +451,7 @@ exports.addMute = async function (guild, channel, userResolvable, moderatorResol
 
     Util.logc('Admin1', `Resolved user as ${resolvedUser.id}`);
 
-    if (resolvedUser.member && Util.checkStaff(guild, resolvedUser.member)) {
+    if (guild.name === 'Sentinel' && resolvedUser.member && Util.checkStaff(guild, resolvedUser.member)) {
         if (resolvedModerator.id != selfId) {
             return Util.commandFailed(channel, moderatorResolvable, 'AddMute', 'Cannot mute staff in this server');
         }
