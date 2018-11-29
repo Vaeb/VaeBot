@@ -1383,7 +1383,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
         // Will only contain: Letters, spaces, forward-slashes and dots
         {
             regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:g *g *|i *o *|m *e *|c *o *m *)\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
-            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|sentinel|rrX8bA|9PbETKC)$/gi], // Caps matter but just-in-case
+            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|rrX8bA|9PbETKC)$/gi], // Caps matter but just-in-case
         },
     ];
 
