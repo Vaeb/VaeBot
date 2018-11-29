@@ -1349,7 +1349,14 @@ exports.runFuncs.push((msgObj, speaker, channel, guild, isEdit) => {
 });
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (speaker == null || msgObj == null || speaker.user.bot === true || speaker.id === vaebId || speaker.id === guild.owner.id || Util.checkStaff(guild, speaker)) {
+    if (
+        speaker == null ||
+        msgObj == null ||
+        speaker.user.bot === true ||
+        speaker.id === vaebId ||
+        speaker.id === guild.owner.id ||
+        Util.checkStaff(guild, speaker)
+    ) {
         return false;
     }
 
@@ -1489,6 +1496,7 @@ client.on('message', (msgObj) => {
 
     if (
         guild != null &&
+        channel.name.toLowerCase() !== 'bot-commands' &&
         author.bot === false &&
         content.length > 0 &&
         contentLower != '$mafia' &&
