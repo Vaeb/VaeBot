@@ -1404,7 +1404,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 
     if (triggered) {
-        // msgObj.delete().catch(console.error);
+        msgObj.delete().catch(console.error);
         Admin.addMute(guild, channel, speaker, 'System', { reason: '[Auto-Mute] Advertising Discord server' });
         return true;
     }
