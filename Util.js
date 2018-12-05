@@ -446,7 +446,7 @@ function forceAddRoles(guild, sendRole) {
 exports.initRoles = async function (sendRole, guild, guildChannel) {
     try {
         await Promise.all(guild.roles.map(async (role) => {
-            if (role.name !== 'SendMessages' && role.name.toLowerCase() !== 'staff' && role.hasPermission('SEND_MESSAGES', null, false)) {
+            if (role.name !== 'SendMessages' && role.hasPermission('SEND_MESSAGES', null, false)) {
                 try {
                     await role.setPermissions(role.permissions & (~2048));
                 } catch (err) {
@@ -654,7 +654,7 @@ exports.checkStaff = function (guild, member) {
     const speakerRoles = member.roles;
     if (!speakerRoles) return false;
     // if (exports.getPermRating(guild, member) >= 30) return true;
-    return speakerRoles.some(role => role.name === 'Staff' || role.name === 'Owner/Seller' || role.name === 'Bot Admin'
+    return speakerRoles.some(role => /\bstaff\b/i.test(role.name) || role.name === 'Owner/Seller' || role.name === 'Bot Admin'
         || role.name === 'Moderator' || role.name.includes('Head Mod') || role.name === 'Trial Moderator' || /OP$/.test(role.name));
 };
 
