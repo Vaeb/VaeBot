@@ -17,7 +17,7 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        if (Util.isLoud(channel)) return;
+        if (Util.isLoud(channel) && !Util.checkStaff(guild, speaker)) return;
 
         const separator = ' OR ';
 
@@ -55,7 +55,7 @@ module.exports = Cmds.addCommand({
         }
 
         Util.sendEmbed(channel, 'Locked Commands', null, 'Locked Commands', null, 0xf44336, sendEmbedFields1);
-        Util.sendEmbed(channel, 'Administrator Commands', null, 'Administrator Commands', null, 0xf44336, sendEmbedFields4);
+        Util.sendEmbed(channel, 'Administrator Commands', null, 'Administrator Commands', null, 0xffeb3b, sendEmbedFields4);
         Util.sendEmbed(channel, 'Staff Commands', null, 'Staff Commands', null, 0x4caf50, sendEmbedFields2);
         Util.sendEmbed(channel, 'Public Commands', null, 'Public Commands', null, 0x2196f3, sendEmbedFields3);
     },
