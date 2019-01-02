@@ -87,6 +87,16 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                             colGreen,
                             null,
                         );
+                    } else if (cmdRequires.administrator && (guild == null || !speaker.hasPermission('ADMINISTRATOR'))) {
+                        Util.sendEmbed(
+                            channel,
+                            'Restricted',
+                            'This command can only be used by Administrators',
+                            Util.makeEmbedFooter(speaker),
+                            null,
+                            colGreen,
+                            null,
+                        );
                     } else if (cmdRequires.vaeb && authorId !== vaebId) {
                         Util.sendEmbed(
                             channel,

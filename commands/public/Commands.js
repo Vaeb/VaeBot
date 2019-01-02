@@ -45,6 +45,8 @@ module.exports = Cmds.addCommand({
 
             if (cmdRequires.vaeb) {
                 sendEmbedFields1.push(embedField);
+            } else if (cmdRequires.administrator) {
+                sendEmbedFields4.push(embedField);
             } else if (cmdRequires.staff) {
                 sendEmbedFields2.push(embedField);
             } else {
@@ -53,7 +55,8 @@ module.exports = Cmds.addCommand({
         }
 
         Util.sendEmbed(channel, 'Locked Commands', null, 'Locked Commands', null, 0xf44336, sendEmbedFields1);
-        Util.sendEmbed(channel, 'Staff-Only Commands', null, 'Staff-Only Commands', null, 0x4caf50, sendEmbedFields2);
+        Util.sendEmbed(channel, 'Administrator Commands', null, 'Administrator Commands', null, 0xf44336, sendEmbedFields4);
+        Util.sendEmbed(channel, 'Staff Commands', null, 'Staff Commands', null, 0x4caf50, sendEmbedFields2);
         Util.sendEmbed(channel, 'Public Commands', null, 'Public Commands', null, 0x2196f3, sendEmbedFields3);
     },
 });

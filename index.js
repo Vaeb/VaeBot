@@ -104,6 +104,7 @@ exports.dailyBans = [];
 
 exports.commandTypes = {
     locked: 'vaeb',
+    administrator: 'administrator',
     staff: 'staff',
     public: 'null',
 };

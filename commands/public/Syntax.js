@@ -1,56 +1,66 @@
-var commands = Cmds.commands;
+const commands = Cmds.commands;
 
 module.exports = Cmds.addCommand({
-    cmds: [";syntax ", ";help ", ";cmd "],
+    cmds: [';syntax ', ';help ', ';cmd '],
 
     requires: {
         guild: false,
-        loud: true
+        loud: true,
     },
 
-    desc: "Display command information",
+    desc: 'Display command information',
 
-    args: "",
+    args: '',
 
-    example: "",
+    example: '',
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        var hasFound = false;
-        
-        for (var i = 0; i < commands.length; i++) {
-            var sendEmbedFields = [];
-            var cmdData = commands[i];
+        let hasFound = false;
 
-            var fullCmds = cmdData[0];
-            var trimCmds = [];
-            var isMatch = false;
-            
-            for (var c = 0; c < fullCmds.length; c++) {
-                var nowTrim = fullCmds[c].trim();
+        for (let i = 0; i < commands.length; i++) {
+            const sendEmbedFields = [];
+            const cmdData = commands[i];
+
+            const fullCmds = cmdData[0];
+            const trimCmds = [];
+            let isMatch = false;
+
+            for (let c = 0; c < fullCmds.length; c++) {
+                const nowTrim = fullCmds[c].trim();
                 trimCmds.push(nowTrim);
-                if (nowTrim == args || (nowTrim.substr(0, 1) == ";" && nowTrim.substring(1) == args)) {
+                if (nowTrim == args || (nowTrim.substr(0, 1) == ';' && nowTrim.substring(1) == args)) {
                     isMatch = true;
                 }
             }
 
             if (!isMatch) continue;
 
-            var cmdRequires = cmdData[2];
-            var cmdDesc = cmdData[3];
-            var cmdSyntax = cmdData[4];
-            var cmdExample = cmdData[5];
+            const cmdRequires = cmdData[2];
+            const cmdDesc = cmdData[3];
+            const cmdSyntax = cmdData[4];
+            const cmdExample = cmdData[5];
 
-            var cmdType = cmdRequires.staff ? "Staff" : cmdRequires.vaeb ? "Vaeb" : "Public";
+            let cmdType;
 
-            sendEmbedFields.push({name: "Commands", value: trimCmds.join(" | "), inline: false});
-            sendEmbedFields.push({name: "Permission Level", value: cmdType, inline: false});
-            sendEmbedFields.push({name: "Description", value: cmdDesc, inline: false});
-            sendEmbedFields.push({name: "Syntax", value: trimCmds[0] + " " + cmdSyntax, inline: false});
-            sendEmbedFields.push({name: "Example", value: trimCmds[0] + " " + cmdExample, inline: false});
+            if (cmdRequires.administrator) {
+                cmdType = 'Administrator';
+            } else if (cmdRequires.staff) {
+                cmdType = 'Staff';
+            } else if (cmdRequires.vaeb) {
+                cmdType = 'Vaeb';
+            } else {
+                cmdType = 'Public';
+            }
 
-            Util.sendEmbed(channel, "Command Syntax", null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
+            sendEmbedFields.push({ name: 'Commands', value: trimCmds.join(' | '), inline: false });
+            sendEmbedFields.push({ name: 'Permission Level', value: cmdType, inline: false });
+            sendEmbedFields.push({ name: 'Description', value: cmdDesc, inline: false });
+            sendEmbedFields.push({ name: 'Syntax', value: `${trimCmds[0]} ${cmdSyntax}`, inline: false });
+            sendEmbedFields.push({ name: 'Example', value: `${trimCmds[0]} ${cmdExample}`, inline: false });
+
+            Util.sendEmbed(channel, 'Command Syntax', null, Util.makeEmbedFooter(speaker), null, colGreen, sendEmbedFields);
 
             hasFound = true;
 
@@ -58,7 +68,7 @@ module.exports = Cmds.addCommand({
         }
 
         if (!hasFound) {
-            Util.sendDescEmbed(channel, "Command Syntax", "Command not found", Util.makeEmbedFooter(speaker), null, colGreen);
+            Util.sendDescEmbed(channel, 'Command Syntax', 'Command not found', Util.makeEmbedFooter(speaker), null, colGreen);
         }
-    }
+    },
 });
