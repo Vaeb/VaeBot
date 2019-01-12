@@ -15,7 +15,7 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        console.log(args);
+        console.log(args, args[0]);
 
         if (!args[0] || !/on|true|off|false/i.test(args[0])) return;
 
