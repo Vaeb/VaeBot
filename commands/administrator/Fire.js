@@ -15,11 +15,9 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        console.log(args, args[0]);
+        if (!args || !/on|true|off|false/i.test(args)) return;
 
-        if (!args[0] || !/on|true|off|false/i.test(args[0])) return;
-
-        const isOn = /on|true/i.test(args[0]);
+        const isOn = /on|true/i.test(args);
 
         if (isOn) {
             guild.channels.forEach((c) => {
