@@ -7,7 +7,8 @@ let timeoutId = 0;
 
 const muteCacheActive = {};
 
-exports.defaultMuteLength = 1800000;
+exports.defaultMuteLength = 1000 * 60 * 30;
+exports.defaultMuteLength2 = 1000 * 60 * 60 * 24;
 exports.dayMilli = 86400000;
 
 exports.badOffenses = [
@@ -311,10 +312,16 @@ function getMinTime(time, maxTime) {
     return time != null ? time : maxTime;
 }
 
+function getDefaultMuteTime(pastMutesCount) {
+    return pastMutesCount < 7
+        ? exports.defaultMuteLength * 2 ** pastMutesCount
+        : exports.defaultMuteLength2 * 3 + exports.defaultMuteLength2 * (exports.pastMutesCount - 7) * 2;
+}
+
 function getNextMuteTime(time, muteReason, pastMutes) {
     if (!muteReason) muteReason = '';
 
-    let maxMuteLength = exports.defaultMuteLength * 2 ** pastMutes;
+    let maxMuteLength = getDefaultMuteTime(pastMutes);
     const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReason) || [])[1]);
 
     if (!isNaN(maxMuteLengthIndex) && maxMuteLengthIndex < exports.badOffenses.length) {
@@ -615,7 +622,7 @@ exports.changeMute = async function (guild, channel, userResolvable, moderatorRe
     const muteReasonNew = newData.reason || muteReasonOld;
     let muteLengthNew = newData.time;
 
-    const maxMuteLengthBase = exports.defaultMuteLength * 2 ** pastMutes;
+    const maxMuteLengthBase = getDefaultMuteTime(pastMutes);
     let maxMuteLength = maxMuteLengthBase;
     const maxMuteLengthIndex = Number((/^\[(\d+)\]/.exec(muteReasonNew) || [])[1]);
 
