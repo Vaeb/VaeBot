@@ -315,7 +315,7 @@ function getMinTime(time, maxTime) {
 function getDefaultMuteTime(pastMutesCount) {
     return pastMutesCount < 7
         ? exports.defaultMuteLength * 2 ** pastMutesCount
-        : exports.defaultMuteLength2 * 3 + exports.defaultMuteLength2 * (exports.pastMutesCount - 7) * 2;
+        : exports.defaultMuteLength2 * 3 + exports.defaultMuteLength2 * (pastMutesCount - 7) * 2;
 }
 
 function getNextMuteTime(time, muteReason, pastMutes) {
