@@ -452,7 +452,7 @@ client.on('guildMemberRemove', (member) => {
     Util.sendLog(sendLogData, colUser);
 });
 
-exports.newMemberTime = 1000 * 4.5;
+exports.newMemberTime = 1000 * 16;
 exports.newMemberTime2 = 1000 * 60 * 1;
 exports.recentMembers = [];
 exports.recentMembers2 = [];
@@ -578,7 +578,7 @@ client.on('guildMemberAdd', (member) => {
         exports.recentMembers2 = exports.recentMembers2.filter(memberData => joinStamp - memberData.joinStamp < exports.newMemberTime2);
     }
 
-    if (exports.recentMembers.length >= 7) {
+    if (exports.recentMembers.length >= (joinStamp - guild.createdTimestamp > 1000 * 60 * 60 * 24 ? 7 : 20)) {
         exports.activateRaidMode(guild, null, true);
 
         return;
