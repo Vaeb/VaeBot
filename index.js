@@ -1500,7 +1500,7 @@ client.on('message', (msgObj) => {
         channel.name.toLowerCase() !== 'bot-commands' &&
         author.bot === false &&
         content.length > 0 &&
-        contentLower != '$mafia' &&
+        !contentLower.startsWith('$') &&
         author.id !== guild.owner.id &&
         author.id !== vaebId &&
         !Admin.checkMuted(guild, author.id)
