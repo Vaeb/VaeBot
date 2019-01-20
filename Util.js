@@ -2845,10 +2845,20 @@ exports.similarStringsStrict = function (str1, str2) {
     str1 = str1.toLowerCase().trim();
     str2 = str2.toLowerCase().trim();
 
-    if ((str1.length < 4 || str2.length < 4) && (!(str1.length == 3 || str2.length == 3) || (str1.length <= 3 && str2.length <= 3))) return str1 == str2;
+    const minLen = Math.min(str1.length, str2.length);
+    const maxLen = Math.max(str1.length, str2.length);
+
+    if (minLen < 9 && (str1.match(/\s/g) || []).length < 2 && (str2.match(/\s/g) || []).length < 2) return false;
+
+    // if ((minLen < 4) && (minLen != 3 || maxLen < 4)) return str1 == str2;
 
     // Get number of allowed alterations between strings to be classed as similar
-    const maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
+    let maxChanges = maxLen / 3;
+    maxChanges = Math.max(maxChanges, Math.abs(str2.length - str1.length));
+    maxChanges = Math.min(maxChanges, 6);
+    maxChanges = Math.floor(maxChanges);
+
+    // const maxChanges = Math.floor(Math.min(Math.max(Math.max(str1.length, str2.length) / 3, Math.abs(str2.length - str1.length)), 6));
 
     // Check if the original strings are similar (have a number of alterations between them [levenshtein distance] less/equal to maxChanges)
     if (exports.getChanges(str1, str2) <= maxChanges) return true;
