@@ -2845,15 +2845,15 @@ exports.similarStringsStrict = function (str1, str2) {
     str1 = str1.toLowerCase().trim();
     str2 = str2.toLowerCase().trim();
 
-    const minLen = Math.min(str1.length, str2.length);
-    const maxLen = Math.max(str1.length, str2.length);
+    const minStr = str1.length < str2.length ? str1 : str2;
+    const maxStr = str1.length < str2.length ? str2 : str1;
 
-    if (minLen < 9 && (str1.match(/\s/g) || []).length < 2 && (str2.match(/\s/g) || []).length < 2) return false;
+    if (minStr.replace(/[|. ,/#!$%^&*;:{}=\-_`~()]/g, '').length < 10 && (str1.match(/\s/g) || []).length < 2 && (str2.match(/\s/g) || []).length < 2) return false;
 
     // if ((minLen < 4) && (minLen != 3 || maxLen < 4)) return str1 == str2;
 
     // Get number of allowed alterations between strings to be classed as similar
-    let maxChanges = maxLen / 3;
+    let maxChanges = maxStr.length / 3;
     maxChanges = Math.max(maxChanges, Math.abs(str2.length - str1.length));
     maxChanges = Math.min(maxChanges, 6);
     maxChanges = Math.floor(maxChanges);
