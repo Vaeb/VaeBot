@@ -1179,6 +1179,43 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
+index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫'];
+
+index.bannedLetters.push('ᖴ');
+
+/*
+
+index.runFuncs.push((msgObj, speaker, channel, guild) => {
+    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
+
+    const contentLower = msgObj.content.toLowerCase();
+
+    for (let i = 0; i < index.bannedLetters.length; i++) {
+        if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
+            msgObj.delete()
+                .then(() => {
+                    Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
+                })
+                .catch(console.error);
+            break;
+        }
+    }
+});
+
+client.on('guildMemberUpdate', (oldMember, member) => {
+    if (member.guild.id !== '477270527535480834' || member.nickname == null) return;
+
+    const nickLower = member.nickname.toLowerCase()
+
+    for (let i = 0; i < index.bannedLetters.length; i++) {
+        if (nickLower.includes(index.bannedLetters[i].toLowerCase())) {
+            member.setNickname('nope').catch(console.error);
+            break;
+        }
+    }
+});
+*/
+
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
 
