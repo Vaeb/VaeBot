@@ -1134,7 +1134,11 @@ exports.print = function (channel, ...args) {
     for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
         // Util.log(`${channel.name}: ${msg.length}`);
-        promises.push(channel.send(msg));
+        const msgPromise = channel.send(msg);
+        msgPromise.catch((err) => {
+            console.log('[PRINT_CATCH]', err);
+        });
+        promises.push(msgPromise);
     }
     return Promise.all(promises);
 };
