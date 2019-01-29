@@ -1213,7 +1213,7 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
                 })
                 .catch(console.error);
-            Util.print(channel, `${speaker} Your message has been deleted because the letters besides \`V\`, \`A\`, \`E\` and \`B\` are now banned.`);
+            Util.print(channel, `${speaker} Your message has been deleted because all letters besides \`V\`, \`A\`, \`E\` and \`B\` are now banned.`);
             break;
         }
     }
