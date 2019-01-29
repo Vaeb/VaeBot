@@ -1183,41 +1183,41 @@ index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '�
 
 index.bannedLetters.push('ᖴ');
 
-// index.runFuncs.push((msgObj, speaker, channel, guild) => {
-//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
-
-//     const contentLower = msgObj.content.toLowerCase();
-
-//     for (let i = 0; i < index.bannedLetters.length; i++) {
-//         if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
-//             msgObj.delete()
-//                 .then(() => {
-//                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
-//                 })
-//                 .catch(console.error);
-//             Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
-//             break;
-//         }
-//     }
-// });
-
 index.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
 
     const contentLower = msgObj.content.toLowerCase();
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (/[^\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~vaeb\s0123456789]/i.test(contentLower)) {
+        if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
             msgObj.delete()
                 .then(() => {
                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
                 })
                 .catch(console.error);
-            Util.print(channel, `${speaker} Your message has been deleted because all letters besides \`V\`, \`A\`, \`E\` and \`B\` are now banned.`);
+            Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
             break;
         }
     }
 });
+
+// index.runFuncs.push((msgObj, speaker, channel, guild) => {
+//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
+
+//     const contentLower = msgObj.content.toLowerCase();
+
+//     for (let i = 0; i < index.bannedLetters.length; i++) {
+//         if (/[^\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~vaeb\s0123456789]/i.test(contentLower)) {
+//             msgObj.delete()
+//                 .then(() => {
+//                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
+//                 })
+//                 .catch(console.error);
+//             Util.print(channel, `${speaker} Your message has been deleted because all letters besides \`V\`, \`A\`, \`E\` and \`B\` are now banned.`);
+//             break;
+//         }
+//     }
+// });
 
 client.on('guildMemberUpdate', (oldMember, member) => {
     if (member.guild.id !== '477270527535480834') return;
