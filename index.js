@@ -1179,9 +1179,27 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
-index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣', '𝐹', 'Ⅎ', 'ꟻ', 'ᶠ', '𝙵', 'ℱ', '𝔉', '𝗳'];
+index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣', '𝐹', 'Ⅎ', 'ꟻ', 'ᶠ', '𝙵', 'ℱ', '𝔉', '𝗳', 'Ֆ', 'φ', 'এ', 'ফ'];
 
 index.bannedLetters.push('ᖴ');
+
+// index.runFuncs.push((msgObj, speaker, channel, guild) => {
+//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
+
+//     const contentLower = msgObj.content.toLowerCase();
+
+//     for (let i = 0; i < index.bannedLetters.length; i++) {
+//         if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
+//             msgObj.delete()
+//                 .then(() => {
+//                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
+//                 })
+//                 .catch(console.error);
+//             Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
+//             break;
+//         }
+//     }
+// });
 
 index.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
@@ -1189,13 +1207,13 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
     const contentLower = msgObj.content.toLowerCase();
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
+        if (/[^\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~e\s0123456789]/i.test(contentLower)) {
             msgObj.delete()
                 .then(() => {
                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
                 })
                 .catch(console.error);
-            Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
+            Util.print(channel, `${speaker} Your message has been deleted because the letters \`A\`-\`D\` and \`F\`-\`Z\` are now banned.`);
             break;
         }
     }
