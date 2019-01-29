@@ -1179,7 +1179,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
-index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣'];
+index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣', '𝐹', 'Ⅎ', 'ꟻ', 'ᶠ', '𝙵', 'ℱ', '𝔉', '𝗳'];
 
 index.bannedLetters.push('ᖴ');
 
@@ -1202,12 +1202,13 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
 });
 
 client.on('guildMemberUpdate', (oldMember, member) => {
-    if (member.guild.id !== '477270527535480834' || member.nickname == null) return;
+    if (member.guild.id !== '477270527535480834') return;
 
-    const nickLower = member.nickname.toLowerCase();
+    const nickLower = member.nickname ? member.nickname.toLowerCase() : '';
+    const userLower = member.user.username;
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (nickLower.includes(index.bannedLetters[i].toLowerCase())) {
+        if (nickLower.includes(index.bannedLetters[i].toLowerCase()) || (nickLower === '' && userLower.includes(index.bannedLetters[i].toLowerCase()))) {
             member.setNickname('nope').catch(console.error);
             break;
         }
