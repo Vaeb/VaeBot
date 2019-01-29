@@ -1189,7 +1189,7 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
     const contentLower = msgObj.content.toLowerCase();
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
+        if (contentLower.includes(index.bannedLetters[i].toLowerCase()) || /~~.*[^\x00-\x7F].*~~/.test(contentLower)) {
             msgObj.delete()
                 .then(() => {
                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
