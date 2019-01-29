@@ -1179,7 +1179,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
-index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下'];
+index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣'];
 
 index.bannedLetters.push('ᖴ');
 
@@ -1192,9 +1192,10 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
         if (contentLower.includes(index.bannedLetters[i].toLowerCase())) {
             msgObj.delete()
                 .then(() => {
-                    Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
+                    // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
                 })
                 .catch(console.error);
+            Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
             break;
         }
     }
