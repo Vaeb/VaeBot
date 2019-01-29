@@ -1207,13 +1207,13 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
     const contentLower = msgObj.content.toLowerCase();
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (/[^\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~e\s0123456789]/i.test(contentLower)) {
+        if (/[^\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~vaeb\s0123456789]/i.test(contentLower)) {
             msgObj.delete()
                 .then(() => {
                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
                 })
                 .catch(console.error);
-            Util.print(channel, `${speaker} Your message has been deleted because the letters \`A\`-\`D\` and \`F\`-\`Z\` are now banned.`);
+            Util.print(channel, `${speaker} Your message has been deleted because the letters besides \`V\`, \`A\`, \`E\` and \`B\` are now banned.`);
             break;
         }
     }
