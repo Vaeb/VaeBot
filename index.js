@@ -1183,8 +1183,6 @@ index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫'];
 
 index.bannedLetters.push('ᖴ');
 
-/*
-
 index.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
 
@@ -1205,7 +1203,7 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
 client.on('guildMemberUpdate', (oldMember, member) => {
     if (member.guild.id !== '477270527535480834' || member.nickname == null) return;
 
-    const nickLower = member.nickname.toLowerCase()
+    const nickLower = member.nickname.toLowerCase();
 
     for (let i = 0; i < index.bannedLetters.length; i++) {
         if (nickLower.includes(index.bannedLetters[i].toLowerCase())) {
@@ -1214,7 +1212,6 @@ client.on('guildMemberUpdate', (oldMember, member) => {
         }
     }
 });
-*/
 
 exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
