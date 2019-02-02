@@ -1571,33 +1571,36 @@ client.on('message', (msgObj) => {
         author.id !== vaebId &&
         !Admin.checkMuted(guild, author.id)
     ) {
+        const contentSpam = content.replace(/\|\|(.+?)\|\|/g, (match, p1) => p1);
+        const contentSpamLower = contentSpam.toLowerCase();
+
         // If they are eligible for anti-spam checks
         if (!has.call(userStatus, authorId)) userStatus[authorId] = 0; // Initialise user status
         if (!has.call(messageStamps, authorId)) messageStamps[authorId] = []; // Initialise user message storage
         const nowStamps = messageStamps[authorId]; // Get user message storage
         const stamp = +new Date(); // Get current timestamp
-        nowStamps.unshift({ stamp, message: contentLower }); // Add current message data to the start ([0]) of the message storage
+        nowStamps.unshift({ stamp, message: contentSpamLower }); // Add current message data to the start ([0]) of the message storage
 
         if (
             !Admin.checkMuted(guild, author.id) &&
-            contentLower.length >= 5 &&
-            contentLower.substr(0, 1) != ';' &&
-            contentLower != 'ping' &&
-            contentLower != '!buy'
+            contentSpamLower.length >= 5 &&
+            contentSpamLower.substr(0, 1) != ';' &&
+            contentSpamLower != 'ping' &&
+            contentSpamLower != '!buy'
         ) {
             // >= 5
             let numSimilar = 0;
-            const prevSpam = spamMessages.find(spamMsg => Util.similarStringsStrict(content, spamMsg.msg));
+            const prevSpam = spamMessages.find(spamMsg => Util.similarStringsStrict(contentSpam, spamMsg.msg));
             for (let i = recentMessages.length - 1; i >= 0; i--) {
                 const recentMsg = recentMessages[i];
-                if (Util.similarStringsStrict(content, recentMsg.msg)) {
+                if (Util.similarStringsStrict(contentSpam, recentMsg.msg)) {
                     numSimilar++;
                 } else if (stamp - recentMsg.stamp > recentMs) {
                     recentMessages.splice(i, 1);
                 }
             }
             const nowCheck = numSimilarForSpam;
-            if ((numSimilar >= nowCheck || prevSpam) && !contentLower.includes('welcome')) {
+            if ((numSimilar >= nowCheck || prevSpam) && !contentSpamLower.includes('welcome')) {
                 // Is spam
                 if (prevSpam) {
                     // If message is similar to one previously detected as spam
@@ -1606,10 +1609,10 @@ client.on('message', (msgObj) => {
                     Admin.addMute(guild, channel, speaker, 'System', { reason: '[Auto-Mute] Message-Specific Spamming' }); // Mute the user
                 } else {
                     // If message was detected as spam based on similar recent messages
-                    spamMessages.push({ msg: content, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
+                    spamMessages.push({ msg: contentSpam, stamp, numSince: 0, initWarn: true }); // At some point remove spam messages with really old stamp?
                     Util.print(
                         channel,
-                        `**Warning:** If users continue to send variants of "${content}", it will be treated as spam resulting in mutes`,
+                        `**Warning:** If users continue to send variants of "${contentSpam}", it will be treated as spam resulting in mutes`,
                     ); // Warn the user
                     // Maybe put all the users who've spammed the message on a warning?
                 }
@@ -1623,9 +1626,9 @@ client.on('message', (msgObj) => {
             }
         }
 
-        recentMessages.push({ msg: content, stamp });
+        recentMessages.push({ msg: contentSpam, stamp });
 
-        if (!Admin.checkMuted(guild, author.id) && Util.isSpam(content)) {
+        if (!Admin.checkMuted(guild, author.id) && Util.isSpam(contentSpam)) {
             // Check if the message contains single-message-spam
             if (userStatus[authorId] == 0) {
                 // If the user has not yet been warned recently
