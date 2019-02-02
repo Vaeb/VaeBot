@@ -785,23 +785,28 @@ exports.cloneObjDepth = function (obj, maxDepth = 1, nowDepth = 0) {
     }
 
     if (obj instanceof Array) {
-        if (nowDepth >= maxDepth) return '[Array]';
+        const len = obj.length;
+
+        if (nowDepth >= maxDepth && len > 0) return '[Array]';
 
         copy = [];
-        const len = obj.length;
         for (let i = 0; i < len; i++) {
             copy[i] = exports.cloneObjDepth(obj[i], maxDepth, nowDepth + 1);
         }
+
         return copy;
     }
 
     if (obj instanceof Object && !(obj instanceof Buffer)) {
-        if (nowDepth >= maxDepth) return '[Object]';
+        const entries = Object.entries(obj);
+
+        if (nowDepth >= maxDepth && entries.length > 0) return '[Object]';
 
         copy = {};
-        for (const [attr, objAttr] of Object.entries(obj)) {
+        for (const [attr, objAttr] of entries) {
             copy[attr] = exports.cloneObjDepth(objAttr, maxDepth, nowDepth + 1);
         }
+
         return copy;
     }
 
