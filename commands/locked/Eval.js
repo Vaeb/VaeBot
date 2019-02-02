@@ -22,7 +22,7 @@ module.exports = Cmds.addCommand({
             .then((result) => {
                 Util.log('Eval result:', result);
                 outStr.push('```');
-                outStr.push(index.NodeUtil.format(result));
+                outStr.push(Util.format(result));
                 outStr.push('```');
                 if (result !== undefined) Util.print(channel, outStr.join('\n'));
             })

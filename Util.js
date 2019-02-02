@@ -762,12 +762,50 @@ exports.cloneObj = function (obj, fixBuffer) {
 
     if (obj instanceof Object && !(obj instanceof Buffer)) {
         copy = {};
-
         for (const [attr, objAttr] of Object.entries(obj)) {
             copy[attr] = exports.cloneObj(objAttr, fixBuffer);
         }
         return copy;
     }
+
+    console.log("Couldn't clone obj, returning real value");
+
+    return obj;
+};
+
+exports.cloneObjDepth = function (obj, maxDepth = 1, nowDepth = 0) {
+    let copy;
+
+    if (obj == null || typeof (obj) !== 'object') return obj;
+
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    if (obj instanceof Array) {
+        if (nowDepth >= maxDepth) return '[Array]';
+
+        copy = [];
+        const len = obj.length;
+        for (let i = 0; i < len; i++) {
+            copy[i] = exports.cloneObjDepth(obj[i], maxDepth, nowDepth + 1);
+        }
+        return copy;
+    }
+
+    if (obj instanceof Object && !(obj instanceof Buffer)) {
+        if (nowDepth >= maxDepth) return '[Object]';
+
+        copy = {};
+        for (const [attr, objAttr] of Object.entries(obj)) {
+            copy[attr] = exports.cloneObjDepth(objAttr, maxDepth, nowDepth + 1);
+        }
+        return copy;
+    }
+
+    console.log("Couldn't clone obj, returning real value");
 
     return obj;
 };
@@ -2940,6 +2978,16 @@ exports.isSpam = function (content) {
 
 exports.reverse = function (str) {
     return str.split('').reverse().join('');
+};
+
+exports.format = function (...args) {
+    const newArgs = [];
+
+    for (let i = 0; i < args.length; i++) {
+        newArgs[i] = exports.cloneObjDepth(args[i], 1);
+    }
+
+    return NodeUtil.format(...newArgs);
 };
 
 let lastTag = null;
