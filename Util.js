@@ -2989,7 +2989,7 @@ exports.format = function (...args) {
     const newArgs = [];
 
     for (let i = 0; i < args.length; i++) {
-        newArgs[i] = exports.cloneObjDepth(args[i], 1);
+        newArgs[i] = exports.cloneObjDepth(args[i], 2);
     }
 
     return NodeUtil.format(...newArgs);
