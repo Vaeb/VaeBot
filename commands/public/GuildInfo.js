@@ -27,7 +27,6 @@ module.exports = Cmds.addCommand({
         sendEmbedFields.push({ name: 'Text Channels', value: Util.getTextChannels(guild).size });
         sendEmbedFields.push({ name: 'Voice Channels', value: Util.getVoiceChannels(guild).size });
         sendEmbedFields.push({ name: 'Roles', value: guild.roles.size });
-        sendEmbedFields.push({ name: 'Default Channel', value: Util.capitalize(guild.defaultChannel.name) });
         sendEmbedFields.push({ name: 'AFK Timeout', value: `${guild.afkTimeout} seconds` });
         sendEmbedFields.push({ name: 'Created', value: createdStr });
         sendEmbedFields.push({ name: 'Icon', value: guild.iconURL });
