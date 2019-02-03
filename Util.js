@@ -2348,7 +2348,7 @@ exports.getRolePermissions = function (role, channel) {
 exports.getPermRating = function (guild, userOrRole) {
     if (userOrRole.hasPermission == null) return 0;
 
-    const tempPermRating = exports.cloneObj(exports.permRating);
+    const tempPermRating = Util.cloneObj(Util.permRating);
 
     let total = 0;
     let foundTop = false;
@@ -2356,7 +2356,7 @@ exports.getPermRating = function (guild, userOrRole) {
     for (let i = 0; i < tempPermRating.length; i++) {
         const permData = tempPermRating[i];
         if (userOrRole.hasPermission(permData[0], false)) {
-            if (!foundTop) {
+            if (!foundTop && i < tempPermRating.length -1) {
                 foundTop = true;
 
                 let lastVal = null;
@@ -2381,6 +2381,8 @@ exports.getPermRating = function (guild, userOrRole) {
                     pointer1 = i2;
                     lastVal = nowVal;
                 }
+
+                console.log('qqq', i, pointer0, pointer1);
 
                 const numPoints = (pointer1 - pointer0) + 1;
                 newVal /= numPoints;
