@@ -24,13 +24,13 @@ module.exports = Cmds.addCommand({
         //         if (whitelistData.length > 0) {
         //             Util.sendDescEmbed(channel, speaker.displayName, 'Vashta owner confirmed, role given.', null, null, null);
 
-        //             speaker.addRole(newBuyer);
+        //             speaker.addRole(newBuyer).catch(console.error);
         //         } else {
         //             // Util.sendDescEmbed(channel, speaker.displayName, 'You are not registered as a Vashta owner, if you do own Veil please say `;newdiscord` and follow the given link before using this command.', null, null, null);
         //             Util.sendDescEmbed(channel, speaker.displayName, 'You are not registered as a Vashta owner.', null, null, null);
 
         //             if (Util.hasRole(speaker, newBuyer)) {
-        //                 speaker.removeRole(newBuyer);
+        //                 speaker.removeRole(newBuyer).catch(console.error);
         //             }
         //         }
         //     },

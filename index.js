@@ -697,7 +697,7 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 (member.id === '214047714059616257' || member.id === '148931616452902912') &&
                 (nowRole.id === '293458258042159104' || nowRole.id === '284761589155102720')
             ) {
-                member.removeRole(nowRole);
+                member.removeRole(nowRole).catch(console.error);
             }
 
             if (nowRole.name === 'Vashta-Owner' && guild.id === '477270527535480834') {
@@ -709,12 +709,12 @@ client.on('guildMemberUpdate', (oldMember, member) => {
             }
 
             if (nowRole.name.includes('Mod') && member.id == '202660584330625024') {
-                member.removeRole(nowRole);
+                member.removeRole(nowRole).catch(console.error);
             }
 
             const isMuted = Admin.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && isMuted) {
-                member.removeRole(nowRole);
+                member.removeRole(nowRole).catch(console.error);
                 Util.log(`Force re-muted ${Util.getName(member)} (${member.id})`);
             } else {
                 const sendLogData = [

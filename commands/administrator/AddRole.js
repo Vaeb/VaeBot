@@ -15,14 +15,18 @@ module.exports = Cmds.addCommand({
     // /////////////////////////////////////////////////////////////////////////////////////////
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        const data = Util.getDataFromString(args, [
-            function (str) {
-                return Util.getMemberByMixed(str, guild);
-            },
-            function (str) {
-                return Util.getRole(str, guild);
-            },
-        ], false);
+        const data = Util.getDataFromString(
+            args,
+            [
+                function (str) {
+                    return Util.getMemberByMixed(str, guild);
+                },
+                function (str) {
+                    return Util.getRole(str, guild);
+                },
+            ],
+            false,
+        );
 
         if (!data) return Util.commandFailed(channel, speaker, 'Invalid parameters');
 
@@ -42,7 +46,7 @@ module.exports = Cmds.addCommand({
             Util.commandFailed(channel, speaker, 'Role has equal or higher rank');
             return false;
         }
-        user.addRole(role);
+        user.addRole(role).catch(console.error);
 
         const sendEmbedFields = [
             { name: 'Username', value: Util.getMention(user) },
@@ -56,7 +60,8 @@ module.exports = Cmds.addCommand({
             Util.makeEmbedFooter(speaker), // Username + ID String
             Util.getAvatar(user), // Avatar URL String
             colGreen, // Color Number
-            sendEmbedFields);
+            sendEmbedFields,
+        );
 
         return true;
     },
