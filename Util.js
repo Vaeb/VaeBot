@@ -1186,6 +1186,33 @@ exports.print = function (channel, ...args) {
     return Promise.all(promises);
 };
 
+const printPromise = async (channel, msg, resolveData, resolveErr) => {
+    try {
+        const data = await channel.send(msg);
+        resolveData.push(data);
+    } catch (err) {
+        resolveErr.push(err);
+    }
+};
+
+Util.print = async function (channel, ...args) {
+    const messages = Util.splitMessages(args);
+    const resolveData = [];
+    const resolveErr = [];
+    const promises = [];
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
+        promises.push(printPromise(channel, msg, resolveData, resolveErr));
+    }
+    try {
+        await Promise.all(promises);
+        if (resolveData.length > 0 && resolveErr.length === 0) return resolveData[0];
+        return resolveErr[0];
+    } catch (err) {
+        throw new Error("SOMETHING WENT WRONG WITH PRINT'S CODE:", err);
+    }
+};
+
 exports.sortPerms = function (permsArr) {
     permsArr.sort((a, b) => exports.permissionsOrder[b] - exports.permissionsOrder[a]);
 };
