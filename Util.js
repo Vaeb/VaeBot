@@ -1192,6 +1192,7 @@ const printPromise = async (channel, msg, resolveData, resolveErr) => {
         resolveData.push(data);
     } catch (err) {
         resolveErr.push(err);
+        console.log('[PRINT_CATCH]', err);
     }
 };
 
