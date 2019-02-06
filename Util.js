@@ -1195,7 +1195,7 @@ const printPromise = async (channel, msg, resolveData, resolveErr) => {
     }
 };
 
-Util.print = async function (channel, ...args) {
+exports.print = async function (channel, ...args) {
     const messages = Util.splitMessages(args);
     const resolveData = [];
     const resolveErr = [];
