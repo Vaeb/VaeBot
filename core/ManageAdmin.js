@@ -373,7 +373,7 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
 
     // Ban the user in all linked guilds
 
-    if (resolvedUser.member && extra.temp) {
+    if (resolvedUser.member/* && extra.temp */) {
         const outStr = [`**You have been ${actionPast.toLowerCase()}**\n\`\`\``];
         outStr.push(`Guild: ${guild.name}`);
         outStr.push(`Reason: ${reason}`);
@@ -385,7 +385,7 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
             'Please keep in mind that bots cannot DM users who they do not share a server with, so you will not be notified when your ban ends.',
         );
         outStr.push('------------------------------------------------------------------------------------');
-        outStr.push(`${guild.name} invite link: https://discord.gg/wZRwXyj`);
+        outStr.push(`${guild.name} invite link: https://discord.gg/bvS5gwY`);
         outStr.push('------------------------------------------------------------------------------------');
         outStr.push(
             'The invite link may still display as **expired** when your ban ends, this is due to Discord caching your ban. If this happens you can try the following:',
