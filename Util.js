@@ -762,12 +762,55 @@ exports.cloneObj = function (obj, fixBuffer) {
 
     if (obj instanceof Object && !(obj instanceof Buffer)) {
         copy = {};
-
         for (const [attr, objAttr] of Object.entries(obj)) {
             copy[attr] = exports.cloneObj(objAttr, fixBuffer);
         }
         return copy;
     }
+
+    console.log("Couldn't clone obj, returning real value");
+
+    return obj;
+};
+
+exports.cloneObjDepth = function (obj, maxDepth = 1, nowDepth = 0) {
+    let copy;
+
+    if (obj == null || typeof (obj) !== 'object') return obj;
+
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    if (obj instanceof Array) {
+        const len = obj.length;
+
+        if (nowDepth >= maxDepth && len > 0) return '[Array]';
+
+        copy = [];
+        for (let i = 0; i < len; i++) {
+            copy[i] = exports.cloneObjDepth(obj[i], maxDepth, nowDepth + 1);
+        }
+
+        return copy;
+    }
+
+    if (obj instanceof Object && !(obj instanceof Buffer)) {
+        const entries = Object.entries(obj);
+
+        if (nowDepth >= maxDepth && entries.length > 0) return '[Object]';
+
+        copy = {};
+        for (const [attr, objAttr] of entries) {
+            copy[attr] = exports.cloneObjDepth(objAttr, maxDepth, nowDepth + 1);
+        }
+
+        return copy;
+    }
+
+    console.log("Couldn't clone obj, returning real value");
 
     return obj;
 };
@@ -1141,6 +1184,34 @@ exports.print = function (channel, ...args) {
         promises.push(msgPromise);
     }
     return Promise.all(promises);
+};
+
+const printPromise = async (channel, msg, resolveData, resolveErr) => {
+    try {
+        const data = await channel.send(msg);
+        resolveData.push(data);
+    } catch (err) {
+        resolveErr.push(err);
+        console.log('[PRINT_CATCH]', err);
+    }
+};
+
+exports.print = async function (channel, ...args) {
+    const messages = Util.splitMessages(args);
+    const resolveData = [];
+    const resolveErr = [];
+    const promises = [];
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
+        promises.push(printPromise(channel, msg, resolveData, resolveErr));
+    }
+    try {
+        await Promise.all(promises);
+        if (resolveData.length > 0 && resolveErr.length === 0) return resolveData[0];
+        return resolveErr[0];
+    } catch (err) {
+        throw new Error("SOMETHING WENT WRONG WITH PRINT'S CODE:", err);
+    }
 };
 
 exports.sortPerms = function (permsArr) {
@@ -2305,7 +2376,7 @@ exports.getRolePermissions = function (role, channel) {
 exports.getPermRating = function (guild, userOrRole) {
     if (userOrRole.hasPermission == null) return 0;
 
-    const tempPermRating = exports.cloneObj(exports.permRating);
+    const tempPermRating = Util.cloneObj(Util.permRating);
 
     let total = 0;
     let foundTop = false;
@@ -2313,7 +2384,7 @@ exports.getPermRating = function (guild, userOrRole) {
     for (let i = 0; i < tempPermRating.length; i++) {
         const permData = tempPermRating[i];
         if (userOrRole.hasPermission(permData[0], false)) {
-            if (!foundTop) {
+            if (!foundTop && i < tempPermRating.length -1) {
                 foundTop = true;
 
                 let lastVal = null;
@@ -2338,6 +2409,8 @@ exports.getPermRating = function (guild, userOrRole) {
                     pointer1 = i2;
                     lastVal = nowVal;
                 }
+
+                console.log('qqq', i, pointer0, pointer1);
 
                 const numPoints = (pointer1 - pointer0) + 1;
                 newVal /= numPoints;
@@ -2940,6 +3013,16 @@ exports.isSpam = function (content) {
 
 exports.reverse = function (str) {
     return str.split('').reverse().join('');
+};
+
+exports.format = function (...args) {
+    const newArgs = [];
+
+    for (let i = 0; i < args.length; i++) {
+        newArgs[i] = exports.cloneObjDepth(args[i], 2);
+    }
+
+    return NodeUtil.format(...newArgs);
 };
 
 let lastTag = null;

@@ -16,7 +16,10 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         const guildAutoRoles = Data.guildGet(guild, Data.autoRoles);
-        const props = args.toLowerCase().trim().split(' ');
+        const props = args
+            .toLowerCase()
+            .trim()
+            .split(' ');
         const rolesAdded = [];
         const rolesRemoved = [];
 
@@ -31,10 +34,10 @@ module.exports = Cmds.addCommand({
             const roleObj = Util.getRole(roleName, guild);
 
             if (!Util.hasRole(speaker, roleObj)) {
-                speaker.addRole(roleObj);
+                speaker.addRole(roleObj).catch(console.error);
                 rolesAdded.push(roleObj.name);
             } else {
-                speaker.removeRole(roleObj);
+                speaker.removeRole(roleObj).catch(console.error);
                 rolesRemoved.push(roleObj.name);
             }
         }
@@ -49,6 +52,14 @@ module.exports = Cmds.addCommand({
             sendEmbedFields.push({ name: 'Roles Removed', value: rolesRemoved.join('\n') });
         }
 
-        Util.sendEmbed(channel, 'User Roles Altered', null, Util.makeEmbedFooter(speaker), Util.getAvatar(speaker), colGreen, sendEmbedFields);
+        Util.sendEmbed(
+            channel,
+            'User Roles Altered',
+            null,
+            Util.makeEmbedFooter(speaker),
+            Util.getAvatar(speaker),
+            colGreen,
+            sendEmbedFields,
+        );
     },
 });
