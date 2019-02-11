@@ -49,7 +49,7 @@ module.exports = Cmds.addCommand({
 
         // Admin.addBan(guild, channel, target, speaker, { reason }); // Don't actually ban them for now...
 
-        const crabRaveGif = './resources/CravRaveGif.gif';
+        const crabRaveGif = './resources/CrabRaveGif.gif';
 
         const goneRole = guild.roles.find(r => / gone(?: \S*)?$/i.test(r.name));
 
@@ -63,10 +63,10 @@ module.exports = Cmds.addCommand({
             channel.send(`🦀🦀🦀🦀🦀🦀 ${target} IS GONE 🦀🦀🦀🦀🦀🦀`, { tts: true, files: [crabRaveGif] }).catch(console.error);
         }, 5000);
 
-        channel.setName(`🦀 ${target.user.username} IS GONE 🦀`).catch(console.error);
-        channel.setTopic(`🦀🦀🦀🦀🦀🦀 ${target} IS GONE 🦀🦀🦀🦀🦀🦀`).catch(console.error);
+        channel.setName(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
+        channel.setTopic(`🦀🦀🦀🦀🦀🦀 ${target.user.username.toUpperCase()} IS GONE 🦀🦀🦀🦀🦀🦀`).catch(console.error);
 
-        guild.setName(`🦀 ${target.user.username} IS GONE 🦀`).catch(console.error);
+        guild.setName(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
 
         return true;
     },
