@@ -1494,6 +1494,7 @@ const spamMessages = []; // Messages detected as spam in recentMessages stay her
 }; */
 
 exports.crabRave = {
+    goneGuild: null,
     goneUser: null,
     interval: null,
 };
@@ -1776,7 +1777,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (index.crabRave.goneUser != null && author.bot === false) {
+    if (index.crabRave.goneUser != null && guild.id === index.crabRave.goneGuild && author.bot === false) {
         const goneUserReal = client.users.get(index.crabRave.goneUser) || client.users.get(vaebId);
         Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${goneUserReal} IS GONE 🦀🦀🦀🦀🦀🦀`);
     }

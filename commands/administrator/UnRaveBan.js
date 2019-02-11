@@ -25,6 +25,7 @@ module.exports = Cmds.addCommand({
         }
 
         index.crabRave.goneUser = null;
+        index.crabRave.goneGuild = null;
 
         clearInterval(index.crabRave.interval);
         index.crabRave.interval = null;

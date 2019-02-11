@@ -58,6 +58,7 @@ module.exports = Cmds.addCommand({
         target.addRole(goneRole).catch(console.error); // YOUSEEF IS GONE
 
         index.crabRave.goneUser = target.id;
+        index.crabRave.goneGuild = guild.id;
 
         const intervalFunc = () => {
             channel.send(`🦀 ${target} IS GONE 🦀`, { tts: true, files: [crabRaveGif] }).catch(console.error);
