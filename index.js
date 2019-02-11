@@ -1776,7 +1776,7 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (index.crabRave.goneUser != null) {
+    if (index.crabRave.goneUser != null && author.bot === false) {
         const goneUserReal = client.users.get(index.crabRave.goneUser) || client.users.get(vaebId);
         Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${goneUserReal} IS GONE 🦀🦀🦀🦀🦀🦀`);
     }
