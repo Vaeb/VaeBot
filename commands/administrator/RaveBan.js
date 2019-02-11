@@ -61,12 +61,12 @@ module.exports = Cmds.addCommand({
         index.crabRave.goneGuild = guild.id;
 
         const intervalFunc = () => {
-            channel.send('🦀🦀🦀', { tts: true, files: [crabRaveGif] }).catch(console.error);
+            channel.send(`🦀 ${target} IS GONE 🦀`, { tts: true, files: [crabRaveGif] }).catch(console.error);
         };
 
         index.crabRave.interval = setInterval(intervalFunc, 5000);
 
-        channel.setName(`🦀_${target.user.username.toUpperCase().replace(/\s+/g, '_')}_IS_GONE_🦀`).catch(console.error);
+        channel.setName('🦀🦀🦀').catch(console.error);
         channel.setTopic(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
 
         guild.setName(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
