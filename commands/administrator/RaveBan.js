@@ -61,7 +61,7 @@ module.exports = Cmds.addCommand({
         index.crabRave.goneGuild = guild.id;
 
         const intervalFunc = () => {
-            channel.send(`🦀 ${target} IS GONE 🦀`, { tts: true, files: [crabRaveGif] }).catch(console.error);
+            channel.send('🦀🦀🦀', { tts: true, files: [crabRaveGif] }).catch(console.error);
         };
 
         index.crabRave.interval = setInterval(intervalFunc, 5000);
