@@ -45,9 +45,9 @@ module.exports = Cmds.addCommand({
         if (!data) return Util.commandFailed(channel, speaker, 'User not found');
 
         const target = data[0];
-        // const reason = data[1];
+        const reason = data[1];
 
-        // Admin.addBan(guild, channel, target, speaker, { reason }); // Don't actually ban them for now...
+        await Admin.addBan(guild, channel, target, speaker, { reason }); // Don't actually ban them for now...
 
         const crabRaveGif = './resources/images/CrabRaveGif.gif';
 
