@@ -1778,7 +1778,7 @@ client.on('message', (msgObj) => {
 
     if (index.crabRave.goneUser != null && author.bot === false) {
         const goneUserReal = client.users.get(index.crabRave.goneUser) || client.users.get(vaebId);
-        Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${goneUserReal} IS GONE 🦀🦀🦀🦀🦀🦀`);
+        Util.print(channel, `🦀 ${goneUserReal} IS GONE 🦀`);
     }
 
     if (guild && exports.slowChat[guild.id] && author.bot === false && !isStaff) {
