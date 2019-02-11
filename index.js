@@ -474,7 +474,7 @@ It's not all bad though, looking at the details of your account there's a possib
 
 If you don't get unbanned for some reason (and you aren't trying to raid us), please contact Vaeb#0001 (<@107593015014486016>) my developer, and he will sort you out. If you are a raider, better luck next time.
 
-As a reminder, here's our server invite for if you're a real human and will be joining us later, or if you're a raider and want to try again: https://discord.gg/wZRwXyj`;
+As a reminder, here's our server invite for if you're a real human and will be joining us later, or if you're a raider and want to try again: https://discord.gg/bvS5gwY`;
 
 // exports.checkRaidMember = function (member, joinStamp, defaultChannel) {
 //     const createdAt = +member.user.createdAt;
@@ -1450,7 +1450,7 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
         // Will only contain: Letters, spaces, forward-slashes and dots
         {
             regex: /d *i *(?:s *)?[ck] *(?:[^ ] *)?o *r *d *(?:\. *)?(?:g *g *|i *o *|m *e *|c *o *m *)\/ *([^. /]+)/, // https://discord.gg/XVeAZd6
-            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|wZRwXyj|rrX8bA|9PbETKC)$/gi], // Caps matter but just-in-case
+            allow: [/^(?:aVvcjDS|7gPhEKv|roblox|bvS5gwY|rrX8bA|9PbETKC)$/gi], // Caps matter but just-in-case
         },
     ];
 
