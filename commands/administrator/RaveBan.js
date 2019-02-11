@@ -49,7 +49,7 @@ module.exports = Cmds.addCommand({
 
         // Admin.addBan(guild, channel, target, speaker, { reason }); // Don't actually ban them for now...
 
-        const crabRaveGif = './resources/CrabRaveGif.gif';
+        const crabRaveGif = './resources/images/CrabRaveGif.gif';
 
         const goneRole = guild.roles.find(r => / gone(?: \S*)?$/i.test(r.name));
 
