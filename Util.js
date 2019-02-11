@@ -2925,9 +2925,9 @@ exports.similarStringsStrict = function (str1, str2) {
     const minStr = str1.length < str2.length ? str1 : str2;
     const maxStr = str1.length < str2.length ? str2 : str1;
 
-    if (minStr.replace(/[|. ,/#!$%^&*;:{}=\-_`~()]/g, '').length < 10 && (str1.match(/\s/g) || []).length < 2 && (str2.match(/\s/g) || []).length < 2) return false;
+    // if (minStr.replace(/[|. ,/#!$%^&*;:{}=\-_`~()]/g, '').length < 10 && (str1.match(/\s/g) || []).length < 2 && (str2.match(/\s/g) || []).length < 2) return false;
 
-    // if ((minLen < 4) && (minLen != 3 || maxLen < 4)) return str1 == str2;
+    if ((minStr.length < 4) && (minStr.length != 3 || maxStr.length < 4)) return str1 == str2;
 
     // Get number of allowed alterations between strings to be classed as similar
     let maxChanges = maxStr.length / 3;
