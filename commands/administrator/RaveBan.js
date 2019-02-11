@@ -63,7 +63,7 @@ module.exports = Cmds.addCommand({
         let count = 0;
 
         const intervalFunc = () => {
-            channel.send(`🦀 ${target} IS GONE 🦀`, { tts: count++ % 2 == 0, files: [crabRaveGif] }).catch(console.error);
+            channel.send(`🦀 ${target} IS GONE 🦀`, { tts: count++ % 1 == 0, files: [crabRaveGif] }).catch(console.error);
         };
 
         index.crabRave.interval = setInterval(intervalFunc, 5000);
