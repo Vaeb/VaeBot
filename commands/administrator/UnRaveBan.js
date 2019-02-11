@@ -35,6 +35,8 @@ module.exports = Cmds.addCommand({
             .setTopic("Main channel. Avoid using bot commands here if they're getting spammy or are annoying users.")
             .catch(console.error);
 
+        guild.setName('Vashta').catch(console.error);
+
         return true;
     },
 });
