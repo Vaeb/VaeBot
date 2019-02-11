@@ -17,6 +17,13 @@ module.exports = Cmds.addCommand({
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         if (index.crabRave.goneUser == null) return undefined;
 
+        const target = guild.members.get(index.crabRave.goneUser);
+
+        if (target) {
+            const goneRole = guild.roles.find(r => / gone(?: \S*)?$/i.test(r.name));
+            target.removeRole(goneRole).catch(console.error);
+        }
+
         index.crabRave.goneUser = null;
 
         clearInterval(index.crabRave.interval);
