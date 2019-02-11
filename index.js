@@ -1493,6 +1493,11 @@ const spamMessages = []; // Messages detected as spam in recentMessages stay her
     stamp: 0,
 }; */
 
+exports.crabRave = {
+    goneUser: null,
+    interval: null,
+};
+
 client.on('message', (msgObj) => {
     const channel = msgObj.channel;
     if (channel.name === 'vaebot-log') return;
@@ -1769,6 +1774,11 @@ client.on('message', (msgObj) => {
                 isAuto: false,
             };
         }
+    }
+
+    if (index.crabRave.goneUser != null) {
+        const goneUserReal = client.users.get(index.crabRave.goneUser) || client.users.get(vaebId);
+        Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${goneUserReal} IS GONE 🦀🦀🦀🦀🦀🦀`);
     }
 
     if (guild && exports.slowChat[guild.id] && author.bot === false && !isStaff) {
