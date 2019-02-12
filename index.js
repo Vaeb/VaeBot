@@ -1495,7 +1495,8 @@ const spamMessages = []; // Messages detected as spam in recentMessages stay her
 
 exports.crabRave = {
     goneGuild: null,
-    goneUser: null,
+    goneId: null,
+    goneName: null,
     interval: null,
 };
 
@@ -1573,6 +1574,7 @@ client.on('message', (msgObj) => {
         author.bot === false &&
         content.length > 0 &&
         !contentLower.startsWith('$') &&
+        !contentLower.startsWith('🦀') &&
         author.id !== guild.owner.id &&
         author.id !== vaebId &&
         !Admin.checkMuted(guild, author.id)
@@ -1777,9 +1779,8 @@ client.on('message', (msgObj) => {
         }
     }
 
-    if (index.crabRave.goneUser != null && guild.id === index.crabRave.goneGuild && author.bot === false) {
-        const goneUserReal = client.users.get(index.crabRave.goneUser) || client.users.get(vaebId);
-        Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${goneUserReal} IS GONE 🦀🦀🦀🦀🦀🦀`);
+    if (guild != null && index.crabRave.goneId != null && guild.id === index.crabRave.goneGuild && author.bot === false) {
+        Util.print(channel, `🦀🦀🦀🦀🦀🦀 ${index.crabRave.goneName} IS GONE 🦀🦀🦀🦀🦀🦀`);
     }
 
     if (guild && exports.slowChat[guild.id] && author.bot === false && !isStaff) {

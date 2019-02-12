@@ -47,18 +47,19 @@ module.exports = Cmds.addCommand({
         const target = data[0];
         const reason = data[1];
 
+        index.crabRave.goneId = target.id;
+        index.crabRave.goneName = target.displayName.toUpperCase();
+        index.crabRave.goneGuild = guild.id;
+
         await Admin.addBan(guild, channel, target, speaker, { reason }); // Don't actually ban them for now...
 
         const crabRaveGif = './resources/images/CrabRaveGif.gif';
 
         const goneRole = guild.roles.find(r => / gone(?: \S*)?$/i.test(r.name));
 
-        await goneRole.setName(`🦀 ${target.user.username} IS GONE 🦀`);
+        await goneRole.setName(`🦀 ${index.crabRave.goneName} IS GONE 🦀`);
 
         target.addRole(goneRole).catch(console.error); // YOUSEEF IS GONE
-
-        index.crabRave.goneUser = target.id;
-        index.crabRave.goneGuild = guild.id;
 
         let count = 0;
 
@@ -69,9 +70,9 @@ module.exports = Cmds.addCommand({
         index.crabRave.interval = setInterval(intervalFunc, 5000);
 
         channel.setName('🦀🦀🦀').catch(console.error);
-        channel.setTopic(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
+        channel.setTopic(`🦀 ${index.crabRave.goneName} IS GONE 🦀`).catch(console.error);
 
-        guild.setName(`🦀 ${target.user.username.toUpperCase()} IS GONE 🦀`).catch(console.error);
+        guild.setName(`🦀 ${index.crabRave.goneName} IS GONE 🦀`).catch(console.error);
 
         intervalFunc();
 
