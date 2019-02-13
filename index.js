@@ -744,8 +744,8 @@ client.on('guildMemberUpdate', (oldMember, member) => {
         rolesRemoved.forEach((nowRole) => {
             const isMuted = Admin.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && !isMuted) {
-                member.addRole(nowRole).catch(console.error);
-                Util.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
+                // member.addRole(nowRole).catch(console.error);
+                // Util.log(`Force re-unmuted ${Util.getName(member)} (${member.id})`);
             } else {
                 const sendLogData = [
                     'Role Removed',
