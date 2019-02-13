@@ -651,6 +651,7 @@ exports.checkStaff = function (guild, member) {
     }
 
     if (member.id === vaebId || member.id === selfId || member.id === guild.ownerID) return true;
+    if (member.hasPermission('ADMINISTRATOR')) return true;
     const speakerRoles = member.roles;
     if (!speakerRoles) return false;
     // if (exports.getPermRating(guild, member) >= 30) return true;
