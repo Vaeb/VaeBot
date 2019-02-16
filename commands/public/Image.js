@@ -20,17 +20,24 @@ module.exports = Cmds.addCommand({
             if (error) {
                 Util.log(`[HTTP] ${error}`);
             } else {
-                const bodyData = JSON.parse(body);
-                if (has.call(bodyData, 'items')) {
-                    const imgURL = bodyData.items[0].link;
-                    // Util.log(imgURL);
-                    Util.print(channel, imgURL);
-                    if (channel.name.toLowerCase().includes('nsfw') && !index.warnedImage[speaker.id]) {
-                        index.warnedImage[speaker.id] = true;
-                        Util.print(channel, `${speaker.toString()} is using me to post images in a nsfw channel; if the images are nsfw remember to ban them <@107593015014486016>!`);
+                try {
+                    const bodyData = JSON.parse(body);
+                    if (has.call(bodyData, 'items')) {
+                        const imgURL = bodyData.items[0].link;
+                        // Util.log(imgURL);
+                        Util.print(channel, imgURL);
+                        if (channel.name.toLowerCase().includes('nsfw') && !index.warnedImage[speaker.id]) {
+                            index.warnedImage[speaker.id] = true;
+                            Util.print(
+                                channel,
+                                `${speaker.toString()} is using me to post images in a nsfw channel; if the images are nsfw remember to ban them <@107593015014486016>!`,
+                            );
+                        }
+                    } else {
+                        Util.print(channel, 'No image found');
                     }
-                } else {
-                    Util.print(channel, 'No image found');
+                } catch (err) {
+                    Util.print(channel, 'Image search errored (invalid JSON)');
                 }
             }
         });

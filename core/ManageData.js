@@ -195,7 +195,7 @@ exports.query = function (statement, inputs, useConnection) {
 exports.connect1 = function () {
     connection = index.MySQL.createConnection({
         host: 'localhost',
-        user: 'VashtaDashboard',
+        user: 'bot',
         password: index.dbPass,
         database: 'vaebot',
         multipleStatements: true,
