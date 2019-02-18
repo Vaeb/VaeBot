@@ -708,7 +708,10 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendDescEmbed(member, title, message, footer, null, colBlue); */
             }
 
-            if ((nowRole.name.includes('Mod') && member.id == '202660584330625024') || (nowRole.name.includes('Special') && member.id == '119203482598244356')) {
+            if (
+                (nowRole.name.includes('Mod') && member.id == '202660584330625024') ||
+                (nowRole.name.includes('Special') && member.id == '119203482598244356')
+            ) {
                 member.removeRole(nowRole).catch(console.error);
             }
 
@@ -1179,28 +1182,28 @@ exports.runFuncs.push((msgObj, speaker, channel, guild) => {
     }
 });
 
-// index.bannedLetters = [];
-index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣', '𝐹', 'Ⅎ', 'ꟻ', 'ᶠ', '𝙵', 'ℱ', '𝔉', '𝗳', 'Ֆ', 'φ', 'এ', 'ফ', 'ᶂ', 'ᵮ', 'Ꝭ', 'ꞧ', '🅕', 'ꞙ', 'ꬵ', 'ꝭ', 'ꝷ', 'ﬀ', 'ꭍ', 'ﬁ', 'Ḟ', 'דּ', '~~r~~', '~~t~~'];
+index.bannedLetters = [];
+// index.bannedLetters = ['f', '𝓕', 'ғ', 'ƒ', '🇫', 'ꎇ', '₣', '𝐅', '🄵', '🅵', '𝔽', 'ｆ', 'ꜰ', 'ꊰ', '𝐟', '𝖋', 'Ⓕ', 'ʄ', '𝓯', '𝕗', 'Ŧ', '下', '𝙁', '千', '⒡', 'ɟ', '℉', 'ｷ', '𝔣', '𝐹', 'Ⅎ', 'ꟻ', 'ᶠ', '𝙵', 'ℱ', '𝔉', '𝗳', 'Ֆ', 'φ', 'এ', 'ফ', 'ᶂ', 'ᵮ', 'Ꝭ', 'ꞧ', '🅕', 'ꞙ', 'ꬵ', 'ꝭ', 'ꝷ', 'ﬀ', 'ꭍ', 'ﬁ', 'Ḟ', 'דּ', '~~r~~', '~~t~~'];
 
-index.bannedLetters.push('ᖴ');
+// index.bannedLetters.push('ᖴ');
 
-index.runFuncs.push((msgObj, speaker, channel, guild) => {
-    if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
+// index.runFuncs.push((msgObj, speaker, channel, guild) => {
+//     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
 
-    const contentLower = msgObj.content.toLowerCase();
+//     const contentLower = msgObj.content.toLowerCase();
 
-    for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (contentLower.includes(index.bannedLetters[i].toLowerCase()) || /~~.*[^\x00-\x7F].*~~/.test(contentLower)) {
-            msgObj.delete()
-                .then(() => {
-                    // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
-                })
-                .catch(console.error);
-            Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
-            break;
-        }
-    }
-});
+//     for (let i = 0; i < index.bannedLetters.length; i++) {
+//         if (contentLower.includes(index.bannedLetters[i].toLowerCase()) || /~~.*[^\x00-\x7F].*~~/.test(contentLower)) {
+//             msgObj.delete()
+//                 .then(() => {
+//                     // Util.print(speaker.user, 'Notice: Your message has been deleted because the letter `F` is now banned.');
+//                 })
+//                 .catch(console.error);
+//             Util.print(channel, `${speaker} Your message has been deleted because the letter \`F\` is now banned.`);
+//             break;
+//         }
+//     }
+// });
 
 // index.runFuncs.push((msgObj, speaker, channel, guild) => {
 //     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true || guild.id !== '477270527535480834' || Util.hasRoleName(speaker, 'owner')) return;
@@ -1217,19 +1220,19 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
 //     }
 // });
 
-client.on('guildMemberUpdate', (oldMember, member) => {
-    if (member.guild.id !== '477270527535480834') return;
+// client.on('guildMemberUpdate', (oldMember, member) => {
+//     if (member.guild.id !== '477270527535480834') return;
 
-    const nickLower = member.nickname ? member.nickname.toLowerCase() : '';
-    const userLower = member.user.username;
+//     const nickLower = member.nickname ? member.nickname.toLowerCase() : '';
+//     const userLower = member.user.username;
 
-    for (let i = 0; i < index.bannedLetters.length; i++) {
-        if (nickLower.includes(index.bannedLetters[i].toLowerCase()) || (nickLower === '' && userLower.includes(index.bannedLetters[i].toLowerCase()))) {
-            member.setNickname('nope').catch(console.error);
-            break;
-        }
-    }
-});
+//     for (let i = 0; i < index.bannedLetters.length; i++) {
+//         if (nickLower.includes(index.bannedLetters[i].toLowerCase()) || (nickLower === '' && userLower.includes(index.bannedLetters[i].toLowerCase()))) {
+//             member.setNickname('nope').catch(console.error);
+//             break;
+//         }
+//     }
+// });
 
 index.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
