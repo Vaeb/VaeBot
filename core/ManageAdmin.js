@@ -315,7 +315,7 @@ function getMinTime(time, maxTime) {
 function getDefaultMuteTime(pastMutesCount) {
     return pastMutesCount < 7
         ? exports.defaultMuteLength * 2 ** pastMutesCount
-        : exports.defaultMuteLength2 * 3 + exports.defaultMuteLength2 * (pastMutesCount - 7) * 2;
+        : exports.defaultMuteLength2 * 3 + exports.defaultMuteLength2 * (pastMutesCount - 7) * 1;
 }
 
 function getNextMuteTime(time, muteReason, pastMutes) {
@@ -373,7 +373,7 @@ async function banMember(guild, channel, resolvedUser, resolvedModerator, reason
 
     // Ban the user in all linked guilds
 
-    if (resolvedUser.member/* && extra.temp */) {
+    if (resolvedUser.member /* && extra.temp */) {
         const outStr = [`**You have been ${actionPast.toLowerCase()}**\n\`\`\``];
         outStr.push(`Guild: ${guild.name}`);
         outStr.push(`Reason: ${reason}`);
