@@ -1574,6 +1574,7 @@ client.on('message', (msgObj) => {
         author.bot === false &&
         content.length > 0 &&
         !contentLower.startsWith('$') &&
+        !contentLower.startsWith('|move') &&
         !contentLower.startsWith('🦀') &&
         author.id !== guild.owner.id &&
         author.id !== vaebId &&
