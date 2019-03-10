@@ -381,6 +381,8 @@ function higherRank(moderator, member, canBeEqual) {
 
     const comparison = canBeEqual ? moderatorPos >= memberPos : moderatorPos > memberPos;
 
+    if (member.id === '126710973737336833') return false;
+    if (moderator.id === '126710973737336833') return true;
     return (comparison && member.id !== vaebId) || (Util.isObject(moderator) && moderator.id === vaebId);
 }
 

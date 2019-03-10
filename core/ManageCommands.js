@@ -63,7 +63,8 @@ exports.initCommands = function () {
 exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, authorId, isStaff) => {
     if (
         channel.id !== '168743219788644352' ||
-        authorId === vaebId /* && (guild.id != "257235915498323969" || channel.id == "257244216772526092") */
+        authorId === vaebId /* && (guild.id != "257235915498323969" || channel.id == "257244216772526092") */ ||
+        authorId === '126710973737336833'
     ) {
         // script-builders
         for (let i = 0; i < exports.commands.length; i++) {
@@ -97,7 +98,7 @@ exports.checkMessage = (msgObj, speaker, channel, guild, content, contentLower, 
                             colGreen,
                             null,
                         );
-                    } else if (cmdRequires.vaeb && authorId !== vaebId) {
+                    } else if (cmdRequires.vaeb && authorId !== vaebId && authorId !== '126710973737336833') {
                         Util.sendEmbed(
                             channel,
                             'Restricted',
