@@ -708,12 +708,12 @@ client.on('guildMemberUpdate', (oldMember, member) => {
                 Util.sendDescEmbed(member, title, message, footer, null, colBlue); */
             }
 
-            if (
-                (nowRole.name.includes('Mod') && member.id == '202660584330625024') ||
-                (nowRole.name.includes('Special') && member.id == '119203482598244356')
-            ) {
-                member.removeRole(nowRole).catch(console.error);
-            }
+            // if (
+            //     (nowRole.name.includes('Mod') && member.id == '202660584330625024') ||
+            //     (nowRole.name.includes('Special') && member.id == '119203482598244356')
+            // ) {
+            //     member.removeRole(nowRole).catch(console.error);
+            // }
 
             const isMuted = Admin.checkMuted(guild, member.id);
             if (nowRole.name === 'SendMessages' && isMuted) {
