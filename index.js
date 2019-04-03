@@ -1238,7 +1238,7 @@ index.runFuncs.push((msgObj, speaker, channel, guild) => {
     if (guild == null || msgObj == null || speaker == null || speaker.user.bot === true) return;
 
     const content = msgObj.content;
-    const matches = /\b\/?r\/(\w+)/g.exec(content);
+    const matches = /\b(?<!com\/)r\/(\w+)/g.exec(content);
 
     if (matches && matches.length) {
         Util.print(channel, `https://www.reddit.com/r/${matches[1]}`);
