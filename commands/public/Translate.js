@@ -14,7 +14,7 @@ module.exports = Cmds.addCommand({
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
         index.Translate.translate(args, 'en', (err, res) => {
-            if (err) return console.error(err);
+            if (err && err.error) return console.log(err.error);
 
             const embFields = [
                 { name: `[${res.detectedSourceLanguage}] Original`, value: res.originalText || args, inline: false },
