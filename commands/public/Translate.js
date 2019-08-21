@@ -13,14 +13,13 @@ module.exports = Cmds.addCommand({
     example: 'Hola mis amigos',
 
     func: (cmd, args, msgObj, speaker, channel, guild) => {
-        index.Translate(args, { to: 'en' }).then((res) => {
+        index.translate(args, 'en', (err, res) => {
             const embFields = [
-                { name: `[${res.from.language.iso}] Original`, value: (res.from.text.value || args), inline: false },
-                { name: '[en] Translation', value: res.text, inline: false },
+                { name: `[${res.detectedSourceLanguage}] Original`, value: res.originalText || args, inline: false },
+                { name: '[en] Translation', value: res.translatedText, inline: false },
             ];
             Util.sendEmbed(channel, 'Translated', null, Util.makeEmbedFooter(speaker), null, colGreen, embFields);
-        })
-        .catch(console.error);
+        });
 
         return undefined;
     },
