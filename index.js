@@ -21,12 +21,14 @@ exports.NodeOpus = require('node-opus');
 exports.Exec = require('child_process').exec;
 const YtInfoObj = require('youtube-node');
 exports.Translate = require('google-translate')(Auth.translateKey);
+const { TranslationServiceClient } = require('@google-cloud/translate').v3beta1;
 exports.MySQL = require('mysql');
 exports.NodeUtil = require('util');
 // exports.YoutubeSearch = require('youtube-search');
 
 exports.YtInfo = new YtInfoObj();
 exports.TrelloHandler = new TrelloObj(Auth.trelloKey, Auth.trelloToken);
+exports.TranslateClient = new TranslationServiceClient();
 
 exports.linkGuilds = [['417110408088780801', '309785618932563968']];
 
