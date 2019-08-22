@@ -24,6 +24,7 @@ module.exports = Cmds.addCommand({
             parent: index.TranslateClient.locationPath(projectId, location), // projects/vaebvps/locations/global
             contents: [useText],
             mimeType: 'text/plain', // mime types: text/plain, text/html
+            sourceLanguageCode: 'ja',
             targetLanguageCode: 'en-US',
         };
 
