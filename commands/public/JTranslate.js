@@ -1,5 +1,5 @@
 module.exports = Cmds.addCommand({
-    cmds: [';jtranslate '],
+    cmds: [';translatej '],
 
     requires: {
         guild: true,
