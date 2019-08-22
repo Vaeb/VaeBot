@@ -24,6 +24,7 @@ exports.Translate = require('google-translate')(Auth.translateKey);
 const { TranslationServiceClient } = require('@google-cloud/translate').v3beta1;
 exports.MySQL = require('mysql');
 exports.NodeUtil = require('util');
+exports.Hepburn = require('hepburn');
 // exports.YoutubeSearch = require('youtube-search');
 
 exports.YtInfo = new YtInfoObj();
