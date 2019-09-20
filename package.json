@@ -29,7 +29,6 @@
     "bufferutil": "^4.0.0",
     "dateformat": "^3.0.3",
     "discord.js": "^11.4.2",
-    "erlpack": "github:hammerandchisel/erlpack",
     "google-translate": "^2.3.0",
     "hepburn": "^1.1.1",
     "libsodium-wrappers": "^0.7.3",
