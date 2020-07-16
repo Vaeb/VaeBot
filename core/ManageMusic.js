@@ -1,3 +1,5 @@
+const scdl = require('soundcloud-downloader');
+
 const Ytdl = index.Ytdl;
 
 exports.isPlaying = {};
@@ -133,8 +135,14 @@ exports.streamAudio = function (songData, guild, channel) {
         let dispatcher;
 
         if (!isFile) {
-            const stream = Ytdl(songId, { filter: 'audioonly' });
-            dispatcher = connection.playStream(stream, streamOptions);
+            if (songData.isSoundcloud) {
+                scdl.download(songId).then((stream) => {
+                    dispatcher = connection.playStream(stream, streamOptions);
+                });
+            } else {
+                const stream = Ytdl(songId, { filter: 'audioonly' });
+                dispatcher = connection.playStream(stream, streamOptions);
+            }
         } else {
             dispatcher = connection.playFile(`/var/files/VaeBot/resources/music/${songId}.mp3`);
         }
@@ -231,7 +239,7 @@ exports.joinMusic = function (guild, channel, func) {
     }
 };
 
-exports.formatSong = function (data, isFile) {
+exports.formatSong = function (data, isFile, isSoundcloud) {
     if (isFile) {
         return {
             id: data,
@@ -239,6 +247,16 @@ exports.formatSong = function (data, isFile) {
             isFile: true,
         };
     }
+
+    if (isSoundcloud) {
+        return {
+            title: data.title,
+            id: data.url,
+            isFile: false,
+            isSoundcloud: true,
+        };
+    }
+
     return {
         id: typeof (data.id) === 'object' ? data.id.videoId : data.id,
         title: data.snippet.title,

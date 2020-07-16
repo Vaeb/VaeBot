@@ -1,3 +1,6 @@
+const scdl = require('soundcloud-downloader');
+const { Util } = require('discord.js');
+
 module.exports = Cmds.addCommand({
     cmds: [';play ', ';add ', ';addqueue '],
 
@@ -19,6 +22,17 @@ module.exports = Cmds.addCommand({
 
         Music.joinMusic(guild, channel, () => {
             if (args.includes('http')) {
+                if (scdl.isValidUrl(args)) {
+                    scdl.getInfo(args).then((info) => {
+                        const songData = {
+                            title: info.title,
+                            id: args,
+                        };
+                        Music.addSong(speaker, guild, channel, Music.formatSong(songData, false, true));
+                    }).catch(() => Util.print(channel, 'Could not find that Soundcloud track'));
+                    return;
+                }
+
                 let songId = /[^/=]+$/.exec(args);
                 if (songId != null && songId[0]) {
                     songId = songId[0];
